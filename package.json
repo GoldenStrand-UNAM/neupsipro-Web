@@ -1,0 +1,31 @@
+{
+  "name": "neupsipro-web",
+  "version": "0.1.0",
+  "description": "Aplicación de Neupsipro",
+  "homepage": "https://github.com/GoldenStrand-UNAM/neupsipro-Web#readme",
+  "bugs": {
+    "url": "https://github.com/GoldenStrand-UNAM/neupsipro-Web/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoldenStrand-UNAM/neupsipro-Web.git"
+  },
+  "license": "ISC",
+  "author": "GoldenStrand",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/css": "^1.0.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "eslint-plugin-security": "^4.0.0",
+    "globals": "^17.4.0"
+  }
+}
