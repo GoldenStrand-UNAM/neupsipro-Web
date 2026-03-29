@@ -5,8 +5,9 @@ import { defineConfig } from "eslint/config";
 import pluginSecurity from "eslint-plugin-security";
 
 export default defineConfig([
+  { ignores: ["eslint.config.mjs"] },
   pluginSecurity.configs.recommended,
-  { files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
+  { files: ["**/*.{js,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
   { files: ["**/*.css"], plugins: { css }, language: "css/css", extends: ["css/recommended"] },
   {
@@ -30,9 +31,6 @@ export default defineConfig([
       ignoreComments: true,
       ignoreStrings: true,
       ignoreTemplateLiterals: true,
-    }],
-    'import/no-extraneous-dependencies': ['error', {
-      devDependencies: ['**/*.test.js', '**/*.spec.js', 'tests/**/*.js'],
     }],
     // Security plugin rules - PCI DSS Requirement 6.2.1
     'security/detect-object-injection': 'warn', // Downgraded to warning
