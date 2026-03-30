@@ -1,0 +1,6 @@
+@layer components {
+  .black-icon {
+    /* formato para íconos negros*/
+    @apply inline-block w-[28px] h-[28px] md:w-[35px] md:h-[35px] text-black; 
+  }
+}

@@ -1,0 +1,6 @@
+@layer components {
+  .white-icon {
+    /* formato para íconos blancos*/
+    @apply inline-block w-[28px] h-[28px] md:w-[35px] md:h-[35px] text-white; 
+  }
+}
