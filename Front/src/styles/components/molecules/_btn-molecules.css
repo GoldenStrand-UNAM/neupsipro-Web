@@ -1,6 +1,6 @@
 
 @layer components {
-  /*Botones de login y mas grandes*/
+  /*Botones de login y mas grandes (a verificar tamaño)*/
   .btn-big {
     /* Centrado y espacio  */
     @apply flex items-center justify-center gap-4;
@@ -33,12 +33,24 @@
     @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;  
   }
   .btn-status {
-    /*Botones de estado*/
     @apply flex items-center justify-center;
     @apply w-[179px] h-[40px] rounded-[8px] transition-all duration-300;
     @apply text-[16px] font-normal; 
     @apply hover:brightness-110 active:scale-95 shadow-sm;
   }
+
+/* Botones de barra lateral (a modificar tamaño horizontal)*/
+  .nav-button {
+    @apply flex items-center w-full max-w-[203px] h-[36px] px-2 gap-[20px];
+    @apply rounded-[10px] cursor-pointer transition-all duration-200;
+    @apply hover:bg-gray-200 active:scale-[0.98];
+  }
+
+  .nav-button__text {
+    @apply text-[24px] font-normal text-black leading-none; 
+  }
 }
+
+
 
 
