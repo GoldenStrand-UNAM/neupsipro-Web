@@ -1,0 +1,35 @@
+
+@layer components {
+  /*Botones de login y mas grandes*/
+  .btn-big {
+    /* Centrado y espacio  */
+    @apply flex items-center justify-center gap-4;
+    
+    /* ESTÉTICA GENERAL*/
+    @apply px-10 py-4 text-white font-medium rounded-lg;
+
+    @apply w-[306px] h-[53px];
+    
+    /* ADAPTABILIDAD DE TEXTO y tamaño*/
+    @apply  text-[20px] text-lg md:text-xl;
+    
+    /* TRANSICIN Y HOVER al presionar */
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;  
+  }
+
+  /*Botones mas pequeños*/
+  .btn-mini {
+    /* Centrado y espacio  */
+     @apply flex items-center justify-center gap-2;
+    
+    /* ESTÉTICA GENERAL */
+    @apply px-4 py-2 text-white font-medium rounded-lg;
+
+    @apply  w-[138px] h-[40px];
+    
+    /* ADAPTABILIDAD DE TEXTO y tamaño*/
+    @apply  text-[16px] text-lg md:text-xl;
+
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;  
+  }
+}
