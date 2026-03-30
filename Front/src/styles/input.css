@@ -1,0 +1,7 @@
+@import 'components/atoms/_black-icon.css';
+@import 'components/atoms/_white-icon.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
