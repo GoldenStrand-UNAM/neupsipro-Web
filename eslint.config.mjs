@@ -65,6 +65,18 @@ export default defineConfig([
     'no-await-in-loop': 'warn', // Downgraded to warning
     'no-plusplus': 'warn', // Downgraded to warning
     'radix': 'warn', // Downgraded to warning
+    'no-var': 'error',
+    'no-const-assign': 'error',
+    'no-object-constructor': 'error',
+    'no-array-constructor': 'error',
+    'prefer-template': 'warn',
+    'default-param-last': 'warn',
+    'no-new-func':'error',
+    'space-before-function-paren': ['error','always'],
+    'space-before-blocks': ['error', 'always'],
+    'function-paren-newline': 'error'
+
+
     }
   }
 ]);
