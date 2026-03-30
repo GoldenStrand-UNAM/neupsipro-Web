@@ -146,3 +146,6 @@ Icon
 
 # Package-locked
 package-lock.json
+
+
+output.css
