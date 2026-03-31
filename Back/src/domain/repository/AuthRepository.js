@@ -1,5 +1,5 @@
 class AuthRepository {
-    invalidateSession(token) {
+    invalidateSession (_token) {
         throw new Error("Method not implemented");
     }
 }

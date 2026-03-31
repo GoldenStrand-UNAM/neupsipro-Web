@@ -1,9 +1,9 @@
 class LogoutUseCase {
-    constructor(authRepository) {
+    constructor (authRepository) {
         this.authRepository = authRepository;
     }
 
-    execute(token) {
+    execute (token) {
         if (!token) {
             throw new Error("Token requerido");
         }
