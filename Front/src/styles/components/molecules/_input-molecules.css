@@ -1,18 +1,17 @@
+/*Contenedor principal del input de búsqueda.*/
 @layer components {
   .search-input {
-    /* Contenedor del input */
-    @apply relative flex items-center w-full max-w-[306px]; 
+    @apply relative flex items-center;
+    @apply w-full max-w-[306px]; 
   }
-
+/* Campo de entrada / select  */
   .search-input_field {
-    /* Estilos base del input de búsqueda */
-    @apply 
-      w-full h-[40px] pl-4 pr-10
-      rounded-[8px] border border-gray-300 bg-white
-      text-[16px] text-black placeholder-gray-400
-      outline-none transition-all duration-150
-      focus:border-[#3350A9] focus:ring-1 focus:ring-[#3350A9]
-      appearance-none cursor-pointer;
+    @apply w-full pl-4 pr-10;
+    @apply h-[36px] md:h-[40px]; 
+    @apply rounded-[8px] border border-gray-300 bg-white;
+    @apply text-sm md:text-[16px] text-black placeholder-gray-400; 
+    @apply outline-none transition-all duration-150;
+    @apply focus:border-[#3350A9] focus:ring-1 focus:ring-[#3350A9];
+    @apply appearance-none cursor-pointer;
   }
-
 }

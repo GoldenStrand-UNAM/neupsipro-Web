@@ -1,56 +1,53 @@
-
 @layer components {
-  /*Botones de login y mas grandes (a verificar tamaño)*/
+  /* Boton grande (icono + texto)*/
   .btn-big {
-    /* Centrado y espacio  */
-    @apply flex items-center justify-center gap-4;
-    
-    /* ESTÉTICA GENERAL*/
-    @apply px-10 py-4 text-white font-medium rounded-lg;
+    @apply flex items-center justify-center gap-3 md:gap-4;
+    @apply px-6 py-3 md:px-10 md:py-4 text-white font-medium rounded-lg;
 
-    @apply w-[306px] h-[53px];
-    
-    /* ADAPTABILIDAD DE TEXTO y tamaño*/
-    @apply  text-[20px] text-lg md:text-xl;
-    
-    /* TRANSICIN Y HOVER al presionar */
-    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;  
+    @apply w-full sm:w-[260px] md:w-[306px];
+    @apply h-[44px] md:h-[53px];
+
+    @apply text-base md:text-xl;
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
-
-  /*Botones mas pequeños*/
+  /* Boton pequeño (icono + texto)*/
   .btn-mini {
-    /* Centrado y espacio  */
-     @apply flex items-center justify-center gap-2;
-    
-    /* ESTÉTICA GENERAL */
-    @apply px-4 py-2 text-white font-medium rounded-lg;
+    @apply flex items-center justify-center gap-2;
+    @apply px-3 py-2 md:px-4 text-white font-medium rounded-lg;
 
-    @apply  w-[138px] h-[40px];
-    
-    /* ADAPTABILIDAD DE TEXTO y tamaño*/
-    @apply  text-[16px] text-lg md:text-xl;
+    @apply w-auto md:w-[138px];
+    @apply h-[34px] md:h-[40px];
 
-    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;  
+    @apply text-sm md:text-base;
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
+  /* Boton status (texto)*/
   .btn-status {
     @apply flex items-center justify-center;
-    @apply w-[179px] h-[40px] rounded-[8px] transition-all duration-300;
-    @apply text-[16px] font-normal; 
+
+    @apply w-full sm:w-[150px] md:w-[179px];
+    @apply h-[34px] md:h-[40px];
+
+    @apply rounded-[8px] transition-all duration-300;
+    @apply text-xs sm:text-sm md:text-base font-normal;
     @apply hover:brightness-110 active:scale-95 shadow-sm;
   }
 
-/* Botones de barra lateral (a modificar tamaño horizontal)*/
+  /*  --BOTONES DE BARRA LATERAL --*/
   .nav-button {
-    @apply flex items-center w-full max-w-[203px] h-[36px] px-2 gap-[20px];
+    @apply flex items-center justify-center md:justify-start;
+    @apply w-[44px] md:w-full md:max-w-[203px];
+    @apply h-[44px] md:h-[36px];
+    @apply px-2 gap-0 md:gap-5;
     @apply rounded-[10px] cursor-pointer transition-all duration-200;
+    /* Feedback visual al interactuar */
     @apply hover:bg-gray-200 active:scale-[0.98];
   }
 
+  /* Texto del boton de la barra lateral */
   .nav-button__text {
-    @apply text-[24px] font-normal text-black leading-none; 
+    /*Ocultar en movil el toxto y mostrar icono*/
+    @apply hidden md:block; 
+    @apply text-base lg:text-[24px] font-normal text-black leading-none;
   }
 }
-
-
-
-
