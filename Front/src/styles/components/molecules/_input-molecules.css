@@ -1,7 +1,7 @@
 @layer components {
   .search-input {
     @apply relative flex items-center;
-    @apply w-full max-w-[306px]; +
+    @apply w-full max-w-[306px]; 
   }
 
   .search-input_field {
