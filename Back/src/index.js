@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
@@ -6,6 +7,7 @@ const AuthController = require("./Presentation/Controller/AuthController");
 const authRoutes = require("./Presentation/routes/authRoutes");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const authService = new AuthService();
