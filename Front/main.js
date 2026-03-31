@@ -1,12 +1,14 @@
-function openLogoutModal() {
+/* global document, window, alert */
+
+function openLogoutModal () {
     document.getElementById("logoutModal").classList.remove("hidden");
 }
 
-function closeLogoutModal() {
+function closeLogoutModal () {
     document.getElementById("logoutModal").classList.add("hidden");
 }
 
-async function logout() {
+async function logout () {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -18,8 +20,8 @@ async function logout() {
         const response = await fetch("http://localhost:3000/auth/logout", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${token}`
-            }
+                "Authorization": `Bearer ${token}`,
+            },
         });
 
         const data = await response.json();
@@ -32,6 +34,7 @@ async function logout() {
             alert(data.error || "Error al cerrar sesión");
         }
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
         alert("Error de conexión con el servidor");
     }
