@@ -7,9 +7,12 @@
 @import './components/atoms/_login-triangles.css';
 @import './components/atoms/_logo.css';
 @import './components/atoms/_title.css';
+@import './components/atoms/_input-base.css';
 
 @import './components/molecules/_btn-molecules.css';
 @import './components/molecules/_input-molecules.css';
+
+@import './components/organisms/_login-form.css';
 
 
 
