@@ -1,0 +1,9 @@
+@layer components{
+    .login-form{
+        @apply w-full max-w-[306px] md:max-w-[366px];  
+        @apply p-6 md:p-8 space-y-4;         
+        @apply text-base md:text-lg;                    
+        @apply bg-white rounded-3xl shadow-lg;
+        @apply transition-all duration-200;
+    }
+}
