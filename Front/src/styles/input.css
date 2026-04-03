@@ -4,6 +4,9 @@
 
 @import './components/atoms/_black-icon.css';
 @import './components/atoms/_white-icon.css';
+@import './components/atoms/_login-triangles.css';
+@import './components/atoms/_logo.css';
+@import './components/atoms/_title.css';
 
 @import './components/molecules/_btn-molecules.css';
 @import './components/molecules/_input-molecules.css';
