@@ -46,7 +46,7 @@ window.openLogoutModal = openLogoutModal;
 window.closeLogoutModal = closeLogoutModal;
 window.logout = logout;
 
-
+//Show & hide password in login
 document.addEventListener('DOMContentLoaded', function () {
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('passwordInput');
@@ -65,4 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-            
+         
+//Show pop up to recover password
+document.addEventListener('DOMContentLoaded', function () {
+    const recoverPassword = document.getElementById('recoverPassword');
+    const popUp = document.getElementById('popUp');
+    const closePopUp = document.getElementById('closePopUp');
+    recoverPassword.addEventListener('click', function () {
+        popUp.showModal();
+    });
+    if (popUp && closePopUp) {
+        closePopUp.addEventListener('click', function () {
+        popUp.close();
+        });
+    }
+});
