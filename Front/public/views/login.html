@@ -21,14 +21,15 @@
                 <!-- Usuario -->
                 <div class="input-div">
                     <label>Usuario</label>
-                    <input type="text" placeholder="Nombre de usuario" class="input-base">
+                    <input id="username" type="text" placeholder="Nombre de usuario" class="input-base" maxlength="30">
+                    <small id="usernameMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
                 </div>
 
                 <!-- Contraseña -->
                 <div class="input-div">
                     <label>Contraseña</label>
-                    <input type="password" id="passwordInput" placeholder="***********" class="input-base">
-
+                    <input id="password" type="password" id="passwordInput" placeholder="***********" class="input-base" maxlength="30">
+                    <small id="passwordMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
                     <!-- Icono -->
                     <svg id="togglePassword" class="w-7 h-7 absolute right-3 top-9 text-gray-400 cursor-pointer"
                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -80,3 +80,35 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+//Show message when character length has reached 30 in both username and password
+document.addEventListener('DOMContentLoaded', function () {
+    const userInput = document.getElementById('username');
+    const usernameMessage = document.getElementById('usernameMessage');
+    const maxLimit = 30;
+    userInput.addEventListener('input', function () {
+        const actualLength = userInput.value.length;
+        if (actualLength >= maxLimit) {
+            usernameMessage.removeAttribute('hidden');
+        } else {
+            usernameMessage.setAttribute('hidden', '');
+        }
+
+    })
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const passwordInput = document.getElementById('password');
+    const passwordMessage = document.getElementById('passwordMessage');
+    const maxLimit = 30;
+    passwordInput.addEventListener('input', function () {
+        const actualLength = passwordInput.value.length;
+        if (actualLength >= maxLimit) {
+            passwordMessage.removeAttribute('hidden');
+        } else {
+            passwordMessage.setAttribute('hidden', '');
+        }
+
+    })
+});
+
