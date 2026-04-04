@@ -1,0 +1,52 @@
+@startuml GU04 Consult-Logbook
+
+title Consult Logbook - User Management (NeuPsi-Pro)
+
+actor "Clinical Group" as CG
+
+boundary "usersView" as VUsers
+boundary "logbookView" as VLog
+control "main.js" as MAIN
+boundary "userManagement\nRoutes" as ROUTE
+control "userManagement\nController" as CTRL
+control "consultLogbook\nUseCase" as UC
+control "logbook\nRepository" as REPO
+control "logbookRepository\nImpl" as IREPO
+database DB
+
+CG -> VUsers : Click [Consultar Bitacora]
+VUsers -> MAIN : navigate\n('/users/logbook/{user_id}')
+
+MAIN -> ROUTE : GET /api/users/logbook/{user_id}\n[Authorization: Bearer JWT]
+
+ROUTE -> ROUTE : authMiddleware\nvalidate JWT
+ROUTE -> CTRL : getLogbook(req, res)
+
+CTRL -> CTRL : Extract user_id from req.params
+
+CTRL -> UC : execute(user_id)
+
+UC -> IREPO : getLogbook(user_id)
+
+IREPO -> DB : SELECT * FROM bitacora\nWHERE id_usuario = ?
+
+DB --> IREPO : logbook_data
+
+create entity "Logbook" as ENT
+IREPO -> ENT : mapToEntity(logbook_data)
+ENT --> IREPO : logbookEntity
+
+REPO --> UC : logbookEntity
+
+UC -> UC : transform to LogbookDTO
+UC --> CTRL : LogbookDTO
+
+CTRL --> ROUTE : HTTP 200 { data: logbook }
+
+ROUTE --> MAIN : HTTP 200 { data: logbook }
+
+MAIN -> VLog : navigate('/users/logbook')\n+ data
+
+VLog --> CG : Display logbook view
+
+@enduml
