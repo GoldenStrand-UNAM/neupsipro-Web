@@ -8,7 +8,7 @@ class ForumRepository extends ImpForumRepository{
     // Page and limit for data pagination
     async fetchAll ({page,limit}) {
          const offset = (page - 1) * limit;
-         const rows = await db.query(
+         const [rows] = await db.query(
             `SELECT 
                 p.id_publication,
                 p.title,
@@ -19,7 +19,8 @@ class ForumRepository extends ImpForumRepository{
                 u.profile_photo
             FROM publication p
             INNER JOIN users u 
-                ON p.id_user = u.id_user;`,
+                ON p.id_user = u.id_user;
+            LIMIT ? OFFSET ?`,
             [limit, offset]
         );
         return rows;
