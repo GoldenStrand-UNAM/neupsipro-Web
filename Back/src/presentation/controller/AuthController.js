@@ -1,6 +1,7 @@
 class AuthController {
-    constructor (logoutUseCase) {
+    constructor (logoutUseCase, loginUseCase) {
         this.logoutUseCase = logoutUseCase;
+        this.loginUseCase = loginUseCase
     }
 
     getLogin (req, res) {
@@ -15,12 +16,31 @@ class AuthController {
                 req.session.warning = "";
             }
 
-            
+            res.render("login.ejs", {
+            isLoggedIn: req.session.isLoggedIn || false,
+            username: req.session.usuario || "",
+            isNew: false,
+            info: message,
+            warning: warning,
+            csrfToken: req.csrfToken(),
+            privilegios: req.session.privilegios || [],
+        });
 
         } catch (error) {
             return res.status(400).json({
                 error: error.message,
             });
+        }
+    }
+
+    login (req, res) {
+        try {
+            const {username, password} = req.body;
+            const token = this.loginUseCase.execute(username, password);
+            res.cookie('jwt_token', token, {httpOnly: true, secure: true});
+            return res.redirect('/home');
+        } catch (error) {
+            return res.render('login.ejs', {error: error.message});
         }
     }
 

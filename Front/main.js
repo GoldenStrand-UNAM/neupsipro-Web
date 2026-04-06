@@ -31,7 +31,7 @@ async function logout () {
         if (response.ok) {
             localStorage.removeItem("token");
             alert("Sesión cerrada correctamente");
-            window.location.href = "index.html";
+            window.location.href = "login.ejs";
         } else {
             alert(data.error || "Error al cerrar sesión");
         }
