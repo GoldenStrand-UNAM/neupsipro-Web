@@ -1,29 +1,27 @@
 
+// Forum use case that retrieves and formats forum posts
+class GetForumUseCase {
+    constructor(forumRepository) {
+        this.forumRepository = forumRepository;
+    }
 
+    async execute({ page, limit }) {
 
+        const post = await this.forumRepository.fetchAll({ page, limit });
 
-// application/GetPublicacionesUseCase.js
-class GetPublicacionesUseCase {
-  constructor(publicacionRepository) {
-    // Recibe la interfaz, no la implementación concreta
-    this.publicacionRepository = publicacionRepository;
-  }
-
-  async execute({ page, limit }) {
-    // Aquí irían validaciones de negocio:
-    // ¿El usuario tiene permiso? ¿El límite es razonable?
-    if (limit > 100) throw new Error("Límite máximo es 100");
-
-    const publicaciones = await this.publicacionRepository.fetchAll({ page, limit });
-
-    // Aquí transformas a DTO (lo que necesita la capa de presentación)
-    return publicaciones.map(p => ({
-      id: p.id,
-      titulo: p.titulo,
-      autor: p.autor_nombre,
-      fecha: p.created_at,
-    }));
-  }
+        //Map data that we recieve from forumrepository into clean data for the client
+        return post.map(p => ({
+            id: p.id_publication,
+            title: p.title,
+            content: p.content,
+            image: p.image,
+            date: p.time_and_date,
+            author: p.full_name,
+            pp: u.profile_photo,
+        }));
+    }
 }
+    
 
-module.exports = GetPublicacionesUseCase;
+
+module.exports = GetForumUseCase;
