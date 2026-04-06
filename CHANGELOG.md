@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Base Page (31/03/2026).
+- LogIn Form Organism (30/03/2026).
 - Ignorar mjs en eslint (28/03/2026).
 - Comando de instalación segurity plugin en readme (28/03/2026).
 - Estructura base de carpetas en backend (28/03/2026).

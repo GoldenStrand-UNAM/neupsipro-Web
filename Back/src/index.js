@@ -10,10 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const authService = new AuthService();
-const logoutUseCase = new LogoutUseCase(authService);
-const authController = new AuthController(logoutUseCase);
-
 app.use("/auth", authRoutes(authController));
 
 app.listen(3000, () => {
