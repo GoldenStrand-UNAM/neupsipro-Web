@@ -1,22 +1,24 @@
-const express = require("express");
-const cors = require("cors");
-
-const AuthService = require("./Infrastructure/Auth/AuthService");
-const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
-const AuthController = require("./Presentation/Controller/AuthController");
-const authRoutes = require("./Presentation/routes/authRoutes");
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'presentation/views')));
 
-const authService = new AuthService();
-const logoutUseCase = new LogoutUseCase(authService);
-const authController = new AuthController(logoutUseCase);
+// Routes
+const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+app.use('/', registerPublicationRoutes);
 
-app.use("/auth", authRoutes(authController));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'presentation/views/register-publication.html'));
+});
 
-app.listen(3000, () => {
-    // eslint-disable-next-line no-console
-    console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
