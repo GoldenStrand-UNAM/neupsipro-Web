@@ -1,20 +1,20 @@
 
 class PublicationDTO {
-  constructor({ id_publicacion, titulo, contenido, imagenes, fecha_y_hora }) {
-    this.id = id_publicacion;
-    this.title = titulo;
-    this.content = contenido;
-    this.image = imagenes;
-    this.date = fecha_y_hora;
-  }
+    constructor({ id_publication, title, content, image, time_and_date }) {
+        this.id = id_publication;
+        this.title = title;
+        this.content = content;
+        this.image = image;
+        this.date = time_and_date;
+    }
 
-  static fromEntity(entity) {
+static fromEntity(entity) {
     return new PublicationDTO({
-      id_publicacion: entity.id_publicacion,
-      titulo: entity.titulo,
-      contenido: entity.contenido,
-      imagenes: entity.imagenes,
-      fecha_y_hora: entity.fecha_y_hora,
+        id_publication: entity.id_publication,
+        title: entity.title,
+        content: entity.content,
+        image: entity.image,
+        time_and_date: entity.time_and_date,
     });
   }
 }
