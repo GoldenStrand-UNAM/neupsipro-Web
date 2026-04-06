@@ -17,7 +17,7 @@ class GetForumUseCase {
             image: p.image,
             date: p.time_and_date,
             author: p.full_name,
-            pp: u.profile_photo,
+            pp: p.profile_photo,
         }));
     }
 }
