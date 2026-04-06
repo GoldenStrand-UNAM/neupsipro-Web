@@ -19,9 +19,10 @@ class ForumRepository extends ImpForumRepository{
                 u.profile_photo
             FROM publication p
             INNER JOIN users u 
-                ON p.id_user = u.id_user;
-            LIMIT ? OFFSET ?`,
-            [limit, offset]
+                ON p.id_user = u.id_user
+            ORDER BY p.time_and_date DESC
+            LIMIT ?, ?`,
+            [Number(offset), Number(limit)]
         );
         return rows;
     }
