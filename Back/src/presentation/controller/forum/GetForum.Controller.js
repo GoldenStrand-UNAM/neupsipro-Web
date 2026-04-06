@@ -2,7 +2,7 @@ const GetForumUseCase = require("../../../application/usecase/getForumUseCase");
 
 
 // Controller function that handles HTTP request to get forum posts
-async function GetForum(request, response) {
+exports.GetForum = async(request, response) => {
 
   try {
     const { page = 1, limit = 10 } = request.query;
@@ -19,3 +19,5 @@ async function GetForum(request, response) {
   }
 
 }
+
+
