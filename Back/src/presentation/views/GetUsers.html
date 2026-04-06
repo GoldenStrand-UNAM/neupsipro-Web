@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Test Usuarios</title>
+</head>
+<body>
+    <h1>Usuarios</h1>
+    <button onclick="cargarUsuarios()">Consultar</button>
+    <pre id="resultado"></pre>
+
+    <script>
+        async function cargarUsuarios() {
+            try {
+                const res = await fetch('http://localhost:3000/UsersList');
+                const data = await res.json();
+                document.getElementById('resultado').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('resultado').textContent = 'Error: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
