@@ -1,6 +1,6 @@
 const RegPublicationUseCase = require('../../../application/usecase/regPublicationUseCase');
 
-// Controller function, handles HTTP request to reg a new publication
+// Controller function it handles HTTP request to reg a new publication
 class RegPublicationController {
   constructor(RegPublicationUseCase) {
     this.RegPublicationUseCase = RegPublicationUseCase;
@@ -10,13 +10,13 @@ class RegPublicationController {
     try {
       const { titulo, contenido } = request.body;
       const id_usuario = request.body.id_usuario || 1; // JWT Auth later
-      const imagenPath = request.file ? request.file.path : null;
+     // const imagenPath = request.file ? request.file.path : null;
 
       const publication = await this.RegPublicationUseCase.execute({
         id_usuario,
         titulo,
         contenido,
-        imagenPath,
+        imagenPath : null,
       });
 
       response.status(201).json(publication);

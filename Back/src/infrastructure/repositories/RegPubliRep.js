@@ -1,18 +1,18 @@
 const db = require('../database/database');
-const ImpPubliRep = require('../../domain/repository/ImpForumRepository');
+const ImpPubliRep = require('../../domain/repository/ImpPubliRep');
 
 class RegPubliRep extends ImpPubliRep {
 
   // Inserts a new publication, return its generated id
   async save({ id_usuario, titulo, contenido, imagenes }) {
     const [result] = await db.query(
-      `INSERT INTO publicacion (id_usuario, titulo, contenido, imagenes, fecha_y_hora)
-       VALUES (?, ?, ?, ?, NOW())`,
+      `INSERT INTO publication (id_user, title, content, image, time_and_date)
+     VALUES (?, ?, ?, ?, NOW())`,
       [id_usuario, titulo, contenido, imagenes],
     );
 
     const [rows] = await db.query(
-      'SELECT * FROM publicacion WHERE id_publicacion = ?',
+      'SELECT * FROM publication WHERE id_publication = ?',
       [result.insertId],
     );
 
