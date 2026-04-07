@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
@@ -7,6 +8,9 @@ const AuthController = require("./Presentation/Controller/AuthController");
 const authRoutes = require("./Presentation/routes/authRoutes");
 
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '..', '..', 'Front', 'views'));
+app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
 app.use(cors());
 app.use(express.json());
 
