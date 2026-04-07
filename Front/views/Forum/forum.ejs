@@ -1,0 +1,28 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foro - NeuPsi-Pro</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col">
+
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 pl-6 pr-6 pt-6 pb-0 md:pl-0">
+            <div class="w-full h-full bg-gray-200 rounded-3xl p-6">
+            </div>
+        </main>
+
+    </div>
+    <script src="/js/sidebar.js"></script>
+    
+</body>
+</html>

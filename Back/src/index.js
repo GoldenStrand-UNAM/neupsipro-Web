@@ -15,11 +15,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '../../Front/public')));
 
 //EJS 
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../../Front/views'));
 
 //Routes
+app.use((req, res, next) => {
+    res.locals.activePage = '';
+    next();
+});
 
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/', forumRoutes);

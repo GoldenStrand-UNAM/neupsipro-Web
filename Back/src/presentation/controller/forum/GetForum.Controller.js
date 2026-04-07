@@ -11,7 +11,11 @@ class ForumController {
         try {
             const { page = 1, limit = 10 } = request.query;
             const posts = await this.getForumUseCase.execute({ page, limit });
-            response.status(200).json(posts);
+
+
+            response.render('Forum/forum', { posts });
+
+            
         } catch (error) {
             response.status(500).json({ error: error.message });
         }
