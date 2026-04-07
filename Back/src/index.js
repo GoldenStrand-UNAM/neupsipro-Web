@@ -1,19 +1,34 @@
 const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
-const app     = express();
+const cors = require('cors');
+const app = express();
+const path = require('path');
 
+
+require('dotenv').config();
+
+
+//Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(express.static(path.join(__dirname, '../../Front/public')));
 
-const usersRoutes = require('./presentation/routes/users/GetUsersList.Routes');
-app.use('/', usersRoutes);
+//EJS 
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../../Front/views'));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/public/views/usuarios.html'));
+//Routes
+app.use((req, res, next) => {
+    res.locals.activePage = '';
+    next();
 });
 
+const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+app.use('/', forumRoutes);
+
+
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
