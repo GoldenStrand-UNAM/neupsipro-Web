@@ -10,33 +10,33 @@ control "main.js" as MAIN
 boundary "users\nRoutes" as ROUTE
 control "users\nController" as CTRL
 control "consultLogbook\nUseCase" as UC
-control "logbook\nRepository" as REPO
-control "logbookRepository\nImpl" as IREPO
+control "ImpLogbookRepository" as REPO
+control "LogbookRepository" as IREPO
 database DB
 
 CG -> VUsers : Click [Consultar Bitacora]
-VUsers -> MAIN : navigate\n('/users/logbook/{user_id}')
+VUsers -> MAIN : navigate\n('/users/logbook/{id_user}')
 
-MAIN -> ROUTE : GET /api/users/logbook/{user_id}\n[Authorization: Bearer JWT]
+MAIN -> ROUTE : GET /api/users/logbook/{id_user}\n[Authorization: Bearer JWT]
 
 ROUTE -> ROUTE : authMiddleware\nvalidate JWT
 ROUTE -> CTRL : getLogbook(req, res)
 
-CTRL -> CTRL : Extract user_id from req.params
+CTRL -> CTRL : Extract id_user from req.params
 
-CTRL -> UC : execute(user_id)
+CTRL -> UC : execute({id_user})
 
-UC -> IREPO : getLogbook(user_id)
+UC -> IREPO : fetchOne({id_user})
 
-IREPO -> DB : SELECT l.*, u.first_name, \nu.lastname_p, u.lastname_m, \nu.profile_photo, u.birthday, \nu.registration_date, \nu.reference_number, \nuc.first_name AS assigned_clinic \nFROM logbook l \nJOIN users u \n     ON l.id_user = u.id_user \nLEFT JOIN users_relation ur \n     ON u.id_user = ur.id_user \nLEFT JOIN users uc \n     ON ur.id_clinic_user = uc.id_user \nWHERE id_user = ?
+IREPO -> DB : SELECT l.*, u.first_name, \nu.lastname_p, u.lastname_m, \nu.profile_photo, u.birthday, \nu.registration_date, \nu.reference_number, \nuc.first_name AS assigned_clinic \nFROM logbook l \nJOIN users u \n     ON l.id_user = u.id_user \nLEFT JOIN users_relation ur \n     ON u.id_user = ur.id_user \nLEFT JOIN users uc \n     ON ur.id_clinic_user = uc.id_user \nWHERE l.id_user = ?
 
 DB --> IREPO : logbookData
 
 create entity "Logbook" as ENT
-IREPO -> ENT : mapToEntity(logbookData)
+IREPO -> ENT : new Logbook(logbookData)
 ENT --> IREPO : logbookEntity
 
-REPO --> UC : logbookEntity
+IREPO --> UC : Logbook[]
 
 UC -> UC : transform to LogbookDTO
 UC --> CTRL : LogbookDTO
