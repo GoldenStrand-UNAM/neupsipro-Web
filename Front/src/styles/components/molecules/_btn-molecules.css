@@ -35,19 +35,26 @@
 
   /*  --BOTONES DE BARRA LATERAL --*/
   .nav-button {
-    @apply flex items-center justify-center md:justify-start;
-    @apply w-[44px] md:w-full md:max-w-[203px];
-    @apply h-[44px] md:h-[36px];
-    @apply px-2 gap-0 md:gap-5;
-    @apply rounded-[10px] cursor-pointer transition-all duration-200;
-    /* Feedback visual al interactuar */
-    @apply hover:bg-gray-200 active:scale-[0.98];
+    @apply flex items-center justify-start; 
+    @apply w-full h-[48px] pl-4 pr-0 gap-3 md:gap-4;
+    @apply rounded-l-[10px] cursor-pointer transition-all duration-200;
+  
+    /* Estado inicial*/
+    @apply bg-transparent text-white;
   }
 
-  /* Texto del boton de la barra lateral */
+  .nav-button:hover, .nav-button.active {
+    @apply bg-white text-[#002B7A] font-bold;
+  }
+
+  /* Ajuste para los iconos y texto internos */
+  .nav-button svg, .nav-button span {
+    color: inherit;
+    stroke: currentColor; 
+  }
   .nav-button__text {
-    /*Ocultar en movil el toxto y mostrar icono*/
-    @apply hidden md:block; 
-    @apply text-base lg:text-[24px] font-normal text-black leading-none;
+    /* Ajuste para texto*/
+    @apply block text-base lg:text-[18px] leading-none;
+    color: inherit;    
   }
 }
