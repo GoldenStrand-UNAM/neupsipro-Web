@@ -14,14 +14,16 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, '../../Front/public')));
 
+//EJS 
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../../Front/views'));
+
 //Routes
 
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/', forumRoutes);
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../Front/public/views/base-page.html'));
-});
 
 const PORT = 3000;
 app.listen(PORT, () => {
