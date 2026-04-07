@@ -5,7 +5,7 @@ class usersController {
 
     getLogbook (req, res) {
         try {
-            const user_id = 1 // req.params.user_id;
+            const {user_id} = req.params;
 
             this.consultLogbookUseCase.execute(user_id);
 

@@ -7,8 +7,8 @@ actor "Clinical Group" as CG
 boundary "usersView" as VUsers
 boundary "logbookView" as VLog
 control "main.js" as MAIN
-boundary "userManagement\nRoutes" as ROUTE
-control "userManagement\nController" as CTRL
+boundary "users\nRoutes" as ROUTE
+control "users\nController" as CTRL
 control "consultLogbook\nUseCase" as UC
 control "logbook\nRepository" as REPO
 control "logbookRepository\nImpl" as IREPO
@@ -28,12 +28,12 @@ CTRL -> UC : execute(user_id)
 
 UC -> IREPO : getLogbook(user_id)
 
-IREPO -> DB : SELECT * FROM bitacora\nWHERE id_usuario = ?
+IREPO -> DB : SELECT l.*, u.first_name, \nu.lastname_p, u.lastname_m, \nu.profile_photo, u.birthday, \nu.registration_date, \nu.reference_number, \nuc.first_name AS assigned_clinic \nFROM logbook l \nJOIN users u \n     ON l.id_user = u.id_user \nLEFT JOIN users_relation ur \n     ON u.id_user = ur.id_user \nLEFT JOIN users uc \n     ON ur.id_clinic_user = uc.id_user \nWHERE id_user = ?
 
-DB --> IREPO : logbook_data
+DB --> IREPO : logbookData
 
 create entity "Logbook" as ENT
-IREPO -> ENT : mapToEntity(logbook_data)
+IREPO -> ENT : mapToEntity(logbookData)
 ENT --> IREPO : logbookEntity
 
 REPO --> UC : logbookEntity
