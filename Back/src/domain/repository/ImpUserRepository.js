@@ -1,7 +1,9 @@
 class ImpUserRepository {
-    async fetchAll() {
-        throw new Error('fetchAll() ');
+    async fetchActivePatients({ search, page, limit }) {
+        throw new Error("fetchActivePatients() must be implemented");
+    }
+    async countActivePatients({ search }) {
+        throw new Error("countActivePatients() must be implemented");
     }
 }
-
 module.exports = ImpUserRepository;

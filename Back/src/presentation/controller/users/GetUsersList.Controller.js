@@ -1,16 +1,16 @@
 class GetUsersListController {
-    constructor(GetUsuariosUseCase) {
-        this.GetUsuariosUseCase = GetUsuariosUseCase;
+    constructor(GetUsersSummaryUseCase) {
+        this.GetUsersSummaryUseCase = GetUsersSummaryUseCase;
     }
- 
-    async getUsuarios(request, response) {
+
+    async getUsers(req, res) {
         try {
-            const users = await this.GetUsuariosUseCase.execute();
-            response.status(200).json(users);
+            const { search = "", page = 1, limit = 10 } = req.query;
+            const result = await this.GetUsersSummaryUseCase.execute({ search, page, limit });
+            res.status(200).json(result);
         } catch (error) {
-            response.status(500).json({ error: error.message });
+            res.status(500).json({ error: error.message });
         }
     }
 }
- 
 module.exports = GetUsersListController;

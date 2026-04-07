@@ -1,0 +1,7 @@
+class UserSummaryDTO {
+    constructor(userSummary) {
+        this.folio    = userSummary.folio ?? "Sin folio";
+        this.fullName = userSummary.fullName;
+    }
+}
+module.exports = UserSummaryDTO;
