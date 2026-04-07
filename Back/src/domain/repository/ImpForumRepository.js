@@ -1,5 +1,3 @@
-
-
 class ImpForumRepository {
 
     // Method to retrieve paginated forum data (must be implemented)
