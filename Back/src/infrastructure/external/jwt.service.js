@@ -6,7 +6,7 @@ class JwtService {
         const expiresIn = process.env.JWT_EXPIRES_IN;
 
         if (!secret) {
-            throw new Error ("Missing JWT_SECRET");
+            throw new Error ("No se encontró JWT_SECRET");
         }
         return jwt.sign(payload, secret, {expiresIn});
     }
