@@ -9,7 +9,6 @@ const authRoutes = require("./Presentation/routes/authRoutes");
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repository/")
 
-const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', '..', 'Front', 'views'));
 app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
@@ -23,6 +22,8 @@ const authController = new AuthController(logoutUseCase);
 
 
 app.use("/auth", authRoutes(authController));
+const app = require ('./app.js');
+
 
 app.listen(3000, () => {
     // eslint-disable-next-line no-console
