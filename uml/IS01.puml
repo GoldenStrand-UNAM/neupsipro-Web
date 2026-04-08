@@ -1,0 +1,57 @@
+@startuml
+actor Grupo_clínico
+
+participant "View" as View
+participant "Routes" as Routes
+participant "AuthController" as Controller
+participant "JWT Service" as JWT
+participant "LogInUseCase" as UseCase
+participant "Bcrypt" as Bcrypt
+participant "LogInRepository" as Repository
+participant "Model" as Model
+
+Grupo_clínico -> View : Ingresa nombre de usuario, contraseña, click "Iniciar sesión"
+View -> Routes : POST /login
+Routes -> Controller : login(usuario, contraseña)
+Controller -> UseCase : ejecutarLogin(credenciales)
+UseCase -> Repository : autenticar(credenciales)
+Repository -> Model : getUserName(usuario)
+
+alt Usuario encontrado
+
+    Model --> Repository : json de usuario
+    Repository --> UseCase : json de usuario
+    UseCase -> Bcrypt : comparar hash con contraseña
+
+    alt contraseñas coinciden
+
+        UseCase --> JWT : genera_token(usuario, id, rol)
+        JWT -> UseCase : token
+
+    else contraseñas no coinciden
+
+        UseCase --> Controller : error
+        Controller --> Routes : HTTP 401
+        Routes --> View : Mensaje de error
+        View --> Grupo_clínico : Credenciales inválidas
+
+    end
+
+    UseCase --> Controller : token
+    
+    Controller --> Routes : HTTP 200 GET /homePage
+    Routes --> View : HomePage
+
+    View --> Grupo_clínico : HomePage
+
+else Usuario no encontrado
+
+    Model --> Repository : null
+    Repository --> UseCase : null
+    UseCase --> Controller : error
+    Controller --> Routes : HTTP 401
+    Routes --> View : Mensaje de error
+    View --> Grupo_clínico : Credenciales inválidas
+
+end
+

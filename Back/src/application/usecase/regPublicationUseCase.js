@@ -3,8 +3,8 @@ const Publication = require('../../domain/entity/Publication');
 const PublicationDTO = require('../dto/PublicationDTO');
 
 class RegPublicationUseCase {
-  constructor(RegPubliRep) {
-    this.RegPubliRep = RegPubliRep;
+  constructor(ForumRepository) {
+    this.ForumRepository = ForumRepository;
   }
 
   async execute({ id_usuario, titulo, contenido, imagenes }) {
@@ -16,7 +16,7 @@ class RegPublicationUseCase {
       imagenes: imagenes || null, // S3 Link or null
     });
 
-    const saved = await this.RegPubliRep.save(publication);
+    const saved = await this.ForumRepository.save(publication);
 
     // Map saved into clean DTO for the client
     return PublicationDTO.fromEntity(saved);

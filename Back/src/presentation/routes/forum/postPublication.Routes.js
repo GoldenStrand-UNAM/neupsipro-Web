@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
-const RegPubliRep = require('../../../infrastructure/repositories/RegPubliRep');
-const RegPublicationController = require('../../controller/forum/RegPublication.Controller');
+const ForumRepository = require('../../../infrastructure/repositories/ForumRepository');
+const PostPublicationController = require('../../controller/forum/PostPublication.Controller');
 const RegPublicationUseCase = require('../../../application/usecase/regPublicationUseCase');
 
 const upload = multer({
@@ -19,10 +19,13 @@ const upload = multer({
 
 const router = express.Router();
 
-const repository = new RegPubliRep();
+const repository = new ForumRepository();
 const useCase = new RegPublicationUseCase(repository);
-const controller = new RegPublicationController(useCase);
+const controller = new PostPublicationController(useCase);
 
+router.get('/Foro/registrar', (req, res) => {
+    res.render('Forum/postPublication', { activePage: 'foro' });
+});
 
 router.post('/Foro/registrar', upload.single('imagen'), (req, res) => controller.registerPublication(req, res));
 
