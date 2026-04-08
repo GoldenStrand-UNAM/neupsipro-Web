@@ -11,6 +11,10 @@ app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
 app.use(cors());
 app.use(express.json());
 
+app.get('/test', (req, res) => {
+    res.render('test');
+});
+
 const forumRoutes = require("./presentation/routes/forumRoutes");
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
