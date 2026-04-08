@@ -13,9 +13,9 @@
   "license": "ISC",
   "author": "GoldenStrand",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "Back/src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "lint": "eslint",
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
     "start": "nodemon"
@@ -23,8 +23,10 @@
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.20.0",
     "nodemon": "^3.1.14"
   },
   "devDependencies": {
@@ -34,6 +36,8 @@
     "eslint": "^10.1.0",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.4.0",
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2"
   }
 }
