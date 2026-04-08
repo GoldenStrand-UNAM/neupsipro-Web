@@ -1,7 +1,7 @@
 const RegPublicationUseCase = require('../../../application/usecase/regPublicationUseCase');
 
 // Controller function it handles HTTP request to reg a new publication
-class RegPublicationController {
+class PostPublicationController {
   constructor(RegPublicationUseCase) {
     this.RegPublicationUseCase = RegPublicationUseCase;
   }
@@ -18,6 +18,7 @@ class RegPublicationController {
         contenido,
         imagenPath : null,
       });
+            
 
       response.status(201).json(publication);
     } catch (error) {
@@ -29,4 +30,4 @@ class RegPublicationController {
   }
 }
 
-module.exports = RegPublicationController;
+module.exports = PostPublicationController;
