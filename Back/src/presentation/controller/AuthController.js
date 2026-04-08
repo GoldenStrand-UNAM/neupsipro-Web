@@ -33,10 +33,10 @@ class AuthController {
         }
     }
 
-    login (req, res) {
+    async login (req, res) {
         try {
             const {username, password} = req.body;
-            const token = this.loginUseCase.execute(username, password);
+            const token = await this.loginUseCase.execute(username, password);
             res.cookie('jwt_token', token, {httpOnly: true, secure: true});
             return res.redirect('/home');
         } catch (error) {

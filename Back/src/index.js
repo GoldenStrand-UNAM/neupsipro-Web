@@ -5,6 +5,8 @@ const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
 const AuthController = require("./Presentation/Controller/AuthController");
 const authRoutes = require("./Presentation/routes/authRoutes");
+const dbPool = require("./infrastructure/database/database");
+const AuthRepository = require("./infrastructure/repository/")
 
 const app = express();
 app.use(cors());
@@ -13,6 +15,8 @@ app.use(express.json());
 const authService = new AuthService();
 const logoutUseCase = new LogoutUseCase(authService);
 const authController = new AuthController(logoutUseCase);
+
+
 
 app.use("/auth", authRoutes(authController));
 
