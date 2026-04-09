@@ -1,6 +1,6 @@
 
 class Publication {
-  constructor({ id_publicacion, id_usuario, titulo, contenido, imagenes, fecha_y_hora }) {
+  constructor ({ id_publicacion, id_usuario, titulo, contenido, imagenes, fecha_y_hora }) {
     this._validate(titulo);
 
     this.id_publicacion = id_publicacion || null;
@@ -11,7 +11,7 @@ class Publication {
     this.fecha_y_hora = fecha_y_hora || null;
   }
 
-  _validate(titulo) {
+  _validate (titulo) {
     if (!titulo || titulo.trim().length === 0) {
       throw new Error('El título es obligatorio');
     }
@@ -20,7 +20,7 @@ class Publication {
     }
   }
 
-  setId(id) {
+  setId (id) {
     this.id_publicacion = id;
   }
 }

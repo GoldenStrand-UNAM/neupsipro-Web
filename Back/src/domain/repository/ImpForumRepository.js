@@ -7,7 +7,7 @@ class ImpForumRepository {
         throw new Error("fetchAll() must be implemented");
     }
     // Method to save a new publication 
-    async save({ id_usuario, titulo, contenido, imagenes }) {
+    async save ({ id_usuario, titulo, contenido, imagenes }) {
         throw new Error('save() ');
     }
 }

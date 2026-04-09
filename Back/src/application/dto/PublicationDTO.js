@@ -1,6 +1,6 @@
 
 class PublicationDTO {
-    constructor({ id_publication, title, content, image, time_and_date }) {
+    constructor ({ id_publication, title, content, image, time_and_date }) {
         this.id = id_publication;
         this.title = title;
         this.content = content;
@@ -8,7 +8,7 @@ class PublicationDTO {
         this.date = time_and_date;
     }
 
-static fromEntity(entity) {
+static fromEntity (entity) {
     return new PublicationDTO({
         id_publication: entity.id_publication,
         title: entity.title,

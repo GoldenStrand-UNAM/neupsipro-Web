@@ -2,11 +2,11 @@ const RegPublicationUseCase = require('../../../application/usecase/regPublicati
 
 // Controller function it handles HTTP request to reg a new publication
 class PostPublicationController {
-  constructor(RegPublicationUseCase) {
+  constructor (RegPublicationUseCase) {
     this.RegPublicationUseCase = RegPublicationUseCase;
   }
 
-  async registerPublication(request, response) {
+  async registerPublication (request, response) {
     try {
       const { titulo, contenido } = request.body;
       const id_usuario = request.body.id_usuario || 1; // JWT Auth later
