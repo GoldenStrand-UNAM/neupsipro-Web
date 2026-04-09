@@ -13,7 +13,12 @@ class ForumController {
             const posts = await this.getForumUseCase.execute({ page, limit });
 
 
-            response.render('Forum/forum', { posts });
+            response.render('Forum/forum', { 
+                posts, 
+                page: Number(page),
+                limit: Number(limit)
+            });
+
 
             
         } catch (error) {
