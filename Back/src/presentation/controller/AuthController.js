@@ -22,7 +22,6 @@ class AuthController {
             isNew: false,
             info: message,
             warning: warning,
-            csrfToken: req.csrfToken(),
             privilegios: req.session.privilegios || [],
         });
 
