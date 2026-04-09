@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();    
 
-const UsersController = require("../../controller/users.controllers");
+const UsersController = require("../../controller/users/users.controller");
 const LogbookRepository = require("../../../infrastructure/repositories/logbookRepository");
 const ConsultLogbookUseCase = require("../../../application/usecase/consultLogbookUseCase");
 
