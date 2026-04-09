@@ -49,7 +49,7 @@ window.logout = logout;
 //Show & hide password in login
 document.addEventListener('DOMContentLoaded', function () {
     const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('passwordInput');
+    const passwordInput = document.getElementById('password');
     if(togglePassword && passwordInput) {
         togglePassword.addEventListener('click', function () {
             const isPassword = passwordInput.getAttribute('type') === 'password';
