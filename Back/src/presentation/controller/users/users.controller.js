@@ -1,3 +1,5 @@
+const LogbookDTO = require('../../../application/dto/logbookDTO');
+
 class usersController {
     constructor (consultLogbookUseCase) {
         this.consultLogbookUseCase = consultLogbookUseCase;
@@ -10,9 +12,12 @@ class usersController {
 
             const logbook = await this.consultLogbookUseCase.execute({id_user});
 
+            const response = logbook.map(lb => LogbookDTO.fromEntity(lb));
+
+
             return res.status(200).json({
                 message: "Bitácora consultada correctamente",
-                data: logbook,
+                data: response,
             });
         } catch (error) {
             return res.status(400).json({
