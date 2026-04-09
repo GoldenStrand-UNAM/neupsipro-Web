@@ -1,5 +1,5 @@
 @startuml
-actor Grupo_clínico
+actor Clinical_group
 
 participant "View" as View
 participant "Routes" as Routes
@@ -10,30 +10,30 @@ participant "Bcrypt" as Bcrypt
 participant "LogInRepository" as Repository
 participant "Model" as Model
 
-Grupo_clínico -> View : Ingresa nombre de usuario, contraseña, click "Iniciar sesión"
+Clinical_group -> View : Enter username and password, click "Iniciar sesión"
 View -> Routes : POST /login
-Routes -> Controller : login(usuario, contraseña)
-Controller -> UseCase : ejecutarLogin(credenciales)
-UseCase -> Repository : autenticar(credenciales)
-Repository -> Model : getUserName(usuario)
+Routes -> Controller : login(username, password)
+Controller -> UseCase : executeLogin(credentials)
+UseCase -> Repository : findByUsername(credential)
+Repository -> Model : execute('SELECT * FROM users WHERE user_name = ?', [username])
 
-alt Usuario encontrado
+alt User found
 
-    Model --> Repository : json de usuario
-    Repository --> UseCase : json de usuario
-    UseCase -> Bcrypt : comparar hash con contraseña
+    Model --> Repository : user json
+    Repository --> UseCase : user json
+    UseCase -> Bcrypt : compare password hash
 
-    alt contraseñas coinciden
+    alt passwords match
 
-        UseCase --> JWT : genera_token(usuario, id, rol)
+        UseCase --> JWT : generate_token(user, id, role)
         JWT -> UseCase : token
 
-    else contraseñas no coinciden
+    else passwords dont match
 
         UseCase --> Controller : error
         Controller --> Routes : HTTP 401
-        Routes --> View : Mensaje de error
-        View --> Grupo_clínico : Credenciales inválidas
+        Routes --> View : Error message
+        View --> Grupo_clínico : Invalid credentials
 
     end
 
@@ -42,16 +42,15 @@ alt Usuario encontrado
     Controller --> Routes : HTTP 200 GET /homePage
     Routes --> View : HomePage
 
-    View --> Grupo_clínico : HomePage
+    View --> Clinical_group : HomePage
 
-else Usuario no encontrado
+else User not found
 
     Model --> Repository : null
     Repository --> UseCase : null
     UseCase --> Controller : error
     Controller --> Routes : HTTP 401
-    Routes --> View : Mensaje de error
-    View --> Grupo_clínico : Credenciales inválidas
-
+    Routes --> View : Error message
+    View --> Grupo_clínico : Invalid credentials
 end
 

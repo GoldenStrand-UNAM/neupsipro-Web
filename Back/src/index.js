@@ -4,7 +4,9 @@ const app = require ('./app.js');
 
 
 
-app.listen(3000, () => {
-    // eslint-disable-next-line no-console
-    console.log("Server running on http://localhost:3000");
+
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
