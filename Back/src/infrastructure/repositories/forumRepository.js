@@ -3,7 +3,7 @@ const ImpForumRepository = require('../../domain/repository/ImpForumRepository')
 
 
 // Repository responsable for fetching publications from the database with author info and pagination
-class ForumRepository extends ImpForumRepository{
+class ForumRepository extends ImpForumRepository {
 
     // Page and limit for data pagination
     async fetchAll ({page,limit}) {
@@ -27,16 +27,16 @@ class ForumRepository extends ImpForumRepository{
         return rows;
     }
     // Inserts a new publication, return its generated id
-    async save({ id_usuario, titulo, contenido, imagenes }) {
+    async save ({ id_usuario, titulo, contenido, imagenes }) {
     const [result] = await db.query(
       `INSERT INTO publication (id_user, title, content, image, time_and_date)
      VALUES (?, ?, ?, ?, NOW())`,
-      [id_usuario, titulo, contenido, imagenes],
+      [id_usuario, titulo, contenido, imagenes]
     );
 
     const [rows] = await db.query(
       'SELECT * FROM publication WHERE id_publication = ?',
-      [result.insertId],
+      [result.insertId]
     );
 
     return rows[0];

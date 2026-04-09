@@ -3,11 +3,11 @@ const Publication = require('../../domain/entity/Publication');
 const PublicationDTO = require('../dto/PublicationDTO');
 
 class RegPublicationUseCase {
-  constructor(ForumRepository) {
+  constructor (ForumRepository) {
     this.ForumRepository = ForumRepository;
   }
 
-  async execute({ id_usuario, titulo, contenido, imagenes }) {
+  async execute ({ id_usuario, titulo, contenido, imagenes }) {
     // Entity validation 
     const publication = new Publication({
       id_usuario,
