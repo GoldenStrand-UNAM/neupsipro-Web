@@ -5,8 +5,7 @@ class Logbook {
 
         this.name = `${data.first_name} ${data.lastname_p} ${data.lastname_m}`;
 
-        this.birthdate = data.birthday;
-        this.age = this.calculateAge(data.birthday);
+        this.age = this.calculateAge(data.birthdate);
 
         this.registration_date = data.registration_date;
         this.phase = data.fase;
@@ -15,12 +14,12 @@ class Logbook {
         this.modality = data.modality;
         this.attendance = data.attendance;
 
-        this.initial_interview = data.initial_interview;
-        this.banfe = data.banfe;
-        this.wais = data.wais;
-        this.rey = data.rey;
-        this.questionnaires = data.questionnaires;
-        this.dr = data.dr;
+        this.initial_interview = this.getStatus(data.initial_interview);
+        this.banfe = this.getStatus(data.banfe);
+        this.wais = this.getStatus(data.wais);
+        this.rey = this.getStatus(data.rey);
+        this.questionnaires = this.getStatus(data.questionnaires);
+        this.dr = this.getStatus(data.dr);
     }
 
     calculateAge (birthdate) {
@@ -40,6 +39,29 @@ class Logbook {
         }
 
         return age;
+    }
+
+    getStatus (status) {
+        if (!status) return null;
+
+        switch(status) {
+            case 1:
+                return "En proceso de Aplicación";
+            case 2: 
+                return "En proceso de Calificar";
+            case 3: 
+                return "Elaborado";
+            case 4: 
+                return "Avanzado";
+            case 5: 
+                return "Impreso";
+            case 6: 
+                return "Por Comezar";
+            case 7: 
+                return "Calificado";
+            case 8: 
+                return "Entregado";
+        }
     }
 }
 
