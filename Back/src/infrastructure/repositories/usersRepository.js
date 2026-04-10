@@ -3,7 +3,7 @@ const ImpUserRepository = require("../../domain/repository/ImpUserRepository");
 const userSummary = require("../../domain/entity/userSummaryEntity");
 
 class UsersRepository extends ImpUserRepository {
-    async fetchActivePatients({ search, page, limit }) {
+    async fetchActivePatients ({ search, page, limit }) {
         // Calculate offset for pagination
         const offset = (page - 1) * limit;
 
@@ -11,7 +11,7 @@ class UsersRepository extends ImpUserRepository {
         const searchParam = search ? `%${search}%` : null;
         
         // Get active Users, rol = 2, with pagination and a optional search filter
-        const [rows] = await db.query(
+        const [rows] = await db.query (
             `SELECT 
                 folio,
                 CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) AS full_name
@@ -26,11 +26,11 @@ class UsersRepository extends ImpUserRepository {
     return rows.map(row => new userSummary(row));
     }
 
-    async countActivePatients({ search }) {
+    async countActivePatients ({ search }) {
         // Prepare search parameter for SQL 
         const searchParam = search ? `%${search}%` : null;
 
-        const [rows] = await db.query(
+        const [rows] = await db.query (
             `SELECT COUNT(*) AS total
             FROM users
             WHERE id_role = 2
