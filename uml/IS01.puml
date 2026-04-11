@@ -6,6 +6,7 @@ participant "Routes" as Routes
 participant "AuthController" as Controller
 participant "JWT Service" as JWT
 participant "LogInUseCase" as UseCase
+participant "Dto" as Dto
 participant "Bcrypt" as Bcrypt
 participant "LogInRepository" as Repository
 participant "Model" as Model
@@ -21,6 +22,8 @@ alt User found
 
     Model --> Repository : user json
     Repository --> UseCase : user json
+    UseCase -> Dto : fromEntity(user)
+    Dto -->> UseCase : userDto
     UseCase -> Bcrypt : compare password hash
 
     alt passwords match
