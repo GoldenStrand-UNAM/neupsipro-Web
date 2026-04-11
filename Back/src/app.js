@@ -63,7 +63,7 @@ const getForumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/', getForumRoutes);
 */
 
-const usersRoutes = require('./presentation/routes/users/users.routes');
+const usersRoutes = require('./presentation/routes/users/getUser.Routes');
 app.use('/users', usersRoutes);
 
 
