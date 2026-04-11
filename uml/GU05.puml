@@ -1,16 +1,16 @@
-@startuml GU04 Consult-User
+@startuml GU05 Get-User
 
-title Consult User - User Management (NeuPsi-Pro)
+title Get User - User Management (NeuPsi-Pro)
 
 actor "Clinical Group" as CG
 
-boundary "usersView" as VUsers
+boundary "userListView" as VUsers
 boundary "userView" as VOne
 control "main.js" as MAIN
-boundary "users\nRoutes" as ROUTE
-control "users\nController" as CTRL
-control "consultUser\nUseCase" as UC
-control "UserRepository" as REPO
+boundary "getUser\nRoutes" as ROUTE
+control "getUser\nController" as CTRL
+control "getUser\nUseCase" as UC
+control "users\nRepository" as REPO
 entity "User" as ENT
 entity "UserDTO" as DTO
 database DB
