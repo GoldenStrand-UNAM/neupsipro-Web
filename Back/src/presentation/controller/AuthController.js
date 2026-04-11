@@ -35,6 +35,16 @@ class AuthController {
     async login (req, res) {
         try {
             const {username, password} = req.body;
+            if (!username || !password) {
+                return res.render ('login.ejs', {
+                    error: 'El usuario y la contraseña son obligatorios',
+                });
+            }
+            if (username.length > 30 || password.length > 30) {
+                return res.render ('login.ejs', {
+                    error: 'El usuario o la contraseña exceden el límite de 30 caracteres',
+                });
+            }
             const token = await this.loginUseCase.execute(username, password);
             res.cookie('jwt_token', token, {httpOnly: true, secure: true});
             return res.redirect('/home');

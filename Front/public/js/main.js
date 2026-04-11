@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-//Show message when character length has reached 30 in both username and password
+//Show message when character length has reached 30 in username field
 document.addEventListener('DOMContentLoaded', function () {
     const userInput = document.getElementById('username');
     const usernameMessage = document.getElementById('usernameMessage');
@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 });
 
+//Show message when character length has reached 30 in password field
 document.addEventListener('DOMContentLoaded', function () {
     const passwordInput = document.getElementById('password');
     const passwordMessage = document.getElementById('passwordMessage');
@@ -109,6 +110,23 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordMessage.setAttribute('hidden', '');
         }
 
-    })
+    });
 });
 
+// Show message when input fields are empty
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', function (event) {
+        const userValue = document.getElementById('username').value.trim();
+        const passValue = document.getElementById('password').value.trim();
+
+        if (userValue === '' || passValue === '') {
+            event.preventDefault();
+            errorMessage.style.display = 'block';
+        } else {
+            errorMessage.style.display = 'none';
+        }
+    });
+})

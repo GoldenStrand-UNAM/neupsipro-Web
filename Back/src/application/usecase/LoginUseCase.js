@@ -23,8 +23,6 @@ class LoginUseCase {
             throw new Error ('Esta cuenta ha sido desactivada');
         }
 
-        console.log("CONTRASEÑA WEB", password);
-        console.log("BD", user);
 
         const isValid = await this.hashingService.compare(password, user.password_hash);
         if (!isValid) {
