@@ -1,4 +1,4 @@
-class ImpLogbookRepository {
+class ImpUserRepository {
 
     // In case function is not implemented
     async fetchOne ({id_user: _id_user}) {
@@ -6,4 +6,4 @@ class ImpLogbookRepository {
     }
 }
 
-module.exports = ImpLogbookRepository;
+module.exports = ImpUserRepository;

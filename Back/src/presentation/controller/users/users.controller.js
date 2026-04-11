@@ -1,22 +1,22 @@
-const LogbookDTO = require('../../../application/dto/logbookDTO');
+const UserDTO = require('../../../application/dto/UserDTO');
 
 class usersController {
-    constructor (consultLogbookUseCase) {
-        this.consultLogbookUseCase = consultLogbookUseCase;
+    constructor (consultUserUseCase) {
+        this.consultUserUseCase = consultUserUseCase;
     }
 
-    // Consult one logbook
-    async getLogbook (req, res) {
+    // Consult one User
+    async getUser (req, res) {
         try {
             const {id_user} = req.params;
 
-            const logbook = await this.consultLogbookUseCase.execute({id_user});
+            const user = await this.consultUserUseCase.execute({id_user});
 
-            const response = logbook.map(lb => LogbookDTO.fromEntity(lb));
+            const response = user.map(lb => UserDTO.fromEntity(lb));
 
 
             return res.status(200).json({
-                message: "Bitácora consultada correctamente",
+                message: "Usuario consultado correctamente",
                 data: response,
             });
         } catch (error) {
