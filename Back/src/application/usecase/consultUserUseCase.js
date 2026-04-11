@@ -1,14 +1,14 @@
-class consultLogbookUseCase {
-    constructor (logbookRepository) {
-        this.logbookRepository = logbookRepository;
+class consultUserUseCase {
+    constructor (userRepository) {
+        this.userRepository = userRepository;
     }
 
 
     async execute ({ id_user }) {
 
-    const logbookEntities = await this.logbookRepository.fetchOne({ id_user });
+    const userEntities = await this.userRepository.fetchOne({ id_user });
 
-    return logbookEntities.map(e => ({
+    return userEntities.map(e => ({
         photo: e.photo,
         reference_number: e.reference_number,
         name: e.name,
@@ -30,4 +30,4 @@ class consultLogbookUseCase {
 }
 }
     
-module.exports = consultLogbookUseCase;
+module.exports = consultUserUseCase;

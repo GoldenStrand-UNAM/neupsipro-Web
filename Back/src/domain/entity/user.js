@@ -1,4 +1,4 @@
-class Logbook {
+class User {
     constructor (data) {
         this.photo = data.profile_photo;
         this.reference_number = data.reference_number;
@@ -65,4 +65,4 @@ class Logbook {
     }
 }
 
-module.exports = Logbook;
+module.exports = User;

@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();    
 
 const UsersController = require("../../controller/users/users.controller");
-const LogbookRepository = require("../../../infrastructure/repositories/logbookRepository");
-const ConsultLogbookUseCase = require("../../../application/usecase/consultLogbookUseCase");
+const UserRepository = require("../../../infrastructure/repositories/userRepository");
+const ConsultUserUseCase = require("../../../application/usecase/consultUserUseCase");
 
-const repository = new LogbookRepository();
-const useCase = new ConsultLogbookUseCase(repository);
+const repository = new UserRepository();
+const useCase = new ConsultUserUseCase(repository);
 const controller = new UsersController(useCase);
 
-router.get("/logbook/:id_user", (req, res) => controller.getLogbook(req, res));
+router.get("/:id_user", (req, res) => controller.getUser(req, res));
 
 module.exports = router;

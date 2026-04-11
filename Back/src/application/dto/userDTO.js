@@ -1,4 +1,4 @@
-class LogbookDTO {
+class UserDTO {
     constructor ({
         photo,
         reference_number,
@@ -36,7 +36,7 @@ class LogbookDTO {
     }
 
     static fromEntity (entity) {
-        return new LogbookDTO({
+        return new UserDTO({
             photo: entity.photo,
             reference_number: entity.reference_number,
             name: entity.name,
@@ -58,4 +58,4 @@ class LogbookDTO {
     }
 }
 
-module.exports = LogbookDTO;
+module.exports = UserDTO;

@@ -1,12 +1,12 @@
 const db = require ("../database/database");
-const ImpLogbookRepository = require('../../domain/repository/impLogbookRepository');
-const Logbook = require("../../domain/entity/Logbook");
+const ImpUserRepository = require('../../domain/repository/impUserRepository');
+const User = require("../../domain/entity/User");
 
-class LogbookRepository extends ImpLogbookRepository {
+class UserRepository extends ImpUserRepository {
 
-    // Consult one logbook by id_user
+    // Consult one User by id_user
     async fetchOne ({id_user}) {
-        const [logbookData] = await db.query(
+        const [userData] = await db.query(
             `SELECT 
                 l.*,
                 u.first_name,
@@ -17,7 +17,7 @@ class LogbookRepository extends ImpLogbookRepository {
                 u.registration_date,
                 u.reference_number,
                 uc.first_name AS assigned_clinic
-            FROM logbook l
+            FROM Logbook l
             JOIN users u ON l.id_user = u.id_user
             LEFT JOIN user_relation ur ON u.id_user = ur.id_user
             LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
@@ -25,9 +25,9 @@ class LogbookRepository extends ImpLogbookRepository {
             [id_user]
         );        
 
-        return logbookData.map(row => new Logbook(row));
+        return userData.map(row => new User(row));
     }
 }
 
 
-module.exports = LogbookRepository;
+module.exports = UserRepository;
