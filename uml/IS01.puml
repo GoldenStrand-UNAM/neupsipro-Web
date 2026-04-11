@@ -1,4 +1,4 @@
-@startuml
+@startuml IS01
 actor Clinical_group
 
 participant "View" as View
