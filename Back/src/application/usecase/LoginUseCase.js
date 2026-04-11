@@ -1,3 +1,4 @@
+const AuthDTO = require('../dto/authDTO');
 class LoginUseCase {
 
     constructor (authRepository, hashingService, jwtService, cacheService) {
@@ -19,12 +20,15 @@ class LoginUseCase {
             throw new Error ("Credenciales inválidas");
         }
 
-        if (user.eliminated) {
+        const userDto = AuthDTO.fromEntity(user);
+
+
+        if (userDto.eliminated) {
             throw new Error ('Esta cuenta ha sido desactivada');
         }
 
 
-        const isValid = await this.hashingService.compare(password, user.password_hash);
+        const isValid = await this.hashingService.compare(password, userDto.passwordHash);
         if (!isValid) {
             this.cacheService.incrementAttempts(username);
             throw new Error ("Credenciales inválidas");
@@ -32,7 +36,7 @@ class LoginUseCase {
 
         this.cacheService.clearAttempts(username);
 
-        const payload = {userId: user.id, privileges: user.privileges};
+        const payload = {userId: userDto.idUser, privileges: userDto.privileges};
         const token = this.jwtService.generateToken(payload);
 
         return token;
