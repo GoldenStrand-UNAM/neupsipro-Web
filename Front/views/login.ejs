@@ -16,20 +16,20 @@
                 <img src="../assets/enes-white-logo.svg" alt="Logo ENES" class="logo-white"/>
                 <h1 class="title">NeuPsi-Pro</h1>
             
-            <form action="/auth/login" method="POST">
+            <form id="loginForm" action="/auth/login" method="POST">
                 <div class="login-form">
 
                     <!-- Usuario -->
                     <div class="input-div">
                         <label>Usuario</label>
-                        <input id="username" type="text" name="username" placeholder="Nombre de usuario" class="input-base" maxlength="30">
+                        <input id="username" type="text" name="username" placeholder="Nombre de usuario" class="input-base" maxlength="30" >
                         <small id="usernameMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
                     </div>
 
                     <!-- Contraseña -->
                     <div class="input-div">
                         <label>Contraseña</label>
-                        <input id="password" type="password" name="password" placeholder="***********" class="input-base" maxlength="30">
+                        <input id="password" type="password" name="password" placeholder="***********" class="input-base" maxlength="30" >
                         <small id="passwordMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
                         <!-- Icono -->
                         <svg id="togglePassword" class="w-7 h-7 absolute right-3 top-9 text-gray-400 cursor-pointer"
@@ -39,6 +39,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                         </svg>
+                    </div>
+
+                    <div id="errorMessage" style="color: red; background-color: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none " class="text-center">
+                        <p>
+                        Por favor, llena todos los campos.
+                    </p>
                     </div>
 
                     <button type="submit" class="btn-big bg-[#3350A9]">
