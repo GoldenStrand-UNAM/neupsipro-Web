@@ -17,3 +17,4 @@ router.get('/Foro', (req, res) => controller.getForum(req, res));
 
 
 module.exports = router
+
