@@ -12,6 +12,7 @@ app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
 app.use(cors());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use (session({
     secret: process.env.SESSION_SECRET,
@@ -26,23 +27,22 @@ app.get('/test', (req, res) => {
 
 const forumRoutes = require("./presentation/routes/forumRoutes");
 const AuthService = require("./Infrastructure/Auth/AuthService");
-const LogoutUseCase = require("./application/usecase/LogoutUseCase");
-const LoginUseCase = require("./application/usecase/LoginUseCase");
-const AuthController = require("./Presentation/controller/AuthController");
-const authRoutes = require("./Presentation/routes/authRoutes");
+const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
+const LoginUseCase = require("./application/usecase/auth/loginUseCase");
+const AuthController = require("./presentation/controller/auth/auth.controller");
+const authRoutes = require("./presentation/routes/auth/authRoutes");
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/authRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
-const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
+const homeRoutes = require("./presentation/routes/home.routes")
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
 const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
-const authMiddleware = new AuthMiddleware(jwtService);
 
 
 const logoutUseCase = new LogoutUseCase(authService);
@@ -53,6 +53,7 @@ const authController = new AuthController(logoutUseCase, loginUseCase);
 
 app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(authController));
+app.use("/", homeRoutes());
 
 //Routes
 app.use((req, res, next) => {

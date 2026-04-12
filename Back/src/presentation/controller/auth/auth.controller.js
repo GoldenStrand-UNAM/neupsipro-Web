@@ -16,7 +16,7 @@ class AuthController {
                 req.session.warning = "";
             }
             const errorMessage = req.query.error || null;
-            res.render("login.ejs", {
+            res.render("auth/login.ejs", {
             isLoggedIn: req.session.isLoggedIn || false,
             username: req.session.usuario || "",
             isNew: false,
@@ -53,6 +53,8 @@ class AuthController {
             return res.render('login.ejs', {error: error.message});
         }
     }
+
+    getHome
 
     logout (req, res) {
         try {
