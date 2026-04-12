@@ -28,19 +28,21 @@ const forumRoutes = require("./presentation/routes/forumRoutes");
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/usecase/LogoutUseCase");
 const LoginUseCase = require("./application/usecase/LoginUseCase");
-const AuthController = require("./Presentation/Controller/AuthController");
+const AuthController = require("./Presentation/controller/AuthController");
 const authRoutes = require("./Presentation/routes/authRoutes");
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/authRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
+const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
 const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
+const authMiddleware = new AuthMiddleware(jwtService);
 
 
 const logoutUseCase = new LogoutUseCase(authService);

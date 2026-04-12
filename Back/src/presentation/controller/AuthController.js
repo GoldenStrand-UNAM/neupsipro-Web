@@ -15,7 +15,7 @@ class AuthController {
             if (req.session.warning) {
                 req.session.warning = "";
             }
-
+            const errorMessage = req.query.error || null;
             res.render("login.ejs", {
             isLoggedIn: req.session.isLoggedIn || false,
             username: req.session.usuario || "",
@@ -23,6 +23,7 @@ class AuthController {
             info: message,
             warning: warning,
             privilegios: req.session.privilegios || [],
+            error: errorMessage,
         });
 
         } catch (error) {
@@ -46,7 +47,7 @@ class AuthController {
                 });
             }
             const token = await this.loginUseCase.execute(username, password);
-            res.cookie('jwt_token', token, {httpOnly: true, secure: true});
+            res.cookie('jwt_token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production'});
             return res.redirect('/home');
         } catch (error) {
             return res.render('login.ejs', {error: error.message});

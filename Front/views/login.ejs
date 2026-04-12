@@ -15,7 +15,6 @@
             <div class="flex flex-col items-center justify-center mt-7">
                 <img src="../assets/enes-white-logo.svg" alt="Logo ENES" class="logo-white"/>
                 <h1 class="title">NeuPsi-Pro</h1>
-            
             <form id="loginForm" action="/auth/login" method="POST">
                 <div class="login-form">
 
@@ -53,7 +52,7 @@
                         </svg>
                         <span>Iniciar Sesión</span>
                     </button>
-                    <% if (typeof error !== 'undefined') { %>
+                    <% if (locals.error) { %>
                         <div style="color: red; background-color: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; " class="text-center">
                             <%= error %>
                         </div>
