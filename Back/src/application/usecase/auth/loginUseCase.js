@@ -1,4 +1,4 @@
-const AuthDTO = require('../dto/authDTO');
+const AuthDTO = require('../../dto/authDTO')
 class LoginUseCase {
 
     constructor (authRepository, hashingService, jwtService, cacheService) {
