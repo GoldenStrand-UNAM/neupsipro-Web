@@ -16,3 +16,7 @@ _npm install jsonwebtoken cookie-parser_
 _npm install bcrypt_
 
 _npm i express-session_
+
+_npm install --save-dev husky_
+
+_npx husky init_
