@@ -18,7 +18,11 @@
     "test": "jest",
     "lint": "eslint",
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
-    "start": "nodemon"
+    "start": "nodemon",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*": "node scripts/check-names.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -40,6 +44,7 @@
     "eslint": "^10.1.0",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "jest": "^30.3.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2"
