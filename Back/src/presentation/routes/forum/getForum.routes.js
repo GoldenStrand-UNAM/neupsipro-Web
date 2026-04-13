@@ -1,5 +1,5 @@
 const express = require("express");
-const forumController = require("../../controller/forumController")
+const forumController = require("../../controller/forum.controller")
 
 module.exports = () => {
     const router = express.Router();

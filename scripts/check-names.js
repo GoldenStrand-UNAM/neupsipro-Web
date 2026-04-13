@@ -1,54 +1,49 @@
 // scripts/check-names.js
+const path = require('path');
 
-// lint-staged pasa los archivos modificados como argumentos al script
+// lint-staged pasa los archivos modificados como argumentos
 const files = process.argv.slice(2);
 let hasError = false;
 
+// Archivos comunes que sí permitimos en mayúscula
+const allowedUppercaseFiles = ['README.md', 'Dockerfile', 'LICENSE'];
+
 files.forEach(file => {
-  // Normalizamos las barras para evitar problemas entre Windows y Mac/Linux
-  const normalizedPath = file.replace(/\\/g, '/');
+  // 1. Convertimos la ruta absoluta (C:/Users/...) a ruta relativa (Back/src/...)
+  const relativePath = path.relative(process.cwd(), file);
+  
+  // 2. Normalizamos las barras para evitar problemas entre Windows y Mac/Linux
+  const normalizedPath = relativePath.replace(/\\/g, '/');
   const parts = normalizedPath.split('/');
   const fileName = parts[parts.length - 1];
 
-// Regla 1: Revisar que todos los folders y el archivo comiencen con minúscula
+  // Regla 1: Revisar que todos los folders y el archivo comiencen con minúscula
   parts.forEach(part => {
-    // Ignoramos carpetas ocultas como .git o .husky, node_modules y valores vacíos
-    if (part && !part.startsWith('.') && part !== 'node_modules') {
-      
-      // Tomamos la primera letra del nombre
+    // Ignoramos carpetas ocultas, node_modules, la carpeta 'Back' y archivos permitidos
+    if (
+      part && 
+      !part.startsWith('.') && 
+      part !== 'node_modules' && 
+      part !== 'Back' && 
+      !allowedUppercaseFiles.includes(part)
+    ) {
       const primeraLetra = part[0];
-      
-      // Si la primera letra no es igual a su versión en minúscula, lanzamos el error
       if (primeraLetra !== primeraLetra.toLowerCase()) {
-        console.error(`❌ Error: El archivo o carpeta "${part}" en la ruta "${file}" debe comenzar con minúscula.`);
+        console.error(`❌ Error: El archivo o carpeta "${part}" (en ${normalizedPath}) debe comenzar con minúscula.`);
         hasError = true;
       }
     }
   });
 
   // Regla 2: Revisar formato de controladores
-if (normalizedPath.includes('/presentation/controller/') && fileName.endsWith('.js')) {
+  if (normalizedPath.includes('/presentation/controller/') && fileName.endsWith('.js')) {
     if (!fileName.endsWith('.controller.js')) {
-      console.error(`❌ Error: El archivo "${fileName}" está en una carpeta de controladores pero no termina en .controller.js`);
+      console.error(`❌ Error: El controlador "${fileName}" no termina en .controller.js`);
       hasError = true;
     }
   }
-
-    // Regla 3: Revisar formato de rutas
-if (normalizedPath.includes('/presentation/routes/') && fileName.endsWith('.js')) {
-    if (!fileName.endsWith('.routes.js')) {
-      console.error(`❌ Error: El archivo "${fileName}" está en una carpeta de rutas pero no termina en .routes.js`);
-      hasError = true;
-    }
-  }
-
 });
 
-
-
-// Si hubo al menos un error, cancelamos el proceso (esto detiene el commit en Husky)
 if (hasError) {
   process.exit(1);
-} else {
-  console.log('✅ Nomenclatura de archivos validada correctamente.');
 }

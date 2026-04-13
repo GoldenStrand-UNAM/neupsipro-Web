@@ -25,18 +25,19 @@ app.get('/test', (req, res) => {
     res.render('test');
 });
 
-const forumRoutes = require("./presentation/routes/forumRoutes");
+const forumRoutes = require("./presentation/routes/forum.routes");
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/usecase/auth/loginUseCase");
-const AuthController = require("./presentation/controller/auth/auth.controller");
-const authRoutes = require("./presentation/routes/auth/authRoutes");
+const LogoutController = require("./presentation/controller/auth/logout.controller");
+const LoginController = require("./presentation/controller/auth/login.controller");
+const authRoutes = require("./presentation/routes/auth/auth.routes");
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/authRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
-const homeRoutes = require("./presentation/routes/home.routes")
+const homeRoutes = require("./presentation/routes/home/home.routes")
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
@@ -48,11 +49,12 @@ const authRepository = new AuthRepository(dbPool);
 const logoutUseCase = new LogoutUseCase(authService);
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService);
 
-const authController = new AuthController(logoutUseCase, loginUseCase);
+const logoutController = new LogoutController(logoutUseCase);
+const loginController = new LoginController(loginUseCase);
 
 
 app.use("/forum", forumRoutes());
-app.use("/auth", authRoutes(authController));
+app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes());
 
 //Routes

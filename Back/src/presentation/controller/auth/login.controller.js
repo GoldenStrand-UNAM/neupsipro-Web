@@ -1,7 +1,6 @@
-class AuthController {
-    constructor (logoutUseCase, loginUseCase) {
-        this.logoutUseCase = logoutUseCase;
-        this.loginUseCase = loginUseCase
+class LoginController {
+    constructor (loginUseCase) {
+        this.loginUseCase = loginUseCase;
     }
 
     getLogin (req, res) {
@@ -33,7 +32,7 @@ class AuthController {
         }
     }
 
-    async login (req, res) {
+     async postLogin (req, res) {
         try {
             const {username, password} = req.body;
             if (!username || !password) {
@@ -54,21 +53,6 @@ class AuthController {
         }
     }
 
-    logout (req, res) {
-        try {
-            const token = req.headers.authorization?.split(" ")[1];
-
-            this.logoutUseCase.execute(token);
-
-            return res.status(200).json({
-                message: "Sesión cerrada correctamente",
-            });
-        } catch (error) {
-            return res.status(400).json({
-                error: error.message,
-            });
-        }
-    }
 }
 
-module.exports = AuthController;
+module.exports = LoginController;
