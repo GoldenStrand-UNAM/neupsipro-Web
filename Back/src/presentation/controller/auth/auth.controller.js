@@ -47,10 +47,10 @@ class AuthController {
                 });
             }
             const token = await this.loginUseCase.execute(username, password);
-            res.cookie('jwt_token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production'});
+            res.cookie('jwt_token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge : 2 * 60 * 60 * 1000});
             return res.redirect('/home');
         } catch (error) {
-            return res.render('login.ejs', {error: error.message});
+            return res.render('auth/login.ejs', {error: error.message});
         }
     }
 
