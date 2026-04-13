@@ -24,9 +24,9 @@ app.use((req, res, next) => {
     next();
 });
 
-const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+const forumRoutes = require('./presentation/routes/forum/getForum.Routes');
 app.use('/', forumRoutes);
-const usersRoutes = require('./presentation/routes/users/GetUsersList.Routes');
+const usersRoutes = require('./presentation/routes/users/getUsersList.Routes');
 app.use('/', usersRoutes);
 
 const PORT = 3000;

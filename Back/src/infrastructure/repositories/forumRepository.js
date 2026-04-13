@@ -3,11 +3,11 @@ const ImpForumRepository = require('../../domain/repository/ImpForumRepository')
 
 
 // Repository responsable for fetching publications from the database with author info and pagination
-class ForumRepository extends ImpForumRepository{
+class ForumRepository extends ImpForumRepository {
 
     // Page and limit for data pagination
-    async fetchAll ({page,limit}) {
-         const offset = (page - 1) * limit;
+    async fetchAll ({_page,_limit}) {
+         const offset = (_page - 1) * _limit;
          const [rows] = await db.query(
             `SELECT 
                 p.id_publication,
