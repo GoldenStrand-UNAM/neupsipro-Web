@@ -1,7 +1,7 @@
-const UserSummaryDTO = require("../dto/userSummaryDTO");
+const UserSummaryDTO = require('../../dto/userSummaryDTO');
 
 /* Use case to fetch the folio + name of the active "usuarios" patients */
-class GetUsersSummaryUseCase {
+class GetUsersListUseCase {
     constructor (userRepository) {
         this.userRepository = userRepository;
     }
@@ -27,4 +27,4 @@ class GetUsersSummaryUseCase {
         };
     }
 }
-module.exports = GetUsersSummaryUseCase;
+module.exports = GetUsersListUseCase;
