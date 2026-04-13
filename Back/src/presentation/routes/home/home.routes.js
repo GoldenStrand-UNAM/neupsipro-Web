@@ -1,8 +1,8 @@
 const express = require("express");
 
-const JwtService = require("../../infrastructure/external/jwt.service");
-const AuthMiddleware = require("../../infrastructure/auth/auth.middleware"); 
-const HomeController = require("../controller/home.controller");
+const JwtService = require("../../../infrastructure/external/jwt.service");
+const AuthMiddleware = require("../../../infrastructure/auth/auth.middleware"); 
+const HomeController = require("../../controller/home/home.controller");
 
 module.exports = () => {
     const router = express.Router();

@@ -20,3 +20,5 @@ _npm i express-session_
 _npm install --save-dev husky_
 
 _npx husky init_
+
+_npm install --save-dev lint-staged_
