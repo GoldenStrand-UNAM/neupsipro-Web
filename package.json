@@ -15,7 +15,10 @@
   "type": "commonjs",
   "main": "Back/src/index.js",
   "scripts": {
-    "test": "jest",
+    "start": "nodemon index.js",
+    "start:prod": "NODE_ENV=production nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose",
+    "test:coverage": "NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
     "start": "nodemon",
@@ -47,8 +50,8 @@
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.4.0",
     "husky": "^9.1.7",
-    "jest": "^30.3.0",
     "lint-staged": "^16.4.0",
+    "jest": "^30.3.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2"
   }
