@@ -38,6 +38,8 @@
     "nodemon": "^3.1.14"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@eslint/css": "^1.0.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.2.2",

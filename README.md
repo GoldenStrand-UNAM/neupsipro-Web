@@ -22,3 +22,5 @@ _npm install --save-dev husky_
 _npx husky init_
 
 _npm install --save-dev lint-staged_
+
+_npm install --save-dev @commitlint/config-conventional @commitlint/cli_
