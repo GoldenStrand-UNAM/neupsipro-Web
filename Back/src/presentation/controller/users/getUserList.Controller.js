@@ -1,7 +1,7 @@
 // Controller responsible for handling HTTP requests for users list.
-class GetUsersListController {
-    constructor (GetUsersSummaryUseCase) {
-        this.GetUsersSummaryUseCase = GetUsersSummaryUseCase;
+class getUsersListController {
+    constructor (GetUsersListUseCase) {
+        this.GetUsersListUseCase = GetUsersListUseCase;
     }
 
     async getUsers (req, res) {
@@ -10,7 +10,7 @@ class GetUsersListController {
             const { search = "", page = 1, limit = 10 } = req.query;
             
             //Exceute useCase
-            const result = await this.GetUsersSummaryUseCase.execute({ search, page, limit });
+            const result = await this.GetUsersListUseCase.execute({ search, page, limit });
 
             //Successful response
             res.status(200).json(result);
@@ -28,4 +28,4 @@ class GetUsersListController {
         }
     }
 }
-module.exports = GetUsersListController;
+module.exports = getUsersListController;
