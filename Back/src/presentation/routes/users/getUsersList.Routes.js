@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const UserRepository = require("../../../infrastructure/repositories/usersRepository");
-const GetUsersSummaryUseCase = require("../../../application/usecase/getUsersSummaryUseCase");
-const getUsersListController = require("../controller/users/getUsersList.Controller");
+const GetUsersListUseCase = require("../../../application/usecase/users/getUserListUseCase");
+const getUsersListController = require("../../controller/users/getUsersList.Controller");
 
 const repository = new UserRepository();
-const useCase = new GetUsersSummaryUseCase(repository);
+const useCase = new GetUsersListUseCase(repository);
 const controller = new getUsersListController(useCase);
 
 router.get("/usuarios", (req, res) => controller.getUsersPage(req, res));

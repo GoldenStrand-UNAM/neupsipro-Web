@@ -1,11 +1,11 @@
 
 // Forum use case that retrieves and formats forum posts
 class GetForumUseCase {
-    constructor(forumRepository) {
+    constructor (forumRepository) {
         this.forumRepository = forumRepository;
     }
 
-    async execute({ page, limit }) {
+    async execute ({ page, limit }) {
 
         const post = await this.forumRepository.fetchAll({ page, limit });
 
@@ -21,7 +21,7 @@ class GetForumUseCase {
         }));
     }
 }
-    
+
 
 
 module.exports = GetForumUseCase;
