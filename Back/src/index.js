@@ -1,30 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
+const path = require('path');
+const dotenv = require('dotenv');
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
+const app = require("./app");
+const PORT = process.env.PORT || 3000;
 
-const AuthService = require("./Infrastructure/Auth/AuthService");
-const LogoutUseCase = require("./application/Usecase/LogoutUseCase");
-const AuthController = require("./Presentation/Controller/AuthController");
-const authRoutes = require("./Presentation/routes/authRoutes");
-
-const app = express();
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', '..', 'Front', 'views'));
-app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
-app.use(cors());
-app.use(express.json());
-
-const authService = new AuthService();
-const logoutUseCase = new LogoutUseCase(authService);
-const authController = new AuthController(logoutUseCase);
-
-app.use("/auth", authRoutes(authController));
-
-app.get('/test', (req, res) => {
-    res.render('test');
-});
-
-app.listen(3000, () => {
+app.listen(PORT, () => {
     // eslint-disable-next-line no-console
-    console.log("Server running on http://localhost:3000");
+    console.log(`[${process.env.NODE_ENV || 'dev'}] Server running on port ${PORT}`);
 });
