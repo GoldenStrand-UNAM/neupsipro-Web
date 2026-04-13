@@ -1,8 +1,8 @@
 const db = require("../database/database");
-const ImpUserRepository = require("../../domain/repository/ImpUserRepository");
+const ImpUsersRepository = require("../../domain/repository/ImpUsersRepository");
 const userSummary = require("../../domain/entity/userSummaryEntity");
 
-class UsersRepository extends ImpUserRepository {
+class UsersRepository extends ImpUsersRepository {
     async fetchActivePatients ({ search, page, limit }) {
         // Calculate offset for pagination
         const offset = (page - 1) * limit;
