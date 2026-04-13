@@ -1,15 +1,15 @@
 // Forum use case that retrieves and formats forum posts
-class GetForumUseCase {
-    constructor(forumRepository) {
+class getForumUseCase {
+    constructor (forumRepository) {
         this.forumRepository = forumRepository;
     }
 
-    async execute({ page, limit }) {
+    async execute (params) {
 
-        const post = await this.forumRepository.fetchAll({ page, limit });
+        const post = await this.forumRepository.fetchAll(params);
 
         //Map data that we recieve from forumrepository into clean data for the client
-        return post.map(p => ({
+        return post.map((p) => ({
             id: p.id_publication,
             title: p.title,
             content: p.content,
@@ -23,4 +23,4 @@ class GetForumUseCase {
     
 
 
-module.exports = GetForumUseCase;
+module.exports = getForumUseCase;
