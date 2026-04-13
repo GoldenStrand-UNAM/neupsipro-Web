@@ -3,7 +3,7 @@
 class ImpForumRepository {
 
     // Method to retrieve paginated forum data (must be implemented)
-    async fetchAll ({page,limit}) {
+    async fetchAll () {
         throw new Error("fetchAll() must be implemented");
     }
 }

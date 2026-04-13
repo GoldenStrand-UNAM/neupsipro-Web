@@ -1,9 +1,9 @@
 const db = require ("../database/database");
-const ImpForumRepository = require('../../domain/repository/ImpForumRepository');
+const impForumRepository = require('../../domain/repository/ImpForumRepository');
 
 
 // Repository responsable for fetching publications from the database with author info and pagination
-class ForumRepository extends ImpForumRepository{
+class forumRepository extends impForumRepository {
 
     // Page and limit for data pagination
     async fetchAll ({page,limit}) {
@@ -29,4 +29,4 @@ class ForumRepository extends ImpForumRepository{
 }
 
 
-module.exports = ForumRepository;
+module.exports = forumRepository;
