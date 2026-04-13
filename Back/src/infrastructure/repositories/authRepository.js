@@ -19,6 +19,18 @@ class AuthRepository {
         }
     }
 
+    /*async getByUserId (idUser) {
+        try {
+            const [rows] = await this.db.execute('', [idUser]);
+            if (rows.length === 0) {
+                return null;
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error ('Error al consultar base de datos', {cause: error});
+        }
+    }
+*/
 }
 
 module.exports = AuthRepository;

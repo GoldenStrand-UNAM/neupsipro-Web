@@ -9,14 +9,21 @@ class MemoryCacheService {
 
     incrementAttempts (username) {
         const current = this.getAttempts(username);
-        this.attempts.set(username, current + 1);
-        return current + 1;
+        const newCount = current + 1;
+        this.attempts.set(username, newCount);
+
+        if (newCount === 4) {
+            setTimeout(() => {
+                this.clearAttempts(username);
+            }, 15 * 60 * 1000);
+        }
+
+        return newCount;
     }
 
     clearAttempts (username) {
         this.attempts.delete(username);
     }
-
 }
 
 module.exports = MemoryCacheService;
