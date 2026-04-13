@@ -19,5 +19,13 @@ class GetUsersListController {
             res.status(500).json({ error: error.message });
         }
     }
+    getUsersPage (req, res) {
+        try {
+            res.locals.activePage = 'usuarios';
+            res.render("Users/usuarios");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 module.exports = GetUsersListController;

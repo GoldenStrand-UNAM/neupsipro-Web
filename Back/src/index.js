@@ -26,11 +26,8 @@ app.use((req, res, next) => {
 
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/', forumRoutes);
-
-const usersApiRoutes  = require('./presentation/routes/users/GetUsersList.Routes');
-const usersPageRoute  = require('./presentation/routes/users/usersPage.routes');
-app.use('/api', usersApiRoutes);  
-app.use('/', usersPageRoute); 
+const usersRoutes = require('./presentation/routes/users/GetUsersList.Routes');
+app.use('/', usersRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {
