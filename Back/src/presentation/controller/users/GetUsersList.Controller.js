@@ -11,7 +11,7 @@ class GetUsersListController {
             
             //Exceute useCase
             const result = await this.GetUsersSummaryUseCase.execute({ search, page, limit });
-            
+
             //Successful response
             res.status(200).json(result);
         } catch (error) {
