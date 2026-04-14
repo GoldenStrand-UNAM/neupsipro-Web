@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario - NeuPsi-Pro</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <!-- Sidebar -->
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- Header -->
+        <%- include('../partials/header') %>
+
+        <!-- Main -->
+        <main class="flex-1 p-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
+
+                <h1 class="text-xl font-bold">
+                    <svg class = "black-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+
+                    Usuario 
+
+                </h1>
+                <hr class="border-2 border-[#002B7A]"><br>
+                
+                <!-- User info -->
+                <div class="flex flex-wrap items-center justify-center  border rounded-2xl border-gray-300 p-6 mt-6">
+
+                    <!-- Photo and Name -->
+                    <div class="text-center">
+                        <img id="userPhoto" class="rounded-full w-20 h-20 object-cover mx-auto" src="/assets/foto perfil.avif">
+                        <p id="userCode" class="text-sm mt-2"></p>
+                        <p id="userName" class="text-base font-medium"></p>
+                    </div>
+
+                    <!-- First Column -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                            </svg>
+                            Edad: <span id="userAge"></span> años
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                            </svg>
+                            Fecha de ingreso: <span id="userDate"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14.7368 0H16.2105C19.3373 0 22.336 1.2421 24.5469 3.45306C26.7579 5.66401 28 8.66271 28 11.7895V13.2632H14.7368V0ZM16.2105 11.7895H26.5263C26.5263 9.05356 25.4395 6.42969 23.5049 4.49511C21.5703 2.56052 18.9464 1.47368 16.2105 1.47368V11.7895ZM11.7895 16.2105H23.5789C23.5789 19.3373 22.3368 22.336 20.1259 24.5469C17.9149 26.7579 14.9162 28 11.7895 28C8.66271 28 5.66401 26.7579 3.45306 24.5469C1.2421 22.336 0 19.3373 0 16.2105C0 13.0838 1.2421 10.0851 3.45306 7.87411C5.66401 5.66315 8.66271 4.42105 11.7895 4.42105V16.2105ZM10.3158 17.6842V5.99789C5.32 6.72 1.47368 11.0084 1.47368 16.2105C1.47368 18.9464 2.56052 21.5703 4.49511 23.5049C6.42969 25.4395 9.05356 26.5263 11.7895 26.5263C16.9916 26.5263 21.28 22.68 22.0021 17.6842H10.3158Z" fill="black"/>
+                            </svg>
+                            Fase: <span id="userPhase"></span>
+                        </div>
+                    </div>
+
+                    <!-- Second Column -->
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-6 md:h-6 shrink-0" viewBox="0 0 27 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.038 24.2563H8.538V20.9106H11.538V19.2378H8.538V15.8921H7.038V19.2378H4.038V20.9106H7.038V24.2563ZM15 18.9166H23.25V17.4361H15V18.9166ZM15 22.9047H20.25V21.4259H15V22.9047ZM2.424 30.1113C1.733 30.1113 1.1565 29.8537 0.6945 29.3385C0.2325 28.8232 0.001 28.1803 0 27.4097V11.0659C0 10.2964 0.2315 9.65403 0.6945 9.13879C1.1575 8.62355 1.7335 8.36537 2.4225 8.36426H10.5V1.67285C10.5 1.20334 10.645 0.80743 10.935 0.485127C11.224 0.161709 11.579 0 12 0H15C15.421 0 15.776 0.161709 16.065 0.485127C16.355 0.80743 16.5 1.20334 16.5 1.67285V8.36426H24.5775C25.2675 8.36426 25.8435 8.62243 26.3055 9.13879C26.7675 9.65514 26.999 10.2981 27 11.0676V27.4097C27 28.1792 26.7685 28.8221 26.3055 29.3385C25.8425 29.8548 25.2665 30.1124 24.5775 30.1113H2.424ZM2.424 28.4385H24.5775C24.8465 28.4385 25.0675 28.342 25.2405 28.1491C25.4135 27.9561 25.5 27.7097 25.5 27.4097V11.0659C25.5 10.7659 25.4135 10.5194 25.2405 10.3265C25.0675 10.1336 24.8465 10.0371 24.5775 10.0371H16.5V11.3252C16.5 11.7724 16.3505 12.1627 16.0515 12.4962C15.7525 12.8297 15.402 12.9969 15 12.9981H12C11.598 12.9981 11.2475 12.8308 10.9485 12.4962C10.6495 12.1616 10.5 11.7713 10.5 11.3252V10.0371H2.424C2.154 10.0371 1.9325 10.1336 1.7595 10.3265C1.5865 10.5194 1.5 10.7665 1.5 11.0676V27.4097C1.5 27.7097 1.5865 27.9561 1.7595 28.1491C1.9325 28.342 2.154 28.4385 2.424 28.4385ZM12 11.3252H15V1.67285H12V11.3252Z" fill="black"/>
+                            </svg>
+                            Asignado: <span id="userClinic"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg"">
+                                <path d="M4.29122 9.98675L13.033 11.3041L14.1049 20.7636L20.5744 2.72902L4.29122 9.98675ZM0.763873 11.4292C0.571344 11.4017 0.392478 11.3036 0.25542 11.1503C0.118362 10.997 0.0308936 10.7972 0.00677988 10.5825C-0.0173339 10.3677 0.0232756 10.15 0.122218 9.9638C0.22116 9.77757 0.372818 9.63331 0.553326 9.55373L21.8213 0.0698813C21.9803 -0.00110184 22.1545 -0.0184785 22.3223 0.0199057C22.4901 0.0582898 22.6441 0.150747 22.7652 0.285814C22.8863 0.420882 22.9692 0.59262 23.0036 0.779738C23.038 0.966856 23.0224 1.16112 22.9588 1.33846L14.474 24.9901C14.4023 25.1916 14.2725 25.3606 14.105 25.4707C13.9376 25.5807 13.7421 25.6254 13.5493 25.5978C13.3566 25.5702 13.1776 25.4718 13.0405 25.3182C12.9034 25.1645 12.8161 24.9643 12.7924 24.7492L11.4662 13.0362L0.763873 11.4292Z" fill="black"/>
+                            </svg>
+                            Modalidad: <span id="userModality"></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                            </svg>
+                            Cuando viene: <span id="userAttendance"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="relative rounded-3xl bg-[#BA8700]/30 p-6 w-full max-w-md">
+
+                    <!-- Etiqueta superior derecha -->
+                    <div class="absolute top-3 right-3 bg-[#BA8700] text-white text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        En Proceso de Aplicación
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="flex flex-col gap-2 mt-4">
+
+                        <!-- Icono -->
+                        <div>
+                            <svg class="w-8 h-8" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M26.16 5.24993H23.625V4.45493C23.6173 4.26642 23.5723 4.0813 23.4925 3.91033C23.4127 3.73936 23.2998 3.58593 23.1602 3.45895C23.0207 3.33197 22.8573 3.23396 22.6796 3.17062C22.5019 3.10727 22.3134 3.07984 22.125 3.08993H13.875C13.6866 3.07984 13.498 3.10727 13.3203 3.17062C13.1426 3.23396 12.9792 3.33197 12.8397 3.45895C12.7002 3.58593 12.5872 3.73936 12.5075 3.91033C12.4277 4.0813 12.3826 4.26642 12.375 4.45493V5.24993H9.83997C8.8454 5.24993 7.89158 5.64502 7.18832 6.34828C6.48505 7.05154 6.08997 8.00537 6.08997 8.99993V29.1599C6.08997 30.1545 6.48505 31.1083 7.18832 31.8116C7.89158 32.5148 8.8454 32.9099 9.83997 32.9099H26.16C27.1545 32.9099 28.1084 32.5148 28.8116 31.8116C29.5149 31.1083 29.91 30.1545 29.91 29.1599V8.99993C29.91 8.00537 29.5149 7.05154 28.8116 6.34828C28.1084 5.64502 27.1545 5.24993 26.16 5.24993ZM13.875 4.58993L22.125 4.60493V6.28493C22.125 7.19993 21.09 7.96493 19.875 7.96493H16.125C14.895 7.96493 13.875 7.19993 13.875 6.28493V4.58993ZM28.41 29.1599C28.406 29.7555 28.1677 30.3255 27.7466 30.7466C27.3255 31.1677 26.7555 31.406 26.16 31.4099H9.83997C9.24323 31.4099 8.67093 31.1729 8.24898 30.7509C7.82702 30.329 7.58997 29.7567 7.58997 29.1599V8.99993C7.58997 8.40319 7.82702 7.83089 8.24898 7.40894C8.67093 6.98698 9.24323 6.74993 9.83997 6.74993H12.42C12.6246 7.56316 13.1068 8.27942 13.7832 8.77509C14.4596 9.27077 15.2879 9.51475 16.125 9.46493H19.875C20.7121 9.51475 21.5403 9.27077 22.2167 8.77509C22.8931 8.27942 23.3753 7.56316 23.58 6.74993H26.16C26.7567 6.74993 27.329 6.98698 27.751 7.40894C28.1729 7.83089 28.41 8.40319 28.41 8.99993V29.1599Z" fill="black"/>
+                                <path d="M21.75 19.0654C21.75 19.2643 21.671 19.4551 21.5303 19.5958C21.3897 19.7364 21.1989 19.8154 21 19.8154H18.75V22.0654C18.75 22.2643 18.671 22.4551 18.5303 22.5958C18.3897 22.7364 18.1989 22.8154 18 22.8154C17.8011 22.8154 17.6103 22.7364 17.4697 22.5958C17.329 22.4551 17.25 22.2643 17.25 22.0654V19.8154H15C14.8011 19.8154 14.6103 19.7364 14.4697 19.5958C14.329 19.4551 14.25 19.2643 14.25 19.0654C14.25 18.8665 14.329 18.6758 14.4697 18.5351C14.6103 18.3944 14.8011 18.3154 15 18.3154H17.25V16.0654C17.25 15.8665 17.329 15.6758 17.4697 15.5351C17.6103 15.3944 17.8011 15.3154 18 15.3154C18.1977 15.3193 18.3863 15.3995 18.5261 15.5393C18.6659 15.6792 18.7462 15.8677 18.75 16.0654V18.3154H21C21.1977 18.3193 21.3863 18.3995 21.5261 18.5393C21.6659 18.6792 21.7462 18.8677 21.75 19.0654Z" fill="black"/>
+                            </svg>
+
+                        </div>
+
+                        <!-- Título -->
+                        <h3 class="text-xl font-bold text-black">
+                            Entrevista Inicial
+                        </h3>
+
+                        <!-- Descripción -->
+                        <p class="text-sm text-gray-800">
+                            Datos personales para conocer al usuario.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const user = JSON.parse(localStorage.getItem("selectedUser"));
+
+            if (!user) {
+                console.warn("No hay usuario en localStorage");
+                return;
+            }
+
+            // Nombre
+            document.getElementById("userName").textContent =
+                user.name || "Sin nombre";
+
+            // Código
+            document.getElementById("userCode").textContent =
+                user.reference_number || "N/A";
+
+            // Edad
+            document.getElementById("userAge").textContent =
+                user.age || "N/A";
+
+            // Fecha
+            document.getElementById("userDate").textContent =
+                user.registration_date
+                    ? new Date(user.registration_date).toLocaleDateString()
+                    : "N/A";
+
+            // Fase
+            document.getElementById("userPhase").textContent =
+                user.phase || "N/A";
+            
+            // Clínica
+            document.getElementById("userClinic").textContent =
+                user.assigned_clinic || "N/A";
+
+            // Modalidad
+            document.getElementById("userModality").textContent =
+                user.modality || "N/A";
+
+            // Asistencia
+            document.getElementById("userAttendance").textContent =
+                user.attendance || "N/A";
+
+        });
+    </script>
+
+    <script src="/js/sidebar.js"></script>
+
+</body>
+</html>

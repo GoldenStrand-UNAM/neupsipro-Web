@@ -36,18 +36,18 @@ DB --> REPO : rawData
 REPO --> UC : rawData
 
 UC -> ENT : new User(data)
-ENT --> UC : UserEntity[]
+ENT --> UC : UserEntity
 
-UC --> CTRL : UserEntity[]
+UC --> CTRL : UserEntity
 
 CTRL -> DTO : map entities to DTO
-DTO --> CTRL : UserDTO[]
+DTO --> CTRL : UserDTO
 
-CTRL --> ROUTE : HTTP 200 { data: UserDTO[] }
+CTRL --> ROUTE : HTTP 200 { data: UserDTO }
 
 ROUTE --> MAIN : HTTP 200 { data: user }
 
-MAIN -> VOne : navigate('/users')\n+ data
+MAIN -> VOne : navigate('/users/{id_user}')\n+ data
 
 VOne --> CG : Display one user view
 
