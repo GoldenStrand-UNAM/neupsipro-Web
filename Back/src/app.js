@@ -11,12 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Archivos estáticos
 app.use(express.static(path.join(__dirname, '../../Front/public')));
 
 // EJS
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../../Front/views'));
+app.set('views', path.join(__dirname, '../../Front/src/views'));
 
 // Middleware global
 app.use((req, res, next) => {
