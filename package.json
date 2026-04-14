@@ -23,11 +23,13 @@
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch"
   },
   "dependencies": {
+    "aws-sdk": "^2.1693.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "ejs": "^5.0.1",
-    "mysql2": "^3.20.0",
     "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "mysql2": "^3.20.0",
     "nodemon": "^3.1.14"
   },
   "devDependencies": {
