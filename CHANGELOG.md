@@ -12,8 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Codification of functionality of ISO2 in frontend (07/04/2026).
 - Codification of header with logout functionality in ejs (07/04/2026).
 - Added dependencies for the use of ejs (07/04/2026).
+- Consultar Publicacion (07/04/2026)
 
 ## [0.1.0] - 31/03/2026
+<<<<<<< HEAD
+=======
 
 ### Added
 
