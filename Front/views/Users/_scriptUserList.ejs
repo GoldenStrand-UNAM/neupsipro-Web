@@ -20,7 +20,6 @@ let searchQuery   = "";
 let debounceTimer;
 
 // = ====  Fetch===========
-
 async function fetchUsers() {
     const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
     try {
@@ -28,8 +27,7 @@ async function fetchUsers() {
         const data = await res.json();
 
         if (!res.ok) {
-            // 2.1.1 — error del servidor: muestra mensaje genérico al usuario,
-            // el detalle técnico solo va a consola.
+
             console.error("Server error:", data.error);
             showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
             return;
@@ -39,14 +37,12 @@ async function fetchUsers() {
         renderPagination(data.totalPages, data.page);
 
     } catch (err) {
-        // Error de red / servidor caído
         console.error("Network error:", err);
         showMsg("No se pudo conectar al servidor. Verifica tu conexión.", "text-red-400");
     }
 }
 
 // = ====  Render===========
-
 function renderTable(users) {
     const tbody = document.getElementById("users-tbody");
     if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
@@ -89,7 +85,7 @@ function renderPagination(totalPages, page) {
     };
 
     const info = document.createElement("span");
-    info.className   = "text-sm text-gray-500";
+    info.className = "text-sm text-gray-500";
     info.textContent = `Página ${page} de ${totalPages}`;
 
     c.append(
@@ -106,7 +102,6 @@ function showMsg(msg, colorClass) {
 }
 
 // = ==== User Finder===========
-
 const searchInput     = document.getElementById("search-input");
 searchInput.setAttribute("maxlength", MAX_SEARCH_LENGTH); // limit of characters
 
