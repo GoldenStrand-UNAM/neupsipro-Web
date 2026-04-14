@@ -8,7 +8,7 @@ class User {
         this.age = this.calculateAge(data.birthdate);
 
         this.registration_date = data.registration_date;
-        this.phase = data.fase;
+        this.phase = data.neuro_status;
 
         this.assigned_clinic = data.assigned_clinic;
         this.modality = data.modality;

@@ -66,5 +66,11 @@ app.use('/', getForumRoutes);
 const usersRoutes = require('./presentation/routes/users/getUser.Routes');
 app.use('/users', usersRoutes);
 
+app.get('/consultUser', (req, res) => {
+    res.render('users/consultUser', {
+        activePage: 'usuario',
+        
+    });
+});
 
 module.exports = app;

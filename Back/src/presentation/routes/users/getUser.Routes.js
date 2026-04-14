@@ -11,4 +11,11 @@ const controller = new UserController(useCase);
 
 router.get("/:id_user", (req, res) => controller.getUser(req, res));
 
+router.get('/consultUser', (req, res) => {
+    res.render('users/consultUser', {
+        activePage: 'usuario',
+        
+    });
+});
+
 module.exports = router;
