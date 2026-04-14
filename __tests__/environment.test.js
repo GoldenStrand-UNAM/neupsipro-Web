@@ -1,3 +1,4 @@
+/* global describe, test, expect */
 describe('Configuración de ambiente', () => {
 
     test('las variables de ambiente de test está definidas', () => {
