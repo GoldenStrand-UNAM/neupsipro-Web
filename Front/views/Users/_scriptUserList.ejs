@@ -1,92 +1,127 @@
 
-    <script>
-        let currentPage  = 1;
-        const LIMIT      = 6;
-        let searchQuery  = "";
-        let debounceTimer;
-        // Fetch users from API
-        async function fetchUsers() {
-            const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
-            try {
-                const res  = await fetch(`/api/usuarios?${params}`);
-                const data = await res.json();
-                if (!res.ok) { showMsg(data.error ?? "Error del servidor", "text-red-400"); return; }
-                renderTable(data.users);
-                renderPagination(data.totalPages, data.page);
-            } catch (err) {
-                showMsg("No se pudo conectar al servidor", "text-red-400");
-            }
-        }
-        // Table rendering
-        function renderTable(users) {
-            const tbody = document.getElementById("users-tbody");
-            if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
+<script>
+// ===== UTilitys ========
 
-            tbody.innerHTML = users.map(u => `
-                <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
-                    <td class="py-3 px-10 text-gray-500">${u.folio}</td>
-                    <td class="py-3 px-10 text-gray-800">${u.fullName}</td>
-                    <td class="py-3 px-10 flex justify-center">
-                        <button onclick="consultar('${u.folio}')" class="btn-mini bg-[#3350A9]">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
-                                    9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                            <span>Consultar</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join("");
+const MAX_SEARCH_LENGTH = 100;
+
+// Function to prevent XSS inyections
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+let currentPage   = 1;
+const LIMIT       = 6;
+let searchQuery   = "";
+let debounceTimer;
+
+// = ====  Fetch===========
+
+async function fetchUsers() {
+    const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
+    try {
+        const res  = await fetch(`/api/usuarios?${params}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+            // 2.1.1 — error del servidor: muestra mensaje genérico al usuario,
+            // el detalle técnico solo va a consola.
+            console.error("Server error:", data.error);
+            showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
+            return;
         }
 
-        function renderPagination(totalPages, page) {
-            const c = document.getElementById("pagination");
-            c.innerHTML = "";
-            if (totalPages <= 1) return;
-            // Move from pages 
-            const btn = (label, disabled, onClick) => {
-                const b = document.createElement("button");
-                b.textContent = label;
-                b.disabled    = disabled;
-                b.onclick     = onClick;
-                b.className   = "btn-mini bg-[#002B7A] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none";
-                return b;
-            };
+        renderTable(data.users);
+        renderPagination(data.totalPages, data.page);
 
-            const info = document.createElement("span");
-            info.className   = "text-sm text-gray-500";
-            info.textContent = `Página ${page} de ${totalPages}`;
+    } catch (err) {
+        // Error de red / servidor caído
+        console.error("Network error:", err);
+        showMsg("No se pudo conectar al servidor. Verifica tu conexión.", "text-red-400");
+    }
+}
 
-            c.append(
-                // Previous button, call fetchUsers with page-1
-                btn("← Anterior", page <= 1, () => { currentPage--; fetchUsers(); }),
-                info,
-                // Next button, call fetchUsers with page+1
-                btn("Siguiente →", page >= totalPages, () => { currentPage++; fetchUsers(); })
-            );
-        }
+// = ====  Render===========
 
-        function showMsg(msg, colorClass) {
-            document.getElementById("users-tbody").innerHTML =
-                `<tr><td colspan="3" class="py-10 text-center ${colorClass}">${msg}</td></tr>`;
-            document.getElementById("pagination").innerHTML = "";
-        }
-        // Search input with debounce
-        document.getElementById("search-input").addEventListener("input", e => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                searchQuery = e.target.value.trim();
-                currentPage = 1;
-                fetchUsers();
-            }, 400);
-        });
+function renderTable(users) {
+    const tbody = document.getElementById("users-tbody");
+    if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
 
-        function consultar(folio) { /* pendiente */ }
-        function signUpUser() { /* pendiente */ }
+    tbody.innerHTML = users.map(u => `
+        <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
+            <td class="py-3 px-10 text-gray-500">${escapeHtml(u.folio)}</td>
+            <td class="py-3 px-10 text-gray-800">${escapeHtml(u.fullName)}</td>
+            <td class="py-3 px-10 flex justify-center">
+                <button
+                    onclick="consultar('${escapeHtml(u.folio)}')"
+                    class="btn-mini bg-[#3350A9]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
+                            9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <span>Consultar</span>
+                </button>
+            </td>
+        </tr>
+    `).join("");
+}
 
+function renderPagination(totalPages, page) {
+    const c = document.getElementById("pagination");
+    c.innerHTML = "";
+    if (totalPages <= 1) return;
+
+    const btn = (label, disabled, onClick) => {
+        const b = document.createElement("button");
+        b.textContent = label;
+        b.disabled = disabled;
+        b.onclick = onClick;
+        b.className = "btn-mini bg-[#002B7A] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none";
+        return b;
+    };
+
+    const info = document.createElement("span");
+    info.className   = "text-sm text-gray-500";
+    info.textContent = `Página ${page} de ${totalPages}`;
+
+    c.append(
+        btn("Anterior", page <= 1, () => { currentPage--; fetchUsers(); }),
+        info,
+        btn("Siguiente ", page >= totalPages, () => { currentPage++; fetchUsers(); })
+    );
+}
+
+function showMsg(msg, colorClass) {
+    document.getElementById("users-tbody").innerHTML =
+        `<tr><td colspan="3" class="py-10 text-center ${escapeHtml(colorClass)}">${escapeHtml(msg)}</td></tr>`;
+    document.getElementById("pagination").innerHTML = "";
+}
+
+// = ==== User Finder===========
+
+const searchInput     = document.getElementById("search-input");
+searchInput.setAttribute("maxlength", MAX_SEARCH_LENGTH); // limit of characters
+
+searchInput.addEventListener("input", e => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        searchQuery = e.target.value.trim();
+        currentPage = 1;
         fetchUsers();
-    </script>
+    }, 400);
+});
+
+
+function consultar(folio) { /* pendiente */ }
+function signUpUser()     { /* pendiente */ }
+
+fetchUsers();
+</script>

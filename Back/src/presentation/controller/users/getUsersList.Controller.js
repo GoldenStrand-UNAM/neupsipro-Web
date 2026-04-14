@@ -8,9 +8,12 @@ class GetUsersListController {
         try {
             // Extract query params 
             const { search = "", page = 1, limit = 10 } = req.query;
+
+            // Sanitize search input
+            const safeSearch = String(search).slice(0, 100);
             
             //Exceute useCase
-            const result = await this.GetUsersListUseCase.execute({ search, page, limit });
+            const result = await this.GetUsersListUseCase.execute({ search: safeSearch, page, limit });
 
             //Successful response
             res.status(200).json(result);
