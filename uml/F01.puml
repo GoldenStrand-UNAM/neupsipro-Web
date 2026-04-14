@@ -1,0 +1,73 @@
+@startuml Registrar_Publicacion
+
+actor "Clinic User" as USR
+
+participant "ForumVire" as VFORO
+participant "PostPublicationView" as VFORM
+participant "main.js" as MAIN
+participant "PublicationRoutes" as ROUTE
+participant "PublicationController" as CTRL
+participant "regPublicationUseCase" as UC
+participant "Publication\n(Entity)" as ENT
+participant "ImpPubliRep" as IREPO
+participant "RegPubliRep" as REPO
+database "DB" as DB
+
+USR -> VFORO : Go to forum 
+VFORO --> USR : Show Forum View
+
+USR -> VFORO : Click [+ Publicar]
+VFORO -> MAIN : navigate('/foro/nueva-publicacion')
+MAIN -> VFORM : render()
+VFORM --> USR : Show forms\n(titulo*, contenido, imagen?)
+
+USR -> VFORM : Complete Form
+USR -> VFORM : Click [Publicar ahora]
+
+VFORM -> VFORM : validate required fields (titulo)
+alt Empty Title
+    VFORM --> USR : Error "El título es obligatorio"
+end
+
+VFORM -> MAIN : submitPublication(titulo, contenido, imagen?)
+MAIN -> ROUTE : POST /api/forum/publications\n[Authorization: Bearer JWT]
+
+ROUTE -> ROUTE : authMiddleware\n verify JWT → id_usuario
+ROUTE -> CTRL : controller.registerPublication(req, res)
+
+CTRL -> CTRL : req.body / req.file {titulo, contenido, imagen}
+
+CTRL -> UC : RegPublicationUseCase.execute({ id_usuario, titulo,\ncontenido, imagePath? })
+
+UC -> UC : Validate (empty titulo, unvalid id_usuario)
+alt Validación falla
+    UC --> CTRL : throw DomainError(mensaje)
+    CTRL --> ROUTE : HTTP 422 { error }
+    ROUTE --> MAIN : HTTP 422 { error }
+    MAIN --> VFORM : Shows error to the Clinic user
+end
+
+UC -> ENT : new Publicacion({\n  id_usuario, titulo,\n  contenido, imagenes,\n  fecha_y_hora: now() })
+ENT -> ENT : Valida invariantes\n(titulo requerido, longitud max)
+ENT --> UC : publicacionEntity
+
+UC -> REPO : guardar(publicacionEntity)
+
+
+REPO -> REPO : Procesa imagen\n(guarda archivo → obtiene path/URL)
+REPO -> DB : INSERT INTO publicacion\n(id_usuario, titulo, contenido,\nimagenes, fecha_y_hora)
+DB --> REPO : { id_publicacion, fecha_y_hora }
+
+REPO -> ENT : publicacion.setId(id_publicacion)
+IREPO --> UC : publicacionGuardada
+
+UC -> UC : mapea Entity → PublicacionDTO
+UC --> CTRL : PublicacionDTO
+  
+
+CTRL --> ROUTE : HTTP 201 Created\n{ data: publicacion }
+ROUTE --> MAIN : HTTP 201 Created\n{ data: publicacion }
+MAIN -> VFORO : navigate('/foro')\n+ agrega publicacion al inicio
+VFORO --> USR : Foro actualizado con\nnueva publicación
+
+@enduml
