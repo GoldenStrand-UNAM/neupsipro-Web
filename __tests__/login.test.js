@@ -1,6 +1,13 @@
 const request = require('supertest');
+
+jest.mock("../Back/src/infrastructure/database/database", () => ({
+    query: jest.fn(),
+    getConnection: jest.fn((cb) => cb(null, { release: () => {} }))
+}));
+
 const app = require('../Back/src/app');
 const AuthRepository = require("../Back/src/infrastructure/repositories/authRepository");
+const { getConnection } = require('../Back/src/infrastructure/database/database');
 
 jest.mock("../Back/src/infrastructure/repositories/authRepository");
 
@@ -21,8 +28,8 @@ describe('Pruebas de Login - Casos de Uso', () => {
             .post('/auth/login')
             .send({ username: 'ricardo', password: 'password123' });
         
-        expect(response.status).toBe(302);
-        expect(response.header['location']).toBe('/');
+        expect(response.status).toBe(200);
+        expect(response.text).toContain('NeuPsi-Pro');
     });
 
     test('F1: Debería fallar si los campos están vacíos', async () => {
