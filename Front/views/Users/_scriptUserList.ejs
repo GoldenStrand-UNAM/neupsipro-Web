@@ -27,7 +27,6 @@ async function fetchUsers() {
         const data = await res.json();
 
         if (!res.ok) {
-
             console.error("Server error:", data.error);
             showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
             return;
