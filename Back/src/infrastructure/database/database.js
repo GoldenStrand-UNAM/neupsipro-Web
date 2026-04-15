@@ -12,8 +12,10 @@ const pool = mysql.createPool({
 
 pool.getConnection((err, connection) => {
   if (err) {
+      //eslint-disable-next-line no-console
       console.error('Database connection error:', err);
   } else {
+      //eslint-disable-next-line no-console
       console.log('Successfully connected to the database');
       connection.release();
   }

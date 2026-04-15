@@ -10,25 +10,31 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', '..', 'Front', 'views'));
 app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
+
 app.use(cors());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 app.use(cookieParser());
+
 app.use (session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'fallback_secret',
     resave: false, 
     saveUninitialized: false, 
 }));
+
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/authRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
 const AuthService = require("./Infrastructure/Auth/AuthService");
+
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/usecase/auth/loginUseCase");
+
 const LogoutController = require("./presentation/controller/auth/logout.controller");
 const LoginController = require("./presentation/controller/auth/login.controller");
+
 const forumRoutes = require("./presentation/routes/forum.routes");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
 const homeRoutes = require("./presentation/routes/home/home.routes");
