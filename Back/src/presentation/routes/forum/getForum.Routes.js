@@ -11,7 +11,7 @@ const repository = new ForumRepository();
 const useCase = new GetForumUseCase(repository);
 const controller = new ForumController(useCase);
 
-router.get('/Foro', (req, res) => controller.getForum(req, res));
+router.get('/', (req, res) => controller.getForum(req, res));
 
 
 
