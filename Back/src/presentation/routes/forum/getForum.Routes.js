@@ -5,7 +5,7 @@ const router = express.Router()
 
 const ForumRepository = require("../../../infrastructure/repositories/forumRepository");
 const ForumController = require("../../controller/forum/GetForum.Controller");
-const GetForumUseCase = require("../../../application/usecase/getForumUseCase");
+const GetForumUseCase = require("../../../application/usecase/forum/getForumUseCase");
 
 const repository = new ForumRepository();
 const useCase = new GetForumUseCase(repository);
