@@ -47,4 +47,23 @@ const uploadToS3 = async (filePath, fileName) => {
     return result.Location;
 };
 
-module.exports = { s3, uploadToS3 };
+async function getPresignedUrl(imageUrlOrKey, expiresIn = 3600) {
+    if (!imageUrlOrKey) return null;
+
+    // If the input is a full URL, extract the key
+    let key = imageUrlOrKey;
+    if (imageUrlOrKey.startsWith('http')) {
+        const url = new URL(imageUrlOrKey);
+        key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+    }
+    
+    const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+    });
+
+    return await getSignedUrl(s3Client, command, { expiresIn });
+}
+
+
+module.exports = { s3, uploadToS3, getPresignedUrl };
