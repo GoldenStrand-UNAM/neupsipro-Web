@@ -1,8 +1,7 @@
 /* global describe, test, expect, jest */
-require('dotenv').config({ path: './.env.test' }); // Cargar variables antes que nada
+require('dotenv').config({ path: './.env.test' });
 const request = require('supertest');
 
-// 1. MOCK DE DATABASE (Antes de cargar app)
 jest.mock('../Back/src/infrastructure/database/database', () => {
     const mock = {
         execute: jest.fn().mockResolvedValue([[]]),
@@ -11,11 +10,9 @@ jest.mock('../Back/src/infrastructure/database/database', () => {
         on: jest.fn(),
         end: jest.fn().mockResolvedValue(null),
     };
-    // Forzamos que el mock sea lo que devuelve pool.promise()
     return mock;
 });
 
-// 2. MOCK DE MEMORY CACHE (Para evitar los setTimeouts de 15 min)
 jest.mock('../Back/src/infrastructure/external/memoryCache.service', () => {
     return jest.fn().mockImplementation(() => ({
         getAttempts: jest.fn().mockReturnValue(0),
@@ -24,12 +21,10 @@ jest.mock('../Back/src/infrastructure/external/memoryCache.service', () => {
     }));
 });
 
-// 3. IMPORTAR APP
 const app = require('../Back/src/app');
 
 describe('Pruebas de Integración - App.js', () => {
     
-    // IMPORTANTE: Limpiamos los temporizadores de Node
     afterAll(async () => {
         jest.useRealTimers();
     });
@@ -41,7 +36,6 @@ describe('Pruebas de Integración - App.js', () => {
     });
 
     test('GET /test - Renderizado Mockeado', async () => {
-        // Mockeamos el render para no lidiar con archivos EJS
         jest.spyOn(app.response, 'render').mockImplementation(function(view) {
             return this.send(`Rendered ${view}`);
         });
