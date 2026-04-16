@@ -1,8 +1,8 @@
 const AWS = require('aws-sdk');
 const fs = require('fs').promises;
 require('dotenv').config();
-//env
-// AWS credentials
+
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME || process.env.AWS_BUCKET;
 
 AWS.config.update({
   signatureVersion: '',
@@ -22,8 +22,7 @@ const uploadToS3 = async (filePath, fileName) => {
     //const base64data = Buffer.from(data, 'binary');
 
     const params = {
-        //bucket name  
-        Bucket: 's3-neupsi-golden-unam-preprod-1',
+    Bucket: BUCKET_NAME,
 
         //The key is the file name
         Key: `forum/${fileName}`,
@@ -47,23 +46,60 @@ const uploadToS3 = async (filePath, fileName) => {
     return result.Location;
 };
 
-async function getPresignedUrl(imageUrlOrKey, expiresIn = 3600) {
-    if (!imageUrlOrKey) return null;
+// Extract images from S3 URLs 
 
-    // If the input is a full URL, extract the key
-    let key = imageUrlOrKey;
-    if (imageUrlOrKey.startsWith('http')) {
-        const url = new URL(imageUrlOrKey);
-        key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+function extractObjectKey(imageUrlOrKey) {
+
+  // If it's not a valid string, return null
+    if (!imageUrlOrKey || typeof imageUrlOrKey !== 'string') return null;
+
+
+  // If it doesn't look like a URL, treat it as a direct key
+    if (!imageUrlOrKey.startsWith('http')) {
+        return imageUrlOrKey.replace(/^\/+/, '');
     }
-    
-    const command = new GetObjectCommand({
-        Bucket: BUCKET_NAME,
-        Key: key,
-    });
 
-    return await getSignedUrl(s3Client, command, { expiresIn });
+
+  // Parse the URL and extract the path as the key
+    const url = new URL(imageUrlOrKey);
+    let key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+    if (BUCKET_NAME && key.startsWith(`${BUCKET_NAME}/`)) {
+        key = key.slice(BUCKET_NAME.length + 1);
+    }
+
+    return decodeURIComponent(key);
 }
 
+// Generate a pre-signed URL for accessing an S3 object
+
+async function getPresignedUrl(imageUrlOrKey, expiresIn = 3600) {
+    if (!imageUrlOrKey) return null;
+    if (!BUCKET_NAME) throw new Error('Missing AWS bucket configuration');
+
+    // If the input already looks like a pre-signed URL, return it as is
+    if (typeof imageUrlOrKey === 'string' && imageUrlOrKey.includes('X-Amz-Signature=')) {
+        return imageUrlOrKey;
+    }
+
+    const key = extractObjectKey(imageUrlOrKey);
+    if (!key) return null;
+
+    const params = {
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Expires: Number(expiresIn),
+    };
+
+    if (typeof s3.getSignedUrlPromise === 'function') {
+        return s3.getSignedUrlPromise('getObject', params);
+    }
+
+    return new Promise((resolve, reject) => {
+        s3.getSignedUrl('getObject', params, (error, signedUrl) => {
+            if (error) return reject(error);
+            return resolve(signedUrl);
+        });
+    });
+}
 
 module.exports = { s3, uploadToS3, getPresignedUrl };
