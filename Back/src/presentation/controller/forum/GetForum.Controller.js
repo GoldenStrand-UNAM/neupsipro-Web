@@ -12,6 +12,7 @@ class forumController {
 
 
             response.render('Forum/forum', { 
+                activePage: 'foro',
                 posts, 
                 page: Number(page),
                 limit: Number(limit),

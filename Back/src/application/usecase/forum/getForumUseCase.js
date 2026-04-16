@@ -1,13 +1,13 @@
 const ForumPostDTO = require('../../dto/forumPostDTO');
 
 class getForumUseCase {
-    constructor(forumRepository) {
+    constructor (forumRepository) {
         this.forumRepository = forumRepository;
     }
 
-    async execute(params) {
-        const posts = await this.forumRepository.fetchAll(params);
-        return ForumPostDTO.fromArray(posts);
+    async execute (params) {
+        const posts = await this.forumRepository.fetchAll (params);
+        return ForumPostDTO.fromArray (posts);
     }
 }
 
