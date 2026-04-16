@@ -1,5 +1,5 @@
 class ForumPostDTO {
-    constructor(post) {
+    constructor (post) {
         this.id      = post.id_publication;
         this.title   = post.title;
         this.content = post.content;
@@ -10,7 +10,7 @@ class ForumPostDTO {
     }
 
     // Utility to map an array of raw posts
-    static fromArray(posts) {
+    static fromArray (posts) {
         return posts.map(p => new ForumPostDTO(p));
     }
 }
