@@ -3,12 +3,12 @@ class LogoutUseCase {
         this.authRepository = authRepository;
     }
 
-    execute (token) {
+    async execute (token) {
         if (!token) {
             throw new Error("Token requerido");
         }
 
-        this.authRepository.invalidateSession(token);
+        return await this.authRepository.invalidateSession(token);
     }
 }
 
