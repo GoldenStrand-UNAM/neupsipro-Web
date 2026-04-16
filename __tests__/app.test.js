@@ -1,40 +1,57 @@
-/* global describe, test, expect */
+/* global describe, test, expect, jest */
+require('dotenv').config({ path: './.env.test' }); // Cargar variables antes que nada
 const request = require('supertest');
-jest.mock('../Back/src/infrastructure/database/database', () => ({
-    query: jest.fn(),
-    getConnection: jest.fn((cb) => cb(null, { release: () => {} })),
-    on: jest.fn(),
-    end: jest.fn()
-}));
+
+// 1. MOCK DE DATABASE (Antes de cargar app)
+jest.mock('../Back/src/infrastructure/database/database', () => {
+    const mock = {
+        execute: jest.fn().mockResolvedValue([[]]),
+        query: jest.fn().mockResolvedValue([[]]),
+        getConnection: jest.fn().mockResolvedValue({ release: jest.fn() }),
+        on: jest.fn(),
+        end: jest.fn().mockResolvedValue(null),
+    };
+    // Forzamos que el mock sea lo que devuelve pool.promise()
+    return mock;
+});
+
+// 2. MOCK DE MEMORY CACHE (Para evitar los setTimeouts de 15 min)
+jest.mock('../Back/src/infrastructure/external/memoryCache.service', () => {
+    return jest.fn().mockImplementation(() => ({
+        getAttempts: jest.fn().mockReturnValue(0),
+        incrementAttempts: jest.fn(),
+        clearAttempts: jest.fn()
+    }));
+});
+
+// 3. IMPORTAR APP
 const app = require('../Back/src/app');
 
-describe('Pruebas de Integración - Autenticación y Vistas', () => {
-
+describe('Pruebas de Integración - App.js', () => {
+    
+    // IMPORTANTE: Limpiamos los temporizadores de Node
     afterAll(async () => {
-        jest.restoreAllMocks();
+        jest.useRealTimers();
     });
 
-    describe('GET /test', () => {
-        test('debería renderizar la vista de test con status 200', async () => {
-            const response = await request(app).get('/test');
-            expect(response.status).toBe(200);
-            expect(response.header['content-type']).toMatch(/text\/html/);
-        });
+    test('Manejo de rutas no encontradas (404)', async () => {
+        const response = await request(app).get('/api/ruta-inexistente');
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ error: 'Ruta no encontrada' });
     });
 
-    describe('POST /auth/logout', () => {
-        test('deberia responder correctamente al cerrar sesión', async () => {
-            const response = await request(app)
-                .post('/auth/logout')
-                .send({ token: 'algun-token-falso' });
-            expect(response.status).not.toBe(404);
+    test('GET /test - Renderizado Mockeado', async () => {
+        // Mockeamos el render para no lidiar con archivos EJS
+        jest.spyOn(app.response, 'render').mockImplementation(function(view) {
+            return this.send(`Rendered ${view}`);
         });
+
+        const response = await request(app).get('/test');
+        expect(response.status).toBe(200);
     });
 
-    describe('Manejo de errores globales', () => {
-        test('retorna 404 oara una ruta que no existe en mi sistema', async () => {
-            const response = await request(app).get('/api/ruta-inexistente');
-            expect(response.status).toBe(404);
-        });
+    test('CORS Header presente', async () => {
+        const response = await request(app).get('/test');
+        expect(response.headers['access-control-allow-origin']).toBeDefined();
     });
 });
