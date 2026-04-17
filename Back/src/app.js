@@ -8,13 +8,17 @@ const dotenv = require("dotenv");
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', '..', 'Front', 'Views'));
-app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'Public')));
+app.set('views', path.join(__dirname, '..', '..', 'front', 'Views'));
+app.use(express.static(path.join(__dirname, '..', '..', 'front', 'Public')));
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
 
 app.use (session({
     secret: process.env.SESSION_SECRET || 'fallback_secret',
@@ -32,7 +36,7 @@ const AuthService = require("./infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/usecase/auth/loginUseCase");
 
-const LogoutController = require("./presentation/controller/auth/logout.controller");
+const LogoutController = require("./Presentation/controller/auth/logout.controller");
 const LoginController = require("./presentation/controller/auth/login.controller");
 
 const forumRoutes = require("./presentation/routes/forum.routes");
@@ -40,12 +44,15 @@ const authRoutes = require("./presentation/routes/auth/auth.routes");
 const homeRoutes = require("./presentation/routes/home/home.routes");
 const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
 const getForumRoutes = require('./presentation/routes/forum/getForum.routes');
+const AuthMiddleware = require("./Infrastructure/Auth/auth.middleware");
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
 const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
+
+const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const logoutUseCase = new LogoutUseCase(authService);
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService);
@@ -60,11 +67,11 @@ app.use((req, res, next) => {
 
 app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
-app.use("/", homeRoutes());
+app.use("/", homeRoutes(authMiddleware));
 app.use('/', registerPublicationRoutes);
 // app.use('/', getForumRoutes); <- Esto causa errores para el test de login .-.
 
-app.get('/test', (req, res) => {
+app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
 });
 
