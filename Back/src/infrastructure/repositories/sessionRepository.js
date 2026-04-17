@@ -13,7 +13,7 @@ class SessionRepository {
             INSERT INTO sessions 
             (id_session, id_user, ip_address, user_agent, expires_at, is_revoked, created_at, last_activity_at)
             VALUES (?, ?, ?, ?, ?, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
-            const [result] = await this.dbConnection.execute(query, [
+             await this.dbConnection.execute(query, [
                 idSession,
                 userId,
                 ipAddress,
@@ -21,7 +21,7 @@ class SessionRepository {
                 expiresAt,
             ]);
 
-            return result.insertId;
+            return idSession;
 
         } catch (error) {
             throw new Error('Error al crear la sesión en la base de datos: ', { cause: error });

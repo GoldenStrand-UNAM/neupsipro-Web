@@ -48,7 +48,7 @@ class LoginUseCase {
 
         this.cacheService.clearAttempts(username);
 
-        const payload = {userId: userDto.idUser, session: idSession};
+        const payload = {userId: userDto.idUser, userRole: userDto.idRole, session: idSession};
         const token = this.jwtService.generateToken(payload);
 
         return token;
