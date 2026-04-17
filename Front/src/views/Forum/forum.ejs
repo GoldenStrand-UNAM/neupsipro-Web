@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- Posts -->
-                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl">
+                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl ">
 
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(post => { %>
@@ -40,10 +40,11 @@
 
                             <!-- Author -->
                             <div class="flex items-center gap-3 mb-3">
+                            
                                 <img 
-                                        class="w-10 h-10 rounded-full object-cover border-2 border-gray-100"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-gray-100" src="<%= post.pp %>"
                                  >
-
+                                
                                 <div>
                                     <p class="font-['Roboto'] text-3xl text-black font-medium "><%= post.author %></p>
                                 </div>
@@ -65,8 +66,9 @@
                             <p class="font-['Roboto'] text-xl text-black font-regular"><%= post.content %></p>
                             <% if (post.image) { %>
                                 <div class="flex items-center gap-2 mt-4">
-                                    <img class="w-full h-auto mt-4 rounded-lg" src="<%= post.image %>">
+                                    <img class="w-full h-full mt-4 rounded-lg object-cover" src="<%= post.image %>">
                                 </div>
+                            
                             <% } %>
 
                             <!-- Actions -->
