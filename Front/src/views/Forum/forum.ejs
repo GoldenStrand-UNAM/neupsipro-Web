@@ -40,12 +40,17 @@
 
                             <!-- Author -->
                             <div class="flex items-center gap-3 mb-3">
-                            
+
+
+                            <% if (post.pp) { %>
                                 <img 
                                         class="w-10 h-10 rounded-full object-cover border-2 border-gray-100" src="<%= post.pp %>"
                                  >
+                            <% } else { %>
+                                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
                                 
-                                <div>
+                            <% } %>
+                                    <div>
                                     <p class="font-['Roboto'] text-3xl text-black font-medium "><%= post.author %></p>
                                 </div>
                                 <div class="ml-auto">
