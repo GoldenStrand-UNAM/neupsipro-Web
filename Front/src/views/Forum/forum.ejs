@@ -70,10 +70,14 @@
                             <h2 class="font-['Roboto'] text-2xl text-black font-medium py-8"><%= post.title %></h2>
                             <p class="font-['Roboto'] text-xl text-black font-regular"><%= post.content %></p>
                             <% if (post.image) { %>
-                                <div class="flex items-center gap-2 mt-4">
-                                    <img class="w-full h-full mt-4 rounded-lg object-cover" src="<%= post.image %>">
+                                <div class="w-full mt-4 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
+                                    <img 
+                                        class="w-full h-full object-cover"
+                                        src="<%= post.image %>"
+                                        alt="Imagen del post"
+                                        loading="lazy"
+                                    >
                                 </div>
-                            
                             <% } %>
 
                             <!-- Actions -->
