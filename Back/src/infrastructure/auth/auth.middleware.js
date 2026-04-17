@@ -9,7 +9,7 @@ class AuthMiddleware {
         }
         try {
             const decoded = this.jwtService.verifyToken(token);
-            req.user = decoded;
+            req.user = {userId: decoded.userId};
             next();
         } catch (error) {
             res.clearCookie('jwt_token');
