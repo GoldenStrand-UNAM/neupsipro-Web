@@ -34,6 +34,7 @@ const LoginController = require("./presentation/controller/auth/login.controller
 const authRoutes = require("./presentation/routes/auth/auth.routes");
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/authRepository");
+const SessionRepository = require("./infrastructure/repositories/sessionRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
@@ -44,10 +45,11 @@ const hashingService = new HashingService();
 const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
+const sessionRepository = new SessionRepository(dbPool);
 
 
 const logoutUseCase = new LogoutUseCase(authService);
-const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService);
+const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
 
 const logoutController = new LogoutController(logoutUseCase);
 const loginController = new LoginController(loginUseCase);
