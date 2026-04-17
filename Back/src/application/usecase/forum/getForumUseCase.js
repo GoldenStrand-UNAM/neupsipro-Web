@@ -14,6 +14,7 @@ class getForumUseCase {
         return Promise.all(dtos.map(async dto => ({
             ...dto,
             image: await getPresignedUrl(dto.image),
+            pp: await getPresignedUrl(dto.pp),
         })));
 
     }
