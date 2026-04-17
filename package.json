@@ -23,6 +23,10 @@
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*": "node scripts/check-names.js"
+  },
+
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
