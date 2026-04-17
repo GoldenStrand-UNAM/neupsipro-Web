@@ -21,7 +21,6 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
-    "start": "nodemon",
     "prepare": "husky"
   },
   "lint-staged": {

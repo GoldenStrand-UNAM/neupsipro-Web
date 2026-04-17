@@ -14,23 +14,21 @@ class AuthRepository {
             const user = rows[0];
             return user;
         } catch (error) {
-            console.log(error);
             throw new Error ('Error al consultar base de datos', {cause: error});
         }
     }
 
-    /*async getByUserId (idUser) {
+    async getPrivileges (idUser) {
         try {
-            const [rows] = await this.db.execute('', [idUser]);
+            const [rows] = await this.db.execute('SELECT FROM privileges & acl', [idUser]);
             if (rows.length === 0) {
                 return null;
             }
         } catch (error) {
-            console.log(error);
             throw new Error ('Error al consultar base de datos', {cause: error});
         }
     }
-*/
+
 }
 
 module.exports = AuthRepository;

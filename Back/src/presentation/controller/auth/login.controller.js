@@ -45,7 +45,11 @@ class LoginController {
                     error: 'El usuario o la contraseña exceden el límite de 30 caracteres',
                 });
             }
-            const token = await this.loginUseCase.execute(username, password);
+
+            const ipAddress = req.ip;
+            const userAgent = req.get('user-agent');
+
+            const token = await this.loginUseCase.execute(username, password, ipAddress, userAgent);
             res.cookie('jwt_token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge : 2 * 60 * 60 * 1000});
             return res.redirect('/home');
         } catch (error) {
