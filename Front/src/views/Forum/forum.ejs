@@ -16,7 +16,7 @@
 
         <%- include('../partials/header') %>
 
-        <main class="flex-1 pl-6 pr-6 pt-6 pb-0 md:pl-0 overflow-hidden">
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
             <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
 
                 <!-- Page Title -->
@@ -30,13 +30,14 @@
                 </div>
 
                 <!-- Posts -->
-                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl ">
+                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl px-0 sm:px-0">
 
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(post => { %>
 
-                        <div class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
-                            style="border: 0.5px solid #575757;">
+                        <div class="bg-white rounded-2xl p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200" 
+                        style="border: 0.5px solid #575757;">
+
 
                             <!-- Author -->
                             <div class="flex items-center gap-3 mb-3">
@@ -47,14 +48,17 @@
                                         class="w-10 h-10 rounded-full object-cover border-2 border-gray-100" src="<%= post.pp %>"
                                  >
                             <% } else { %>
-                                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
+                                
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
+                                    <%= post.author ? post.author.charAt(0).toUpperCase() : '?' %>
+                                    </div>
                                 
                             <% } %>
                                     <div>
-                                    <p class="font-['Roboto'] text-3xl text-black font-medium "><%= post.author %></p>
+                                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight"><%= post.author %></p>
                                 </div>
                                 <div class="ml-auto">
-                                    <p class="font-['Roboto'] text-m text-#575757">
+                                    <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                                         <%= new Date(post.date).toLocaleString('es-MX', { 
                                             year: 'numeric', 
                                             month: '2-digit', 
@@ -67,8 +71,8 @@
                             </div>
 
                             <!-- Content-->
-                            <h2 class="font-['Roboto'] text-2xl text-black font-medium py-8"><%= post.title %></h2>
-                            <p class="font-['Roboto'] text-xl text-black font-regular"><%= post.content %></p>
+                            <h2 class="font-['Roboto'] text-lg sm:text-2xl text-black font-medium py-4 sm:py-8"><%= post.title %></h2>
+                            <p class="font-['Roboto'] text-sm sm:text-xl text-black font-regular leading-relaxed"><%= post.content %></p>
                             <% if (post.image) { %>
                                 <div class="w-full mt-4 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
                                     <img 
