@@ -1,4 +1,5 @@
-const AuthDTO = require('../../dto/authDTO')
+const AuthDTO = require('../../dto/authDTO');
+const User = require('../../../domain/entity/user');
 class LoginUseCase {
 
     // eslint-disable-next-line max-params
@@ -25,10 +26,13 @@ class LoginUseCase {
         }
 
         const userDto = AuthDTO.fromEntity(user);
-
-        if (userDto.eliminated) {
-            throw new Error ('Esta cuenta ha sido desactivada');
-        }
+        const userEntity = new User({
+            idUser: userDto.idUser,
+            idRole: userDto.idRole,
+            eliminated : userDto.eliminated,
+            passwordHash: userDto.passwordHash,
+        })
+        userEntity.checkIfActive();
 
         const isValid = await this.hashingService.compare(password, userDto.passwordHash);
         if (!isValid) {
