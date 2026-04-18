@@ -25,6 +25,7 @@ files.forEach(file => {
       !part.startsWith('.') && 
       part !== 'node_modules' && 
       part !== 'Back' && 
+      part !== 'Front' && 
       !allowedUppercaseFiles.includes(part)
     ) {
       const primeraLetra = part[0];

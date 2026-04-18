@@ -29,6 +29,7 @@ const forumRoutes = require("./presentation/routes/forum.routes");
 const AuthService = require("./Infrastructure/Auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/usecase/auth/loginUseCase");
+const AuthorizationUseCase = require("./application/usecase/auth/authorizationUseCase");
 const LogoutController = require("./presentation/controller/auth/logout.controller");
 const LoginController = require("./presentation/controller/auth/login.controller");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
@@ -50,6 +51,7 @@ const sessionRepository = new SessionRepository(dbPool);
 
 const logoutUseCase = new LogoutUseCase(authService);
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
+const authUseCase = new AuthorizationUseCase(authRepository);
 
 const logoutController = new LogoutController(logoutUseCase);
 const loginController = new LoginController(loginUseCase);
@@ -57,7 +59,7 @@ const loginController = new LoginController(loginUseCase);
 
 app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
-app.use("/", homeRoutes());
+app.use("/", homeRoutes(authUseCase));
 
 //Routes
 app.use((req, res, next) => {
