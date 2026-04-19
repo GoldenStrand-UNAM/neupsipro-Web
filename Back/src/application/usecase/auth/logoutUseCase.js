@@ -1,14 +1,12 @@
 class LogoutUseCase {
-    constructor (authRepository) {
-        this.authRepository = authRepository;
+    constructor (authService) {
+        this.authService = authService;
     }
 
-    execute (token) {
-        if (!token) {
-            throw new Error("Token requerido");
-        }
+    async execute (token) {
+        if (!token) return;
 
-        this.authRepository.invalidateSession(token);
+        return await this.authService.invalidateSession(token);
     }
 }
 

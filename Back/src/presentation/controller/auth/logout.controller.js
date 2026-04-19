@@ -3,17 +3,23 @@ class Logout {
         this.logoutUseCase = logoutUseCase;
     }
 
-    logout (req, res) {
+    async logout (req, res) {
         try {
-            const token = req.headers.authorization?.split(" ")[1];
+            const token = req.cookies?.jwt_token;
 
-            this.logoutUseCase.execute(token);
+            if (token) {
+                await this.logoutUseCase.execute(token);
+            }
 
-            return res.status(200).json({
-                message: "Sesión cerrada correctamente",
-            });
+            res.clearCookie('jwt_token');
+
+            if (req.headers['content-type'] === 'application/json') {
+                return res.status(200).json({ message: "Sesión cerrada correctamente" });
+            }
+
+            return res.redirect('/auth/');
         } catch (error) {
-            return res.status(400).json({
+            return res.status(500).json({
                 error: error.message,
             });
         }
