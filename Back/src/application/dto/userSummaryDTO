@@ -1,5 +1,6 @@
 class UserSummaryDTO {
     constructor(userSummary) {
+        this.id = userSummary.id;
         this.folio    = userSummary.folio ?? "Sin folio";
         this.fullName = userSummary.fullName;
     }

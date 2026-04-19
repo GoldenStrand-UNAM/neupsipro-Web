@@ -13,6 +13,7 @@ class UsersRepository extends ImpUsersRepository {
         // Get active Users, rol = 2, with pagination and a optional search filter
         const [rows] = await db.query (
             `SELECT 
+                id_user AS id,
                 folio,
                 CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) AS full_name
             FROM users
