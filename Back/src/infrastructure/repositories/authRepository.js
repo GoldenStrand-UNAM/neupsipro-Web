@@ -62,7 +62,7 @@ class AuthRepository {
 
 
 
-    async invalidateSession(token) {
+    async invalidateSession (token) {
         // logica de borrado de token de la DB
         try {
             await this.db.execute('DELETE FROM sessions WHERE token = ?', [token]);
