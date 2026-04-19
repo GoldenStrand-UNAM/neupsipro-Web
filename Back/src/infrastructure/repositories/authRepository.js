@@ -60,6 +60,18 @@ class AuthRepository {
         }
     }
 
+
+
+    async invalidateSession(token) {
+        // logica de borrado de token de la DB
+        try {
+            await this.db.execute('DELETE FROM sessions WHERE token = ?', [token]);
+            return true;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al invalidar sesión');
+        }
+    }
 }
 
 module.exports = AuthRepository;

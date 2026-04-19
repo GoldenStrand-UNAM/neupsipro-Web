@@ -1,8 +1,8 @@
 const express = require("express");
-
+ 
+const HomeController = require("../../controller/home/home.controller");
 const JwtService = require("../../../infrastructure/external/jwt.service");
 const AuthMiddleware = require("../../../infrastructure/auth/auth.middleware"); 
-const HomeController = require("../../controller/home/home.controller");
 const PermissionsMiddleware = require("../../../infrastructure/auth/permissions.middleware");
 
 module.exports = (authUseCase) => {
@@ -10,6 +10,7 @@ module.exports = (authUseCase) => {
 
     const jwtService = new JwtService();
     const authMiddleware = new AuthMiddleware(jwtService);
+
     
     const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
     

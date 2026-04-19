@@ -1,6 +1,6 @@
 
 class AuthDTO {
-    constructor ({id_user, id_role, user_name, first_name, lastname_p, lastame_m, email, profile_photo, 
+    constructor ({id_user, id_role, user_name, first_name, lastname_p, lastname_m, email, profile_photo, 
         birthdate, eliminated, password_hash, registration_date, last_day_activity, longest_streak,
          current_streak, reference_number,
         }) {
@@ -9,7 +9,7 @@ class AuthDTO {
         this.userName = user_name;
         this.firstName = first_name;
         this.lastnameP = lastname_p;
-        this.lastameM = lastame_m;
+        this.lastnameM = lastname_m;
         this.email = email;
         this.profilePhoto = profile_photo;
         this.birthdate = birthdate;
@@ -29,7 +29,7 @@ class AuthDTO {
             user_name: entity.user_name,
             first_name: entity.first_name,
             lastname_p: entity.lastname_p,
-            lastame_m: entity.lastame_m,
+            lastname_m: entity.lastname_m,
             email: entity.email,
             profile_photo: entity.profile_photo,
             birthdate: entity.birthdate,

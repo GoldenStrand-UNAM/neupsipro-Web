@@ -13,6 +13,9 @@ files.forEach(file => {
   if (normalizedPath.startsWith('uml/') || normalizedPath.includes('/uml/')) {
     return;
   }
+    if (normalizedPath.startsWith('assets/') || normalizedPath.includes('/assets/')) {
+    return;
+  }
 
   const parts = normalizedPath.split('/');
   const fileName = parts[parts.length - 1];
