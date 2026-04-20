@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 });
 
 const forumRoutes = require("./presentation/routes/forum.routes");
-const AuthService = require("./Infrastructure/Auth/AuthService");
+const AuthService = require("./infrastructure/auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/usecase/auth/loginUseCase");
 const AuthorizationUseCase = require("./application/usecase/auth/authorizationUseCase");
@@ -46,7 +46,7 @@ const CacheService = require("./infrastructure/external/memoryCache.service");
 const homeRoutes = require("./presentation/routes/home/home.routes");
 const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
 //const getForumRoutes = require('./presentation/routes/forum/getForum.routes');
-const AuthMiddleware = require("./Infrastructure/Auth/auth.middleware");
+const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
