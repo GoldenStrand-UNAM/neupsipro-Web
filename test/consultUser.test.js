@@ -58,6 +58,16 @@ describe('SQL Injection', () => {
 
 });
 
+describe('rate limiting', () => {
+  test('debería limitar el número de solicitudes', async () => {
+    for (let i = 0; i < 1000; i++) {
+      await request(app).get('/api/usuarios').query({ search: '', page: 1, limit: 6 });
+    }
+    const res = await request(app).get('/api/usuarios').query({ search: '', page: 1, limit: 6 });
+    expect(res.status).toBe(429);
+  });
+}
+);
 
 
 
