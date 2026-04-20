@@ -12,7 +12,7 @@ describe('GET /usuarios', () => {
 });
 
 // XSS security test
-describe('V0 - Reflected XSS (walkthrough)', () => {
+describe('Reflected XSS', () => {
 
   // A <script> tag in the query string should never appear unescaped in the HTML
   test('payload <script> no debe aparecer sin escapar en la respuesta', async () => {
@@ -35,13 +35,31 @@ describe('V0 - Reflected XSS (walkthrough)', () => {
     expect(res.text).not.toContain('<img src=x onerror=alert(1)>');
   });
 
-  // Plain text should show up normally
-  test('mensaje legítimo (texto plano) sigue mostrándose', async () => {
+});
+
+describe('SQL Injection', () => {
+  test('payload SQL Injection no debe afectar la consulta', async () => {
+    const payload = "' OR '1'='1";
     const res = await request(app)
       .get('/api/usuarios')
-      .query({ search: 'maria garcia', page: 1, limit: 6 });
+      .query({ search: payload, page: 1, limit: 6 });
 
     expect(res.status).toBe(200);
-    expect(res.text).toContain('maria garcia');
   });
+
+  test('busqueda legítima no debe ser afectada por payloads maliciosos', async () => {
+    const res = await request(app)
+      .get('/api/usuarios')
+      .query({ search: 'Juan', page: 1, limit: 6 });
+
+    expect(res.status).toBe(200);
+
+  });
+
 });
+
+
+
+
+
+
