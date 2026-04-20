@@ -14,7 +14,7 @@ class UsersRepository extends ImpUsersRepository {
         const [rows] = await db.query (
             `SELECT 
                 id_user AS id,
-                folio,
+                reference_number,
                 CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) AS full_name
             FROM users
             WHERE id_role = 2

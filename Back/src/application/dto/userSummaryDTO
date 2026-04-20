@@ -1,7 +1,7 @@
 class UserSummaryDTO {
     constructor(userSummary) {
         this.id = userSummary.id;
-        this.folio    = userSummary.folio ?? "Sin folio";
+        this.reference_number    = userSummary.referenceNumber ?? "Sin folio";
         this.fullName = userSummary.fullName;
     }
 }
