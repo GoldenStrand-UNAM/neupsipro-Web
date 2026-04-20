@@ -7,18 +7,14 @@ class AuthorizationUseCase {
     }
 
     async checkPermission (userId, moduleName, requestedAction) {
-
         //mapping permissions from privileges into modules for verification
-        //TODO: add rest of permissions, such as 'Emotion'
-        const moduleToEntity = {
-            'gaming': 'Game',
-            'forum': 'Publication',
-            'routine': 'Activity',
-            'calendar': 'Appointment',
-            'occasion': 'Occassion',
-            'user-management': 'User',
-            'initial-interview': 'Initial interview',
-            'logbook': 'Logbook',
+        const moduleToEntities = {
+            'gaming': ['Game'],
+            'forum': ['Publication', 'Interaction'],
+            'user-management': ['User', 'Initial interview'],
+            'routine': ['Activity', 'Emotion'],
+            'occasion': ['Ocassion'],
+            'logbook': ['Logbook'],
         };
 
         const [rawRolePrivileges, rawUserExceptions] = await Promise.all([
@@ -35,20 +31,29 @@ class AuthorizationUseCase {
                 (ex.moduleName || ex.module || "").toLowerCase() === moduleName.toLowerCase());
 
             if (exception) {
-                if (requestedAction === 'consultation') return exception.consultation === 1;
-                if (requestedAction === 'writting') return exception.writting === 1;
-                if (requestedAction === 'edit') return exception.edit === 1;
-                if (requestedAction === 'eliminate') return exception.eliminate === 1;
+                const aclMap = {
+                    'consultation': exception.consultation,
+                    'writting': exception.writting,
+                    'edit': exception.edit,
+                    'eliminate': exception.eliminate,
+                };
+
+                if (aclMap[requestedAction] !== undefined) {
+                    return aclMap[requestedAction] === 1;
+                }
+
             }
         }
 
+        const entitiesNeeded = moduleToEntities[moduleName.toLowerCase()] || [moduleName];
 
-        const dbEntityNeeded = moduleToEntity[moduleName.toLowerCase()];
         //If exceptions is null, check for privileges per role
         const hasRolePrivilege = rolePrivileges.some(p => 
-            p.permited_action === requestedAction && p.permissions === dbEntityNeeded);
-                return hasRolePrivilege;
-            }
+            p.permited_action === requestedAction && 
+            entitiesNeeded.includes(p.permissions));
+
+        return hasRolePrivilege;
+    }
 }
 
 module.exports = AuthorizationUseCase;
