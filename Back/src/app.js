@@ -2,9 +2,10 @@
 const express = require('express');
 const path = require("path");
 const cors = require("cors");
-
+const { generalLimiter } = require('./infrastructure/external/rateLimiting');
 
 const app = express();
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', '..', 'Front', 'views'));
 app.use(express.static(path.join(__dirname, '..', '..', 'Front', 'public')));
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../../Front/views'));
+app.use(generalLimiter);
 
 //Routes
 app.use((req, res, next) => {
