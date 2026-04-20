@@ -1,7 +1,7 @@
 class userSummary {
-    constructor ({ folio, full_name, id }) {
+    constructor ({ reference_number, full_name, id }) {
         this.id = id;
-        this.folio    = folio;
+        this.referenceNumber = reference_number;
         this.fullName = full_name;
     }
 }
