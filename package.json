@@ -15,32 +15,46 @@
   "type": "commonjs",
   "main": "./Back/src/index.js",
   "scripts": {
-    "test": "jest",
+    "start": "nodemon index.js",
+    "start:prod": "NODE_ENV=production nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
-    "start": "nodemon"
+    "prepare": "husky"
   },
+  "lint-staged": {
+    "*": "node scripts/check-names.js"
+  },
+
   "dependencies": {
+    "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
-    "dotenv": "^17.4.1",
-    "ejs": "^5.0.1",
+    "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
-    "mysql2": "^3.20.0",
-    "nodemon": "^3.1.14"
+    "mysql2": "^3.22.0",
+    "nodemon": "^3.1.14",
+    "session": "^0.1.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@eslint/css": "^1.0.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^10.1.0",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
     "jest": "^30.3.0",
+    "lint-staged": "^16.4.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2"
   }
