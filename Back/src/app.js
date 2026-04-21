@@ -8,7 +8,7 @@ const session = require("express-session")
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', '..', 'front', 'Views'));
+app.set('views', path.resolve(__dirname, '../../front/Views'));
 app.use(express.static(path.join(__dirname, '..', '..', 'front', 'Public')));
 
 app.use(cors());
@@ -23,8 +23,8 @@ app.use((req, res, next) => {
 const forumRoutes = require("./presentation/routes/forum.routes");
 const AuthService = require("./infrastructure/auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
-const LoginUseCase = require("./application/usecase/auth/loginUseCase");
-const AuthorizationUseCase = require("./application/usecase/auth/authorizationUseCase");
+const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
+const AuthorizationUseCase = require("./application/Usecase/auth/authorizationUseCase");
 const LogoutController = require("./presentation/controller/auth/logout.controller");
 const LoginController = require("./presentation/controller/auth/login.controller");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
