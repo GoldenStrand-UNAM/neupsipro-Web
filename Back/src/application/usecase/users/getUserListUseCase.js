@@ -19,8 +19,8 @@ class GetUsersListUseCase {
 
             // Pagination metadata
             total,
-            page:       Number (page),
-            limit:      Number (limit),
+            page: Number (page),
+            limit: Number (limit),
 
             // Calculate total pages
             totalPages: Math.ceil (total / limit),
