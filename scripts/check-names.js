@@ -4,16 +4,16 @@ const path = require('path');
 const files = process.argv.slice(2);
 let hasError = false;
 
-const allowedUppercaseFiles = ['README.md', 'Dockerfile', 'LICENSE'];
+const allowedUppercaseFiles = ['README.md', 'Dockerfile', 'LICENSE', 'CHANGELOG.md'];
 
 files.forEach(file => {
   const relativePath = path.relative(process.cwd(), file);
   const normalizedPath = relativePath.replace(/\\/g, '/');
-  
+
   if (normalizedPath.startsWith('uml/') || normalizedPath.includes('/uml/')) {
     return;
   }
-    if (normalizedPath.startsWith('assets/') || normalizedPath.includes('/assets/')) {
+  if (normalizedPath.startsWith('assets/') || normalizedPath.includes('/assets/')) {
     return;
   }
 
