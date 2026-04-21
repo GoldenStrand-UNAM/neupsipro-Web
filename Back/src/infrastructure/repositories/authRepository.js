@@ -68,8 +68,7 @@ class AuthRepository {
             await this.db.execute('DELETE FROM sessions WHERE token = ?', [token]);
             return true;
         } catch (error) {
-            console.log(error);
-            throw new Error('Error al invalidar sesión');
+            throw new Error('Error al invalidar sesión', { cause: error });
         }
     }
 }

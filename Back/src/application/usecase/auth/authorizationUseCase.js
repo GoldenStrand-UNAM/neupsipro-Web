@@ -33,12 +33,12 @@ class AuthorizationUseCase {
             if (exception) {
                 const aclMap = {
                     'consultation': exception.consultation,
-                    'writting': exception.writting,
+                    'writing': exception.writing,
                     'edit': exception.edit,
                     'eliminate': exception.eliminate,
                 };
 
-                if (aclMap[requestedAction] !== undefined) {
+                if (Object.prototype.hasOwnProperty.call(aclMap, requestedAction)) {
                     return aclMap[requestedAction] === 1;
                 }
 
