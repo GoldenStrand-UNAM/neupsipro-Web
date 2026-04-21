@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "GoldenStrand",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "Back/src/index.js",
   "scripts": {
     "start": "nodemon index.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
@@ -47,7 +47,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^10.1.0",
     "eslint-plugin-security": "^4.0.0",
-    "globals": "^17.4.0",
+    "globals": "^17.5.0",
     "husky": "^9.1.7",
     "jest": "^30.3.0",
     "lint-staged": "^16.4.0",

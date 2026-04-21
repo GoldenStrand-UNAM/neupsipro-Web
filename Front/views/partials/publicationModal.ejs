@@ -1,0 +1,14 @@
+<div id="publicationModal" class="fixed inset-0 z-50 flex items-center justify-center">
+<div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+<div class="relative bg-white rounded-2xl p-8 max-w-7xl w-full mx-4 shadow-2xl text-center">
+    <div class="flex flex-col sm:flex-row gap-4">
+        <% if (data.publicationPhotos[0].publicationUserPhoto) { %>
+            <img 
+                class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="<%= data.publicationPhotos[0].publicationUserPhoto %>">
+                    <% } else { %>
+                        
+                    <% } %>
+        
+    </div>
+</div>
+</div>
