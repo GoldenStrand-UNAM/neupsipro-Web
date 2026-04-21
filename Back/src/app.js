@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require("path");
 const cors = require("cors");
 const session = require("express-session")
+const { generalLimiter, loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
 
 
 const app = express();
@@ -19,7 +20,9 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
+app.use('/auth/login', loginLimiter);
 
+//const forumRoutes = require("./presentation/routes/forum.routes");
 const AuthService = require("./infrastructure/auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
@@ -43,6 +46,8 @@ const CacheService = require("./infrastructure/external/memoryCache.service");
 
 
 const homeRoutes = require("./presentation/routes/home/home.routes");
+//const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+//const getForumRoutes = require('./presentation/routes/forum/getForum.routes');
 const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
 const jwtService = new JwtService();
@@ -61,6 +66,7 @@ const authUseCase = new AuthorizationUseCase(authRepository);
 const logoutController = new LogoutController(logoutUseCase);
 const loginController = new LoginController(loginUseCase);
 
+//app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
@@ -72,6 +78,11 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authMiddleware));
+//app.use("/forum", forumRoutes());
+app.use("/auth", authRoutes(logoutController, loginController));
+app.use("/", homeRoutes(authMiddleware));
+//app.use('/', registerPublicationRoutes);
+// app.use('/', getForumRoutes); <- Esto causa errores para el test de login .-.
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
