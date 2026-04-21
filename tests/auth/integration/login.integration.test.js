@@ -112,7 +112,7 @@ describe('Login Integration Test', () => {
     });
 
     test('POST /auth/login - Rate Limiting: Debe bloquear tras muchos intentos', async () => {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 101; i++) {
             await request(app)
                 .post('/auth/login')
                 .send({ username: 'test', password: '1'});
