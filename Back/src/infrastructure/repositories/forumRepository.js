@@ -28,8 +28,8 @@ class forumRepository extends impForumRepository {
             INNER JOIN users u 
                 ON p.id_user = u.id_user
             ORDER BY p.time_and_date DESC
-            LIMIT ?, OFFSET ?`,
-            [Number(limit), Number(offset)]
+            LIMIT ?, ?`,
+            [Number(offset), Number(limit)]
         );
         return rows;
     }

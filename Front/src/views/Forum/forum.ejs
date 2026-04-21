@@ -110,7 +110,42 @@
                     <% } %>
 
                 </div>
+                <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                    <div class="flex items-center justify-center gap-2 mt-8 mb-4 pt-4">
 
+                        <!-- Before button -->
+                        <a href="?page=<%= page - 1 %>&limit=<%= limit %>"
+                        class="flex items-center gap-1 px-4 py-2 border rounded text-sm font-['Roboto']
+                                <%= page <= 1 ? 'pointer-events-none opacity-40' : 'hover:bg-gray-50' %>">
+                            ← Anterior
+                        </a>
+
+                        <!-- Number of pages-->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <% if (
+                                i === 1 || i === totalPages ||
+                                (i >= page - 2 && i <= page + 2)
+                            ) { %>
+                                <a href="?page=<%= i %>&limit=<%= limit %>"
+                                class="w-10 h-10 flex items-center justify-center border rounded text-sm font-['Roboto']
+                                        <%= i === page ? 'bg-[#002B7A] text-white border-[#002B7A]' : 'hover:bg-gray-50' %>">
+                                    <%= i %>
+                                </a>
+                            <% } else if (i === page - 3 || i === page + 3) { %>
+                                <span class="px-1 text-gray-400">…</span>
+                            <% } %>
+                        <% } %>
+
+                        <!-- Next Button -->
+                        <a href="?page=<%= page + 1 %>&limit=<%= limit %>"
+                        class="flex items-center gap-1 px-4 py-2 border rounded text-sm font-['Roboto']
+                                <%= page >= totalPages ? 'pointer-events-none opacity-40' : 'hover:bg-gray-50' %>">
+                            Siguiente →
+                        </a>
+
+                    </div>
+                    <% } %>
 
             </div>
         </main>
