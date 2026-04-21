@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const forumRoutes = require("./presentation/routes/forum.routes");
+//const forumRoutes = require("./presentation/routes/forum.routes");
 const AuthService = require("./infrastructure/auth/AuthService");
 const LogoutUseCase = require("./application/usecase/auth/logoutUseCase");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
@@ -44,7 +44,7 @@ const CacheService = require("./infrastructure/external/memoryCache.service");
 
 
 const homeRoutes = require("./presentation/routes/home/home.routes");
-const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+//const registerPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
 //const getForumRoutes = require('./presentation/routes/forum/getForum.routes');
 const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
@@ -65,7 +65,7 @@ const logoutController = new LogoutController(logoutUseCase);
 const loginController = new LoginController(loginUseCase);
 
 
-app.use("/forum", forumRoutes());
+//app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
@@ -75,10 +75,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/forum", forumRoutes());
+//app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authMiddleware));
-app.use('/', registerPublicationRoutes);
+//app.use('/', registerPublicationRoutes);
 // app.use('/', getForumRoutes); <- Esto causa errores para el test de login .-.
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
