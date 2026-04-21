@@ -25,7 +25,7 @@ class GetUsersListController {
     getUsersPage (req, res) {
         try {
             res.locals.activePage = 'usuarios';
-            res.render("Users/usuarios");
+            res.render("Users/consultUsersList");
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
