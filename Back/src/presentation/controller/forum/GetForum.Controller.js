@@ -3,7 +3,7 @@ const GetForumUseCase = require("../../../application/usecase/getForumUseCase");
 
 // Controller function that handles HTTP request to get forum posts
 class ForumController {
-    constructor(getForumUseCase) {
+    constructor (getForumUseCase) {
         this.getForumUseCase = getForumUseCase;
     }
 

@@ -22,7 +22,7 @@ class ForumRepository extends ImpForumRepository {
                 ON p.id_user = u.id_user
             ORDER BY p.time_and_date DESC
             LIMIT ?, ?`,
-            [Number(offset), Number(limit)]
+            [Number(offset), Number(_limit)]
         );
         return rows;
     }
