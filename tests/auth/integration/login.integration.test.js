@@ -83,4 +83,45 @@ describe('Login Integration Test', () => {
         expect(response.status).toBe(200);
         expect(response.text).toContain('Credenciales inválidas');
     });
+
+    test('POST /auth/login - SQL Injection: No debe permitir bypass', async () => {
+        mockFindByUsername.mockResolvedValue(null);
+
+        const response = await request(app)
+            .post('/auth/login')
+            .send({
+                username: "' OR '1'='1",
+                password: "password"
+            });
+        
+        expect(response.status).toBe(200);
+        expect(response.text).toContain('Credenciales inválidas');
+    });
+
+    test('POST /auth/login - XSS: Debe escapar caracteres especiales en la respuesta', async () => {
+        const xssPayload = "<script>alert('xss')</script>";
+
+        const response = await request(app)
+            .post('/auth/login')
+            .send({
+                username: xssPayload,
+                password: "password"
+            });
+        
+        expect(response.text).not.toContain(xssPayload);
+    });
+
+    test('POST /auth/login - Rate Limiting: Debe bloquear tras muchos intentos', async () => {
+        for (let i = 0; i < 100; i++) {
+            await request(app)
+                .post('/auth/login')
+                .send({ username: 'test', password: '1'});
+        }
+
+        const response = await request(app)
+            .post('/auth/login')
+            .send({ username: 'test', password: '1' });
+
+        expect(response.status).toBe(429);
+    });
 });
