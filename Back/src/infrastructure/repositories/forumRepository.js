@@ -5,6 +5,13 @@ const impForumRepository = require('../../domain/repository/ImpForumRepository')
 // Repository responsable for fetching publications from the database with author info and pagination
 class forumRepository extends impForumRepository {
 
+    async count () {
+        const [[{ total }]] = await db.query(
+            `SELECT COUNT(*) AS total FROM publication`
+        );
+        return total;
+    }
+
     // Page and limit for data pagination
     async fetchAll ({page,limit}) {
          const offset = (page - 1) * limit;
@@ -21,8 +28,8 @@ class forumRepository extends impForumRepository {
             INNER JOIN users u 
                 ON p.id_user = u.id_user
             ORDER BY p.time_and_date DESC
-            LIMIT ?, ?`,
-            [Number(offset), Number(limit)]
+            LIMIT ?, OFFSET ?`,
+            [Number(limit), Number(offset)]
         );
         return rows;
     }

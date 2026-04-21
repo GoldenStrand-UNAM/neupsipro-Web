@@ -8,14 +8,19 @@ class getForumUseCase {
     }
 
     async execute (params) {
-        const posts = await this.forumRepository.fetchAll (params);
-        const dtos = ForumPostDTO.fromArray(posts);
+        const [posts, total] = await Promise.all([
+        this.forumRepository.fetchAll (params),
+        this.forumRepository.count (),
+        ]);
 
-        return Promise.all(dtos.map(async dto => ({
-            ...dto,
-            image: await getPresignedUrl(dto.image),
-            pp: await getPresignedUrl(dto.pp),
+        const dtos = ForumPostDTO.fromArray (posts);
+        const resolved = await Promise.all(dtos.map(async dto => ({
+        ...dto,
+        image: await getPresignedUrl(dto.image),
+        pp: await getPresignedUrl(dto.pp),
         })));
+
+        return { posts: resolved, total };
 
     }
 }
