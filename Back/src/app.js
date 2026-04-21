@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require("path");
 const cors = require("cors");
 const session = require("express-session")
-const { generalLimiter, loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
+const { loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
 
 
 const app = express();
