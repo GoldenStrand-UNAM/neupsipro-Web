@@ -76,7 +76,7 @@ app.use("/", homeRoutes(authMiddleware));
 
 // Forum 
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
-app.use('/forum', forumRoutes);
+app.use('/forum', forumRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
