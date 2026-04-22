@@ -13,6 +13,9 @@ files.forEach(file => {
   if (normalizedPath.startsWith('uml/') || normalizedPath.includes('/uml/')) {
     return;
   }
+  if (normalizedPath.startsWith('repository/') || normalizedPath.includes('/repository/')) {
+    return;
+  }
   if (normalizedPath.startsWith('assets/') || normalizedPath.includes('/assets/')) {
     return;
   }

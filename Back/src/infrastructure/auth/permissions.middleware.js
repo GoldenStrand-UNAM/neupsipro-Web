@@ -2,7 +2,7 @@ class PermissionsMiddleware {
     constructor (authorizationUseCase) {
         this.authUseCase = authorizationUseCase;
     }
-    //middleware to verify privileges
+    // Middleware to verify privileges
     requirePermission = (moduleName, action) => async (req, res, next) => {
         try {
             const { userId } = req.user;            

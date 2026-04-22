@@ -7,7 +7,7 @@ class AuthorizationUseCase {
     }
 
     async checkPermission (userId, moduleName, requestedAction) {
-        //mapping permissions from privileges into modules for verification
+        // Mapping permissions from privileges into modules for verification
         const moduleToEntities = {
             'gaming': ['Game'],
             'forum': ['Publication', 'Interaction'],

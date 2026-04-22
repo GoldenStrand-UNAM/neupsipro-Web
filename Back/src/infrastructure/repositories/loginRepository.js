@@ -38,7 +38,7 @@ class AuthRepository {
         }
     }
 
-    //function to get acls
+    // Function to get acls
     async getExceptions (idUser) {
         try {
             const [rows] = await this.db.execute(`
@@ -63,7 +63,7 @@ class AuthRepository {
 
 
     async invalidateSession (token) {
-        // logica de borrado de token de la DB
+        // Logic to delete user session
         try {
             await this.db.execute('DELETE FROM sessions WHERE token = ?', [token]);
             return true;
