@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Front and back of IS01
 - Sequence diagram
-- 
+- Tested full functionality of IS02 and it's ready now to go to 0.1.0 (21/04/2026).
 
 ## [0.1.0] - 07/04/2026
 
