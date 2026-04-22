@@ -25,7 +25,7 @@ describe('AuthorizationUseCase - ACL Logic', () => {
     });
 
     test('should deny action if user is eliminated (Entity check)', () => {
-        const User = require('../../../Back/src/domain/entity/user');
+        const User = require('../../../Back/src/domain/entity/auth');
         const eliminatedUser = new User({ idUser: 1, 
             eliminated: true });
 
