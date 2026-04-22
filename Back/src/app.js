@@ -28,8 +28,10 @@ app.use('/forum', generalLimiter);
 
 const AuthService = require("./infrastructure/auth/AuthService");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
+const LogoutUseCase = require("./application/Usecase/auth/logoutUseCase");
 const AuthorizationUseCase = require("./application/Usecase/auth/authorizationUseCase");
 const LoginController = require("./presentation/controller/auth/login.controller");
+const LogoutController = require("./presentation/controller/auth/logout.controller");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
 app.use (session({
     secret: process.env.SESSION_SECRET || 'fallback_secret',
@@ -60,12 +62,14 @@ const sessionRepository = new SessionRepository(dbPool);
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
+const logoutUseCase = new LogoutUseCase(authService);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
+const logoutController = new LogoutController(logoutUseCase);
 
-
-app.use("/auth", authRoutes(loginController));
+//app.use("/forum", forumRoutes());
+app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
 //================ Routes =======================
@@ -74,8 +78,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/auth", authRoutes(loginController));
+app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authMiddleware));
+//app.use("/forum", forumRoutes());
 
 
 // Forum 
