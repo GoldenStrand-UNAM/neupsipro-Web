@@ -1,0 +1,5 @@
+@layer components{
+    .pop-up{
+        @apply m-auto bg-white p-6 rounded-lg shadow-xl backdrop:bg-black/50 ;
+    }
+}
