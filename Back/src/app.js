@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require("path");
 const cors = require("cors");
 const session = require("express-session")
-const { loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
 
 
 const app = express();
@@ -20,7 +20,11 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
+
+//APP LIMITER
 app.use('/auth/login', loginLimiter);
+app.use('/forum', generalLimiter);
+
 
 const AuthService = require("./infrastructure/auth/AuthService");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
