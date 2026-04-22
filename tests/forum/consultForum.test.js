@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../Back/src/app');
+const app = require('../../Back/src/app');
 
 describe('GET /forum', () => {
   test('returns status 200', async () => {
@@ -18,7 +18,7 @@ describe('GET /forum', () => {
 describe('Database error', () => {
   test('returns status 500 when the database fails', async () => {
     // Mock the repository to throw an error
-    const ForumRepository = require('../Back/src/infrastructure/repositories/forumRepository');
+    const ForumRepository = require('../../Back/src/infrastructure/repositories/forumRepository');
     jest.spyOn(ForumRepository.prototype, 'fetchAll').mockRejectedValueOnce(new Error('DB error'));
     jest.spyOn(ForumRepository.prototype, 'count').mockRejectedValueOnce(new Error('DB error'));
 
