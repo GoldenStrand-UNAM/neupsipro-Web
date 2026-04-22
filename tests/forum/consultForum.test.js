@@ -1,4 +1,20 @@
 const request = require('supertest');
+
+jest.mock('../../Back/src/infrastructure/auth/auth.middleware', () => {
+  return jest.fn().mockImplementation(() => ({
+    verifyToken: (req, res, next) => {
+      req.user = { id: 1, role: 'admin' };
+      next();
+    }
+  }));
+});
+
+jest.mock('../../Back/src/infrastructure/auth/permissions.middleware', () => {
+  return jest.fn().mockImplementation(() => ({
+    requirePermission: () => (req, res, next) => next()
+  }));
+});
+
 const app = require('../../Back/src/app');
 
 describe('GET /forum', () => {
