@@ -1,7 +1,7 @@
 const AuthorizationUseCase = require('../../../Back/src/application/usecase/auth/authorizationUseCase');
 
 describe('AuthorizationUseCase - ACL Logic', () => {
-    // Se simula un repositorio que devuelve los datos controlados
+    // Simulates repository with controlled data
     const mockRepo = {
         getPrivileges: jest.fn(),
         getExceptions: jest.fn()
@@ -10,7 +10,7 @@ describe('AuthorizationUseCase - ACL Logic', () => {
     const authUC = new AuthorizationUseCase(mockRepo);
 
     test('should allow action if user has an explicit exception (1)', async () => {
-        // Se configura el mock para que devuelva una excepcion de escritura
+        // Configure mock to return writing exception
         mockRepo.getPrivileges.mockResolvedValue([]);
         mockRepo.getExceptions.mockResolvedValue([{
             module_name: 'forum',
