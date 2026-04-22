@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+@import "tailwindcss";
+
+@import './components/atoms/_black-icon.css';
+@import './components/atoms/_white-icon.css';
+@import './components/atoms/_login-triangles.css';
+@import './components/atoms/_logo.css';
+@import './components/atoms/_text.css';
+@import './components/atoms/_input-base.css';
+@import './components/atoms/_pop-up.css';
+
+@import './components/molecules/_btn-molecules.css';
+@import './components/molecules/_input-molecules.css';
+
+@import './components/organisms/_login-form.css';
+
+
+
