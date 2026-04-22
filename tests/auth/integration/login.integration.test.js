@@ -3,7 +3,15 @@ const mockFindByUsername = jest.fn();
 const mockCompare = jest.fn();
 const mockGenerateToken = jest.fn();
 const mockCreateSession = jest.fn();
-jest.mock('../../../Back/src/infrastructure/repositories/authRepository', () => {            
+/*
+    This test is designed to run integration tests for login, the main features it tests are:
+    - Basic flow that tests from login to home
+    - Alternate flows for login
+    - Sql Inyection
+    - XSS
+    - DDoS 
+ */
+jest.mock('../../../Back/src/infrastructure/repositories/loginRepository', () => {            
     return jest.fn().mockImplementation(() => ({
             findByUsername: mockFindByUsername,
             getPrivileges: jest.fn().mockResolvedValue([]),

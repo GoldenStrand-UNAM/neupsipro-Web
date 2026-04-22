@@ -1,5 +1,9 @@
 const AuthDTO = require('../../dto/authDTO');
-const User = require('../../../domain/entity/user');
+const User = require('../../../domain/entity/auth');
+
+/**
+ * This use case creates de user session and the JWT
+ */
 class LoginUseCase {
 
     // eslint-disable-next-line max-params
@@ -14,7 +18,7 @@ class LoginUseCase {
     // eslint-disable-next-line max-params
     async execute (username, password, ipAddress, userAgent) {
         const attempts = this.cacheService.getAttempts(username);
-        if (attempts === 4) {
+        if (attempts >= 2) {
             throw new Error ('Límite de intentos de inicio de sesión alcanzados. Espera 15 minutos o contacta al administrador');
         }
 
