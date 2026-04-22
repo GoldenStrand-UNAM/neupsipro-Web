@@ -1,5 +1,9 @@
 const AuthDTO = require('../../dto/authDTO');
-const User = require('../../../domain/entity/user');
+const User = require('../../../domain/entity/auth');
+
+/**
+ * This use case creates de user session and the JWT
+ */
 class LoginUseCase {
 
     // eslint-disable-next-line max-params

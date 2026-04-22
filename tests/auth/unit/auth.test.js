@@ -26,7 +26,8 @@ describe('AuthorizationUseCase - ACL Logic', () => {
 
     test('should deny action if user is eliminated (Entity check)', () => {
         const User = require('../../../Back/src/domain/entity/user');
-        const eliminatedUser = new User({ idUser: 1, eliminated: true });
+        const eliminatedUser = new User({ idUser: 1, 
+            eliminated: true });
 
         expect(() => eliminatedUser.checkIfActive()).toThrow('Esta cuenta ha sido desactivada');
     })
