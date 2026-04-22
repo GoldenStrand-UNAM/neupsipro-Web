@@ -24,3 +24,26 @@ _npx husky init_
 _npm install --save-dev lint-staged_
 
 _npm install --save-dev @commitlint/config-conventional @commitlint/cli_
+
+_npm install aws-sdk_
+
+_npm install ejs_
+
+_npm install cors_
+
+_npm install dotenv_
+
+_npm install multer_
+
+_npm install mysql2_
+
+_npm install nodemon_
+
+_npm install --save-dev cross-env_
+
+_npm install jest supertest_
+
+
+
+
+

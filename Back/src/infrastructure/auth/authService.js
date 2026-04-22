@@ -1,4 +1,4 @@
-const AuthRepository = require("../../domain/Repository/AuthRepository");
+const AuthRepository = require("../../domain/repository/ImpAuthRepository");
 
 class AuthService extends AuthRepository {
     constructor () {
