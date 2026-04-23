@@ -12,22 +12,29 @@ class getPublicationUseCase {
 
         const publication = await this.forumRepository.fetchOneUser({idPublication});
 
-        const interactions = await this.interactionRepository.fetchAllFromOne({idPublication});
+        const interactionComments = await this.interactionRepository.fetchAllFromOne({idPublication});
 
-        const dto = new postInteractionDTO (publication[0], interactions[0]);
+        const numberLikes = await this.interactionRepository.fetchLikes({idPublication});
+
+        const numberComments = await this.interactionRepository.fetchComments({idPublication});
+
+        const interactionComplete = await Promise.all (interactionComments[0].map(async interaction => ({
+            ...interaction,
+            interactionUPhoto: await getPresignedUrl(interaction.profile_photo),
+            })));
+
+        const dto = new postInteractionDTO (publication[0], interactionComplete,numberLikes[0], numberComments[0]);
+        
+        console.log(dto);
 
         const publicationPhotos = await Promise.all (publication[0].map(async publi => ({
                 publicationUserPhoto: await getPresignedUrl(publi.profile_photo),
                 publicationImage: await getPresignedUrl(publi.image),
-            }))
-        );
-        const interactionPhotos = await Promise.all (
-            interactions[0].map(async interaction => ({
-                interactionUPhoto: await getPresignedUrl(interaction.profile_photo),
-            }
-        )) )
+            })));
 
-        return {dto, publicationPhotos, interactionPhotos};
+
+
+        return {dto, publicationPhotos};
     }
 
 }

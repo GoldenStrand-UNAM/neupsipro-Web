@@ -1,5 +1,5 @@
 class postInteractionDTO {
-    constructor (posts, interactions) {
+    constructor (posts, interactions, numberLikes, numberComments) {
         this.publication = posts.map (post => ({
             id: post.id_publication,
             title: post.title,
@@ -20,8 +20,10 @@ class postInteractionDTO {
             firstName: interaction.first_name,
             lastNameP: interaction.lastname_p,
             lastNameM: interaction.lastname_m,
-            pp: interaction.profile_photo,
+            pp: interaction.interactionUPhoto,
         }));
+        this.likes = numberLikes.likes,
+        this.comments = numberComments.comments
     }
 }
 

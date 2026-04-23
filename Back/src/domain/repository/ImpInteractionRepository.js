@@ -3,5 +3,13 @@ class ImpInteractionRepository {
     async fetchAllFromOne() {
         throw new Error("fetchAllFromOne() interaction is not working.");
     }
+    async fetchLikes() {
+        throw new Error("fetchLikes() interacrion is not working.");
+    }
+
+    async fetchComments() {
+        throw new Error("fetchComments() interacrion is not working.");
+    }
+
 }
 module.exports = ImpInteractionRepository;

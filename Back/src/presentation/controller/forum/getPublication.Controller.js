@@ -9,8 +9,6 @@ class getPublicationController {
         try{
             const {idPublication} = request.params;
             const publication = await this.getPublicationUseCase.execute({idPublication});
-            console.log("Aqui va lo que busco")
-            console.log(publication);
             response.render('forum/detailPublication',{
                 activePage: 'foro',
                 data: publication,
