@@ -8,13 +8,20 @@ class GetUsersListController {
         try {
             // Extract query params 
             const { search = "", page = 1, limit = 10 } = req.query;
+            
+            if (String(search).length > 100) {
+                return res.status(429).json({ error: "Search too long" });
+            }
 
             // Sanitize search input
             const safeSearch = String(search).slice(0, 100);
+
+            const safePage = Math.max(1, parseInt(page) || 1);
+            const safeLimit = Math.max(1, parseInt(limit) || 10);
             
             //Exceute useCase
-            const result = await this.GetUsersListUseCase.execute({ search: safeSearch, page, limit });
-
+            const result = await this.GetUsersListUseCase.execute({ search: safeSearch, page: safePage, limit: safeLimit });
+            
             //Successful response
             res.status(200).json(result);
         } catch (error) {
