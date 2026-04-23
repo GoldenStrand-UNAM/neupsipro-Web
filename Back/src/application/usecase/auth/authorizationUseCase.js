@@ -11,7 +11,7 @@ class AuthorizationUseCase {
         const moduleToEntities = {
             'gaming': ['Game'],
             'forum': ['Publication', 'Interaction'],
-            'user-management': ['User', 'Initial interview'],
+            'user management': ['User', 'Initial interview'],
             'routine': ['Activity', 'Emotion'],
             'occasion': ['Ocassion'],
             'logbook': ['Logbook'],
@@ -27,19 +27,19 @@ class AuthorizationUseCase {
 
         //Check for exceptions per user (ACL)
         if (userExceptions.length > 0) {
-            const exception = userExceptions.find(ex => 
+            const exception = userExceptions.filter(ex => 
                 (ex.moduleName || ex.module || "").toLowerCase() === moduleName.toLowerCase());
 
-            if (exception) {
+            if (exception.length > 0) {
                 const aclMap = {
-                    'consultation': exception.consultation,
-                    'writing': exception.writing,
-                    'edit': exception.edit,
-                    'eliminate': exception.eliminate,
+                    'consultation': 'consultation',
+                    'writing': 'writing',
+                    'edit': 'edit',
+                    'eliminate': 'eliminate',
                 };
 
                 if (Object.prototype.hasOwnProperty.call(aclMap, requestedAction)) {
-                    return aclMap[requestedAction] === 1;
+                    return exception.some(ex => ex[aclMap[requestedAction]] === 1);
                 }
 
             }
