@@ -1,5 +1,4 @@
 const express = require("express");
-const { loginLimiter } = require("../../../infrastructure/external/rateLimiting");
 
 module.exports = (logoutController, loginController) => {
     const router = express.Router();
