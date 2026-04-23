@@ -20,7 +20,9 @@ class GetUsersListController {
             const safeLimit = Math.max(1, parseInt(limit) || 10);
             
             //Exceute useCase
-            const result = await this.GetUsersListUseCase.execute({ search: safeSearch, page: safePage, limit: safeLimit });
+            const result = await this.GetUsersListUseCase.execute ({ 
+                search: safeSearch, page: safePage, limit: safeLimit,
+            });
             
             //Successful response
             res.status(200).json(result);
