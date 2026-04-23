@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require("path");
 const cors = require("cors");
 const session = require("express-session")
-const { loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
 
 
 const app = express();
@@ -20,12 +20,17 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
-app.use('/auth/login', loginLimiter);
+
+//APP LIMITER
+app.post('/auth/login', loginLimiter);
+app.use(generalLimiter);
 
 const AuthService = require("./infrastructure/auth/AuthService");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
+const LogoutUseCase = require("./application/Usecase/auth/logoutUseCase");
 const AuthorizationUseCase = require("./application/Usecase/auth/authorizationUseCase");
 const LoginController = require("./presentation/controller/auth/login.controller");
+const LogoutController = require("./presentation/controller/auth/logout.controller");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
 app.use (session({
     secret: process.env.SESSION_SECRET || 'fallback_secret',
@@ -41,7 +46,6 @@ const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
 
 
-
 const homeRoutes = require("./presentation/routes/home/home.routes");
 const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
@@ -52,25 +56,35 @@ const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
 
+
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
+const logoutUseCase = new LogoutUseCase(authService);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
+const logoutController = new LogoutController(logoutUseCase);
 
-
-app.use("/auth", authRoutes(loginController));
+app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
-//Routes
+
+//================ Routes =======================
 app.use((req, res, next) => {
     res.locals.activePage = '';
     next();
 });
 
-app.use("/auth", authRoutes(loginController));
 app.use("/", homeRoutes(authMiddleware));
+
+
+// Forum 
+const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+app.use('/forum', forumRoutes(authUseCase));
+
+const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
+app.use('/', usersRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
