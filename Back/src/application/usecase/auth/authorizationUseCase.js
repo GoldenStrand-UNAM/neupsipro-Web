@@ -11,7 +11,7 @@ class AuthorizationUseCase {
         const moduleToEntities = {
             'gaming': ['Game'],
             'forum': ['Publication', 'Interaction'],
-            'user-management': ['User', 'Initial interview'],
+            'user management': ['User', 'Initial interview'],
             'routine': ['Activity', 'Emotion'],
             'occasion': ['Ocassion'],
             'logbook': ['Logbook'],

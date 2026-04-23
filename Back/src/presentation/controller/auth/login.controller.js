@@ -51,7 +51,7 @@ class LoginController {
 
             const token = await this.loginUseCase.execute(username, password, ipAddress, userAgent);
             res.cookie('jwt_token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge : 2 * 60 * 60 * 1000});
-            return res.redirect('/home');
+            return res.redirect('/test');
         } catch (error) {
             return res.render('auth/login.ejs', {error: error.message});
         }
