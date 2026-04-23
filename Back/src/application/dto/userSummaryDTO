@@ -1,0 +1,8 @@
+class UserSummaryDTO {
+    constructor(userSummary) {
+        this.id = userSummary.id;
+        this.reference_number    = userSummary.referenceNumber ?? "Sin folio";
+        this.fullName = userSummary.fullName;
+    }
+}
+module.exports = UserSummaryDTO;

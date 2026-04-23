@@ -5,13 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.1.0] - 22/04/2026
+
+### Added
+
+- Front and back of F03
+- Sequence diagram
+- Tested full functionality of F03 and it's ready now to go to 0.1.0 (21/04/2026).
+
+- ACL permission check now evaluates all matching exceptions for a module instead of only the first one, preventing false permission denials when multiple ACL rows exist for the same module.
+
 ## [0.1.0] - 21/04/2026
 
 ### Added
 
 - Front and back of IS01
 - Sequence diagram
-- 
+- Tested full functionality of IS02 and it's ready now to go to 0.1.0 (21/04/2026).
+
+# Fixed
 
 ## [0.1.0] - 07/04/2026
 
@@ -21,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Codification of header with logout functionality in ejs (07/04/2026).
 - Added dependencies for the use of ejs (07/04/2026).
 - Consult Publication (07/04/2026)
+- Consult User List functionality (23/04/2024)
 
 ## [0.1.0] - 31/03/2026
 
