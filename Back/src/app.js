@@ -45,8 +45,6 @@ const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
 
-// Routes
-
 
 const homeRoutes = require("./presentation/routes/home/home.routes");
 const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
@@ -57,6 +55,7 @@ const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
+
 
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
@@ -70,6 +69,7 @@ const logoutController = new LogoutController(logoutUseCase);
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
+
 //================ Routes =======================
 app.use((req, res, next) => {
     res.locals.activePage = '';
@@ -82,6 +82,9 @@ app.use("/", homeRoutes(authMiddleware));
 // Forum 
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/forum', forumRoutes(authUseCase));
+
+const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
+app.use('/', usersRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
