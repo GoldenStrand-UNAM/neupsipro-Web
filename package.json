@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "GoldenStrand",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "Back/src/index.js",
   "scripts": {
     "start": "nodemon Back/src/index.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
