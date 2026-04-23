@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 
 //APP LIMITER
 app.use('/auth/login', loginLimiter);
-app.use('/forum', generalLimiter);
+app.use(generalLimiter);
 
 
 const AuthService = require("./infrastructure/auth/AuthService");
@@ -68,7 +68,6 @@ const authUseCase = new AuthorizationUseCase(authRepository);
 const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
-//app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
@@ -78,9 +77,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authMiddleware));
-//app.use("/forum", forumRoutes());
 
 
 // Forum 
