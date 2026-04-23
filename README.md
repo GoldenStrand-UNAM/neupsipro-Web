@@ -43,7 +43,12 @@ _npm install --save-dev cross-env_
 
 _npm install jest supertest_
 
+_npm install @aws-sdk/client-s3_
+
+_npm install @aws-sdk/s3-request-presigner_
+
 _npm i express-rate-limit_
+
 
 
 
