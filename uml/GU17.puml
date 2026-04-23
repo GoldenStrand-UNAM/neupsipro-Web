@@ -1,0 +1,28 @@
+@startuml nombre
+
+start
+
+:Click\n**Situación Financiera**;
+:Get progress;
+
+repeat
+
+#D6EAF8:Select section;
+#D6EAF8:Get section data;
+#D6EAF8:Render selected section view;
+
+repeat
+
+#D5F5E3:User edits fields;
+#D5F5E3:Validate data;
+#D5F5E3:Save changes in DB;
+
+repeat while (More changes?) is (Yes)
+
+repeat while (Click another section?) is (Yes)
+
+:Complete Financial Module;
+
+stop
+
+@enduml
