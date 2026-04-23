@@ -8,8 +8,12 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 })
 
-// Login limiter.....
+// Login limiter: 5 requests per 15 minutes
 const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
 
 })
 
@@ -18,5 +22,4 @@ const publicationLimiter = rateLimit({
 
 })
 
-module.exports = { generalLimiter, loginLimiter, publicationLimiter,
-}
+module.exports = { generalLimiter, loginLimiter, publicationLimiter}

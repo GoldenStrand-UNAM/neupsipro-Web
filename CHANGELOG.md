@@ -5,12 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<<<<<<< HEAD
+## [0.1.0] - 31/03/2026
+=======
+## [0.1.0] - 21/04/2026
+>>>>>>> origin/0.1.0
+
+### Added
+
+- Front and back of IS01
+- Sequence diagram
+- Tested full functionality of IS02 and it's ready now to go to 0.1.0 (21/04/2026).
+
+## [0.1.0] - 07/04/2026
+
+### Added
+
+- Codification of functionality of ISO2 in frontend (07/04/2026).
+- Codification of header with logout functionality in ejs (07/04/2026).
+- Added dependencies for the use of ejs (07/04/2026).
+- Consult Publication (07/04/2026)
+
 ## [0.1.0] - 31/03/2026
 
 ### Added
 
-- Codificación de la funcionalidad IS02 en backend (31/03/2026).
-- Codificación parcial de la funcionalidad IS02 en frontend (31/03/2026).
+- Coding of the IS02 functionality in backend (31/03/2026).
+- Partial coding of the IS02 functionality in frontend (31/03/2026).
 
 ## [0.1.0] - 28/03/2026
 
@@ -18,17 +39,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Base Page (31/03/2026).
 - LogIn Form Organism (30/03/2026).
-- Ignorar mjs en eslint (28/03/2026).
-- Comando de instalación segurity plugin en readme (28/03/2026).
-- Estructura base de carpetas en backend (28/03/2026).
+- Ignore mjs in eslint (28/03/2026).
+- Security plugin installation command in readme (28/03/2026).
+- Base folder structure in backend (28/03/2026).
 
 ## [0.0.0] - 26/03/2026
 
 ### Added
 
-- Commit inicial del proyecto (17/03/2026).
-- Primer commit del proyecto (18/03/2026).
-- Creacion de gitignore (18/03/2026)
-- Creacion del template de Pull Request (18/03/2026).
-- Update template de Pull Request (26/03/2026).
-- Creacion del Changelog (26/03/2026).
+- Initial project commit (17/03/2026).
+- First project commit (18/03/2026).
+- Creation of gitignore (18/03/2026)
+- Creation of the Pull Request template (18/03/2026).
+- Update Pull Request template (26/03/2026).
+- Creation of the Changelog (26/03/2026).
