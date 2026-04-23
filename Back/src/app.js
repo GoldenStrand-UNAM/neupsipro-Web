@@ -3,8 +3,8 @@ const cookieParser = require('cookie-parser');
 const path = require("path");
 const cors = require("cors");
 const session = require("express-session")
-const { loginLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
-const { generalLimiter } = require('./infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
+
 
 const app = express();
 
@@ -20,7 +20,10 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
-app.use('/auth/login', loginLimiter);
+
+//APP LIMITER
+app.post('/auth/login', loginLimiter);
+app.use(generalLimiter);
 
 const AuthService = require("./infrastructure/auth/AuthService");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
@@ -41,16 +44,6 @@ const SessionRepository = require("./infrastructure/repositories/sessionReposito
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../../Front/views'));
-app.use(generalLimiter);
-
-//Routes
-app.use((req, res, next) => {
-    res.locals.activePage = '';
-    next();
-});
 
 
 const homeRoutes = require("./presentation/routes/home/home.routes");
@@ -73,14 +66,25 @@ const authUseCase = new AuthorizationUseCase(authRepository);
 const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
-//app.use("/forum", forumRoutes());
 app.use("/auth", authRoutes(logoutController, loginController));
 app.use("/", homeRoutes(authUseCase));
 
 
+//================ Routes =======================
+app.use((req, res, next) => {
+    res.locals.activePage = '';
+    next();
+});
+
+app.use("/", homeRoutes(authMiddleware));
+
+
+// Forum 
+const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+app.use('/forum', forumRoutes(authUseCase));
+
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 app.use('/', usersRoutes(authUseCase));
-
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
