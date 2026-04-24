@@ -12,12 +12,12 @@
 
     <%- include('../partials/sidebar') %>
 
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col overflow-hidden">
 
         <%- include('../partials/header') %>
 
-        <main class="flex-1 px-4 md:px-6 pt-6 pb-0 overflow-hidden">
-            <div class="w-full h-full bg-gray-100 rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4">
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4">
 
                 <!--Title, search, signUser-->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -45,9 +45,12 @@
                         </div>
                     </div>
                 </div>
+                <div> 
+                    <img src="/assets/Linear-determinate progress indicator.svg"  alt="Progress indicator" class="w-full">         
+                </div>
 
                 <!-- Table -->
-                <div class="flex-1 overflow-auto bg-white rounded-xl shadow-sm border-t-4 border-[#002B7A] px-3 md:px-6">
+                <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
                 <table class="w-full border-collapse text-sm md:text-base">
                     <thead>
                         <tr class="border-b-2 border-gray-200">
