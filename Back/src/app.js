@@ -87,7 +87,7 @@ const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 app.use('/', usersRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
-app.use('/', clinicalRoutes);
+app.use('/', clinicalRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
