@@ -33,7 +33,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                             </svg>
-                            <span>Registrar Usuario</span>
+                            <span>Nuevo Usuario</span>
                         </button>
 
                         <div class="search-input">
@@ -199,7 +199,7 @@ function getStatusBadge(val) {
         'No ingreso': { label: 'No ingresó',border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)'},
     };
     const m = map[val];
-    if (!m) return `<span class="text-gray-300 text-xs"> — </span>`;
+    if (!m) return `<span class="text-gray-300 text-xs"> - </span>`;
     return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
 }
 
