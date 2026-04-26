@@ -57,4 +57,12 @@
     @apply block text-base lg:text-[18px] leading-none;
     color: inherit;    
   }
+  .btn-badge {
+  @apply inline-flex items-center justify-center;
+  @apply px-3 py-1;
+  @apply rounded-lg border;
+  @apply text-xs font-semibold whitespace-nowrap;
+  @apply cursor-default select-none;
+  width: 9rem;
+  }
 }
