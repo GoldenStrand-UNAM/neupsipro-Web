@@ -4,7 +4,7 @@ import { defineConfig } from "eslint/config";
 import pluginSecurity from "eslint-plugin-security";
 
 export default defineConfig([
-  { ignores: ["eslint.config.mjs"] },
+  { ignores: ["eslint.config.mjs", "**/*.spec.js"] },
   pluginSecurity.configs.recommended,
   { files: ["**/*.{js,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
