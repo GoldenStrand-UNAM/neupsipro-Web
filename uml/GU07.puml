@@ -1,0 +1,49 @@
+@startuml Consultar_Usuarios
+
+actor "Clinician" as GC
+participant "usuarios.ejs" as V
+participant "main.js" as MAIN
+participant "getUsersList.Routes" as ROUTE
+participant "authMiddleware" as AUTH
+participant "getUsersList.Controller" as CTRL
+participant "GetUsersListUseCase" as UC
+participant "UserSummaryDTO" as DTO
+participant "userSummaryEntity" as ENT
+participant "UsersRepository" as REPO
+participant "ImpUsersRepository" as IREPO
+database "DB" as DB
+
+GC -> V : Accesses "Users" module
+V -> MAIN : fetchUsers()
+MAIN -> ROUTE : GET /api/usuarios?search=&page=1&limit=6\n[Authorization: Bearer JWT]
+ROUTE -> AUTH : authMiddleware(req, res, next)
+AUTH -> AUTH : Verifies and decodes JWT\n(role, valid session)
+AUTH --> ROUTE : next()
+ROUTE -> CTRL : controller.getUsers(req, res)
+CTRL -> CTRL : page = Number(page)\nlimit = Number(limit)
+CTRL -> UC : GetUsersListUseCase.execute\n({ search, page, limit })
+
+UC -> IREPO : fetchActivePatients({search, page, limit})
+IREPO -> REPO :Extend
+REPO -> DB : SELECT folio,\nCONCAT(user_name,' ',lastname_p,' ',lastname_m) AS full_name\nFROM users\nWHERE id_role=2 AND eliminated=0\nAND (? IS NULL OR CONCAT(...) LIKE ?)\nORDER BY user_name ASC\nLIMIT ? OFFSET ?
+DB --> REPO : List<RowDataPacket>
+REPO -> ENT : new userSummary(row) for each row
+REPO --> UC : List<userSummaryEntity>
+
+UC -> IREPO : countActivePatients({search})
+IREPO -> REPO : Extend
+REPO -> DB : SELECT COUNT(*) AS total\nFROM users\nWHERE id_role=2 AND eliminated=0\nAND (? IS NULL OR CONCAT(...) LIKE ?)
+DB --> REPO : { total: N }
+REPO --> UC : rows[0].total
+
+UC -> UC : totalPages = Math.ceil(total / limit)
+UC -> DTO : new UserSummaryDTO(u) for each entity
+UC --> CTRL : { users: List<DTO>, total,\npage, limit, totalPages }
+CTRL --> ROUTE : HTTP 200 OK\n{ users, total, page, limit, totalPages }
+ROUTE --> MAIN : JSON response
+MAIN -> MAIN : renderTable(users)
+MAIN -> MAIN : renderPagination(totalPages, page)
+MAIN -> V : Updates DOM
+V --> GC : Table: Folio | Name | Consult Button
+
+@enduml

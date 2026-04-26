@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foro - NeuPsi-Pro</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
+
+                <!-- Page Title -->
+                <div class="flex items-center justify-between max-w-250">
+                    <div>
+                        <h1 class="font-['Roboto'] text-3xl text-black font-bold">Foro</h1>
+                    </div>
+
+                    <div>
+                        <button onclick="window.location.href='RUTA_AQUI'" class="btn-mini w-full sm:w-65 md:w-76.5 bg-[#C89B3C] cursor-pointer font-['Roboto'] flex items-center gap-2 font-normal py-2 px-4 border rounded">
+                            <img src="/assets/publicar.svg" alt="" class="w-5 h-5 invert" />
+                            Publicar
+                        </button>
+                    </div>
+                </div>
+                <div> 
+                    <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator">
+                </div>
+
+                <!-- Posts -->
+                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl px-0 sm:px-0">
+
+                    <% if (posts && posts.length > 0) { %>
+                        <% posts.forEach(post => { %>
+
+                        <div class="bg-white rounded-2xl p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200" 
+                        style="border: 0.5px solid #575757;">
+
+
+                            <!-- Author -->
+                            <div class="flex items-center gap-3 mb-3">
+
+
+                            <% if (post.pp) { %>
+                                <img 
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-gray-100" src="<%= post.pp %>"
+                                 >
+                            <% } else { %>
+                                
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium shrink-0">
+                                    <%= post.author ? post.author.charAt(0).toUpperCase() : '?' %>
+                                    </div>
+                                
+                            <% } %>
+                                    <div>
+                                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight"><%= post.author %></p>
+                                </div>
+                                <div class="ml-auto">
+                                    <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+                                        <%= new Date(post.date).toLocaleString('es-MX', { 
+                                            year: 'numeric', 
+                                            month: '2-digit', 
+                                            day: 'numeric', 
+                                            hour: '2-digit', 
+                                            minute: '2-digit' 
+                                        }) %>
+                                    </p>                            
+                                </div>
+                            </div>
+
+                            <!-- Content-->
+                            <h2 class="font-['Roboto'] text-lg sm:text-2xl text-black font-medium py-4 sm:py-8"><%= post.title %></h2>
+                            <p class="font-['Roboto'] text-sm sm:text-xl text-black font-regular leading-relaxed"><%= post.content %></p>
+                            <% if (post.image) { %>
+                                <div class="w-full mt-4 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
+                                    <img 
+                                        class="w-full h-full object-cover"
+                                        src="<%= post.image %>"
+                                        alt="Imagen del post"
+                                        loading="lazy"
+                                    >
+                                </div>
+                            <% } %>
+
+                            <!-- Actions -->
+                            <div class="flex justify-end mt-4 pt-3 border-t border-gray-100">
+
+                                <button class="flex items-center gap-1.5 text-s text-black hover:text-[#002B7A] transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    Me gusta
+                                </button>
+                            </div>
+                        </div>
+
+                        <% }) %>
+
+                    <% } else { %>
+
+                    <% } %>
+
+                </div>
+                <!-- Pagination -->
+                <% if (totalPages > 1) { %>
+                <div class="flex items-center justify-center gap-3 mt-8 mb-4 pt-4">
+
+                    <!-- Before button -->
+                    <a href="?page=<%= page - 1 %>&limit=<%= limit %>"
+                    class="btn-mini bg-[#002B7A] text-white
+                            <%= page <= 1 ? 'pointer-events-none opacity-40' : '' %>">
+                        ← Anterior
+                    </a>
+
+                    <!-- Info -->
+                    <span class="text-sm text-gray-500">
+                        Página <%= page %> de <%= totalPages %>
+                    </span>
+
+                    <!-- Next Button -->
+                    <a href="?page=<%= page + 1 %>&limit=<%= limit %>"
+                    class="btn-mini bg-[#002B7A] text-white
+                            <%= page >= totalPages ? 'pointer-events-none opacity-40' : '' %>">
+                        Siguiente →
+                    </a>
+
+                </div>
+                <% } %>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+</body>
+</html>
