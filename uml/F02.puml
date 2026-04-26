@@ -1,0 +1,60 @@
+@startuml
+actor Grupo_Clínico
+participant "View (Frontend)" as View
+participant "Routes" as Routes
+participant "ForoController" as Controller
+participant "ConsultarPubliUseCase" as UseCase
+participant "ConsultarInteraccionUseCase" as UseCase2
+participant "ForoRepository" as Repository
+database "mySQL" as DB
+
+activate Grupo_Clínico
+Grupo_Clínico -> View: Click en una publicación
+deactivate Grupo_Clínico
+activate View
+View -> Routes: GET/consultarPublicacion/idPublicacion
+deactivate View
+activate Routes
+Routes -> Controller: consultarPublicacion(idPublicacion)
+deactivate Routes
+activate Controller
+Controller -> UseCase: execute(RequestDto)
+deactivate Controller
+activate UseCase
+UseCase -> Repository: obtenerPublicacion(idPublicacion)
+deactivate UseCase
+activate Repository
+Repository ->> DB: Query
+activate DB
+DB -->> Repository: Data
+deactivate DB
+Repository --> UseCase: DataDomain
+deactivate Repository
+activate UseCase
+UseCase --> Controller: ResponseDto
+deactivate UseCase
+activate Controller
+Controller --> UseCase2: execute(requestDto)
+deactivate Controller
+activate UseCase2
+UseCase2 --> Repository: obtenerInteraciones(idPublicacion)
+deactivate UseCase2
+activate Repository
+Repository --> DB: Query
+activate DB
+DB -->> Repository: Data
+deactivate DB
+Repository --> UseCase2: DataDomain
+deactivate Repository
+activate UseCase2
+UseCase2 --> Controller: ResponseDto
+deactivate UseCase2
+activate Controller
+Controller --> View: render
+deactivate Controller
+activate View
+View --> Grupo_Clínico: Pantalla de Publicación
+deactivate View
+activate Grupo_Clínico
+
+@enduml

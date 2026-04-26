@@ -1,0 +1,27 @@
+@startuml
+actor Clinical_Group as ClinicalGroup
+
+participant "View (Frontend)" as View
+participant "Routes" as Routes
+participant "AuthController" as Controller
+participant "LogoutUseCase" as UseCase
+participant "AuthService" as Auth
+participant "Session/Token Store" as Session
+
+ClinicalGroup -> View : Click "Logout"
+View -> Routes : POST /logout
+Routes -> Controller : logout()
+
+Controller -> UseCase : execute(userId / token)
+
+UseCase -> Auth : invalidateSession(token)
+Auth -> Session : delete/invalidate(token)
+Session --> Auth : OK
+
+Auth --> UseCase : session invalidated
+UseCase --> Controller : success
+
+Controller -> View : redirect(Login)
+View --> ClinicalGroup : Show login screen
+
+@enduml
