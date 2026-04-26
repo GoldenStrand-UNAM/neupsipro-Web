@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+    <script src="/js/main.js"></script>
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -51,17 +52,19 @@
 
                 <!-- Table -->
                 <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
-                <table class="w-full border-collapse text-sm md:text-base">
+                <table class="w-full border-collapse text-sm md:text-base ">
                     <thead>
-                        <tr class="border-b-2 border-gray-200">
-                            <th class="py-2.5 px-10 text-left font-semibold text-gray-700 w-40">Folio</th>
-                            <th class="py-2.5 px-10 text-left font-semibold text-gray-700">Nombre</th>
-                            <th class="py-2.5 px-10 text-center font-semibold text-gray-700 w-60">Consultar Información</th>
+                        <tr class="border-b-2 border-gray-200 table-fixed">
+                            <th class="w-[10%] py-2.5 px-4 text-left font-semibold text-gray-700">Folio</th>
+                            <th class="w-[30%] py-2.5 px-4 text-left font-semibold text-gray-700">Nombre</th>
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus Neuro</th>
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Protocolo</th>
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Consultar Información</th>
                         </tr>
                     </thead>
                     <tbody id="users-tbody">
                         <tr>
-                            <td colspan="3" class="py-10 text-center text-gray-400">Cargando...</td>
+                            <td colspan="5" class="py-10 text-center text-gray-400">Cargando...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -79,16 +82,6 @@
 // ===== UTilitys ========
 
 const MAX_SEARCH_LENGTH = 50;
-
-// Function to prevent XSS inyections
-function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
 
 let currentPage   = 1;
 const LIMIT       = 6;
@@ -124,9 +117,12 @@ function renderTable(users) {
 
     tbody.innerHTML = users.map(u => `
         <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
-            <td class="py-3 px-10 text-gray-500">${escapeHtml(u.reference_number)}</td>
-            <td class="py-3 px-10 text-gray-800">${escapeHtml(u.fullName)}</td>
-            <td class="py-3 px-10 flex justify-center">
+            <td class="py-3 px-4 text-gray-500">${escapeHtml(u.reference_number)}</td>
+            <td class="py-3 px-4 text-gray-800">${escapeHtml(u.fullName)}</td>
+            <td class="py-3 px-4 text-center">${getStatusBadge(u.neuroStatus)}</td>
+            <td class="py-3 px-4 text-center text-gray-600 text-sm">${
+                escapeHtml(u.protocol === 'Clinical' ? 'Clínico' : u.protocol === 'Research' ? 'Investigación' : '—')}</td> 
+            <td class="py-3 px-4 flex justify-center">
                 <button
                     onclick="consultar('${escapeHtml(u.id)}')"
                     class="btn-mini bg-[#3350A9]">
@@ -172,7 +168,13 @@ function renderPagination(totalPages, page) {
 
 function showMsg(msg, colorClass) {
     document.getElementById("users-tbody").innerHTML =
-        `<tr><td colspan="3" class="py-10 text-center ${escapeHtml(colorClass)}">${escapeHtml(msg)}</td></tr>`;
+   `<tr>
+    <td colspan="5" class="py-10">
+        <div class="flex justify-center items-center text-center ${escapeHtml(colorClass)}">
+            ${escapeHtml(msg)}
+        </div>
+    </td>
+    </tr>`;
     document.getElementById("pagination").innerHTML = "";
 }
 
@@ -188,6 +190,18 @@ searchInput.addEventListener("input", e => {
         fetchUsers();
     }, 400);
 });
+
+function getStatusBadge(val) {
+    const map = {
+        'Alta': { label: 'Alta', border: '#E03232', text: '#E03232', bg:'rgba(224,50,50,0.33)'},
+        'Stand by': { label: 'Stand By', border: '#1F893A', text: '#1F893A', bg:'rgba(31,137,58,0.33)'},
+        'Entrevista inicial pendiente': { label: 'Entrevista pendiente', border: '#938B2E', text:'#938B2E', bg: 'rgba(147,139,46,0.33)'},
+        'No ingreso': { label: 'No ingresó',border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)'},
+    };
+    const m = map[val];
+    if (!m) return `<span class="text-gray-300 text-xs"> — </span>`;
+    return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
+}
 
 
 function consultar(id) { /* pendiente */ }
