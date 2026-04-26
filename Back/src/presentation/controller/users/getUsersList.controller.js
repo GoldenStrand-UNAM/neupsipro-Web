@@ -21,6 +21,7 @@ class GetUsersListController {
             
             //Exceute useCase
             const result = await this.GetUsersListUseCase.execute ({ 
+                
                 search: safeSearch, page: safePage, limit: safeLimit,
             });
             
