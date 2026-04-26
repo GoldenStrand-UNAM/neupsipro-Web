@@ -19,7 +19,7 @@ class UsersRepository extends ImpUsersRepository {
                 l.neuro_status,
                 l.protocol
             FROM users u
-            LEFT JOIN logbook l ON l.id_user = u.id_user
+            LEFT JOIN user_info l ON l.id_user = u.id_user
             WHERE u.id_role = 2
               AND u.eliminated = 0
               AND (? IS NULL OR CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) LIKE ?)
