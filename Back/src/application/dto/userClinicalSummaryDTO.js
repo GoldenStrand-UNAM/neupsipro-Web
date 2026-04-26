@@ -1,5 +1,5 @@
 class UserClinicalSummaryDTO {
-    constructor(userSummary) {
+    constructor (userSummary) {
         this.id = userSummary.id;
         this.fullName = userSummary.fullName;
     }
