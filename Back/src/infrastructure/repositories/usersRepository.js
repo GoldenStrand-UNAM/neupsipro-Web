@@ -11,16 +11,19 @@ class UsersRepository extends ImpUsersRepository {
         const searchParam = search ? `%${search}%` : null;
         
         // Get active Users, rol = 2, with pagination and a optional search filter
-        const [rows] = await db.query (
+        const [rows] = await db.query(
             `SELECT 
-                id_user AS id,
-                reference_number,
-                CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) AS full_name
-            FROM users
-            WHERE id_role = 2
-            AND eliminated = 0
-            AND (? IS NULL OR CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)
-            ORDER BY user_name ASC
+                u.id_user AS id,
+                CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
+                l.reference_number,
+                l.neuro_status,
+                l.protocol
+            FROM users u
+            LEFT JOIN user_info l ON l.id_user = u.id_user
+            WHERE u.id_role = 2
+              AND u.eliminated = 0
+              AND (? IS NULL OR CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) LIKE ?)
+            ORDER BY u.first_name ASC
             LIMIT ? OFFSET ?`,
             [searchParam, searchParam, Number(limit), Number(offset)]
         );
