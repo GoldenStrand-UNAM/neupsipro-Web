@@ -14,11 +14,11 @@ class ClinicalRepository extends ImpClinicalRepository {
         const [rows] = await db.query (
             `SELECT 
                 id_user AS id,
-                CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) AS full_name
+                CONCAT(first_name, ' ', lastname_p, ' ', lastname_m) AS full_name
             FROM users
             WHERE id_role = 1
             AND eliminated = 0
-            AND (? IS NULL OR CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)
+            AND (? IS NULL OR CONCAT(first_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)
             ORDER BY user_name ASC
             LIMIT ? OFFSET ?`,
             [searchParam, searchParam, Number(limit), Number(offset)]
