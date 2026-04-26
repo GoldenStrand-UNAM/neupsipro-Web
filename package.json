@@ -15,7 +15,7 @@
   "type": "commonjs",
   "main": "Back/src/index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon Back/src/index.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --verbose",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
@@ -23,7 +23,12 @@
     "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*": "node scripts/check-names.js"
+  },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1031.0",
+    "@aws-sdk/s3-request-presigner": "^3.1031.0",
     "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -31,6 +36,7 @@
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
     "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
@@ -45,7 +51,7 @@
     "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.2.2",
     "cross-env": "^10.1.0",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.0",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.5.0",
     "husky": "^9.1.7",

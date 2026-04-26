@@ -1,57 +1,84 @@
-@startuml
-actor Grupo_clínico
+@startuml IS01
+actor Clinical_group
 
 participant "View" as View
 participant "Routes" as Routes
-participant "AuthController" as Controller
+participant "PermissionsMiddleware" as Mid
+participant "LoginController" as Controller
 participant "JWT Service" as JWT
 participant "LogInUseCase" as UseCase
+participant "AuthUseCase" as authUseCase
+participant "UserEntity" as Entity
+participant "UserDto" as Dto
+participant "PrivilegeDto" as PDto
+participant "ExceptionDto" as EDto
 participant "Bcrypt" as Bcrypt
 participant "LogInRepository" as Repository
-participant "Model" as Model
+participant "SessionRepository" as SRepository
+database "DB" as DB
 
-Grupo_clínico -> View : Ingresa nombre de usuario, contraseña, click "Iniciar sesión"
+Clinical_group -> View : Enter username and password, click "Iniciar sesión"
 View -> Routes : POST /login
-Routes -> Controller : login(usuario, contraseña)
-Controller -> UseCase : ejecutarLogin(credenciales)
-UseCase -> Repository : autenticar(credenciales)
-Repository -> Model : getUserName(usuario)
+Routes -> Controller : login(username, password)
+Controller -> UseCase : executeLogin(credentials)
+UseCase -> Repository : findByUsername(credential)
+Repository -> DB : execute('SELECT * FROM users WHERE user_name = ?', [username])
 
-alt Usuario encontrado
+alt User found
 
-    Model --> Repository : json de usuario
-    Repository --> UseCase : json de usuario
-    UseCase -> Bcrypt : comparar hash con contraseña
+    DB --> Repository : user json
+    Repository --> UseCase : user json
+    UseCase -> Dto : fromEntity(user)
+    Dto --> UseCase : userDto
+    UseCase -> Bcrypt : compare password hash
 
-    alt contraseñas coinciden
+    alt passwords match
 
-        UseCase --> JWT : genera_token(usuario, id, rol)
+        UseCase --> SRepository : createSession(userId, ipAddress, userAgent, expiresAt)
+        SRepository --> DB : db.execute('INSERT INTO sessions...')
+        DB --> SRepository : query ok
+        SRepository --> UseCase : return idSession
+        UseCase --> JWT : generate_token(userId, idRole, idSession)
         JWT -> UseCase : token
 
-    else contraseñas no coinciden
+    else passwords dont match
 
         UseCase --> Controller : error
         Controller --> Routes : HTTP 401
-        Routes --> View : Mensaje de error
-        View --> Grupo_clínico : Credenciales inválidas
+        Routes --> View : Error message
+        View --> Clinical_group : Invalid credentials
 
     end
 
     UseCase --> Controller : token
     
     Controller --> Routes : HTTP 200 GET /homePage
-    Routes --> View : HomePage
+    Routes -> Mid : 'consulting', 'homepage'
+    Mid --> authUseCase : checkPermission(userId, moduleName, requestedAction)
+    authUseCase --> Repository : await PromiseAll[getPrivileges(userId), getExceptions(userId, moduleName)]
+    Repository --> DB : db.execute[getPrivileges(userId), getExceptions(userId)]
+    DB --> Repository : [privileges, exceptions]
+    Repository --> authUseCase : rawUserExceptions, rawRolePrivilege
+    authUseCase --> PDto :  fromEntity(rawRolePrivilege)
+    authUseCase --> EDto : fromEntity(rawUserExceptions)
+    PDto --> authUseCase : privilegeDto
+    EDto --> authUseCase : exceptionDto
+    authUseCase --> Mid : return exceptions/privileges
 
-    View --> Grupo_clínico : HomePage
+    alt has necessary permissions
+        Routes --> View: HomePage
+        View --> Clinical_group : HomePage
+    else has no permissions
+        Routes --> View : Error, has no permission for this action
+    end
 
-else Usuario no encontrado
+else User not found
 
-    Model --> Repository : null
+    DB --> Repository : null
     Repository --> UseCase : null
     UseCase --> Controller : error
     Controller --> Routes : HTTP 401
-    Routes --> View : Mensaje de error
-    View --> Grupo_clínico : Credenciales inválidas
-
+    Routes --> View : Error message
+    View --> Clinical_group : Invalid credentials
 end
 
