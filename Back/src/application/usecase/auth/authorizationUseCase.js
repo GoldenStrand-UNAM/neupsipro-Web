@@ -15,6 +15,7 @@ class AuthorizationUseCase {
             'routine': ['Activity', 'Emotion'],
             'occasion': ['Ocassion'],
             'logbook': ['Logbook'],
+            'clinical': ['Clinical'],
         };
 
         const [rawRolePrivileges, rawUserExceptions] = await Promise.all([
