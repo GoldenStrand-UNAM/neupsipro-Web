@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NeuPsi-Pro - Nueva Publicación</title>
-  <link rel="stylesheet" href="../css/output.css">
+  <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
 
@@ -200,7 +200,7 @@
     const formData = new FormData(form);
 
     try {
-      const res = await fetch('/Foro/registrar', {
+      const res = await fetch('/forum/registrar', {
         method: 'POST',
         body: formData,
       });
