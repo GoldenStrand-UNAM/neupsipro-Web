@@ -1,0 +1,56 @@
+@startuml Consultar_Usuarios_Clinicos
+
+actor "Clinician" as GC
+participant "consultUsersClinicalList.ejs" as V
+participant "main.js" as MAIN
+participant "getUsersListClinical.routes" as ROUTE
+participant "authMiddleware" as AUTH
+participant "getUsersListClinical.controller" as CTRL
+participant "GetClinicalListUseCase" as UC
+participant "userClinicalSummaryDTO" as DTO
+participant "userClinicalSummary" as ENT
+participant "ClinicalRepository" as REPO
+participant "ImpClinicalRepository" as IREPO
+database "DB" as DB
+
+GC -> V : Accesses "Clinical" module
+V -> MAIN : fetchClinicalUsers()
+MAIN -> ROUTE : GET /api/clinical-users?search=&page=1&limit=6\n[Authorization: Bearer JWT]
+
+ROUTE -> AUTH : authMiddleware(req, res, next)
+AUTH -> AUTH : Verifies and decodes JWT
+AUTH --> ROUTE : next()
+
+ROUTE -> CTRL : controller.getClinicalUsers(req, res)
+CTRL -> CTRL : page = Number(page)\nlimit = Number(limit)
+CTRL -> UC : GetClinicalListUseCase.execute({ search, page, limit })
+
+UC -> IREPO : fetchActivePatients({search, page, limit})
+IREPO -> REPO : Extend
+
+REPO -> DB : SELECT id_user AS id,\nCONCAT(first_name,' ',lastname_p,' ',lastname_m) AS full_name\nFROM users\nWHERE id_role = 1\nAND eliminated = 0\nAND (? IS NULL OR CONCAT(first_name,' ',lastname_p,' ',lastname_m) LIKE ?)\nORDER BY user_name ASC\nLIMIT ? OFFSET ?
+
+DB --> REPO : List<RowDataPacket>
+REPO -> ENT : new userClinicalSummary(row)
+REPO --> UC : List<userClinicalSummary>
+
+UC -> IREPO : countActivePatients({search})
+IREPO -> REPO : Extend
+
+REPO -> DB : SELECT COUNT(*) AS total\nFROM users\nWHERE id_role = 1\nAND eliminated = 0\nAND (? IS NULL OR CONCAT(user_name,' ',lastname_p,' ',lastname_m) LIKE ?)
+
+DB --> REPO : { total: N }
+REPO --> UC : total
+
+UC -> UC : totalPages = Math.ceil(total / limit)
+UC -> DTO : new userClinicalSummaryDTO(u)
+
+UC --> CTRL : { users, total, page, limit, totalPages }
+CTRL --> ROUTE : HTTP 200 OK
+ROUTE --> MAIN : JSON
+MAIN -> MAIN : renderTable(users)
+MAIN -> MAIN : renderPagination(...)
+MAIN -> V : Updates DOM
+V --> GC : Table displayed
+
+@enduml
