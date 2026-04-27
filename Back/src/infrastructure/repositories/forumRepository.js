@@ -33,6 +33,21 @@ class forumRepository extends impForumRepository {
         );
         return rows;
     }
+    // Inserts a new publication, return its generated id
+    async save ({ id_usuario, titulo, contenido, image }) {
+    const [result] = await db.query(
+      `INSERT INTO publication (id_user, title, content, image, time_and_date)
+     VALUES (?, ?, ?, ?, NOW())`,
+      [id_usuario, titulo, contenido, image]
+    );
+
+    const [rows] = await db.query(
+      'SELECT * FROM publication WHERE id_publication = ?',
+      [result.insertId]
+    );
+
+    return rows[0];
+  }
 }
 
 
