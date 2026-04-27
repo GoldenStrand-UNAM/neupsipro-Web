@@ -5,7 +5,6 @@ const RegPublicationUseCase = require('../../../application/usecase/forum/postPu
 const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
-const { publicationLimiter }  = require('../../../infrastructure/external/rateLimiter');
 
 
 
@@ -19,6 +18,6 @@ router.get('/forum/registrar', (req, res) => {
     res.render('Forum/postPublication', { activePage: 'foro' });
 });
 
-router.post('/forum/registrar', publicationLimiter, upload.single('imagen'), validateImageMiddleware, s3UploadMiddleware,  (req, res) => controller.registerPublication(req, res));
+router.post('/forum/registrar', upload.single('imagen'), validateImageMiddleware, s3UploadMiddleware,  (req, res) => controller.registerPublication(req, res));
 
 module.exports = router;
