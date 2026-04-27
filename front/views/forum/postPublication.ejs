@@ -200,7 +200,7 @@
     const formData = new FormData(form);
 
     try {
-      const res = await fetch('/forum/registrar', {
+      const res = await fetch('/forum/post', {
         method: 'POST',
         body: formData,
       });

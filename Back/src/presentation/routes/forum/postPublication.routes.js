@@ -22,15 +22,15 @@ module.exports = (authUseCase) => {
     const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
     router.get(
-        '/forum/registrar',
-        //authMiddleware.verifyToken,
+        '/forum/post',
+        authMiddleware.verifyToken,
        // permissionsMiddleware.requirePermission('Forum', 'writing'),
         (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
     );
 
     router.post(
-        '/forum/registrar',
-        //authMiddleware.verifyToken,                                     
+        '/forum/post',
+        authMiddleware.verifyToken,                                     
         //permissionsMiddleware.requirePermission('Forum', 'writing'),
         upload.single('imagen'),
         validateImageMiddleware,

@@ -8,7 +8,7 @@ class PostPublicationController {
   async registerPublication(request, response) {
     try {
       const { titulo, contenido } = request.body;
-      const id_usuario = request.body.id_usuario || 1; // JWT Auth later
+      const id_usuario = request.user.userId;
       const image = request.file ? request.file.s3Location : null;
 
 
