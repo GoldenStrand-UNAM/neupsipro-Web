@@ -20,24 +20,24 @@
             <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
 
                 <!-- Page Title -->
-                <div class="flex items-center justify-between max-w-250">
+                <div class="flex justify-between pt-6">
                     <div>
                         <h1 class="font-['Roboto'] text-3xl text-black font-bold">Foro</h1>
                     </div>
 
                     <div>
-                        <button onclick="window.location.href='RUTA_AQUI'" class="btn-mini w-full sm:w-65 md:w-76.5 bg-[#C89B3C] cursor-pointer font-['Roboto'] flex items-center gap-2 font-normal py-2 px-4 border rounded">
+                         <button onclick="window.location.href='RUTA_AQUI'" class="btn-mini w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
                             <img src="/assets/publicar.svg" alt="" class="w-5 h-5 invert" />
                             Publicar
                         </button>
                     </div>
                 </div>
-                <div> 
-                    <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator">
+                <div class ="w-full mt-4"> 
+                    <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator" class = "w-full">
                 </div>
 
                 <!-- Posts -->
-                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl px-0 sm:px-0">
+                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl mx-auto px-4 sm:px-6 pb-6" >
 
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(post => { %>
