@@ -4,12 +4,12 @@ class postInteractionDTO {
             id: post.id_publication,
             title: post.title,
             content: post.content,
-            image: post.image,
+            image: post.postPhoto,
             date: post.time_and_date,
             firstName: post.first_name,
             lastNameP: post.lastname_p,
             lastNameM: post.lastname_m,
-            pp: post.profile_photo,
+            pp: post.userPhoto,
         }));
         this.interactionList = interactions.map (interaction => ({
             idIinteraction: interaction.id_interaction,

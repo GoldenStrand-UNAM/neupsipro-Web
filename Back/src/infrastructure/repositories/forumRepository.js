@@ -33,7 +33,7 @@ class forumRepository extends impForumRepository {
         );
         return rows;
     }
-        async fetchOne({idPublication}) {
+        async fetchOne ({idPublication}) {
         try{
             const result = await db.query(
                 `SELECT 
@@ -77,7 +77,6 @@ class forumRepository extends impForumRepository {
             throw err;
         }
     }
-}
 }
 
 
