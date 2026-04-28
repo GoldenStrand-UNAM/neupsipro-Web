@@ -1,5 +1,6 @@
 class postInteractionDTO {
-    constructor (posts, interactions, numberLikes, numberComments) {
+    constructor (exists, posts, interactions, numberLikes, numberComments) {
+        this.success = exists;
         this.publication = posts.map (post => ({
             id: post.id_publication,
             title: post.title,

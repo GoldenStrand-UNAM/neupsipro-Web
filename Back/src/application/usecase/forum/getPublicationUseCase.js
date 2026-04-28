@@ -11,7 +11,6 @@ class getPublicationUseCase {
     async execute ({idPublication}) {
 
         const publication = await this.forumRepository.fetchOneUser({idPublication});
-   
         const interactionComments = await this.interactionRepository.fetchAllFromOne({idPublication});
 
         const numberLikes = await this.interactionRepository.fetchLikes({idPublication});
@@ -28,10 +27,28 @@ class getPublicationUseCase {
             ...interaction,
             interactionUPhoto: await getPresignedUrl(interaction.profile_photo),
             })));
-        const dto = new postInteractionDTO (publicationComplete, interactionComplete,numberLikes[0], numberComments[0]);
-        console.log(dto);
+        if (publication[0].length != 0) {
+            const dto = new postInteractionDTO (
+                true,
+                publicationComplete,
+                interactionComplete,
+                numberLikes[0],
+                numberComments[0]
+            );
+            return {dto};
+        }
 
-        return {dto};
+        else {
+                const dto = new postInteractionDTO (
+                false,
+                publicationComplete,
+                interactionComplete,
+                numberLikes[0],
+                numberComments[0]
+            );
+            return {dto};
+        }
+        
     }
 
 }
