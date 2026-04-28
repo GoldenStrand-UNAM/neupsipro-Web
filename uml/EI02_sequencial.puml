@@ -1,0 +1,158 @@
+@startuml EI02 Socioeconomic-Level-Interview
+
+title Socioeconomic Level Interview - Initial Interview (NeuPsi-Pro)
+
+actor "Clinical Group" as CG
+
+boundary "financialInterviewView" as VIEW
+boundary "financialInterview\nRoutes" as ROUTE
+control "financialInterview\nController" as CTRL
+control "financialInterview\nUseCase" as UC
+control "financialInterview\nRepository" as REPO
+entity "FinancialInterview" as ENT
+entity "FinancialInterviewDTO" as DTO
+database DB
+
+== Get Current Section Data ==
+
+CG -> VIEW : Click [2. Nivel Socioeconómico]
+
+VIEW -> ROUTE : GET /users/{id_user}/financial-interview/\n[Authorization: Bearer JWT]
+
+ROUTE -> ROUTE : authMiddleware\nvalidate JWT
+ROUTE -> CTRL : getFinancialInterview(req,res)
+
+CTRL -> CTRL : Extract id_user
+
+CTRL -> UC : executeGet({id_user})
+UC -> REPO : fetchRelation(id_user)
+
+REPO -> DB : SELECT id_user_relation\nFROM user_relation\nWHERE id_user = ?
+
+DB --> REPO : id_user_relation
+REPO --> UC : id_user_relation
+
+UC -> REPO : fetchCurrentSection(id_user_relation)
+
+REPO -> DB : SELECT current_section\nFROM financial_progress\nWHERE id_user_relation = ?
+
+DB --> REPO : current_section
+REPO --> UC : current_section
+
+UC -> REPO : fetchSectionData(id_user_relation,current_section)
+
+alt #LightSkyBlue current_section = 1
+    REPO -> DB : SELECT *fs, *cp \nFROM financial_situation as fs, \n          contributing_people as cp \nWHERE id_user_relation = ?
+    else current_section = 2
+        REPO -> DB : SELECT * \nFROM esc_government \nWHERE id_user_relation = ?
+    else current_section = 3
+        REPO -> DB : SELECT * \nFROM amai_questionnaire \nWHERE id_user_relation = ?
+    else current_section = 4
+        REPO -> DB : SELECT total_income.fs, total_expenses.fs,\n              socioeconomic_level.g, total.g \n              socioeconomic_level.a, total.a\nFROM financial_situation as fs, \n          esc_government as g, \n          amai_questionnaire as a \nWHERE id_user_relation = ?
+end
+
+DB --> REPO : rawData
+REPO --> UC : rawData
+
+UC -> ENT : new FinancialInterview(data, current_section)
+ENT --> UC : Entity
+
+UC --> CTRL : Entity
+
+CTRL -> DTO : map entity to DTO
+DTO --> CTRL : FinancialInterviewDTO
+
+CTRL --> ROUTE : HTTP 200 { data }
+
+ROUTE --> ROUTE : evaluate current_section
+
+alt #LightSkyBlue current_section = 1
+    ROUTE -> VIEW : Render Income & Expenses View
+else current_section = 2
+    ROUTE -> VIEW : Render ESC Government View
+else current_section = 3
+    ROUTE -> VIEW : Render AMAI Questionnaire View
+else current_section = 4
+    ROUTE -> VIEW : Render Summary View
+end
+
+ROUTE -> VIEW : Render view with saved data
+VIEW -> VIEW : save in memory
+
+VIEW --> CG : Display current section view
+
+== Save Current Section ==
+
+CG -> VIEW : Fill incomes, expenses,\ncontributors, dependents
+CG -> VIEW : Click [Siguiente]
+
+VIEW -> ROUTE : POST /api/users/{id_user}\n         /financial-interview/{current_section}\n         [Authorization: Bearer JWT] + data
+
+ROUTE -> ROUTE : authMiddleware\nvalidate JWT
+ROUTE -> CTRL : saveFinancialInterview(req,res)
+
+CTRL -> CTRL : Validate request params\nValidate required fields\nExtract data
+
+CTRL -> UC : execute(data)
+
+UC -> ENT : validateSectionData(data, current_section)
+ENT --> UC : Valid entity
+
+UC -> REPO : saveSection(data, current_section)
+
+alt #LightSkyBlue current_section = 1
+    REPO -> DB : UPDATE financial_situation,\n              contributing_people
+
+    alt #LightGreen required  fields completed
+        REPO -> DB : UPDATE financial_progress\nSET income_completed = 1,\n        current_section = 2
+        else incomplete fields, next section
+        REPO -> DB : UPDATE financial_progress\nSET current_section = 2
+    end
+
+else current_section = 2
+    REPO -> DB : UPDATE esc_government
+
+    alt #LightGreen required  fields completed
+        REPO -> DB : UPDATE financial_progress\nSET esc_completed = 1,\n        current_section = 3
+        else incomplete fields, next section
+        REPO -> DB : UPDATE financial_progress\nSET current_section = 3
+    end
+
+else current_section = 3
+    REPO -> DB : UPDATE amai_questionnaire
+
+    alt #LightGreen required fields completed
+        REPO -> DB : UPDATE financial_progress\nSET amai_completed = 1,\n        current_section = 4
+        else incomplete fields, next section
+        REPO -> DB : UPDATE financial_progress\nSET current_section = 4
+    end
+
+end
+
+REPO -> DB : Recalculate financial_progress.status
+
+alt #LightGreen status = completed
+    REPO -> DB : UPDATE initial_interview_progress\nSET financial_completed = 1
+end
+
+DB --> REPO : success
+
+REPO --> UC : savedData
+UC --> CTRL : success
+
+CTRL -> DTO : map result
+DTO --> CTRL : ResponseDTO
+
+CTRL --> ROUTE : HTTP 200 { message }
+
+ROUTE --> VIEW : Show success toast
+
+group #LightGoldenRodYellow Get Current Section Data
+VIEW -> ROUTE : GET /users/{id_user}/financial-interview
+ROUTE --> VIEW : HTTP 200 { current_section, data }
+end
+
+VIEW --> CG :  Display next section view
+
+
+@enduml
