@@ -52,7 +52,7 @@
 
             <div class="editor-toolbar"> </div>
 
-            <div class="editor-body" contenteditable="true" oninput="limitarContenido(this)" data-placeholder="Escribe aquí el contenido..."></div>
+            <div class="editor-body" contenteditable="true" oninput="limitContent(this)" data-placeholder="Escribe aquí el contenido..."></div>
               <span id="charCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/500 </span>
           </div>
           
@@ -141,6 +141,17 @@
     titleCount.innerText = `${length}/${max}`;
   });
 
+  function limitContent(content) {
+    const limit = 500;
+    if (content.innerText.length > limit) {
+        content.innerText = content.innerText.substring(0, limit);
+        window.getSelection().selectAllChildren(content);
+        window.getSelection().collapseToEnd();
+    }
+    const counter = document.getElementById('charCount');
+    if (counter) counter.innerText = `${content.innerText.length}/${limit}`;
+}
+
   // Clean forms
   clearBtn.addEventListener('click', () => {
     resetForm();
@@ -164,36 +175,17 @@
     filePreview.classList.remove('hidden'); 
     emptyState.classList.add('hidden');
   });
-/*
-  function showToast(message, type = 'success') {
-    toast.innerHTML = `
-      <div class="btn-big ${type === 'success' ? 'bg-[#002B7A]' : 'bg-red-600'} shadow-lg">
-        <span>${message}</span>
-      </div>
-    `;
-
-    toast.classList.remove('hidden');
-
-    setTimeout(() => {
-      toast.classList.add('hidden');
-    }, 3000);
-  }
-  function limitarContenido(elemento) {
-    const limit = 500;
-    if (elemento.innerText.length > limit) {
-      elemento.innerText = elemento.innerText.substring(0, limit);
-      window.getSelection().selectAllChildren(elemento);
-      window.getSelection().collapseToEnd();
-    }
-    const counter = document.getElementById('charCount');
-    if (counter) {
-      counter.innerText = `${elemento.innerText.length}/${limit}`;
-    }
-  }*/
 
   //  Submit
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const content = editor.innerText.trim();
+
+    if (!content) {
+        showToast('El contenido es obligatorio', 'error');
+        return;
+    }
 
     hiddenInput.value = editor.innerText;
 
