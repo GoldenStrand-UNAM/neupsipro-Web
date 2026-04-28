@@ -3,7 +3,7 @@ actor Clinical_Group as ClinicalGroup
 
 participant "View (Frontend)" as View
 participant "Routes" as Routes
-participant "AuthController" as Controller
+participant "LogoutController" as Controller
 participant "LogoutUseCase" as UseCase
 participant "AuthService" as Auth
 participant "Session/Token Store" as Session

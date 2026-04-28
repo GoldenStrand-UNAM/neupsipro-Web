@@ -57,19 +57,24 @@
 </div>
 
 <script>
+
+// Reference the DOM elements needed for the logout modal functionality
 const logoutModal = document.getElementById('logoutModal');
 const openBtn = document.getElementById('openLogoutModal');
 const closeBtn = document.getElementById('cancelLogout');
 const confirmBtn = document.getElementById('confirmLogout');
 
+// Event listener to display the logout modal by removing the 'hidden' class
 openBtn.addEventListener('click', () => {
     logoutModal.classList.remove('hidden');
 });
 
+// Event listener to hide the logout modal by adding the 'hidden' class
 closeBtn.addEventListener('click', () => {
     logoutModal.classList.add('hidden');
 });
 
+// Event listener to handle the logout process. It sends a POST request to the server, clears local storage, and redirects the user upon success.
 confirmBtn.addEventListener('click', async () => {
     try {
         const response = await fetch('/auth/logout', {
