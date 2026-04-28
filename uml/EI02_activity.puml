@@ -1,0 +1,35 @@
+@startuml EI02_Activity
+
+title Socioeconomic Level Interview - Activity Diagram (NeuPsi-Pro)
+
+start
+
+:Click\n**Situación Financiera**;
+
+repeat
+#D6EAF8:Get current section;
+#D6EAF8:Get section data;
+#D6EAF8:Render current section view;
+
+#e2d5f5:User edits fields;
+#e2d5f5:Click **Siguiente**;
+
+#e2d5f5:Validate data;
+#e2d5f5:Save section data;
+
+if (Required fields completed?) then (Yes)
+    #D5F5E3:Mark section as completed;
+endif
+
+#D6EAF8:Advance current section;
+#D6EAF8:Recalculate financial module status;
+
+if (Financial module completed?) then (Yes)
+    #D5F5E3:Complete Financial Module;
+endif
+
+repeat while (Next section?) is (Yes)
+
+stop
+
+@enduml
