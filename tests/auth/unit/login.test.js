@@ -11,9 +11,7 @@ describe('LoginUseCase Unit Test', () => {
         mockCache = { getAttempts: jest.fn(), incrementAttempts: jest.fn(), clearAttempts: jest.fn() };
         mockSessionRepo = { createSession: jest.fn() };
 
-        loginUseCase = new LoginUseCase(
-            mockAuthRepo, mockHashService, mockJwtService, mockCache, mockSessionRepo
-        );
+        loginUseCase = new LoginUseCase(mockAuthRepo, mockHashService, mockJwtService, mockCache, mockSessionRepo);
     });
 
     test('should throw error if attempts reach limit (Security Logic)', async () => {
@@ -26,7 +24,7 @@ describe('LoginUseCase Unit Test', () => {
     test('should return token on succesful login', async () => {
         mockCache.getAttempts.mockReturnValue(0);
         mockAuthRepo.findByUsername.mockResolvedValue({
-            id_user: 1, user_name: 'test', password_hash: 'hashed', eliminated: 0
+            id_user: 1, user_name: 'test', password_hash: 'hashed', eliminated: 0,
         });
         mockHashService.compare.mockResolvedValue(true);
         mockJwtService.generateToken.mockReturnValue('fake-jwt-token');

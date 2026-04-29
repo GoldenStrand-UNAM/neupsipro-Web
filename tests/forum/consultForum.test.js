@@ -1,19 +1,15 @@
 const request = require('supertest');
 
-jest.mock('../../Back/src/infrastructure/auth/auth.middleware', () => {
-  return jest.fn().mockImplementation(() => ({
+jest.mock('../../Back/src/infrastructure/auth/auth.middleware', () => jest.fn().mockImplementation(() => ({
     verifyToken: (req, res, next) => {
       req.user = { id: 1, role: 'admin' };
       next();
-    }
-  }));
-});
+    },
+  })));
 
-jest.mock('../../Back/src/infrastructure/auth/permissions.middleware', () => {
-  return jest.fn().mockImplementation(() => ({
-    requirePermission: () => (req, res, next) => next()
-  }));
-});
+jest.mock('../../Back/src/infrastructure/auth/permissions.middleware', () => jest.fn().mockImplementation(() => ({
+    requirePermission: () => (req, res, next) => next(),
+  })));
 
 jest.mock('../../Back/src/infrastructure/external/rateLimiting', () => ({
   generalLimiter: (req, res, next) => next(),

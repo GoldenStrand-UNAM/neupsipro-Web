@@ -6,9 +6,7 @@ const impForumRepository = require('../../domain/repository/ImpForumRepository')
 class forumRepository extends impForumRepository {
 
     async count () {
-        const [[{ total }]] = await db.query(
-            `SELECT COUNT(*) AS total FROM publication`
-        );
+        const [[{ total }]] = await db.query(`SELECT COUNT(*) AS total FROM publication`);
         return total;
     }
 
@@ -34,48 +32,38 @@ class forumRepository extends impForumRepository {
         return rows;
     }
         async fetchOne ({idPublication}) {
-        try{
-            const result = await db.query(
-                `SELECT 
-                    p.id_user,
-                    p.time_and_date,
-                    p.title,
-                    p.content,
-                    p.image
-                FROM publication p
-                WHERE p.id_publication = ?`,
-                [idPublication]
-            );
-            return result;
-        } catch(err) {
-            console.log(err)
-            throw err;
-        }
+        const result = await db.query(
+            `SELECT 
+                p.id_user,
+                p.time_and_date,
+                p.title,
+                p.content,
+                p.image
+            FROM publication p
+            WHERE p.id_publication = ?`,
+            [idPublication]
+        );
+        return result;
     }
 
     async fetchOneUser ({idPublication}) {
-        try{
-            const result = await db.query(
-                `SELECT 
-                    p.id_user,
-                    p.time_and_date,
-                    p.title,
-                    p.content,
-                    p.image,
-                    u.first_name,
-                    u.lastname_p,
-                    u.lastname_m,
-                    u.profile_photo 
-                FROM publication p
-                JOIN users u ON u.id_user = p.id_user
-                WHERE p.id_publication = ?`,
-                [idPublication]
-            );
-            return result;
-        } catch(err) {
-            console.log(err)
-            throw err;
-        }
+         const result = await db.query(
+            `SELECT 
+                p.id_user,
+                p.time_and_date,
+                p.title,
+                p.content,
+                p.image,
+                u.first_name,
+                u.lastname_p,
+                u.lastname_m,
+                u.profile_photo 
+            FROM publication p
+            JOIN users u ON u.id_user = p.id_user
+            WHERE p.id_publication = ?`,
+            [idPublication]
+        );
+        return result;
     }
 }
 

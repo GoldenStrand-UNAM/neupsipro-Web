@@ -4,7 +4,7 @@ describe('AuthorizationUseCase - ACL Logic', () => {
     // Simulates repository with controlled data
     const mockRepo = {
         getPrivileges: jest.fn(),
-        getExceptions: jest.fn()
+        getExceptions: jest.fn(),
     };
     
     const authUC = new AuthorizationUseCase(mockRepo);
@@ -17,7 +17,7 @@ describe('AuthorizationUseCase - ACL Logic', () => {
             consultation: 1,
             writing: 1,
             edit: 0,
-            eliminate: 0
+            eliminate: 0,
         }]);
 
         const result = await authUC.checkPermission(1, 'forum', 'writing');

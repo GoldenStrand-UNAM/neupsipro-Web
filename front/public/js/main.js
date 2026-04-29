@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
 })
 
 // Function to prevent XSS inyections
-function escapeHtml(str) {
+function escapeHtml (str) {
     return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")

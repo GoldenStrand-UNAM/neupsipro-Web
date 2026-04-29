@@ -11,25 +11,17 @@ const mockCreateSession = jest.fn();
     - XSS
     - DDoS 
  */
-jest.mock('../../../Back/src/infrastructure/repositories/loginRepository', () => {            
-    return jest.fn().mockImplementation(() => ({
+jest.mock('../../../Back/src/infrastructure/repositories/loginRepository', () => jest.fn().mockImplementation(() => ({
             findByUsername: mockFindByUsername,
             getPrivileges: jest.fn().mockResolvedValue([]),
-            getExceptions: jest.fn().mockResolvedValue([])
-    }));
-});
+            getExceptions: jest.fn().mockResolvedValue([]),
+    })));
 
-jest.mock('../../../Back/src/infrastructure/external/hashing.service', () => {
-    return jest.fn().mockImplementation(() => ({ compare: mockCompare }));
-});
+jest.mock('../../../Back/src/infrastructure/external/hashing.service', () => jest.fn().mockImplementation(() => ({ compare: mockCompare })));
 
-jest.mock('../../../Back/src/infrastructure/external/jwt.service', () => {
-    return jest.fn().mockImplementation(() => ({ generateToken: mockGenerateToken }));
-});
+jest.mock('../../../Back/src/infrastructure/external/jwt.service', () => jest.fn().mockImplementation(() => ({ generateToken: mockGenerateToken })));
 
-jest.mock('../../../Back/src/infrastructure/repositories/sessionRepository', () => {
-    return jest.fn().mockImplementation(() => ({ createSession: mockCreateSession }));
-});
+jest.mock('../../../Back/src/infrastructure/repositories/sessionRepository', () => jest.fn().mockImplementation(() => ({ createSession: mockCreateSession })));
 
 const app = require('../../../Back/src/app');
 
@@ -45,7 +37,7 @@ describe('Login Integration Test', () => {
             user_name: 'testuser',
             password_hash: 'hash_cualquiera',
             id_role: 1,
-            eliminated: 0
+            eliminated: 0,
         });
         mockCompare.mockResolvedValue(true);
         mockGenerateToken.mockReturnValue('fake-token');
@@ -55,7 +47,7 @@ describe('Login Integration Test', () => {
             .post('/auth/login')
             .send({
                 username: 'testuser',
-                password: 'password123'
+                password: 'password123',
             });
 
         expect(response.status).toBe(302);
@@ -99,7 +91,7 @@ describe('Login Integration Test', () => {
             .post('/auth/login')
             .send({
                 username: "' OR '1'='1",
-                password: "password"
+                password: "password",
             });
         
         expect(response.status).toBe(200);
@@ -113,7 +105,7 @@ describe('Login Integration Test', () => {
             .post('/auth/login')
             .send({
                 username: xssPayload,
-                password: "password"
+                password: "password",
             });
         
         expect(response.text).not.toContain(xssPayload);

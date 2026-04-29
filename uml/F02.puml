@@ -1,60 +1,99 @@
 @startuml
 actor Grupo_Clínico
-participant "View (Frontend)" as View
+boundary "View (Frontend)" as View
 participant "Routes" as Routes
 participant "ForoController" as Controller
-participant "ConsultarPubliUseCase" as UseCase
-participant "ConsultarInteraccionUseCase" as UseCase2
-participant "ForoRepository" as Repository
+participant "getPublicationUseCase" as UseCase
+entity "postInteractionDto" as DTO
+participant "impForumRepository" as ImpRepo
+participant "impInteractionRepository" as ImpRepo2
+participant "ForumRepository" as Repository
+participant "interactionRepository" as Repository2
 database "mySQL" as DB
 
 activate Grupo_Clínico
 Grupo_Clínico -> View: Click en una publicación
 deactivate Grupo_Clínico
 activate View
-View -> Routes: GET/consultarPublicacion/idPublicacion
+View -> Routes: GET/publicacion/:idPublication
 deactivate View
 activate Routes
-Routes -> Controller: consultarPublicacion(idPublicacion)
+Routes -> Controller: getPublication(idPublication)
 deactivate Routes
 activate Controller
-Controller -> UseCase: execute(RequestDto)
+Controller -> UseCase: execute(idPublication)
 deactivate Controller
 activate UseCase
-UseCase -> Repository: obtenerPublicacion(idPublicacion)
+UseCase -> ImpRepo: fetchOneUser(idPublicacion)
 deactivate UseCase
+activate ImpRepo
+ImpRepo -> Repository: fetchOneUser(idPublicacion)
 activate Repository
-Repository ->> DB: Query
+Repository ->>DB: execute("SELECT * FROM")
 activate DB
-DB -->> Repository: Data
+DB -->> Repository: rows
 deactivate DB
-Repository --> UseCase: DataDomain
+Repository -->> ImpRepo: rows
 deactivate Repository
+ImpRepo -->> UseCase: publication
+deactivate ImpRepo
 activate UseCase
-UseCase --> Controller: ResponseDto
+UseCase -> ImpRepo2: fetchAllFromOne(idPublicacion)
+deactivate UseCase
+activate ImpRepo2
+ImpRepo2 -> Repository2: fetchAllFromOne(idPublicacion)
+activate Repository2
+Repository2 ->>DB: execute("SELECT * FROM")
+activate DB
+DB -->> Repository2: rows
+deactivate DB
+Repository2 -->> ImpRepo2: rows
+deactivate Repository2
+ImpRepo2 -->> UseCase: interaction
+deactivate ImpRepo2
+activate UseCase
+UseCase -> ImpRepo2: fetchLikes(idPublicacion)
+deactivate UseCase
+activate ImpRepo2
+ImpRepo2 -> Repository2: fetchLikes(idPublicacion)
+activate Repository2
+Repository2 ->>DB: execute("SELECT COUNT * FROM")
+activate DB
+DB -->> Repository2: rows
+deactivate DB
+Repository2 -->> ImpRepo2:rows
+deactivate Repository2
+ImpRepo2 -->> UseCase: likes
+deactivate ImpRepo2
+activate UseCase
+UseCase -> ImpRepo2: fetchComments(idPublicacion)
+deactivate UseCase
+activate ImpRepo2
+ImpRepo2 -> Repository2: fetchComments(idPublicacion)
+activate Repository2
+Repository2 ->>DB: execute("SELECT COUNT* FROM")
+activate DB
+DB -->> Repository2: rows
+deactivate DB
+Repository2 -->> ImpRepo2:rows
+deactivate Repository2
+ImpRepo2 -->> UseCase: comments
+deactivate ImpRepo2
+activate UseCase
+UseCase -> DTO: constructor
+activate DTO
+DTO -> UseCase: postInteractionDto
+deactivate DTO
+UseCase -> Controller: postInteractionDto
 deactivate UseCase
 activate Controller
-Controller --> UseCase2: execute(requestDto)
+Controller -> Routes: res(200) JSON
 deactivate Controller
-activate UseCase2
-UseCase2 --> Repository: obtenerInteraciones(idPublicacion)
-deactivate UseCase2
-activate Repository
-Repository --> DB: Query
-activate DB
-DB -->> Repository: Data
-deactivate DB
-Repository --> UseCase2: DataDomain
-deactivate Repository
-activate UseCase2
-UseCase2 --> Controller: ResponseDto
-deactivate UseCase2
-activate Controller
-Controller --> View: render
-deactivate Controller
+activate Routes
+Routes -> View: HTTP
+deactivate Routes
 activate View
-View --> Grupo_Clínico: Pantalla de Publicación
+View -> Grupo_Clínico: UI
 deactivate View
 activate Grupo_Clínico
-
 @enduml

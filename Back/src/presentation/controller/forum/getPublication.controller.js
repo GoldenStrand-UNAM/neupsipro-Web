@@ -1,14 +1,17 @@
-const getPublicationUseCase = require("../../../application/usecase/forum/getPublicationUseCase");
+
 
 class getPublicationController {
+    // Constructor method for publication
     constructor (getPublicationUseCase) {
         this.getPublicationUseCase = getPublicationUseCase;
     }
 
+    // Method to get a publication along with its interactions
     async getPublication (request, response) {
         try{
             const {idPublication} = request.params;
             const publication = await this.getPublicationUseCase.execute({idPublication});
+            // Makes sure the dto returned was usefull
             if (publication.dto.success === true) {
                 response.render('partials/PublicationContent',{
                 activePage: 'foro',

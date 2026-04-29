@@ -48,7 +48,7 @@ const uploadToS3 = async (filePath, fileName) => {
 
 // Extract images from S3 URLs 
 
-function extractObjectKey(imageUrlOrKey) {
+function extractObjectKey (imageUrlOrKey) {
 
   // If it's not a valid string, return null
     if (!imageUrlOrKey || typeof imageUrlOrKey !== 'string') return null;
@@ -72,7 +72,7 @@ function extractObjectKey(imageUrlOrKey) {
 
 // Generate a pre-signed URL for accessing an S3 object
 
-async function getPresignedUrl(imageUrlOrKey, expiresIn = 3600) {
+async function getPresignedUrl (imageUrlOrKey, expiresIn = 3600) {
     if (!imageUrlOrKey) return null;
     if (!BUCKET_NAME) throw new Error('Missing AWS bucket configuration');
 
