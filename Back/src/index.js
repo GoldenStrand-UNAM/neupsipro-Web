@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === 'test') {
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 const app = require('./app');
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
