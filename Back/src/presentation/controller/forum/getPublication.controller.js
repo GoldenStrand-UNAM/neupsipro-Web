@@ -11,6 +11,8 @@ class getPublicationController {
         try{
             const {idPublication} = request.params;
             const publication = await this.getPublicationUseCase.execute({idPublication});
+
+            console.log(publication.dto.success);
             // Makes sure the dto returned was usefull
             if (publication.dto.success === true) {
                 response.render('partials/PublicationContent',{
@@ -20,6 +22,9 @@ class getPublicationController {
                 if (err) throw err;
                 response.status(200).json({ success: true, html: html });
             }); 
+            }
+            else{
+                response.status(200).json({ success: false, html: ''})
             }
             
         } catch (err) {
