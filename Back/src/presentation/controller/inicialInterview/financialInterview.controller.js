@@ -1,4 +1,4 @@
-const UserDTO = require('../../../application/dto/UserDTO');
+const FinancialInterviewDTO  = require('../../../application/dto/FinancialInterviewDTO ');
 
 class financialInterviewController {
     constructor (financialInterviewUseCase) {
@@ -10,10 +10,10 @@ class financialInterviewController {
         try {
             const {id_user} = req.params;
 
-            const user = await this.financialInterviewUseCase.execute({id_user});
+            const financialInterview = await this.financialInterviewUseCase.execute({id_user});
 
-            const response = user.map(lb => UserDTO.fromEntity(lb));
-
+            const response = FinancialInterviewDTO.fromEntity(financialInterview);
+            
             return res.status(200).json({
                 message: "Entrevista Inicial: Nivel Socioeconómico consultado correctamente",
                 data: response,
