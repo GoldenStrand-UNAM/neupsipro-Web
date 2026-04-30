@@ -2,12 +2,24 @@ import js from "@eslint/js";
 import globals from "globals";
 import { defineConfig } from "eslint/config";
 import pluginSecurity from "eslint-plugin-security";
+import importX from 'eslint-plugin-import-x';
 
 export default defineConfig([
   { ignores: ["eslint.config.mjs", "**/*.spec.js", "**/*.test.js", "tailwind.config.js"] },
   pluginSecurity.configs.recommended,
   { files: ["**/*.{js,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
+  {
+    plugins: { 'import': importX },
+    rules: {
+      'import/no-cycle': 'error',
+      'import/no-self-import': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+      'import/no-mutable-exports': 'error',
+    },
+  },
+
   {
     rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',

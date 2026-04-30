@@ -31,6 +31,7 @@ const AuthorizationUseCase = require('./application/Usecase/auth/authorizationUs
 const LoginController = require('./presentation/controller/auth/login.controller');
 const LogoutController = require('./presentation/controller/auth/logout.controller');
 const authRoutes = require('./presentation/routes/auth/auth.routes');
+
 app.use (session({
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
@@ -76,12 +77,15 @@ app.use('/', homeRoutes(authMiddleware));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+
 app.use('/forum', forumRoutes(authUseCase));
 
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
+
 app.use('/', usersRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
+
 app.use('/', clinicalRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
