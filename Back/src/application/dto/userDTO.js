@@ -1,15 +1,25 @@
 class UserDTO {
+    // eslint-disable-next-line max-lines-per-function
     constructor ({
         photo,
-        reference_number,
+        referenceNumber,
         name,
         age,
-        registration_date,
+        registrationDate,
         phase,
-        assigned_clinic,
+        assignedClinic,
         modality,
         attendance,
-        initial_interview,
+        amputationDate,
+        protocol,
+        state,
+        groupIntervention,
+        amputationEtiology,
+        laterality,
+        prosthetist,
+        neuroEntryDate,
+        amputationLevel,
+        initialInterview,
         banfe,
         wais,
         rey,
@@ -17,17 +27,26 @@ class UserDTO {
         dr,
     }) {
         this.photo = photo;
-        this.reference_number = reference_number;
+        this.referenceNumber = referenceNumber;
         this.name = name;
         this.age = age;
-        this.registration_date = registration_date;
+        this.registration_date = registrationDate;
         this.phase = phase;
 
-        this.assigned_clinic = assigned_clinic;
+        this.assigned_clinic = assignedClinic;
         this.modality = modality;
         this.attendance = attendance;
+        this.amputationDate = amputationDate;
+        this.protocol = protocol;
+        this.state = state;
+        this.groupIntervention = groupIntervention;
+        this.amputationEtiology = amputationEtiology;
+        this.laterality = laterality;
+        this.prosthetist = prosthetist;
+        this.neuroEntryDate = neuroEntryDate;
+        this.amputationLevel = amputationLevel;
 
-        this.initial_interview = initial_interview;
+        this.initial_interview = initialInterview;
         this.banfe = banfe;
         this.wais = wais;
         this.rey = rey;
@@ -38,17 +57,26 @@ class UserDTO {
     static fromEntity (entity) {
         return new UserDTO({
             photo: entity.photo,
-            reference_number: entity.reference_number,
+            referenceNumber: entity.referenceNumber,
             name: entity.name,
             age: entity.age,
-            registration_date: entity.registration_date,
+            registrationDate: entity.registrationDate,
             phase: entity.phase,
 
-            assigned_clinic: entity.assigned_clinic,
+            assignedClinic: entity.assignedClinic,
             modality: entity.modality,
             attendance: entity.attendance,
+            amputationDate: entity.amputationDate,
+            protocol: entity.protocol,
+            state: entity.state,
+            groupIntervention: entity.groupIntervention,
+            amputationEtiology: entity.amputationEtiology,
+            laterality: entity.laterality,
+            prosthetist: entity.prosthetist,
+            neuroEntryDate: entity.neuroEntryDate,
+            amputationLevel: entity.amputationLevel,
 
-            initial_interview: entity.initial_interview,
+            initialInterview: entity.initialInterview,
             banfe: entity.banfe,
             wais: entity.wais,
             rey: entity.rey,

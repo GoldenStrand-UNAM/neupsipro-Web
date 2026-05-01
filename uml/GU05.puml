@@ -33,9 +33,8 @@ REPO -> DB : SELECT l.*, u.first_name,\nu.lastname_p, u.lastname_m,\nu.profile_p
 
 DB --> REPO : rawData
 
-REPO --> UC : rawData
+REPO --> ENT : rawData
 
-UC -> ENT : new User(data)
 ENT --> UC : UserEntity
 
 UC --> CTRL : UserEntity
