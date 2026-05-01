@@ -7,11 +7,11 @@ class FinancialInterviewUseCase {
 
         // fetch  relation
         const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
-        const id_user_relation = relationResult[0]?.id_user_relation;
+        const id_user_relation = relationResult[0][0]?.id_user_relation;
 
         // fetch current section
         const sectionResult = await this.financialInterviewRepository.fetchCurrentSection({ id_user_relation });
-        const current_section = sectionResult[0]?.current_section;
+        const current_section = sectionResult[0][0]?.current_section;
 
         let data;
 
@@ -34,7 +34,7 @@ class FinancialInterviewUseCase {
                 break;
 
             default:
-                throw new Error("Invalid section");
+                throw new Error(`Invalid financial section:  ${current_section}`);
         }
 
         return {
