@@ -1,44 +1,63 @@
 class User {
     constructor (data) {
         this.photo = data.profile_photo;
-        this.reference_number = data.reference_number;
+        this.referenceNumber = data.reference_number;
 
         this.name = `${data.first_name} ${data.lastname_p} ${data.lastname_m}`;
 
         this.age = this.calculateAge(data.birthdate);
 
-        this.registration_date = data.registration_date;
+        this.registrationDate = data.registration_date;
         this.phase = data.neuro_status;
 
-        this.assigned_clinic = data.assigned_clinic;
+        this.assignedClinic = data.assigned_clinic;
         this.modality = data.modality;
         this.attendance = data.attendance;
+        this.amputationDate = data.amputation_date;
+        this.protocol = data.protocol;
+        this.state = data.state;
+        this.groupIntervention = data.group_intervention;
+        this.amputationEtiology = data.amputation_etiology;
+        this.laterality = data.laterality;
+        this.prosthetist = data.prosthetist;
+        this.neuroEntryDate = data.neuro_entry_date;
+        this.amputationLevel = data.amputation_level;
 
-        this.initial_interview = this.getStatus(data.initial_interview);
+        this.initialInterview = this.getStatus(data.initial_interview);
         this.banfe = this.getStatus(data.banfe);
         this.wais = this.getStatus(data.wais);
         this.rey = this.getStatus(data.rey);
         this.questionnaires = this.getStatus(data.questionnaires);
         this.dr = this.getStatus(data.dr);
-    }
+    }   
 
-    calculateAge (birthdate) {
+calculateAge (birthdate) {
         if (!birthdate) return null;
 
         const today = new Date();
         const birth = new Date(birthdate);
 
-        let age = today.getFullYear() - birth.getFullYear();
-        const monthDiff = today.getMonth() - birth.getMonth();
+        let years = today.getFullYear() - birth.getFullYear();
+        let months = today.getMonth() - birth.getMonth();
+        let days = today.getDate() - birth.getDate();
 
-        if (
-            monthDiff < 0 ||
-            (monthDiff === 0 && today.getDate() < birth.getDate())
-        ) {
-            age = age - 1;
+        if (days < 0) {
+            months--;
+            const daysInPreviousMonth = new Date(
+                today.getFullYear(), 
+                today.getMonth(), 
+                0
+            ).getDate();
+            
+            days += daysInPreviousMonth;
         }
 
-        return age;
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return `${years} años, ${months} meses y ${days} días`;
     }
 
     getStatus (status) {

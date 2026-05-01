@@ -10,17 +10,28 @@ class consultUserUseCase {
 
     return userEntities.map(e => ({
         photo: e.photo,
-        reference_number: e.reference_number,
+        referenceNumber: e.referenceNumber,
         name: e.name,
         age: e.age,
-        registration_date: e.registration_date,
+
+
+        registrationDate: e.registrationDate,
         phase: e.phase,
 
-        assigned_clinic: e.assigned_clinic,
+        assignedClinic: e.assignedClinic,
         modality: e.modality,
         attendance: e.attendance,
-
-        initial_interview: e.initial_interview,
+        amputationDate: e.amputationDate,
+        protocol: e.protocol,
+        state: e.state,
+        groupIntervention: e.groupIntervention,
+        amputationEtiology: e.amputationEtiology,
+        laterality: e.laterality,
+        prosthetist: e.prosthetist,
+        neuroEntryDate: e.neuroEntryDate,
+        amputationLevel: e.amputationLevel,
+        
+        initialInterview: e.initialInterview,
         banfe: e.banfe,
         wais: e.wais,
         rey: e.rey,

@@ -40,7 +40,7 @@ class UsersRepository extends ImpUsersRepository {
                 u.id_user AS id,
                 CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
                 l.reference_number,
-                l.neuro_status,
+                l.state,
                 l.protocol
             FROM users u
             LEFT JOIN user_info l ON l.id_user = u.id_user
