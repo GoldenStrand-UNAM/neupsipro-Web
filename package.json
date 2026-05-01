@@ -15,12 +15,13 @@
   "type": "commonjs",
   "main": "Back/src/index.js",
   "scripts": {
-    "start": "nodemon Back/src/index.js tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch",
+    "start": "nodemon Back/src/index.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --verbose",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch"
   },
   "lint-staged": {
     "*": "node scripts/check-names.js"
