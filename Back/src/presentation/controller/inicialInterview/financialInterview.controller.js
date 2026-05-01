@@ -2,7 +2,7 @@ const FinancialInterviewDTO  = require('../../../application/dto/financialInterv
 
 class financialInterviewController {
     constructor (financialInterviewUseCase) {
-        this.getFinancialInterviewUseCase = financialInterviewUseCase;
+        this.financialInterviewUseCase = financialInterviewUseCase;
     }
 
     // get financial interview
@@ -11,7 +11,10 @@ class financialInterviewController {
         try {
             const {id_user} = req.params;
 
-            const financialInterview = await this.financialInterviewUseCase.execute({id_user});
+            const financialInterview = await this.financialInterviewUseCase.execute({
+                id_user, 
+                section: 'financial',
+            });
 
             const response = FinancialInterviewDTO.fromEntity(financialInterview);
             
