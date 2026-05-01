@@ -90,6 +90,9 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
 });
 
+const inicialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
+app.use('/users/:id_user/inicialInterview/financial', inicialInterviewRoutes(authUseCase));
+
 app.use((req, res) => { 
     res.status(404).json({ error: 'Ruta no encontrada' }); 
 });

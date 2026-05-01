@@ -1,4 +1,4 @@
-const FinancialInterviewDTO  = require('../../../application/dto/FinancialInterviewDTO ');
+const FinancialInterviewDTO  = require('../../../application/dto/financialInterviewDTO');
 
 class financialInterviewController {
     constructor (financialInterviewUseCase) {
@@ -7,6 +7,7 @@ class financialInterviewController {
 
     // get financial interview
     async getFinancialInterview (req, res) {
+        
         try {
             const {id_user} = req.params;
 
