@@ -23,14 +23,17 @@ class FinancialInterviewUseCase {
 
             case 2:
                 data = await this.financialInterviewRepository.fetchEscGov({ id_user_relation });
+                data = data[0];
                 break;
 
             case 3:
                 data = await this.financialInterviewRepository.fetchAmaiQ({ id_user_relation });
+                data = data[0];
                 break;
 
             case 4:
                 data = await this.financialInterviewRepository.fetchResults({ id_user_relation });
+                data = data[0];
                 break;
 
             default:
@@ -38,7 +41,6 @@ class FinancialInterviewUseCase {
         }
 
         return {
-            current_section,
             data,
         };
     }

@@ -25,18 +25,39 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     }
 
     // Fetch financial situation by relation
-    async fetchFinancialSituation ({ id_user_relation }) {
+    async fetchFinancialSituationInfo ({ id_user_relation }) {
         const rows = await db.query(
-            `SELECT fs.*, cp.contributor, cp.relation, cp.income
-            FROM financial_situation fs
-            LEFT JOIN contributing_people cp
-                ON cp.id_user_relation = fs.id_user_relation
-            WHERE fs.id_user_relation = ?`,
+            `SELECT *
+            FROM financial_situation
+            WHERE id_user_relation = ?`,
             [id_user_relation]
         );
 
+        return rows[0] || null;
+    }
+
+    // Fetch contributors by relation
+    async fetchContributors ({ id_user_relation }) {
+        const rows = await db.query(
+            `SELECT contributor, relation, income
+            FROM contributing_people
+            WHERE id_user_relation = ?`,
+            [id_user_relation]
+        );
+
+        return rows;
+    }
+
+    // Get elements to create the entity
+    async fetchFinancialSituation ({ id_user_relation }) {
+        const base = await this.fetchFinancialSituationInfo({ id_user_relation });
+        const contributorsRows = await this.fetchContributors({ id_user_relation });
+
         return new FinancialInterview({
-            data: rows,
+            data: {
+                base,
+                contributors: contributorsRows,
+            },
             current_section: 1,
         });
     }

@@ -37,17 +37,6 @@ class FinancialInterview {
         return salaryAfter + scholarship;
     }
 
-    // Build an array with each contributor
-    buildContributors (data) {
-        return data
-            .filter(row => row.contributor)
-            .map(row => ({
-                name: row.contributor,
-                relation: row.relation,
-                income: Number(row.income) || 0,
-            }));
-    }
-
     // Build Salary section especification
     buildSalary (base) {
         return {
@@ -88,7 +77,7 @@ class FinancialInterview {
                 others_expenses: Number(base.others_expenses) || 0,
                 total_expenses: Number(base.total_expenses) || 0,
             },
-            economic_situation: base.economic_situation,
+            economic_situation: base.economic_situation ?? null,
             num_economic_dependents: Number(base.num_economic_dependents) || 0,
         };
     }
@@ -97,14 +86,20 @@ class FinancialInterview {
 
     // Financial Situation
     mapFinancialSituation (data) {
-        const rows = Array.isArray(data) ? data : [];
-        const base = rows[0] || {};
+        const base = data.base || {};
+        const contributors = data.contributors[0] || [];
 
-        const contributors = this.buildContributors(data);
-        const totalContributors = contributors.reduce((sum, c) => sum + c.income, 0);
+        const formattedContributors = contributors.map(c => ({
+            name: c.contributor ?? null,
+            relation: c.relation ?? null,
+            income: Number(c.income) || 0,
+        }));
+
+        const totalContributors = formattedContributors
+            .reduce((sum, c) => sum + c.income, 0);
 
         return {
-            income: this.buildIncome(base, contributors, totalContributors),
+            income: this.buildIncome(base, formattedContributors, totalContributors),
             expenses: this.buildExpenses(base),
         };
     }
@@ -113,7 +108,7 @@ class FinancialInterview {
     mapEscGovernment (data) {
         return {
             min_income: Number(data.min_income) || 0,
-            ocupation: data.ocupation,
+            ocupation: data.ocupation ?? null,
             family_expenses: Number(data.family_expenses) || 0,
 
             housing: {
@@ -132,7 +127,7 @@ class FinancialInterview {
                 family_health: Number(data.family_health) || 0,
             },
 
-            socioeconomic_level: data.socioeconomic_level,
+            socioeconomic_level: data.socioeconomic_level ?? null,
             total: Number(data.total) || 0,
         };
     }
@@ -140,14 +135,14 @@ class FinancialInterview {
     // AMAI Questionary
     mapAmai (data) {
         return {
-            last_studies: data.last_studies,
+            last_studies: data.last_studies ?? null,
             num_bathrooms: Number(data.num_bathrooms) || 0,
             num_car: Number(data.num_car) || 0,
             has_internet: Number(data.has_internet) || 0,
             has_worked: Number(data.has_worked) || 0,
             has_bedroom: Number(data.has_bedroom) || 0,
 
-            socioeconomic_level: data.socioeconomic_level,
+            socioeconomic_level: data.socioeconomic_level?? null,
             total: Number(data.total) || 0,
         };
     }
@@ -159,7 +154,7 @@ class FinancialInterview {
             total_expenses: Number(data.total_expenses) || 0,
 
             government: {
-                level: data.socio_level_gov,
+                level: data.socio_level_gov ?? null,
                 score: Number(data.total_gov) || 0,
             },
 
