@@ -105,7 +105,9 @@ class FinancialInterview {
     }
 
     // ESC Goverment
-    mapEscGovernment (data) {
+    mapEscGovernment (datas) {
+        const data = Array.isArray(datas) ? datas[0] : datas;
+
         return {
             min_income: Number(data.min_income) || 0,
             ocupation: data.ocupation ?? null,
@@ -133,7 +135,9 @@ class FinancialInterview {
     }
 
     // AMAI Questionary
-    mapAmai (data) {
+    mapAmai (datas) {
+        const data = Array.isArray(datas) ? datas[0] : datas;
+
         return {
             last_studies: data.last_studies ?? null,
             num_bathrooms: Number(data.num_bathrooms) || 0,
@@ -148,7 +152,9 @@ class FinancialInterview {
     }
 
     // Results
-    mapResults (data) {
+    mapResults (datas) {
+        const data = Array.isArray(datas) ? datas[0] : datas;
+
         return {
             total_income: Number(data.total_income) || 0,
             total_expenses: Number(data.total_expenses) || 0,

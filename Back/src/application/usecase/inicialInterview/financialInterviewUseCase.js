@@ -23,7 +23,6 @@ class FinancialInterviewUseCase {
 
             case 2:
                 data = await this.financialInterviewRepository.fetchEscGov({ id_user_relation });
-                data = data[0];
                 break;
 
             case 3:
