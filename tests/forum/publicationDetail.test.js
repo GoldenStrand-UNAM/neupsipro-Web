@@ -40,7 +40,7 @@ describe('Publication Detail: GET /forum/publication/id ', () => {
 
     const res = await request(app).get('/publication/999999999');
     expect(res.status).toBe(200);
-    expect(res.body.dto.status).toBe(false);
+    expect(res.body.dto.success).toBe(false);
   });
 
 });
