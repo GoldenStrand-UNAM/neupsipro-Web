@@ -71,10 +71,12 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
             [id_user_relation]
         );
 
-        return rows.map(row => new FinancialInterview({
-            data: row,
+        const base = rows[0] || {};
+
+        return new FinancialInterview({
+            data: base,
             current_section: 2,
-        }));
+        });
     }
 
     // Fetch AMAI Wuestionary by relation
