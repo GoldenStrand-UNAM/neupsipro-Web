@@ -25,14 +25,18 @@
 
                 <!--Main Header-->
                 <div>
-                    <h1 class="text-xl font-bold">
-                    <svg class = "black-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-
-                    Usuario 
-
-                </h1>
+                    <div class="flex">
+                        <a href="/users">
+                            <button class="cursor-pointer pb">
+                                <svg class = "black-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </button>
+                        </a>
+                        <h1 class="text-xl font-bold pl-1">
+                            Usuario 
+                        </h1>
+                    </div>
                 <hr class="border-2 border-[#002B7A]">
                 </div>
                 
@@ -57,13 +61,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
                             </svg>
                             <span class="text-gray-600">Edad:</span>
-                            <span class="font-medium" id="userAge"></span>años
+                            <span class="font-medium" id="userAge"></span>
                         </div>
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
                             </svg>
-                            <span class="text-gray-600">Fecha:</span>
+                            <span class="text-gray-600">Ingreso a unidad:</span>
                             <span class="font-medium" id="userDate"></span>
                         </div>
                         <div class="flex items-center gap-3">
@@ -73,6 +77,20 @@
                             <span class="text-gray-600">Fase:</span>
                             <span class="font-medium" id="userPhase"></span>
                         </div>
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                            </svg>
+                            <span class="text-gray-600">Pares:</span>
+                            <span class="font-medium" id="groupIntervention"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                            <span class="text-gray-600">Etiología:</span>
+                            <span class="font-medium" id="etiology"></span>
+                        </div>
                     </div>
 
                     <!-- Second Column -->
@@ -81,63 +99,76 @@
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 27 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.038 24.2563H8.538V20.9106H11.538V19.2378H8.538V15.8921H7.038V19.2378H4.038V20.9106H7.038V24.2563ZM15 18.9166H23.25V17.4361H15V18.9166ZM15 22.9047H20.25V21.4259H15V22.9047ZM2.424 30.1113C1.733 30.1113 1.1565 29.8537 0.6945 29.3385C0.2325 28.8232 0.001 28.1803 0 27.4097V11.0659C0 10.2964 0.2315 9.65403 0.6945 9.13879C1.1575 8.62355 1.7335 8.36537 2.4225 8.36426H10.5V1.67285C10.5 1.20334 10.645 0.80743 10.935 0.485127C11.224 0.161709 11.579 0 12 0H15C15.421 0 15.776 0.161709 16.065 0.485127C16.355 0.80743 16.5 1.20334 16.5 1.67285V8.36426H24.5775C25.2675 8.36426 25.8435 8.62243 26.3055 9.13879C26.7675 9.65514 26.999 10.2981 27 11.0676V27.4097C27 28.1792 26.7685 28.8221 26.3055 29.3385C25.8425 29.8548 25.2665 30.1124 24.5775 30.1113H2.424ZM2.424 28.4385H24.5775C24.8465 28.4385 25.0675 28.342 25.2405 28.1491C25.4135 27.9561 25.5 27.7097 25.5 27.4097V11.0659C25.5 10.7659 25.4135 10.5194 25.2405 10.3265C25.0675 10.1336 24.8465 10.0371 24.5775 10.0371H16.5V11.3252C16.5 11.7724 16.3505 12.1627 16.0515 12.4962C15.7525 12.8297 15.402 12.9969 15 12.9981H12C11.598 12.9981 11.2475 12.8308 10.9485 12.4962C10.6495 12.1616 10.5 11.7713 10.5 11.3252V10.0371H2.424C2.154 10.0371 1.9325 10.1336 1.7595 10.3265C1.5865 10.5194 1.5 10.7665 1.5 11.0676V27.4097C1.5 27.7097 1.5865 27.9561 1.7595 28.1491C1.9325 28.342 2.154 28.4385 2.424 28.4385ZM12 11.3252H15V1.67285H12V11.3252Z" fill="black"/>
                             </svg>
-                            <span class="text-gray-600">Asignado:</span>
-                            <span class="font-medium" id="userClinic"></span>
+                            <span class="text-gray-600">Protesista:</span>
+                            <span class="font-medium" id="prosthetist"></span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg"">
-                                <path d="M4.29122 9.98675L13.033 11.3041L14.1049 20.7636L20.5744 2.72902L4.29122 9.98675ZM0.763873 11.4292C0.571344 11.4017 0.392478 11.3036 0.25542 11.1503C0.118362 10.997 0.0308936 10.7972 0.00677988 10.5825C-0.0173339 10.3677 0.0232756 10.15 0.122218 9.9638C0.22116 9.77757 0.372818 9.63331 0.553326 9.55373L21.8213 0.0698813C21.9803 -0.00110184 22.1545 -0.0184785 22.3223 0.0199057C22.4901 0.0582898 22.6441 0.150747 22.7652 0.285814C22.8863 0.420882 22.9692 0.59262 23.0036 0.779738C23.038 0.966856 23.0224 1.16112 22.9588 1.33846L14.474 24.9901C14.4023 25.1916 14.2725 25.3606 14.105 25.4707C13.9376 25.5807 13.7421 25.6254 13.5493 25.5978C13.3566 25.5702 13.1776 25.4718 13.0405 25.3182C12.9034 25.1645 12.8161 24.9643 12.7924 24.7492L11.4662 13.0362L0.763873 11.4292Z" fill="black"/>
+                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
                             </svg>
-                            <span class="text-gray-600">Modalidad:</span>
-                            <span class="font-medium" id="userModality"></span>
+                            <span class="text-gray-600">Ingreso a neuropsicología:</span>
+                            <span class="font-medium" id="neuroDate"></span>
                         </div>
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                             </svg>
-                            <span class="text-gray-600">Cuando viene:</span>
-                            <span class="font-medium" id="userAttendance"></span>
+                            <span class="text-gray-600">Fecha de amputación:</span>
+                            <span class="font-medium" id="amputationDate"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="28" height="19" viewBox="0 0 28 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28 0.730769C28 0.924581 27.925 1.11046 27.7915 1.2475C27.658 1.38455 27.4769 1.46154 27.2881 1.46154H21.3559V6.57692C21.3559 6.77074 21.2809 6.95661 21.1474 7.09365C21.0139 7.2307 20.8329 7.30769 20.6441 7.30769H14.7119V12.4231C14.7119 12.6169 14.6369 12.8028 14.5034 12.9398C14.3699 13.0769 14.1888 13.1538 14 13.1538H8.0678V18.2692C8.0678 18.463 7.9928 18.6489 7.8593 18.786C7.7258 18.923 7.54473 19 7.35593 19H0.711864C0.523066 19 0.342001 18.923 0.2085 18.786C0.0749998 18.6489 0 18.463 0 18.2692C0 18.0754 0.0749998 17.8895 0.2085 17.7525C0.342001 17.6155 0.523066 17.5385 0.711864 17.5385H6.64407V12.4231C6.64407 12.2293 6.71907 12.0434 6.85257 11.9063C6.98607 11.7693 7.16713 11.6923 7.35593 11.6923H13.2881V6.57692C13.2881 6.38311 13.3631 6.19724 13.4966 6.06019C13.6301 5.92315 13.8112 5.84615 14 5.84615H19.9322V0.730769C19.9322 0.536957 20.0072 0.351083 20.1407 0.214037C20.2742 0.0769914 20.4553 0 20.6441 0H27.2881C27.4769 0 27.658 0.0769914 27.7915 0.214037C27.925 0.351083 28 0.536957 28 0.730769Z" fill="black"/>
+                            </svg>
+                            <span class="text-gray-600">Nivel de amputación:</span>
+                            <span class="font-medium" id="amputationLevel"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14.5 28.2721V16.3368M14.5 16.3368C14.5 10.4921 10.5048 5.72205 5.48755 5.45117M14.5 16.3368C14.5 10.4921 18.4953 5.72205 23.5125 5.45117" stroke="black" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M5.48752 9.46485V1.41367C5.48752 0.601541 4.63449 0.194182 4.13564 0.769155L0.79697 4.6139C0.702819 4.72232 0.628135 4.85104 0.57718 4.9927C0.526226 5.13436 0.5 5.28619 0.5 5.43952C0.5 5.59285 0.526226 5.74468 0.57718 5.88634C0.628135 6.028 0.702819 6.15671 0.79697 6.26514L4.1361 10.1099C4.63449 10.6843 5.48752 10.2775 5.48752 9.46485ZM23.5125 9.46485V1.41367C23.5125 0.601541 24.3655 0.194182 24.8644 0.769155L28.203 4.6139C28.2972 4.72232 28.3719 4.85104 28.4228 4.9927C28.4738 5.13436 28.5 5.28619 28.5 5.43952C28.5 5.59285 28.4738 5.74468 28.4228 5.88634C28.3719 6.028 28.2972 6.15671 28.203 6.26514L24.8644 10.1099C24.3655 10.6843 23.5125 10.2775 23.5125 9.46485Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+
+                            <span class="text-gray-600">Lateralidad:</span>
+                            <span class="font-medium" id="laterality"></span>
                         </div>
                     </div>
 
                 </div>
 
-                <!--Estatus Usuario--> 
-                <div id="statusCard"
-                    class="flex items-center justify-between rounded-3xl p-4 w-full">
-
-                    <!-- Content -->
-                    <div class="flex items-center gap-4">
-
-                        <!-- Icono -->
-                        <div class="rounded-xl p-2">
-                            <svg class="w-8 h-8" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M26.16 5.24993H23.625V4.45493C23.6173 4.26642 23.5723 4.0813 23.4925 3.91033C23.4127 3.73936 23.2998 3.58593 23.1602 3.45895C23.0207 3.33197 22.8573 3.23396 22.6796 3.17062C22.5019 3.10727 22.3134 3.07984 22.125 3.08993H13.875C13.6866 3.07984 13.498 3.10727 13.3203 3.17062C13.1426 3.23396 12.9792 3.33197 12.8397 3.45895C12.7002 3.58593 12.5872 3.73936 12.5075 3.91033C12.4277 4.0813 12.3826 4.26642 12.375 4.45493V5.24993H9.83997C8.8454 5.24993 7.89158 5.64502 7.18832 6.34828C6.48505 7.05154 6.08997 8.00537 6.08997 8.99993V29.1599C6.08997 30.1545 6.48505 31.1083 7.18832 31.8116C7.89158 32.5148 8.8454 32.9099 9.83997 32.9099H26.16C27.1545 32.9099 28.1084 32.5148 28.8116 31.8116C29.5149 31.1083 29.91 30.1545 29.91 29.1599V8.99993C29.91 8.00537 29.5149 7.05154 28.8116 6.34828C28.1084 5.64502 27.1545 5.24993 26.16 5.24993ZM13.875 4.58993L22.125 4.60493V6.28493C22.125 7.19993 21.09 7.96493 19.875 7.96493H16.125C14.895 7.96493 13.875 7.19993 13.875 6.28493V4.58993ZM28.41 29.1599C28.406 29.7555 28.1677 30.3255 27.7466 30.7466C27.3255 31.1677 26.7555 31.406 26.16 31.4099H9.83997C9.24323 31.4099 8.67093 31.1729 8.24898 30.7509C7.82702 30.329 7.58997 29.7567 7.58997 29.1599V8.99993C7.58997 8.40319 7.82702 7.83089 8.24898 7.40894C8.67093 6.98698 9.24323 6.74993 9.83997 6.74993H12.42C12.6246 7.56316 13.1068 8.27942 13.7832 8.77509C14.4596 9.27077 15.2879 9.51475 16.125 9.46493H19.875C20.7121 9.51475 21.5403 9.27077 22.2167 8.77509C22.8931 8.27942 23.3753 7.56316 23.58 6.74993H26.16C26.7567 6.74993 27.329 6.98698 27.751 7.40894C28.1729 7.83089 28.41 8.40319 28.41 8.99993V29.1599Z" fill="black"/>
-                                <path d="M21.75 19.0654C21.75 19.2643 21.671 19.4551 21.5303 19.5958C21.3897 19.7364 21.1989 19.8154 21 19.8154H18.75V22.0654C18.75 22.2643 18.671 22.4551 18.5303 22.5958C18.3897 22.7364 18.1989 22.8154 18 22.8154C17.8011 22.8154 17.6103 22.7364 17.4697 22.5958C17.329 22.4551 17.25 22.2643 17.25 22.0654V19.8154H15C14.8011 19.8154 14.6103 19.7364 14.4697 19.5958C14.329 19.4551 14.25 19.2643 14.25 19.0654C14.25 18.8665 14.329 18.6758 14.4697 18.5351C14.6103 18.3944 14.8011 18.3154 15 18.3154H17.25V16.0654C17.25 15.8665 17.329 15.6758 17.4697 15.5351C17.6103 15.3944 17.8011 15.3154 18 15.3154C18.1977 15.3193 18.3863 15.3995 18.5261 15.5393C18.6659 15.6792 18.7462 15.8677 18.75 16.0654V18.3154H21C21.1977 18.3193 21.3863 18.3995 21.5261 18.5393C21.6659 18.6792 21.7462 18.8677 21.75 19.0654Z" fill="black"/>
-                            </svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center p-6 mt-6">
+                    <div class="space-y-4 w-fit mx-auto">
+                        <div class="flex items-center justify-start gap-2">
+                            <span class="text-gray-600 text-base md:text-xl">Estatus: </span>
+                            <span id="state"></span>
                         </div>
-
-                        <!-- Text -->
-                        <div>
-                            <h3 class="text-base font-semibold text-black">
-                                Estatus por Usuario
-                            </h3>
-                            <p class="text-xs text-gray-700">
-                                Más datos personales para conocer al usuario.
-                            </p>
+                        <div class="flex items-center justify-start gap-2">
+                            <span class="text-gray-600 text-base md:text-xl">Próxima cita: </span>
+                            <span class="font-medium text-base md:text-xl" id="nextApt"></span>
                         </div>
                     </div>
-
-                    <!-- Consult Button -->
-                    <button class="flex items-center gap-5 bg-[#3350A9] text-white px-4 py-2 rounded-lg text-sm">
-                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                        </svg>
-                        Consultar
-                    </button>
-
+                    
+                    <div class="space-y-4 w-fit mx-auto">
+                        <div class="flex items-center justify-start gap-2">
+                            <svg class="w-5 h-5 md:w-7 md:h-7 shrink-0" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.4215 2.631H20.3077V4.38057H22.1538V26.2502H1.84615V4.38057H3.69231V2.631H1.84615C1.6201 2.60001 1.38967 2.61481 1.17009 2.67442C0.950514 2.73403 0.746769 2.83709 0.572305 2.9768C0.39784 3.11651 0.256623 3.28969 0.157972 3.48492C0.0593206 3.68015 0.00547898 3.89299 0 4.10939V26.5214C0.00120864 26.7167 0.0429961 26.9098 0.122976 27.0898C0.202956 27.2698 0.319562 27.4331 0.466136 27.5704C0.612711 27.7077 0.786383 27.8163 0.977236 27.8899C1.16809 27.9636 1.37239 28.0009 1.57846 27.9998H22.4215C22.6276 28.0009 22.8319 27.9636 23.0228 27.8899C23.2136 27.8163 23.3873 27.7077 23.5339 27.5704C23.6804 27.4331 23.797 27.2698 23.877 27.0898C23.957 26.9098 23.9988 26.7167 24 26.5214V4.10939C23.9988 3.91409 23.957 3.72094 23.877 3.54095C23.797 3.36096 23.6804 3.19766 23.5339 3.06038C23.3873 2.9231 23.2136 2.81452 23.0228 2.74085C22.8319 2.66717 22.6276 2.62985 22.4215 2.631Z" fill="black"/>
+                                <path d="M19.3847 4.66947C19.3823 4.1296 19.1549 3.6125 18.7521 3.23075C18.3493 2.849 17.8036 2.63352 17.2339 2.63122H15.5724C15.369 1.87854 14.9071 1.21141 14.2595 0.734998C13.6119 0.258588 12.8153 0 11.9955 0C11.1756 0 10.3791 0.258588 9.73146 0.734998C9.08382 1.21141 8.62191 1.87854 8.41856 2.63122H6.76625C6.19658 2.63352 5.65093 2.849 5.24811 3.23075C4.84529 3.6125 4.61791 4.1296 4.61548 4.66947V7.87993H19.3847V4.66947ZM17.5386 6.13036H6.46163V4.66947C6.46163 4.63156 6.46951 4.59402 6.48482 4.55899C6.50013 4.52397 6.52257 4.49215 6.55085 4.46534C6.57914 4.43853 6.61272 4.41727 6.64968 4.40276C6.68663 4.38825 6.72625 4.38079 6.76625 4.38079H10.1539V3.506C10.1539 3.04199 10.3484 2.59698 10.6947 2.26887C11.0409 1.94076 11.5105 1.75643 12.0001 1.75643C12.4897 1.75643 12.9593 1.94076 13.3055 2.26887C13.6517 2.59698 13.8462 3.04199 13.8462 3.506V4.38079H17.2339C17.3147 4.38079 17.3922 4.4112 17.4493 4.46534C17.5065 4.51948 17.5386 4.5929 17.5386 4.66947V6.13036Z" fill="black"/>
+                                <path d="M5.53833 10.5039H18.4614V12.2535H5.53833V10.5039Z" fill="black"/>
+                                <path d="M5.53833 14.0039H18.4614V15.7535H5.53833V14.0039Z" fill="black"/>
+                                <path d="M5.53833 17.5029H18.4614V19.2525H5.53833V17.5029Z" fill="black"/>
+                                <path d="M5.53833 21.002H18.4614V22.7515H5.53833V21.002Z" fill="black"/>
+                            </svg>
+                            <span class="text-gray-600 text-base md:text-xl">Protocolo: </span>
+                            <span class="font-medium text-base md:text-xl" id="protocol"></span>
+                        </div>
+                        <div class="flex items-center justify-start gap-2">
+                            <svg class="w-5 h-5 md:w-7 md:h-7 shrink-0" viewBox="0 0 27 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.038 24.2563H8.538V20.9106H11.538V19.2378H8.538V15.8921H7.038V19.2378H4.038V20.9106H7.038V24.2563ZM15 18.9166H23.25V17.4361H15V18.9166ZM15 22.9047H20.25V21.4259H15V22.9047ZM2.424 30.1113C1.733 30.1113 1.1565 29.8537 0.6945 29.3385C0.2325 28.8232 0.001 28.1803 0 27.4097V11.0659C0 10.2964 0.2315 9.65403 0.6945 9.13879C1.1575 8.62355 1.7335 8.36537 2.4225 8.36426H10.5V1.67285C10.5 1.20334 10.645 0.80743 10.935 0.485127C11.224 0.161709 11.579 0 12 0H15C15.421 0 15.776 0.161709 16.065 0.485127C16.355 0.80743 16.5 1.20334 16.5 1.67285V8.36426H24.5775C25.2675 8.36426 25.8435 8.62243 26.3055 9.13879C26.7675 9.65514 26.999 10.2981 27 11.0676V27.4097C27 28.1792 26.7685 28.8221 26.3055 29.3385C25.8425 29.8548 25.2665 30.1124 24.5775 30.1113H2.424ZM2.424 28.4385H24.5775C24.8465 28.4385 25.0675 28.342 25.2405 28.1491C25.4135 27.9561 25.5 27.7097 25.5 27.4097V11.0659C25.5 10.7659 25.4135 10.5194 25.2405 10.3265C25.0675 10.1336 24.8465 10.0371 24.5775 10.0371H16.5V11.3252C16.5 11.7724 16.3505 12.1627 16.0515 12.4962C15.7525 12.8297 15.402 12.9969 15 12.9981H12C11.598 12.9981 11.2475 12.8308 10.9485 12.4962C10.6495 12.1616 10.5 11.7713 10.5 11.3252V10.0371H2.424C2.154 10.0371 1.9325 10.1336 1.7595 10.3265C1.5865 10.5194 1.5 10.7665 1.5 11.0676V27.4097C1.5 27.7097 1.5865 27.9561 1.7595 28.1491C1.9325 28.342 2.154 28.4385 2.424 28.4385ZM12 11.3252H15V1.67285H12V11.3252Z" fill="black"/>
+                            </svg>
+                            <span class="text-gray-600 text-base md:text-xl">Asignado: </span>
+                            <span class="font-medium text-base md:text-xl" id="clinic"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <!--Initial Interview--> 
@@ -160,9 +191,7 @@
                             <h3 class="text-base font-semibold text-black">
                                 Entrevista Inicial
                             </h3>
-                            <p class="text-xs text-gray-700">
-                                Datos personales para conocer al usuario.
-                            </p>
+
                         </div>
                     </div>
 
@@ -195,12 +224,56 @@
                     </div>
                 </div>
 
+                <!--Intervention--> 
+                <div id="statusCard"
+                    class="flex items-center justify-between rounded-3xl p-4 w-full">
+
+                    <!-- Content -->
+                    <div class="flex items-center gap-4">
+
+                        <!-- Icon -->
+                        <div class="rounded-xl p-2">
+                            <svg class="w-8 h-8" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M26.16 5.24993H23.625V4.45493C23.6173 4.26642 23.5723 4.0813 23.4925 3.91033C23.4127 3.73936 23.2998 3.58593 23.1602 3.45895C23.0207 3.33197 22.8573 3.23396 22.6796 3.17062C22.5019 3.10727 22.3134 3.07984 22.125 3.08993H13.875C13.6866 3.07984 13.498 3.10727 13.3203 3.17062C13.1426 3.23396 12.9792 3.33197 12.8397 3.45895C12.7002 3.58593 12.5872 3.73936 12.5075 3.91033C12.4277 4.0813 12.3826 4.26642 12.375 4.45493V5.24993H9.83997C8.8454 5.24993 7.89158 5.64502 7.18832 6.34828C6.48505 7.05154 6.08997 8.00537 6.08997 8.99993V29.1599C6.08997 30.1545 6.48505 31.1083 7.18832 31.8116C7.89158 32.5148 8.8454 32.9099 9.83997 32.9099H26.16C27.1545 32.9099 28.1084 32.5148 28.8116 31.8116C29.5149 31.1083 29.91 30.1545 29.91 29.1599V8.99993C29.91 8.00537 29.5149 7.05154 28.8116 6.34828C28.1084 5.64502 27.1545 5.24993 26.16 5.24993ZM13.875 4.58993L22.125 4.60493V6.28493C22.125 7.19993 21.09 7.96493 19.875 7.96493H16.125C14.895 7.96493 13.875 7.19993 13.875 6.28493V4.58993ZM28.41 29.1599C28.406 29.7555 28.1677 30.3255 27.7466 30.7466C27.3255 31.1677 26.7555 31.406 26.16 31.4099H9.83997C9.24323 31.4099 8.67093 31.1729 8.24898 30.7509C7.82702 30.329 7.58997 29.7567 7.58997 29.1599V8.99993C7.58997 8.40319 7.82702 7.83089 8.24898 7.40894C8.67093 6.98698 9.24323 6.74993 9.83997 6.74993H12.42C12.6246 7.56316 13.1068 8.27942 13.7832 8.77509C14.4596 9.27077 15.2879 9.51475 16.125 9.46493H19.875C20.7121 9.51475 21.5403 9.27077 22.2167 8.77509C22.8931 8.27942 23.3753 7.56316 23.58 6.74993H26.16C26.7567 6.74993 27.329 6.98698 27.751 7.40894C28.1729 7.83089 28.41 8.40319 28.41 8.99993V29.1599Z" fill="black"/>
+                                <path d="M21.75 19.0654C21.75 19.2643 21.671 19.4551 21.5303 19.5958C21.3897 19.7364 21.1989 19.8154 21 19.8154H18.75V22.0654C18.75 22.2643 18.671 22.4551 18.5303 22.5958C18.3897 22.7364 18.1989 22.8154 18 22.8154C17.8011 22.8154 17.6103 22.7364 17.4697 22.5958C17.329 22.4551 17.25 22.2643 17.25 22.0654V19.8154H15C14.8011 19.8154 14.6103 19.7364 14.4697 19.5958C14.329 19.4551 14.25 19.2643 14.25 19.0654C14.25 18.8665 14.329 18.6758 14.4697 18.5351C14.6103 18.3944 14.8011 18.3154 15 18.3154H17.25V16.0654C17.25 15.8665 17.329 15.6758 17.4697 15.5351C17.6103 15.3944 17.8011 15.3154 18 15.3154C18.1977 15.3193 18.3863 15.3995 18.5261 15.5393C18.6659 15.6792 18.7462 15.8677 18.75 16.0654V18.3154H21C21.1977 18.3193 21.3863 18.3995 21.5261 18.5393C21.6659 18.6792 21.7462 18.8677 21.75 19.0654Z" fill="black"/>
+                            </svg>
+                        </div>
+
+                        <!-- Text -->
+                        <div>
+                            <h3 class="text-base font-semibold text-black">
+                                Intervención
+                            </h3>
+
+                        </div>
+                    </div>
+
+                    <!-- Consult Button -->
+                    <button class="flex items-center gap-5 bg-[#3350A9] text-white px-3 py-2 rounded-lg text-sm">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        Consultar
+                    </button>
+
+                </div>
+
                 <div>
-                    <h2 class="text-xl pt-7 p-3">Bitácora de Pruebas</h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl pt-7 p-3">Evaluación</h2>
+                        <button class="flex items-center gap-5 bg-[#3350A9] text-white px-3 py-2 rounded-lg text-sm">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            Consultar resultados
+                        </button>
+                    </div>
                     <div id="logbookContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 pb-5"> </div>
                 </div>
-                
-
             </div>
         </main>
 
@@ -222,30 +295,58 @@
                 user.name || "Sin nombre";
 
             document.getElementById("userCode").textContent =
-                user.reference_number || "N/A";
+                user.referenceNumber || "N/A";
 
             // First Column
             document.getElementById("userAge").textContent =
                 user.age || "N/A";
 
             document.getElementById("userDate").textContent =
-                user.registration_date
-                    ? new Date(user.registration_date).toLocaleDateString()
+                user.registrationDate
+                    ? new Date(user.registrationDate).toLocaleDateString()
                     : "N/A";
 
             document.getElementById("userPhase").textContent =
                 user.phase || "N/A";
             
+            document.getElementById("groupIntervention").textContent =
+                user.groupIntervention || "N/A";
+
+            document.getElementById("etiology").textContent =
+                user.amputationEtiology || "N/A";
+                
             // Second Column
-            document.getElementById("userClinic").textContent =
-                user.assigned_clinic || "N/A";
+            document.getElementById("prosthetist").textContent =
+                user.prosthetist || "N/A";
 
-            document.getElementById("userModality").textContent =
-                user.modality || "N/A";
+            document.getElementById("neuroDate").textContent =
+                user.neuroEntryDate 
+                    ? new Date(user.neuroEntryDate).toLocaleDateString()
+                    : "N/A";
 
-            document.getElementById("userAttendance").textContent =
-                user.attendance || "N/A";
 
+            document.getElementById("amputationDate").textContent =
+                user.amputationDate 
+                    ? new Date(user.amputationDate).toLocaleDateString()
+                    : "N/A";
+
+            document.getElementById("amputationLevel").textContent =
+                user.amputationLevel || "N/A";
+
+            document.getElementById("laterality").textContent =
+                user.laterality || "N/A";
+
+            
+            document.getElementById("state").innerHTML = getStatusBadge(user.state);
+
+            document.getElementById("nextApt").textContent =
+                formatAppointmentDate(user.nextAppointment) || "N/A";
+
+            document.getElementById("protocol").textContent =
+                user.protocol || "N/A";
+
+            document.getElementById("clinic").textContent =
+                user.assignedClinic || "N/A";
 
             // ----- TESTS -----
             const tests = [
@@ -344,6 +445,31 @@
                 // icon
                 const icon = document.getElementById(iconId);
                 if (icon) icon.innerHTML = colors.icon;
+            }
+
+            function getStatusBadge(val) {
+                const map = {
+                    'Discharged': { label: 'Alta', border: '#E03232', text: '#E03232', bg:'rgba(224,50,50,0.33)'},
+                    'Stand_by': { label: 'Stand By', border: '#1F893A', text: '#1F893A', bg:'rgba(31,137,58,0.33)'},
+                    'Active': { label: 'En proceso', border: '#938B2E', text:'#938B2E', bg: 'rgba(147,139,46,0.33)'},
+                    'Declined': { label: 'No ingresó',border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)'},
+                };
+                const m = map[val];
+                if (!m) return `<span class="text-gray-300 text-xl"> - </span>`;
+                return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
+            }
+
+            function formatAppointmentDate(dateString) {
+                const date = new Date(dateString);
+
+                return date.toLocaleString('es-MX', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true 
+                });
             }
 
             function createTestCard(test, status) {

@@ -19,6 +19,7 @@ class UserDTO {
         prosthetist,
         neuroEntryDate,
         amputationLevel,
+        nextAppointment,
         initialInterview,
         banfe,
         wais,
@@ -30,10 +31,10 @@ class UserDTO {
         this.referenceNumber = referenceNumber;
         this.name = name;
         this.age = age;
-        this.registration_date = registrationDate;
+        this.registrationDate = registrationDate;
         this.phase = phase;
 
-        this.assigned_clinic = assignedClinic;
+        this.assignedClinic = assignedClinic;
         this.modality = modality;
         this.attendance = attendance;
         this.amputationDate = amputationDate;
@@ -45,8 +46,9 @@ class UserDTO {
         this.prosthetist = prosthetist;
         this.neuroEntryDate = neuroEntryDate;
         this.amputationLevel = amputationLevel;
+        this.nextAppointment = nextAppointment;
 
-        this.initial_interview = initialInterview;
+        this.initialInterview = initialInterview;
         this.banfe = banfe;
         this.wais = wais;
         this.rey = rey;
@@ -75,6 +77,7 @@ class UserDTO {
             prosthetist: entity.prosthetist,
             neuroEntryDate: entity.neuroEntryDate,
             amputationLevel: entity.amputationLevel,
+            nextAppointment: entity.nextAppointment,
 
             initialInterview: entity.initialInterview,
             banfe: entity.banfe,

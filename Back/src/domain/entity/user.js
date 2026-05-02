@@ -14,24 +14,26 @@ class User {
         this.modality = data.modality;
         this.attendance = data.attendance;
         this.amputationDate = data.amputation_date;
-        this.protocol = data.protocol;
         this.state = data.state;
-        this.groupIntervention = data.group_intervention;
         this.amputationEtiology = data.amputation_etiology;
-        this.laterality = data.laterality;
         this.prosthetist = data.prosthetist;
         this.neuroEntryDate = data.neuro_entry_date;
         this.amputationLevel = data.amputation_level;
-
+        this.nextAppointment = data.next_appointment;
+        
+        this.laterality = this.setLaterality(data.laterality);
+        this.groupIntervention = this.getGroupIntervention(data.group_intervention);
         this.initialInterview = this.getStatus(data.initial_interview);
         this.banfe = this.getStatus(data.banfe);
         this.wais = this.getStatus(data.wais);
         this.rey = this.getStatus(data.rey);
         this.questionnaires = this.getStatus(data.questionnaires);
         this.dr = this.getStatus(data.dr);
+        this.protocol = this.setProtocol(data.protocol);
+
     }   
 
-calculateAge (birthdate) {
+    calculateAge (birthdate) {
         if (!birthdate) return null;
 
         const today = new Date();
@@ -82,6 +84,38 @@ calculateAge (birthdate) {
                 return "Entregado";
         }
     }
+
+    getGroupIntervention (status) {
+        if (status === null || status === undefined) return null;
+        switch (status) {
+            case 0: 
+                return "No asiste";
+            case 1: 
+                return "Sí asiste";
+        }
+    }
+
+    setLaterality (laterality) {
+        if (!laterality) {
+            return null;
+        } else if (laterality === 'right') {
+            return "Diestra";
+        } else if (laterality === 'left') {
+            return "Zurda";
+        } else if (laterality === 'both') 
+            return "Ambidiestra"; 
+        
+    }
+
+    setProtocol (protocol) {
+        if (!protocol) {
+            return null;
+        } else if (protocol === 'Clinical' || protocol === "clinical") {
+            return "Clínico";
+        } else if (protocol === 'Research' || protocol === "research") {
+            return "Investigación";
+    }
+}
 }
 
 module.exports = User;
