@@ -30,6 +30,7 @@ class consultUserUseCase {
         prosthetist: e.prosthetist,
         neuroEntryDate: e.neuroEntryDate,
         amputationLevel: e.amputationLevel,
+        nextAppointment: e.nextAppointment,
         
         initialInterview: e.initialInterview,
         banfe: e.banfe,

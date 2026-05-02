@@ -15,12 +15,26 @@ class UsersRepository extends ImpUsersRepository {
                 u.lastname_m,
                 u.profile_photo,
                 u.birthdate,
-                uc.first_name AS assigned_clinic
+                ur.id_clinic_user, 
+                uc.first_name AS assigned_clinic,
+                
+                -- Subquery to get next appointment
+                (
+                    SELECT a.date_time 
+                    FROM appointment a
+                    -- Join w/user relation to know whose appointment this is
+                    JOIN user_relation ur_app ON a.id_user_relation = ur_app.id_user_relation
+                    WHERE ur_app.id_user = l.id_user 
+                    AND a.date_time >= NOW() 
+                    ORDER BY a.date_time ASC 
+                    LIMIT 1
+                ) AS next_appointment
+
             FROM user_info l
             JOIN users u ON l.id_user = u.id_user
-            LEFT JOIN user_relation ur ON u.id_user = ur.id_user
+            LEFT JOIN user_relation ur ON u.id_user = ur.id_user AND ur.type = 'assigned'
             LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
-            WHERE l.id_user = ?`,
+            WHERE l.id_user = ?;`,
             [id_user]
         );        
 
