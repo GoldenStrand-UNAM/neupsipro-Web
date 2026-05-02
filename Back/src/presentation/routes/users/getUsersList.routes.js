@@ -19,8 +19,8 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-  router.get('/usuarios',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsersPage(req, res));
-  router.get('/api/usuarios',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsers(req, res));
+    router.get("/users",  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsersPage(req, res));
+    router.get("/api/users",  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsers(req, res));
 
   return router;
 
