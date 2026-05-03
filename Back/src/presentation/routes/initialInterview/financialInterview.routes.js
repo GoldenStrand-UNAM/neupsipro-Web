@@ -24,6 +24,12 @@ module.exports = (authUseCase) => {
         (req, res) => controller.getFinancialInterview(req, res)
     );
 
+    router.get('/financial/view', (req, res) => {
+        res.render('inicialInterview/financial/incomeAndExpense', {
+            activePage: 'usuarios',
+        });
+    });
+
 
     return router;
 };

@@ -8,4 +8,24 @@
         @apply hover:brightness-125 hover:font-bold transition-all duration-200;
         @apply block w-full;
     }
+
+    .section_title {
+        @apply text-lg font-semibold;
+        @apply pb-2 pt-4;
+    }
+
+    .total {
+        @apply max-w-md;
+        @apply flex justify-end;
+        @apply pt-6 pb-6 pr-12;
+        @apply col-span-2;
+        @apply text-[#BA8700];
+        @apply underline underline-offset-4;
+    }
+
+    .section {
+        @apply max-w-md pt-2;
+        @apply flex justify-end;
+        @apply text-gray-400 gap-2;
+    }
 }
