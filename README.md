@@ -49,7 +49,7 @@ _npm install @aws-sdk/s3-request-presigner_
 
 _npm i express-rate-limit_
 
-_npm --save-dev eslint-plugin-import-x_
+_npm i --save-dev eslint-plugin-import-x_
 
 
 

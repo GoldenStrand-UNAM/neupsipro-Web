@@ -81,6 +81,7 @@ const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 app.use('/forum', forumRoutes(authUseCase));
 
 const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
+
 app.use('/publication', publicationRoutes(authUseCase));
 
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
@@ -90,7 +91,6 @@ app.use('/', usersRoutes(authUseCase));
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 
 app.use('/', clinicalRoutes(authUseCase));
-
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

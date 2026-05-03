@@ -1,13 +1,13 @@
-const db = require ("../database/database");
+const db = require ('../database/database');
 const ImpInteractionRepository = require('../../domain/repository/ImpInteractionRepository');
 
 class InteractionRepository extends ImpInteractionRepository {
-     async fetchAllFromOne ({idPublication}) {
-        if(!idPublication || idPublication == '') {
-            throw  new Error("Missing ID");
-        }
-        const result = await db.query(
-            `SELECT 
+  async fetchAllFromOne ({ idPublication }) {
+    if (!idPublication || idPublication === '') {
+      throw  new Error('Missing ID');
+    }
+    const result = await db.query(
+      `SELECT 
                 i.id_interaction,
                 i.is_like,
                 i.content, 
@@ -20,31 +20,31 @@ class InteractionRepository extends ImpInteractionRepository {
             JOIN publication p ON p.id_publication = i.id_publication 
 			JOIN users u ON u.id_user = i.id_user AND i.is_like = 0
             WHERE p.id_publication = ?`,
-            [idPublication]
-        );
-        return result;
-    }
+      [idPublication]
+    );
+    return result;
+  }
 
-    async fetchLikes ({idPublication}) {
-        if(!idPublication || idPublication == '') {
-            throw  new Error("Missing ID");
-        }
-        const result = await db.query(`SELECT COUNT(*) AS likes
+  async fetchLikes ({ idPublication }) {
+    if (!idPublication || idPublication === '') {
+      throw  new Error('Missing ID');
+    }
+    const result = await db.query(`SELECT COUNT(*) AS likes
             FROM interaction i
             WHERE i.id_publication = '87981835-3abc-11f1-b5a8-dc2148751be6' AND i.is_like = 1;
             `, [idPublication]);
-        return result[0];
-    }
+    return result[0];
+  }
 
-    async fetchComments ({idPublication}) {
-        if(!idPublication || idPublication == '') {
-            throw  new Error("Missing ID");
-        }
-        const result = await db.query(`SELECT COUNT(*) AS comments
+  async fetchComments ({ idPublication }) {
+    if (!idPublication || idPublication === '') {
+      throw  new Error('Missing ID');
+    }
+    const result = await db.query(`SELECT COUNT(*) AS comments
             FROM interaction i
             WHERE i.id_publication = '87981835-3abc-11f1-b5a8-dc2148751be6' AND i.is_like = 0;
             `, [idPublication]);
-        return result[0];
-    }
+    return result[0];
+  }
 }
 module.exports = InteractionRepository;

@@ -1,28 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const publications = document.querySelectorAll('[id^="p-"]');
-    const publicationModal = document.getElementById('publicationContent');
-    const publicationBox = document.getElementById('publicationBox')
-    const closeIcon = document.getElementById('closeIconModal');
+  const publications = document.querySelectorAll('[id^="p-"]');
+  const publicationModal = document.getElementById('publicationContent');
+  const publicationBox = document.getElementById('publicationBox');
+  const closeIcon = document.getElementById('closeIconModal');
 
-    const closeModal = () => {
-        publicationBox.classList.add('hidden');
-        publicationModal.innerHTML = `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada! </p>`
-    };
+  const closeModal = () => {
+    publicationBox.classList.add('hidden');
+    publicationModal.innerHTML = '<p class="text-left font-[\'Roboto\'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada! </p>';
+  };
 
-    const modalHTML = (dto) => {
-        const publication = dto.publication[0];
-        const date = new Date(publication.date).toLocaleString('es-MX', {
-        year: 'numeric', month: '2-digit', day: 'numeric',
-        hour: '2-digit', minute: '2-digit',
+  const modalHTML = (dto) => {
+    const publication = dto.publication[0];
+    const date = new Date(publication.date).toLocaleString('es-MX', {
+      year: 'numeric', month: '2-digit', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
     });
     return `
     <div class="flex items-center sm:flex-row gap-4 p-6">
     ${publication.pp
-            ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${publication.pp}">`
-            : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
+    ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${publication.pp}">`
+    : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
                 ${publication.firstName ? publication.firstName.charAt(0).toUpperCase() : '?'}
                </div>`
-        }
+}
         <div>
             <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${publication.firstName}</p>
         </div>
@@ -33,25 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="flex sm:flex-row gap-2 px-6 py-4 sm:py-2">
         ${publication.title
-            ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${publication.title}</p>`
-            : ''
-        }
+    ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${publication.title}</p>`
+    : ''
+}
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4">
         ${publication.content
-            ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
-            : ''
-        }
+    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+    : ''
+}
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4">
         ${publication.image
-            ? `<div class="w-full max-w-sm mx-auto mt-8 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
+    ? `<div class="w-full max-w-sm mx-auto mt-8 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
                 <img class="w-full h-full object-cover" src="${publication.image}" alt="Imagen del post" loading="lazy">
                </div>`
-            : ''
-        }
+    : ''
+}
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4">
@@ -71,50 +71,48 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
     ${dto.interactionList && dto.interactionList.length > 0
-        ? dto.interactionList.map(interaction => `
+    ? dto.interactionList.map(interaction => `
             <div class="flex items-center sm:flex-row gap-4 px-6 py-2">
                 ${interaction.pp
-                    ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${interaction.pp}">`
-                    : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
+    ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${interaction.pp}">`
+    : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
                         ${interaction.firstName ? interaction.firstName.charAt(0).toUpperCase() : '?'}
                        </div>`
-                }
+}
                 <div>
                     <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${interaction.firstName}</p>
                 </div>
             </div>
             <div class="flex sm:flex-row gap-2 px-7 py-2">
                 ${interaction.content
-                    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
-                    : ''
-                }
+    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
+    : ''
+}
             </div>
         `).join('')
-        : ''
-    }
+    : ''
+}
     `;
-    }
-    closeIcon.addEventListener('click', closeModal);
-    
-    publications.forEach (publication => {
-        publication.addEventListener('click', async (e) =>{
-            const idModified = e.currentTarget.id;
-            const id = idModified.replace('p-', '');
-            publicationBox.classList.remove('hidden');
-            try{
-                const publication = await fetch(`/publication/${id}`)
-                if (!publication.ok) throw new Error('Error al buscar publicación');
-                const result = await publication.json();
-                if (result.success) {
-                    publicationModal.innerHTML = modalHTML(result.dto);
-                }
-            }
-            catch (error) {
-                console.error('Error:', error);
-            }
-        })
+  };
+  closeIcon.addEventListener('click', closeModal);
+
+  publications.forEach (publication => {
+    publication.addEventListener('click', async (e) =>{
+      const idModified = e.currentTarget.id;
+      const id = idModified.replace('p-', '');
+      publicationBox.classList.remove('hidden');
+      try {
+        const publication = await fetch(`/publication/${id}`);
+        if (!publication.ok) throw new Error('Error al buscar publicación');
+        const result = await publication.json();
+        if (result.success) {
+          publicationModal.innerHTML = modalHTML(result.dto);
+        }
+      }
+      catch (error) {
+        console.error('Error:', error);
+      }
     });
-
-
+  });
 
 });

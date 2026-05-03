@@ -30,9 +30,9 @@ class forumRepository extends impForumRepository {
     );
     return rows;
   }
-        async fetchOne ({idPublication}) {
-        const result = await db.query(
-            `SELECT 
+  async fetchOne ({ idPublication }) {
+    const result = await db.query(
+      `SELECT 
                 p.id_user,
                 p.time_and_date,
                 p.title,
@@ -40,14 +40,14 @@ class forumRepository extends impForumRepository {
                 p.image
             FROM publication p
             WHERE p.id_publication = ?`,
-            [idPublication]
-        );
-        return result;
-    }
+      [idPublication]
+    );
+    return result;
+  }
 
-    async fetchOneUser ({idPublication}) {
-         const result = await db.query(
-            `SELECT 
+  async fetchOneUser ({ idPublication }) {
+    const result = await db.query(
+      `SELECT 
                 p.id_user,
                 p.time_and_date,
                 p.title,
@@ -60,10 +60,10 @@ class forumRepository extends impForumRepository {
             FROM publication p
             JOIN users u ON u.id_user = p.id_user
             WHERE p.id_publication = ?`,
-            [idPublication]
-        );
-        return result;
-    }
+      [idPublication]
+    );
+    return result;
+  }
 }
 
 module.exports = forumRepository;
