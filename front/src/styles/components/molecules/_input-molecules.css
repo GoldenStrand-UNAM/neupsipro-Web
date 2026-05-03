@@ -2,16 +2,36 @@
 @layer components {
   .search-input {
     @apply relative flex items-center;
-    @apply w-full max-w-[306px]; 
+    @apply w-full max-w-76.5; 
   }
 /* Campo de entrada / select  */
   .search-input_field {
     @apply w-full pl-4 pr-10;
-    @apply h-[36px] md:h-[40px]; 
-    @apply rounded-[8px] border border-gray-300 bg-white;
+    @apply h-9 md:h-10; 
+    @apply rounded-lg border border-gray-300 bg-white;
     @apply text-sm md:text-[16px] text-black placeholder-gray-400; 
     @apply outline-none transition-all duration-150;
     @apply focus:border-[#3350A9] focus:ring-1 focus:ring-[#3350A9];
     @apply appearance-none cursor-pointer;
+  }
+
+  .input{
+    @apply w-full flex max-w-md;
+    @apply px-3 py-2 text-sm outline-none;
+    @apply rounded-lg border border-gray-300 bg-white;
+    @apply focus:border-[#3350A9] focus:ring-1 focus:ring-[#3350A9];
+  }
+
+  .input_label{
+    @apply w-full flex max-w-md mb-1;
+    @apply flex items-center;
+    @apply px-3 py-2 text-lg outline-none;
+  }
+
+  .expenses_input {
+    @apply grid grid-cols-2;
+    @apply items-center;
+    @apply border-b-2 border-gray-300;
+    @apply pb-4 pt-2.5;
   }
 }

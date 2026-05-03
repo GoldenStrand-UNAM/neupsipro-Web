@@ -1,0 +1,206 @@
+<div>
+    <h2 class="section_title">Desglose de Ingresos</h2>
+
+    <!--First input part-->
+    <div class="mt-4 space-y-4">
+        <!--Schoolarship income-->
+        <div>
+            <label class="input_label">Recibe algún financiamiento, beca, etc.</label>
+            <input type="number" id="incomeExtra" class="input" placeholder="$0.00">
+        </div>
+
+        <!--Schoolarship type-->
+        <div>
+            <label class="input_label">Describa el tipo de financiamiento</label>
+            <input type="text" class="input" placeholder="Crédito educativo, beca, etc">
+        </div>
+
+        <!--Salary before-->
+        <div>
+            <label class="input_label">Salario antes de la enfermedad/amputación</label>
+            <input type="number" id="salaryBefore" class="input" placeholder="$0.00">
+        </div>
+
+        <!--Salary after-->
+        <div>
+            <label class="input_label">Salario después de la enfermedad/amputación</label>
+            <input type="number" id="salaryAfter" class="input" placeholder="$0.00">
+        </div>
+
+        <!--Total Section-->
+        <div class="section">
+            <span>Total de Sección:</span>
+            <span id="totalSectionOne"></span>
+        </div>
+        
+
+    </div>
+
+    <!--Contributors Section-->
+    <div>
+        <h2 class="section_title">Personas que aportan</h2>
+
+        <div id="contributorsContainer" class="mt-4 space-y-6 max-w-md">
+            <!--Person Card-->
+            
+
+            <!--Add Person Button-->
+            <button id="addPersonBtn" class="btn-mid bg-[#3350A9] mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+
+                <span>Agregar Persona</span>
+            </button>
+        </div>
+
+        <!--Total Section-->
+        <div class="section">
+                <span>Total de Sección:</span>
+                <span id="totalSectionTwo"></span>
+        </div>
+
+        <template id="personTemplate">
+            <div class="rounded-xl overflow-hidden shadow-sm border border-gray-400">
+
+                <div class="bg-[#BA8700] text-white px-4 py-2 flex justify-between items-center">
+                    <span class="person-title">Persona X</span>
+                    <button class="btn-mini bg-[#FF0404] delete-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <span>Eliminar</span>
+                    </button>
+                </div>
+                
+                <div class="bg-white p-4 space-y-4">
+                    
+                    <div>
+                        <label class="input_label">Nombre</label>
+                        <input type="text" class="input" placeholder="María Luisa">
+                    </div>
+
+                    <div>
+                        <label class="input_label">Relación</label>
+                        <div>
+                            <select class="input text-gray-400">
+                                <option disabled selected>Selecciona una opción</option>
+                                <option>Madre</option>
+                                <option>Padre</option>
+                                <option>Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="input_label">Cantidad de Ingresos</label>
+                        <input type="number" class="input" placeholder="$0.00">
+                    </div>
+
+                </div>
+            </div>
+        </template>
+
+    </div>
+
+    <!-- Total Incomes-->
+    <div class="grid grid-cols-3">
+        <div></div>
+        <div class="total">
+            <span class="font-bold">Total de Ingresos:</span>
+            <span id="totalIncomes"></span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const container = document.getElementById('contributorsContainer');
+    const addBtn = document.getElementById('addPersonBtn');
+    const template = document.getElementById('personTemplate');
+
+    const getValue = el => parseFloat(el?.value) || 0;
+
+    // Update card person title with correct number
+    function updateTitles() {
+        container.querySelectorAll('.person-title')
+            .forEach((el, i) => el.textContent = `Persona ${i + 1}`);
+    }
+
+    // Get total
+    function calculateTotal() {
+        // For Section 1
+        const section1 =
+            getValue(document.getElementById('incomeExtra')) +
+            getValue(document.getElementById('salaryAfter'));
+
+        document.getElementById('totalSectionOne').textContent = `$${section1.toFixed(2)}`;
+
+        // For Section 2
+        let section2 = 0;
+        container.querySelectorAll('input[type="number"]').forEach(input => {
+            section2 += getValue(input);
+        });
+
+        document.getElementById('totalSectionTwo').textContent = `$${section2.toFixed(2)}`;
+
+        // Set total incomes
+        const total = section1 + section2;
+        document.getElementById('totalIncomes').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Insert add person button after cards
+    addBtn.addEventListener('click', () => {
+        const clone = template.content.cloneNode(true);
+        container.insertBefore(clone, addBtn);
+        updateTitles();
+        calculateTotal();
+    });
+
+    // Continuosly getting total
+    container.addEventListener('input', calculateTotal);
+
+    // Delete card when click on delete button
+    container.addEventListener('click', (e) => {
+        if (e.target.closest('.delete-btn')) {
+            e.target.closest('.rounded-xl').remove();
+            updateTitles();
+            calculateTotal();
+        }
+    });
+
+    // Get total listeners for section 1
+    document.querySelectorAll('#incomeExtra, #salaryAfter')
+        .forEach(input => input.addEventListener('input', calculateTotal));
+
+    // Get info listener
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const financial = JSON.parse(localStorage.getItem("financialData"));
+
+        if (!financial) return;
+
+        // For section 1
+        document.getElementById("incomeExtra").value = financial.incomeExtra || "";
+        document.getElementById("salaryBefore").value = financial.salaryBefore || "";
+        document.getElementById("salaryAfter").value = financial.salaryAfter || "";
+
+        // For Contributors (section 2)
+        if (financial.contributors && financial.contributors.length > 0) {
+            financial.contributors.forEach(person => {
+                const clone = template.content.cloneNode(true);
+
+                clone.querySelector('input[type="text"]').value = person.name;
+                clone.querySelector('select').value = person.relation;
+                clone.querySelector('input[type="number"]').value = person.amount;
+
+                container.insertBefore(clone, addBtn);
+            });
+
+            updateTitles();
+        }
+
+        calculateTotal();
+    });
+
+</script>

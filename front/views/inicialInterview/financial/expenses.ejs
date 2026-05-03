@@ -1,0 +1,174 @@
+<div class="space-y-8">
+    <h2 class="section_title">Desglose de Egresos</h2>
+
+    <!--Expenses List-->
+    <div>
+        <!--Food-->
+        <div class="expenses_input">
+            <label class="input_label">Alimentación / despensa</label>
+            <div class="flex justify-end">
+                <input type="number" id="food" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Rent-->
+        <div class="expenses_input">
+            <label class="input_label">Renta / hipoteca</label>
+            <div class="flex justify-end">
+                <input type="number" id="rent" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Services-->
+        <div class="expenses_input">
+            <label class="input_label">Luz, Agua, Gas e Internet</label>
+            <div class="flex justify-end">
+                <input type="number" id="services" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Gas-->
+        <div class="expenses_input">
+            <label class="input_label">Gasolina</label>
+            <div class="flex justify-end">
+                <input type="number" id="gas" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--School-->
+        <div class="expenses_input">
+            <label class="input_label">Educación</label>
+            <div class="flex justify-end">
+                <input type="number" id="school" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Wardrope-->
+        <div class="expenses_input">
+            <label class="input_label">Vestido</label>
+            <div class="flex justify-end">
+                <input type="number" id="wardrope" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Medic-->
+        <div class="expenses_input">
+            <label class="input_label">Atención Médica</label>
+            <div class="flex justify-end">
+                <input type="number" id="medic" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Transport-->
+        <div class="expenses_input">
+            <label class="input_label">Transporte</label>
+            <div class="flex justify-end">
+                <input type="number" id="transport" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Credit-->
+        <div class="expenses_input">
+            <label class="input_label">Abonos / Crédito</label>
+            <div class="flex justify-end">
+                <input type="number" id="credit" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Phone-->
+        <div class="expenses_input">
+            <label class="input_label">Teléfono</label>
+            <div class="flex justify-end">
+                <input type="number" id="phone" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+
+        <!--Others-->
+        <div class="expenses_input border-0">
+            <label class="input_label">Otros ej. diversión, salidas</label>
+            <div class="flex justify-end">
+                <input type="number" id="others" class="expense-value input max-w-40" placeholder="$0.00">
+            </div>            
+        </div>
+    </div>
+
+    <!-- Total Expenses-->
+    <div class="grid grid-cols-3">
+        <div></div>
+        <div class="total">
+            <span class="font-bold">Total de Egresos:</span>
+            <span id="totalExpenses"></span>
+        </div>
+    </div>
+
+    <div class="pb-4">
+        <!--Economic Situation-->
+        <div class="pt-2">
+            <label class="input_label">Situación Económica</label>
+            <input type="text" id="economicSituation" class="input" placeholder="">
+        </div>
+
+        <!--Salary after-->
+        <div class="pt-2">
+            <label class="input_label">Número de dependientes económicos</label>
+            <input type="number" id="numDependants" class="input" placeholder="0">
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get total expenses
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const financial = JSON.parse(localStorage.getItem("financialData"));
+
+        // Load info
+        if (financial) {
+
+            // Expenses data
+            const fields = [
+                "food","rent","services","gas","school",
+                "wardrope","medic","transport","credit","phone","others"
+            ];
+
+            fields.forEach(field => {
+                document.getElementById(field).value =
+                    financial?.expenses?.[field] || "";
+            });
+
+            // Extra info
+            document.getElementById("economicSituation").value =
+                financial.economicSituation || "";
+
+            document.getElementById("numDependants").value =
+                financial.numDependants || "";
+        }
+
+        // Get expenses total
+        const expensesInputs = document.querySelectorAll('.expense-value');
+
+        function getValue(input) {
+            return parseFloat(input.value) || 0;
+        }
+
+        // Make the sum
+        function calculateExpenses() {
+            let total = 0;
+
+            expensesInputs.forEach(input => {
+                total += getValue(input);
+            });
+
+            document.getElementById('totalExpenses').textContent =
+                `$${total.toFixed(2)}`;
+        }
+
+        // Listen changes
+        expensesInputs.forEach(input => {
+            input.addEventListener('input', calculateExpenses);
+        });
+
+        // inicial
+        calculateExpenses();
+    });
+</script>
