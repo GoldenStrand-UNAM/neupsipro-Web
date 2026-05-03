@@ -13,16 +13,10 @@ class getPublicationController {
             const publication = await this.getPublicationUseCase.execute({idPublication});
             // Makes sure the dto returned was usefull
             if (publication.dto.success === true) {
-                response.render('partials/PublicationContent',{
-                activePage: 'foro',
-                data: publication,
-            }, (err, html) => {
-                if (err) throw err;
-                response.status(200).json({ success: true, html: html });
-            }); 
+                response.status(200).json({ success: true, dto: publication.dto});
             }
             else{
-                response.status(404).json({ success: false, html: ''})
+                response.status(404).json({ success: false, dto: publication.dto});
             }
             
         } catch (err) {

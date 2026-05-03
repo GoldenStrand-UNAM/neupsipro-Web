@@ -8,6 +8,92 @@ document.addEventListener('DOMContentLoaded', () => {
         publicationBox.classList.add('hidden');
         publicationModal.innerHTML = `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada! </p>`
     };
+
+    const modalHTML = (dto) => {
+        const publication = dto.publication[0];
+        const date = new Date(publication.date).toLocaleString('es-MX', {
+        year: 'numeric', month: '2-digit', day: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+    });
+    return `
+    <div class="flex items-center sm:flex-row gap-4 p-6">
+    ${publication.pp
+            ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${publication.pp}">`
+            : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
+                ${publication.firstName ? publication.firstName.charAt(0).toUpperCase() : '?'}
+               </div>`
+        }
+        <div>
+            <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${publication.firstName}</p>
+        </div>
+        <div>
+            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">${date}</p>
+        </div>
+    </div>
+
+    <div class="flex sm:flex-row gap-2 px-6 py-4 sm:py-2">
+        ${publication.title
+            ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${publication.title}</p>`
+            : ''
+        }
+    </div>
+
+    <div class="flex sm:flex-row gap-2 px-6 py-4">
+        ${publication.content
+            ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+            : ''
+        }
+    </div>
+
+    <div class="flex sm:flex-row gap-2 px-6 py-4">
+        ${publication.image
+            ? `<div class="w-full max-w-sm mx-auto mt-8 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
+                <img class="w-full h-full object-cover" src="${publication.image}" alt="Imagen del post" loading="lazy">
+               </div>`
+            : ''
+        }
+    </div>
+
+    <div class="flex sm:flex-row gap-2 px-6 py-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+        </svg>
+        <p class="font-['Roboto'] text-lg sm:text-2xl text-gray-500 whitespace-nowrap pt-2 px-2">${dto.likes}</p>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+        </svg>
+        <p class="font-['Roboto'] text-lg sm:text-2xl text-gray-500 whitespace-nowrap pt-2 px-2">${dto.comments}</p>
+    </div>
+
+    <div class="input-div py-8 px-6">
+        <input id="comment" type="text" name="comment" placeholder="Escribe un comentario..." class="input-base" maxlength="200">
+        <small id="usernameMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
+    </div>
+
+    ${dto.interactionList && dto.interactionList.length > 0
+        ? dto.interactionList.map(interaction => `
+            <div class="flex items-center sm:flex-row gap-4 px-6 py-2">
+                ${interaction.pp
+                    ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${interaction.pp}">`
+                    : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
+                        ${interaction.firstName ? interaction.firstName.charAt(0).toUpperCase() : '?'}
+                       </div>`
+                }
+                <div>
+                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${interaction.firstName}</p>
+                </div>
+            </div>
+            <div class="flex sm:flex-row gap-2 px-7 py-2">
+                ${interaction.content
+                    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
+                    : ''
+                }
+            </div>
+        `).join('')
+        : ''
+    }
+    `;
+    }
     closeIcon.addEventListener('click', closeModal);
     
     publications.forEach (publication => {
@@ -20,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!publication.ok) throw new Error('Error al buscar publicación');
                 const result = await publication.json();
                 if (result.success) {
-                    publicationModal.innerHTML = result.html;
+                    publicationModal.innerHTML = modalHTML(result.dto);
                 }
             }
             catch (error) {
