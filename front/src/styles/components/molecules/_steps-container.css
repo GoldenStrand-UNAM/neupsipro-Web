@@ -1,0 +1,59 @@
+@layer components {
+
+    .step {
+        @apply flex-1 bg-white rounded-xl;
+        @apply p-4 min-h-28;
+        @apply shadow-md relative;
+        @apply transition-all duration-300 hover:shadow-lg;
+    }
+
+    .step-muted {
+        @apply bg-gray-50;
+    }
+
+    .text-container {
+        @apply flex items-center justify-between h-full;
+    }
+
+    .status-label {
+        @apply text-xs text-[#BA8700];
+        @apply font-medium tracking-wide h-4;
+    }
+
+    .complete-check {
+        @apply w-5 h-5;
+        @apply flex items-center justify-center;
+    }
+
+    .check {
+        @apply w-5 h-5 text-[#BA8700];
+    }
+
+    .lineunder {
+        @apply absolute bottom-0 left-0;
+        @apply w-full h-0.75;
+        @apply bg-[#BA8700] rounded-b-xl;
+    }
+
+    .progress {
+        @apply absolute top-2 right-3;
+    }
+
+    .dots-container {
+        @apply flex items-center gap-2;
+        @apply text-xs text-gray-500;
+    }
+
+    .step-title {
+        @apply text-sm pt-2;
+    }
+
+    .step-title-strong {
+        @apply font-semibold;
+    }
+
+    .step-title-light {
+        @apply font-medium;
+    }
+
+}
