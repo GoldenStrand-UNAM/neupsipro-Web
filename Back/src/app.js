@@ -45,9 +45,9 @@ const HashingService = require('./infrastructure/external/hashing.service');
 const JwtService = require('./infrastructure/external/jwt.service');
 const CacheService = require('./infrastructure/external/memoryCache.service');
 
-const homeRoutes = require("./presentation/routes/home/home.routes");
-const profileRoutes = require("./presentation/routes/users/profile.routes");
-const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
+const homeRoutes = require('./presentation/routes/home/home.routes');
+const profileRoutes = require('./presentation/routes/users/profile.routes');
+const AuthMiddleware = require('./infrastructure/auth/auth.middleware');
 
 const jwtService = new JwtService();
 const hashingService = new HashingService();
@@ -93,7 +93,7 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });
 
-app.use("/api/profile", authMiddleware.verifyToken, profileRoutes);
+app.use('/api/profile', authMiddleware.verifyToken, profileRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
