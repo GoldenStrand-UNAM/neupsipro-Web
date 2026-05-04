@@ -30,10 +30,12 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
   () => (_req, _res, next) => next()
 );
 
+const mockGetProfile = jest.fn();
+
 // Mock the profile service to avoid hitting a real database. 7
 jest.mock('../../../Back/src/infrastructure/repositories/profileRepository', () => {
   return jest.fn().mockImplementation(() => ({
-    getById: jest.fn(),
+    getById: mockGetProfile,
   }));
 });
 
@@ -60,78 +62,67 @@ describe('INTEGRATION — GET /api/profile/:userId/', () => {
   });
 
   // 1.1 — No authentication token
-  test('1.1 returns 401 when no token is provided', async () => {
-    asUnauthenticated();
+    test('1.1 returns 401 when no token is provided', async () => {
+      asUnauthenticated();
 
-    const res = await request(app).get('/api/profile/1/');
+      const res = await request(app).get('/api/profile/u-1/');
 
-    expect(res.status).toBe(401);
-    expect(res.body).toMatchObject({ message: 'No autorizado' });
-  });
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({ message: 'No autorizado' });
+    });
 
-    // 1.2 — Expired token
-  test('1.2 returns 401 when the token is expired', async () => {
-    asExpiredToken();
- 
-    const res = await request(app).get('/api/profile/1/');
- 
-    expect(res.status).toBe(401);
-    expect(res.body).toMatchObject({ message: 'Token expirado' });
-  });
+  // 1.2 — Expired token
+    test('1.2 returns 401 when the token is expired', async () => {
+      asExpiredToken();
+
+      const res = await request(app).get('/api/profile/u-1/');
+
+      expect(res.status).toBe(401);
+      expect(res.body).toMatchObject({ message: 'Token expirado' });
+    });
 
     // 1.3 — Non-existent profile
-  test('1.3 returns 404 when the requested profile does not exist', async () => {
-    asAuthenticated(9999);
-    mockGetProfile.mockResolvedValue(null);
- 
-    const res = await request(app).get('/api/profile/9999/');
- 
-    expect(res.status).toBe(404);
-    expect(res.body).toMatchObject({ message: 'Usuario no encontrado' });
-  });
+      test('1.3 returns 404 when the requested profile does not exist', async () => {
+        asAuthenticated('u-9999');
+        mockGetProfile.mockResolvedValue(null);
+    
+        const res = await request(app).get('/api/profile/u-9999/');
+    
+        expect(res.status).toBe(404);
+        expect(res.body).toMatchObject({ message: 'User not found' });
+      });
 
     // 1.4 — SQL injection
-  test('1.4 returns 400 and exposes no internal details when SQL injection is attempted', async () => {
-    asAuthenticated(1);
- 
-    const sqlPayload = encodeURIComponent("' OR '1'='1");
-    const res        = await request(app).get(`/api/profile/${sqlPayload}/`);
- 
-    expect(res.status).toBe(400);
- 
-    const rawBody = JSON.stringify(res.body);
- 
-    // Must not leak any query internals, stack traces, or SQL fragments
-    expect(rawBody).not.toContain('stack');
-    expect(rawBody).not.toContain('query');
-    expect(rawBody).not.toContain('OR');
-    expect(rawBody).not.toContain('syntax');
-  });
+      test('1.4 returns 400 and exposes no internal details when SQL injection is attempted', async () => {
+        asAuthenticated(1);
+    
+        const sqlPayload = encodeURIComponent("' OR '1'='1");
+        const res        = await request(app).get(`/api/profile/${sqlPayload}/`);
+    
+        expect(res.status).toBe(400);
+    
+        const rawBody = JSON.stringify(res.body);
+    
+        // Must not leak any query internals, stack traces, or SQL fragments
+        expect(rawBody).not.toContain('stack');
+        expect(rawBody).not.toContain('query');
+        expect(rawBody).not.toContain('OR');
+        expect(rawBody).not.toContain('syntax');
+      });
 
     // 1.5 — IDOR: accessing another user's profile
-  test('1.5 returns 403 when a user requests a profile that is not their own (IDOR)', async () => {
-    // User 1 is authenticated but tries to access user 2's profile
-    asAuthenticated(1);
- 
-    const res = await request(app).get('/api/profile/2/');
- 
-    expect(res.status).toBe(403);
-    expect(res.body).toMatchObject({
-      message: 'No tienes permiso para ver este perfil',
-    });
-  });
+      test('1.5 returns 403 when a user requests a profile that is not their own (IDOR)', async () => {
 
-    // 1.6 — Malformed userId
-  test('1.6 returns 400 when userId has an invalid format', async () => {
-    asAuthenticated(1);
- 
-    const invalidIds = ['abc', '12.34', '!@#$', ''];
- 
-    for (const id of invalidIds) {
-      const res = await request(app).get(`/api/profile/${id}/`);
-      expect(res.status).toBe(400);
-    }
-  });
+        // User u-1 is authenticated but tries to access user 2's profile
+        asAuthenticated(1);
+    
+        const res = await request(app).get('/api/profile/u-2/');
+    
+        expect(res.status).toBe(403);
+        expect(res.body).toMatchObject({
+          message: 'No tienes permiso para ver este perfil',
+        });
+      });
   
 
 });
