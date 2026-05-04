@@ -4,14 +4,32 @@
  */
 class userProfileDTO {
     constructor (userProfile) {
-        this.fullName = `${userProfile.firstName} ${userProfile.lastNameP} ${userProfile.lastNameM}`;
-        this.profilePhoto = userProfile.profilePhoto;
-        this.birthDate = userProfile.birthDate;
-        this.registrationDate = userProfile.registrationDate;
-        this.neuroStatus = userProfile.neuroStatus;
-        this.protocol = userProfile.protocol;
-        this.state = userProfile.state;
-        this.prosthetist = userProfile.prosthetist;
+        this.personalInfo = {
+            fullName: `${userProfile.firstName} ${userProfile.lastNameP} ${userProfile.lastNameM}`.trim(),
+            profilePhoto: userProfile.profilePhoto,
+            birthDate: userProfile.birthDate ? new Date(userProfile.birthDate).toISOString().split('T')[0] : null,
+            age: userProfile.age,
+        };
+
+        this.clinicalInfo = {
+            unitEntryDate: userProfile.unitEntryDate ? new Date(userProfile.unitEntryDate).toISOString().split('T')[0] : null,
+            neuroEntryDate: userProfile.neuroEntryDate ? new Date(userProfile.neuroEntryDate).toISOString().split('T')[0] : null,
+            neuroStatus: userProfile.neuroStatus,
+            protocol: userProfile.protocol,
+            state: userProfile.state,
+            stage: userProfile.stage,
+            prosthetist: userProfile.prosthetist,
+        };
+
+        this.assignment = {
+            relationId: userProfile.idUserRelation,
+            assignedClinic: userProfile.assignedClinic || 'No asignado',
+        };
+
+        this.nextAppointment = userProfile.nextAppointmentDate ? {
+            date: new Date(userProfile.nextAppointmentDate).toISOString().split('T')[0],
+            time: userProfile.nextAppointmentTime ? userProfile.nextAppointmentTime.substring(0, 5) : null,
+        } : null;
     }
 }
 
