@@ -108,4 +108,30 @@ describe('INTEGRATION — GET /api/profile/:userId/', () => {
     expect(rawBody).not.toContain('syntax');
   });
 
+    // 1.5 — IDOR: accessing another user's profile
+  test('1.5 returns 403 when a user requests a profile that is not their own (IDOR)', async () => {
+    // User 1 is authenticated but tries to access user 2's profile
+    asAuthenticated(1);
+ 
+    const res = await request(app).get('/api/profile/2/');
+ 
+    expect(res.status).toBe(403);
+    expect(res.body).toMatchObject({
+      message: 'No tienes permiso para ver este perfil',
+    });
+  });
+
+    // 1.6 — Malformed userId
+  test('1.6 returns 400 when userId has an invalid format', async () => {
+    asAuthenticated(1);
+ 
+    const invalidIds = ['abc', '12.34', '!@#$', ''];
+ 
+    for (const id of invalidIds) {
+      const res = await request(app).get(`/api/profile/${id}/`);
+      expect(res.status).toBe(400);
+    }
+  });
+  
+
 });
