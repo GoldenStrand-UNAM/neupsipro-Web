@@ -24,11 +24,6 @@ class User {
         this.laterality = this.setLaterality(data.laterality);
         this.groupIntervention = this.getGroupIntervention(data.group_intervention);
         this.initialInterview = this.getStatus(data.initial_interview);
-        this.banfe = this.getStatus(data.banfe);
-        this.wais = this.getStatus(data.wais);
-        this.rey = this.getStatus(data.rey);
-        this.questionnaires = this.getStatus(data.questionnaires);
-        this.dr = this.getStatus(data.dr);
         this.protocol = this.setProtocol(data.protocol);
 
     }   
@@ -77,7 +72,7 @@ class User {
             case 5: 
                 return "Impreso";
             case 6: 
-                return "Por Comezar";
+                return "Por Comenzar";
             case 7: 
                 return "Calificado";
             case 8: 

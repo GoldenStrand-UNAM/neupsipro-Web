@@ -1,6 +1,8 @@
+const UserDTO= require('../../dto/userDTO')
 class consultUserUseCase {
-    constructor (userRepository) {
+    constructor (userRepository, testSessionsRepository) {
         this.userRepository = userRepository;
+        this.testSessionsRepository = testSessionsRepository;
     }
 
 
@@ -8,38 +10,26 @@ class consultUserUseCase {
 
     const userEntities = await this.userRepository.fetchOne({ id_user });
 
-    return userEntities.map(e => ({
-        photo: e.photo,
-        referenceNumber: e.referenceNumber,
-        name: e.name,
-        age: e.age,
+    if (!userEntities || userEntities.length === 0) {
+            throw new Error('Usuario no encontrado');
+    }
 
-
-        registrationDate: e.registrationDate,
-        phase: e.phase,
-
-        assignedClinic: e.assignedClinic,
-        modality: e.modality,
-        attendance: e.attendance,
-        amputationDate: e.amputationDate,
-        protocol: e.protocol,
-        state: e.state,
-        groupIntervention: e.groupIntervention,
-        amputationEtiology: e.amputationEtiology,
-        laterality: e.laterality,
-        prosthetist: e.prosthetist,
-        neuroEntryDate: e.neuroEntryDate,
-        amputationLevel: e.amputationLevel,
-        nextAppointment: e.nextAppointment,
+    const user = userEntities[0];
+    let assignedSessions = [];
+    const hasProtocol = user.protocol && user.protocol !== 'Pending';
+    if (hasProtocol) {
+            assignedSessions = await this.testSessionsRepository.fetchTestSessions({ id_user });
+        }
+    const canStartIntervention = assignedSessions.some (session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
         
-        initialInterview: e.initialInterview,
-        banfe: e.banfe,
-        wais: e.wais,
-        rey: e.rey,
-        questionnaires: e.questionnaires,
-        dr: e.dr,
-    }));
-}
+    const cleanUser = UserDTO.fromEntity(user);
+    return {
+            ...cleanUser,
+            hasProtocol: hasProtocol,
+            assignedSessions: assignedSessions,
+            canStartIntervention: canStartIntervention,
+        };
+    }
 }
     
 module.exports = consultUserUseCase;
