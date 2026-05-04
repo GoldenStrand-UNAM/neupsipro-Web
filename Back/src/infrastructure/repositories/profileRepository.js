@@ -7,8 +7,8 @@ const db = require('../database/database');
  * It does a JOIN between multiple tables to consolidate data.
  */
 class profileRepository extends ImpProfileRepository {
-    async getUserId (userId) {
-        const query = `
+  async getUserId (userId) {
+    const query = `
             SELECT
                 u.first_name, u.lastname_p, u.lastname_m, u.profile_photo, u.birthdate,
                 ui.unit_entry_date, ui.neuro_entry_date, ui.neuro_status, ui.protocol, ui.state, ui.stage, ui.prosthetist,
@@ -28,28 +28,28 @@ class profileRepository extends ImpProfileRepository {
             ) a ON ur.id_user_relation = a.id_user_relation
             WHERE u.id_user = ?    
         `;
-        const [rows] = await db.query(query, [userId]);
-        const row = rows[0];
-        if (!row) return null;
-        return new userProfile({
-            firstName: row.first_name,
-            lastNameP: row.lastname_p,
-            lastNameM: row.lastname_m,
-            profilePhoto: row.profile_photo,
-            birthDate: row.birthdate,
-            unitEntryDate: row.unit_entry_date,
-            neuroEntryDate: row.neuro_entry_date,
-            neuroStatus: row.neuro_status,
-            protocol: row.protocol,
-            state: row.state,
-            stage: row.stage,
-            prosthetist: row.prosthetist,
-            idUserRelation: row.id_user_relation,
-            assignedClinic: row.assigned_clinic_name,
-            nextAppointmentDate: row.next_appointment_date,
-            nextAppointmentTime: row.next_appointment_time,
-        });
-    }    
+    const [rows] = await db.query(query, [userId]);
+    const row = rows[0];
+    if (!row) return null;
+    return new userProfile({
+      firstName: row.first_name,
+      lastNameP: row.lastname_p,
+      lastNameM: row.lastname_m,
+      profilePhoto: row.profile_photo,
+      birthDate: row.birthdate,
+      unitEntryDate: row.unit_entry_date,
+      neuroEntryDate: row.neuro_entry_date,
+      neuroStatus: row.neuro_status,
+      protocol: row.protocol,
+      state: row.state,
+      stage: row.stage,
+      prosthetist: row.prosthetist,
+      idUserRelation: row.id_user_relation,
+      assignedClinic: row.assigned_clinic_name,
+      nextAppointmentDate: row.next_appointment_date,
+      nextAppointmentTime: row.next_appointment_time,
+    });
+  }
 }
 
 module.exports = profileRepository;
