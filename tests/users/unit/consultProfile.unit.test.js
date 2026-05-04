@@ -67,6 +67,58 @@ describe('UNIT — GET /api/profile/:userId/', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+   // 1.2 — Expired token
+  test('1.2 returns 401 when token is expired', async () => {
+    const req  = buildReq({ user: undefined });
+    const res  = buildRes();
+    const next = jest.fn();
+ 
+    // Simulate middleware detecting an expired token signature
+    mockVerifyToken.mockImplementation((_req, _res) => {
+      _res.status(401).json({ message: 'Token expirado' });
+    });
+ 
+    await mockVerifyToken(req, res, next);
+ 
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Token expirado' });
+  });
+ 
+  // 1.3 — Non-existent profile
+  test('1.3 returns 404 when the requested profile does not exist', async () => {
+    // Service returns null when no user is found
+    mockGetProfile.mockResolvedValue(null);
+ 
+    const req = buildReq({ params: { userId: '9999' }, user: { id: 9999 } });
+    const res = buildRes();
+ 
+    await getProfile(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Usuario no encontrado' })
+    );
+  });
+ 
+  // 1.4 — SQL injection attempt
+  test('1.4 returns 400 and no stack trace when SQL injection is detected in userId', async () => {
+    const req = buildReq({
+      params: { userId: "' OR '1'='1" },
+      user:   { id: 1 },
+    });
+    const res = buildRes();
+ 
+    await getProfile(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+ 
+    const responseBody = res.json.mock.calls[0][0];
+ 
+    // Must not expose the raw SQL, a stack trace, or internal query details
+    expect(JSON.stringify(responseBody)).not.toContain('OR');
+    expect(JSON.stringify(responseBody)).not.toContain('stack');
+    expect(JSON.stringify(responseBody)).not.toContain('query');
+  });
 
 
 });
