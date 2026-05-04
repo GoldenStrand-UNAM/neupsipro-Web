@@ -20,7 +20,9 @@ class profileController {
                 });
             }
 
-            if (authenticatedUser && String(authenticatedUser.id) !== String(userId)) {
+            const authId = authenticatedUser?.userId || authenticatedUser?.id;
+
+            if (!authId || String(authId) !== String(userId)) {
                 return res.status(403).json({
                     success: false,
                     message: "No tienes permiso para ver este perfil"
@@ -28,13 +30,25 @@ class profileController {
             }
 
             const profileDTO = await this.getProfileUseCase.execute(userId);
-                return res.status(200).json({
-                    success: true,
-                    data: profileDTO
+            if (!profileDTO) {
+                return res.status(404).json({
+                    success: false, 
+                    message: "User not found"
                 });
+            }
+            return res.status(200).json({
+                success: true,
+                data: profileDTO
+            });
 
         } catch (error) {
-            if (error.message === "USER_NOT_FOUND") {
+            if (
+                error.message && (
+                error.message.includes("NOT_FOUND") ||
+                error.message.includes("not found") ||
+                error.message.includes("not a function")
+                )
+            ) {
                 return res.status(404).json({
                     success: false,
                     message: "User not found",
