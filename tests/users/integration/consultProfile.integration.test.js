@@ -69,4 +69,43 @@ describe('INTEGRATION — GET /api/profile/:userId/', () => {
     expect(res.body).toMatchObject({ message: 'No autorizado' });
   });
 
+    // 1.2 — Expired token
+  test('1.2 returns 401 when the token is expired', async () => {
+    asExpiredToken();
+ 
+    const res = await request(app).get('/api/profile/1/');
+ 
+    expect(res.status).toBe(401);
+    expect(res.body).toMatchObject({ message: 'Token expirado' });
+  });
+
+    // 1.3 — Non-existent profile
+  test('1.3 returns 404 when the requested profile does not exist', async () => {
+    asAuthenticated(9999);
+    mockGetProfile.mockResolvedValue(null);
+ 
+    const res = await request(app).get('/api/profile/9999/');
+ 
+    expect(res.status).toBe(404);
+    expect(res.body).toMatchObject({ message: 'Usuario no encontrado' });
+  });
+
+    // 1.4 — SQL injection
+  test('1.4 returns 400 and exposes no internal details when SQL injection is attempted', async () => {
+    asAuthenticated(1);
+ 
+    const sqlPayload = encodeURIComponent("' OR '1'='1");
+    const res        = await request(app).get(`/api/profile/${sqlPayload}/`);
+ 
+    expect(res.status).toBe(400);
+ 
+    const rawBody = JSON.stringify(res.body);
+ 
+    // Must not leak any query internals, stack traces, or SQL fragments
+    expect(rawBody).not.toContain('stack');
+    expect(rawBody).not.toContain('query');
+    expect(rawBody).not.toContain('OR');
+    expect(rawBody).not.toContain('syntax');
+  });
+
 });
