@@ -8,11 +8,11 @@ window.sectionsState = window.sectionsState || {
   subStep: 2,
 };
 
-const stepConfig = {
-  1: 3,
-  2: 4,
-  3: 10,
-};
+const stepConfig = new Map([
+  [1, 3],
+  [2, 4],
+  [3, 10],
+]);
 
 // Render UI
 // eslint-disable-next-line max-lines-per-function
@@ -26,7 +26,7 @@ function renderSections () {
   steps.forEach(stepEl => {
 
     const step = Number(stepEl.dataset.step);
-    const total = stepConfig[step];
+    const total = stepConfig.get(step);
 
     const label = stepEl.querySelector(".status-label");
     const check = stepEl.querySelector(".check");
