@@ -1,14 +1,14 @@
 const express = require('express');
+const ProfileRepository = require('../../../infrastructure/repositories/profileRepository');
+const GetProfileUseCase = require('../../../application/usecase/users/getProfileUseCase');
+const ProfileController = require('../../controller/users/profile.controller');
 const router = express.Router();
-/**
- * Definition of profile routes.
- * @param {ProfileController} profileController - Instance from th inyected controller.
- */
-const profileRoutes = (profileController) => {
-    
-    router.get('/:userId', (req, res) => profileController.getProfile(req, res));
+const db = require('../../../infrastructure/database/database');
 
-    return router;
-};
+const profileRepository = new ProfileRepository(db);
+const getProfileUseCase = new GetProfileUseCase(profileRepository);
+const profileController = new ProfileController(getProfileUseCase);
 
-module.exports = profileRoutes;
+router.get('/:userId', (req, res) => profileController.getProfile(req, res));
+
+module.exports = router;

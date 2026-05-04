@@ -44,12 +44,9 @@ const SessionRepository = require("./infrastructure/repositories/sessionReposito
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
-const ProfileRepository = require("./infrastructure/repositories/profileRepository");
-const GetProfileUseCase = require("./application/usecase/users/getProfileUseCase");
-const ProfileController = require("./Presentation/controller/users/profile.controller");
-const ProfileRoutes = require("./presentation/routes/users/profile.routes");
 
 const homeRoutes = require("./presentation/routes/home/home.routes");
+const profileRoutes = require("./presentation/routes/users/profile.routes");
 const AuthMiddleware = require("./infrastructure/auth/auth.middleware");
 
 const jwtService = new JwtService();
@@ -58,9 +55,6 @@ const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
-const profileRepository = new ProfileRepository(dbPool);
-const getProfileUseCase = new GetProfileUseCase(profileRepository);
-const profileController = new ProfileController(getProfileUseCase);
 
 
 const authMiddleware = new AuthMiddleware(jwtService, authService);
@@ -99,7 +93,7 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
     res.render('test');
 });
 
-app.use("/api/profile", authMiddleware.verifyToken, ProfileRoutes(profileController));
+app.use("/api/profile", authMiddleware.verifyToken, profileRoutes);
 
 app.use((req, res) => { 
     res.status(404).json({ error: 'Ruta no encontrada' }); 
