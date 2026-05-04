@@ -24,7 +24,7 @@ jest.mock('../../../Back/src/infrastructure/repositories/profileRepository', () 
 
 const { getProfile } = require('../../../Back/src/presentation/controller/users/profile.controller');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ======== HELPERS =========================
 
 //  Builds a minimal Express-like req object for controller unit tests.
 const buildReq = (overrides = {}) => ({
@@ -41,7 +41,7 @@ const buildRes = () => {
   return res;
 };
 
-// TESTS
+// ====================== TESTS =================================== 
 
 describe('UNIT — GET /api/profile/:userId/', () => {
   beforeEach(() => {
@@ -118,6 +118,33 @@ describe('UNIT — GET /api/profile/:userId/', () => {
     expect(JSON.stringify(responseBody)).not.toContain('OR');
     expect(JSON.stringify(responseBody)).not.toContain('stack');
     expect(JSON.stringify(responseBody)).not.toContain('query');
+
+      // 1.5 — IDOR: valid token but requesting another user's profile
+  test('1.5 returns 403 when authenticated user requests a different user profile (IDOR)', async () => {
+    // User 1 is authenticated but is requesting user 2's profile
+    const req = buildReq({ params: { userId: '2' }, user: { id: 1 } });
+    const res = buildRes();
+ 
+    await getProfile(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'No tienes permiso para ver este perfil' })
+    );
+  });
+ 
+  // 1.6 — Malformed userId format
+  test('1.6 returns 400 when userId is not a valid format (e.g. letters instead of a number)', async () => {
+    const req = buildReq({ params: { userId: 'abc!@#' }, user: { id: 1 } });
+    const res = buildRes();
+ 
+    await getProfile(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('inválido') })
+    );
+  });
   });
 
 
