@@ -21,11 +21,6 @@ class UserDTO {
         amputationLevel,
         nextAppointment,
         initialInterview,
-        banfe,
-        wais,
-        rey,
-        questionnaires,
-        dr,
     }) {
         this.photo = photo;
         this.referenceNumber = referenceNumber;
@@ -49,11 +44,6 @@ class UserDTO {
         this.nextAppointment = nextAppointment;
 
         this.initialInterview = initialInterview;
-        this.banfe = banfe;
-        this.wais = wais;
-        this.rey = rey;
-        this.questionnaires = questionnaires;
-        this.dr = dr;
     }
 
     static fromEntity (entity) {
@@ -80,11 +70,6 @@ class UserDTO {
             nextAppointment: entity.nextAppointment,
 
             initialInterview: entity.initialInterview,
-            banfe: entity.banfe,
-            wais: entity.wais,
-            rey: entity.rey,
-            questionnaires: entity.questionnaires,
-            dr: entity.dr,
         });
     }
 }
