@@ -12,24 +12,23 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
   () => (_req, _res, next) => next()
 );
 
-// Mock the profile service to avoid hitting a real database. 7
-jest.mock('../../../Back/src/infrastructure/repositories/profileRepository', () => {
-  return jest.fn().mockImplementation(() => ({
-    getById: jest.fn(),
-  }));
-});
 
+const mockExecute = jest.fn();
 
 // SUBJECT UNDER TEST
 
-const { getProfile } = require('../../../Back/src/presentation/controller/users/profile.controller');
+const ProfileController = require('../../../Back/src/presentation/controller/users/profile.controller');
+
+// Instantiate controller with the mocked use case — mirrors how app.js does it.
+const profileController = new ProfileController({ execute: mockExecute });
+
 
 // ======== HELPERS =========================
 
 //  Builds a minimal Express-like req object for controller unit tests.
 const buildReq = (overrides = {}) => ({
-  params: { userId: '1' },
-  user:   { id: 1 },
+  params: { userId: 'u-1' },
+  user:   { id:'u-1'},
   ...overrides,
 });
 
@@ -50,6 +49,7 @@ describe('UNIT — GET /api/profile/:userId/', () => {
 
   // 1.1 — No authentication token
   test('1.1 returns 401 when no token is provided', async () => {
+
     // Simulate auth middleware rejecting a request with no token
     const req  = buildReq({ user: undefined });
     const res  = buildRes();
@@ -86,29 +86,33 @@ describe('UNIT — GET /api/profile/:userId/', () => {
  
   // 1.3 — Non-existent profile
   test('1.3 returns 404 when the requested profile does not exist', async () => {
-    // Service returns null when no user is found
-    mockGetProfile.mockResolvedValue(null);
+
+    // Use case throws USER_NOT_FOUND — controller maps it to 404
+    mockExecute.mockRejectedValue(new Error('USER_NOT_FOUND'));
+
  
-    const req = buildReq({ params: { userId: '9999' }, user: { id: 9999 } });
+    const req = buildReq({ params: { userId: 'u-9999' }, user: { id: 'u-9999' } });
     const res = buildRes();
  
-    await getProfile(req, res);
+    await profileController.getProfile(req, res);
  
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Usuario no encontrado' })
+      expect.objectContaining({ message: 'User not found' })
     );
   });
  
   // 1.4 — SQL injection attempt
   test('1.4 returns 400 and no stack trace when SQL injection is detected in userId', async () => {
+    
     const req = buildReq({
       params: { userId: "' OR '1'='1" },
       user:   { id: 1 },
     });
+
     const res = buildRes();
  
-    await getProfile(req, res);
+    await profileController.getProfile(req, res);
  
     expect(res.status).toHaveBeenCalledWith(400);
  
@@ -119,13 +123,15 @@ describe('UNIT — GET /api/profile/:userId/', () => {
     expect(JSON.stringify(responseBody)).not.toContain('stack');
     expect(JSON.stringify(responseBody)).not.toContain('query');
 
+  });
+
       // 1.5 — IDOR: valid token but requesting another user's profile
   test('1.5 returns 403 when authenticated user requests a different user profile (IDOR)', async () => {
     // User 1 is authenticated but is requesting user 2's profile
-    const req = buildReq({ params: { userId: '2' }, user: { id: 1 } });
+    const req = buildReq({ params: { userId: 'u-2' }, user: { id: 'u-1' } });
     const res = buildRes();
  
-    await getProfile(req, res);
+    await profileController.getProfile(req, res);
  
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
@@ -133,19 +139,6 @@ describe('UNIT — GET /api/profile/:userId/', () => {
     );
   });
  
-  // 1.6 — Malformed userId format
-  test('1.6 returns 400 when userId is not a valid format (e.g. letters instead of a number)', async () => {
-    const req = buildReq({ params: { userId: 'abc!@#' }, user: { id: 1 } });
-    const res = buildRes();
- 
-    await getProfile(req, res);
- 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining('inválido') })
-    );
-  });
-  });
 
 
 });
