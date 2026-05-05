@@ -1,5 +1,6 @@
 class User {
   constructor (data) {
+    this.idUser = data.id_user;
     this.photo = data.profile_photo;
     this.referenceNumber = data.reference_number;
     this.name = `${data.first_name} ${data.lastname_p} ${data.lastname_m}`;

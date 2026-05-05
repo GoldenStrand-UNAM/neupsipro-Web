@@ -16,10 +16,13 @@ class postApplicationUseCase {
 
   async execute ({ id_user, application_name }) {
     // 1. Verify user exists and retrieve their assigned protocol
-    const [userRows] = await db.query(
-      `SELECT id_user, protocol FROM users WHERE id_user = ? AND eliminated = 0`,
-      [id_user]
-    );
+      const [userRows] = await db.query(
+        `SELECT u.id_user, ui.protocol 
+        FROM users u
+        INNER JOIN user_info ui ON u.id_user = ui.id_user
+        WHERE u.id_user = ? AND u.eliminated = 0`,
+        [id_user]
+      );
 
     if (!userRows.length) {
       const err  = new Error('User not found');
