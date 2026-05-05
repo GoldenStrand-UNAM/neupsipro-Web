@@ -17,7 +17,7 @@ class userProfileDTO {
       neuroStatus: userProfile.neuroStatus,
       protocol: userProfile.protocol,
       state: userProfile.state,
-      stage: userProfile.stage,
+      stage: this._formatStage(userProfile.stage),
       prosthetist: userProfile.prosthetist,
     };
 
@@ -30,6 +30,16 @@ class userProfileDTO {
       date: new Date(userProfile.nextAppointmentDate).toISOString().split('T')[0],
       time: userProfile.nextAppointmentTime ? userProfile.nextAppointmentTime.substring(0, 5) : null,
     } : null;
+  }
+
+  _formatStage (stage) {
+    const interventionStages = ['Initial', 'Following'];
+
+    if (interventionStages.includes(stage)) {
+      return 'Intervention';
+    }
+
+    return stage;
   }
 }
 
