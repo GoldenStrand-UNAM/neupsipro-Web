@@ -1,5 +1,6 @@
 class UserDTO {
   constructor ({
+    idUser,
     photo,
     referenceNumber,
     name,
@@ -21,6 +22,7 @@ class UserDTO {
     nextAppointment,
     initialInterview,
   }) {
+    this.idUser = idUser;
     this.photo = photo;
     this.referenceNumber = referenceNumber;
     this.name = name;
@@ -47,6 +49,7 @@ class UserDTO {
 
   static fromEntity (entity) {
     return new UserDTO({
+      idUser: entity.idUser,
       photo: entity.photo,
       referenceNumber: entity.referenceNumber,
       name: entity.name,

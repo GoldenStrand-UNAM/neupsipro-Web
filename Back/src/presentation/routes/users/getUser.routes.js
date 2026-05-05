@@ -3,13 +3,28 @@ const router = express.Router();
 
 const UserController = require("../../controller/users/getUser.controller");
 const UsersRepository = require("../../../infrastructure/repositories/usersRepository");
-const TestSessionsRepository = require("../../../infrastructure/repositories/testSessionRepository");
+
+const impTestApplicationsRepository = require("../../../infrastructure/repositories/impTestApplicationRepository");
+const impTestResultsRepository      = require("../../../infrastructure/repositories/impTestResultsRepository");
+
 const GetUserUseCase = require("../../../application/usecase/users/getUserUseCase");
 
-const repository = new UsersRepository();
-const tsRepository = new TestSessionsRepository();
-const useCase = new GetUserUseCase(repository, tsRepository);
+const postApplicationUseCase   = require("../../../application/usecase/testApplications/postApplicationUseCase");
+const ApplicationsController   = require("../../controller/testApplications/postApplications.controller");
+
+
+
+const usersRepository    = new UsersRepository();
+const testAppRepository  = new impTestApplicationsRepository();
+const useCase            = new GetUserUseCase(usersRepository, testAppRepository);
 const controller = new UserController(useCase);
+
+//Create Application
+
+const testResultsRepository  = new impTestResultsRepository();
+const createAppUseCase       = new postApplicationUseCase(testAppRepository, testResultsRepository);
+const appController = new ApplicationsController(createAppUseCase);
+
 
 router.get("/:id_user", (req, res) => controller.getUser(req, res));
 
@@ -19,5 +34,9 @@ router.get('/consultUser', (req, res) => {
         
     });
 });
+
+//Create Application route
+
+router.post("/:id_user/applications", (req, res) => appController.createApplication(req, res));
 
 module.exports = router;
