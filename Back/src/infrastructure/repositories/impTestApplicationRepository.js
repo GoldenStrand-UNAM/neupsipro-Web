@@ -1,7 +1,8 @@
 const db = require ('../database/database');
-const TestSessions = require('../../domain/entity/testApplication');
+const TestApplication = require('../../domain/entity/testApplication');
+const TestApplicationRepository = require('../../domain/repository/testApplicationRepository');
 
-class TestApplicationsRepository {
+class TestApplicationsRepository extends ImpApplicationRepository {
   async fetchTestSessions ({ id_user }) {
     const [testSessions] = await db.query(
       `SELECT *
