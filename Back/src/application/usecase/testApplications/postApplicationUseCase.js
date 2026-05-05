@@ -9,9 +9,9 @@ const PROTOCOL_TESTS = {
 };
 
 class postApplicationUseCase {
-  constructor (testApplicationsRepository, resultRepository) {
-    this.testApplicationsRepository = testApplicationsRepository;
-    this.resultRepository           = resultRepository;
+  constructor (impTestApplicationsRepository, impTestResultsRepository) {
+    this.impTestApplicationsRepository = impTestApplicationsRepository;
+    this.impTestResultsRepository           = impTestResultsRepository;
   }
 
   async execute ({ id_user, application_name }) {
@@ -49,13 +49,13 @@ class postApplicationUseCase {
     }
 
     // 4. Persist the application — repository returns a full entity
-    const savedEntity = await this.testApplicationsRepository.saveApplication({
+    const savedEntity = await this.impTestApplicationsRepository.saveApplication({
       id_user,
       application_name,
     });
 
     // 5. Bulk-create the result rows for each test in the protocol
-    await this.resultRepository.createResults(
+    await this.impTestResultsRepository.createResults(
       savedEntity.idApplication,
       id_user,
       PROTOCOL_TESTS[protocol]
