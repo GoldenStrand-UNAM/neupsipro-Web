@@ -17,10 +17,11 @@ class financialInterviewController {
             });
 
             const response = FinancialInterviewDTO.fromEntity(financialInterview);
-            
-            return res.status(200).json({
-                message: "Entrevista Inicial: Nivel Socioeconómico consultado correctamente",
+
+            return res.render("inicialInterview/financial/incomeAndExpense", {
                 data: response,
+                id_user,
+                activePage: 'usuarios',
             });
         } catch (error) {
             return res.status(400).json({

@@ -173,34 +173,4 @@
     document.querySelectorAll('#incomeExtra, #salaryAfter')
         .forEach(input => input.addEventListener('input', calculateTotal));
 
-    // Get info listener
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const financial = JSON.parse(localStorage.getItem("financialData"));
-
-        if (!financial) return;
-
-        // For section 1
-        document.getElementById("incomeExtra").value = financial.incomeExtra || "";
-        document.getElementById("salaryBefore").value = financial.salaryBefore || "";
-        document.getElementById("salaryAfter").value = financial.salaryAfter || "";
-
-        // For Contributors (section 2)
-        if (financial.contributors && financial.contributors.length > 0) {
-            financial.contributors.forEach(person => {
-                const clone = template.content.cloneNode(true);
-
-                clone.querySelector('input[type="text"]').value = person.name;
-                clone.querySelector('select').value = person.relation;
-                clone.querySelector('input[type="number"]').value = person.amount;
-
-                container.insertBefore(clone, addBtn);
-            });
-
-            updateTitles();
-        }
-
-        calculateTotal();
-    });
-
 </script>

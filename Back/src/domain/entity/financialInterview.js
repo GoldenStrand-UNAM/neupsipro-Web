@@ -40,10 +40,10 @@ class FinancialInterview {
     // Build Salary section especification
     buildSalary (base) {
         return {
-            has_financing_schoolarship: Number(base.has_financing_schoolarship) || 0,
-            financial_type: Number(base.financial_type) || 0,
-            salary_before_sickness: Number(base.salary_before_sickness) || 0,
-            salary_after_sickness: Number(base.salary_after_sickness) || 0,
+            hasFinancingSchoolarship: Number(base.has_financing_schoolarship) || 0,
+            financialType: Number(base.financial_type) || 0,
+            salaryBeforeSickness: Number(base.salary_before_sickness) || 0,
+            salaryAfterSickness: Number(base.salary_after_sickness) || 0,
             total: this.calculateTotalSalary(base) || 0,
         };
     }
@@ -56,29 +56,29 @@ class FinancialInterview {
                 list: contributors,
                 total: totalContributors,
             },
-            total_income: Number(base.total_income) || 0,
+            totalIncome: Number(base.total_income) || 0,
         };
     }
 
     // Build All expense structure
     buildExpenses (base) {
         return {
-            expense_breakdown: {
-                food_expenses: Number(base.food_expenses) || 0,
-                rent_expenses: Number(base.rent_expenses) || 0,
-                services_expenses: Number(base.services_expenses) || 0,
-                gas_expenses: Number(base.gas_expenses) || 0,
-                education_expenses: Number(base.education_expenses) || 0,
-                wardrobe_expenses: Number(base.wardrobe_expenses) || 0,
-                medical_expenses: Number(base.medical_expenses) || 0,
-                transport_expenses: Number(base.transport_expenses) || 0,
-                creditcard_expenses: Number(base.creditcard_expenses) || 0,
-                phone_expenses: Number(base.phone_expenses) || 0,
-                others_expenses: Number(base.others_expenses) || 0,
-                total_expenses: Number(base.total_expenses) || 0,
+            expenseBreakdown: {
+                foodExpenses: Number(base.food_expenses) || 0,
+                rentExpenses: Number(base.rent_expenses) || 0,
+                servicesExpenses: Number(base.services_expenses) || 0,
+                gasExpenses: Number(base.gas_expenses) || 0,
+                educationExpenses: Number(base.education_expenses) || 0,
+                wardrobeExpenses: Number(base.wardrobe_expenses) || 0,
+                medicalExpenses: Number(base.medical_expenses) || 0,
+                transportExpenses: Number(base.transport_expenses) || 0,
+                creditcardExpenses: Number(base.creditcard_expenses) || 0,
+                phoneExpenses: Number(base.phone_expenses) || 0,
+                othersExpenses: Number(base.others_expenses) || 0,
+                totalExpenses: Number(base.total_expenses) || 0,
             },
-            economic_situation: base.economic_situation ?? null,
-            num_economic_dependents: Number(base.num_economic_dependents) || 0,
+            economicSituation: base.economic_situation ?? null,
+            numEconomicDependents: Number(base.num_economic_dependents) || 0,
         };
     }
 
@@ -87,7 +87,7 @@ class FinancialInterview {
     // Financial Situation
     mapFinancialSituation (data) {
         const base = data.base || {};
-        const contributors = data.contributors[0] || [];
+        const contributors = data.contributors || [];
 
         const formattedContributors = contributors.map(c => ({
             name: c.contributor ?? null,
@@ -109,27 +109,27 @@ class FinancialInterview {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
-            min_income: Number(data.min_income) || 0,
+            minIncome: Number(data.min_income) || 0,
             ocupation: data.ocupation ?? null,
-            family_expenses: Number(data.family_expenses) || 0,
+            familyExpenses: Number(data.family_expenses) || 0,
 
             housing: {
-                real_right: Number(data.real_right) || 0,
-                housing_type: Number(data.housing_type) || 0,
-                public_services: Number(data.public_services) || 0,
-                inhome_services: Number(data.inhome_services) || 0,
-                construction_material: Number(data.construction_material) || 0,
-                num_bedrooms: Number(data.num_bedrooms) || 0,
-                persons_per_bedroom: Number(data.persons_per_bedroom) || 0,
+                realRight: Number(data.real_right) || 0,
+                housingType: Number(data.housing_type) || 0,
+                publicServices: Number(data.public_services) || 0,
+                inhomeServices: Number(data.inhome_services) || 0,
+                constructionMaterial: Number(data.construction_material) || 0,
+                numBedrooms: Number(data.num_bedrooms) || 0,
+                personsPerBedroom: Number(data.persons_per_bedroom) || 0,
             },
 
             family_conditions: {
-                treatment_time: Number(data.treatment_time) || 0,
-                other_problems: Number(data.other_problems) || 0,
-                family_health: Number(data.family_health) || 0,
+                treatmentTime: Number(data.treatment_time) || 0,
+                otherProblems: Number(data.other_problems) || 0,
+                familyHealth: Number(data.family_health) || 0,
             },
 
-            socioeconomic_level: data.socioeconomic_level ?? null,
+            socioeconomicLevel: data.socioeconomic_level ?? null,
             total: Number(data.total) || 0,
         };
     }
@@ -139,14 +139,14 @@ class FinancialInterview {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
-            last_studies: data.last_studies ?? null,
-            num_bathrooms: Number(data.num_bathrooms) || 0,
-            num_car: Number(data.num_car) || 0,
-            has_internet: Number(data.has_internet) || 0,
-            has_worked: Number(data.has_worked) || 0,
-            has_bedroom: Number(data.has_bedroom) || 0,
+            lastStudies: data.last_studies ?? null,
+            numBathrooms: Number(data.num_bathrooms) || 0,
+            numCar: Number(data.num_car) || 0,
+            hasInternet: Number(data.has_internet) || 0,
+            hasWorked: Number(data.has_worked) || 0,
+            hasBedroom: Number(data.has_bedroom) || 0,
 
-            socioeconomic_level: data.socioeconomic_level?? null,
+            socioeconomicLevel: data.socioeconomic_level?? null,
             total: Number(data.total) || 0,
         };
     }
@@ -156,8 +156,8 @@ class FinancialInterview {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
-            total_income: Number(data.total_income) || 0,
-            total_expenses: Number(data.total_expenses) || 0,
+            totalIncome: Number(data.total_income) || 0,
+            totalExpenses: Number(data.total_expenses) || 0,
 
             government: {
                 level: data.socio_level_gov ?? null,

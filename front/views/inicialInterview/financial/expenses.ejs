@@ -117,32 +117,7 @@
 </div>
 
 <script>
-    // Get total expenses
     document.addEventListener('DOMContentLoaded', () => {
-
-        const financial = JSON.parse(localStorage.getItem("financialData"));
-
-        // Load info
-        if (financial) {
-
-            // Expenses data
-            const fields = [
-                "food","rent","services","gas","school",
-                "wardrope","medic","transport","credit","phone","others"
-            ];
-
-            fields.forEach(field => {
-                document.getElementById(field).value =
-                    financial?.expenses?.[field] || "";
-            });
-
-            // Extra info
-            document.getElementById("economicSituation").value =
-                financial.economicSituation || "";
-
-            document.getElementById("numDependants").value =
-                financial.numDependants || "";
-        }
 
         // Get expenses total
         const expensesInputs = document.querySelectorAll('.expense-value');

@@ -1,6 +1,5 @@
 const db = require ("../database/database");
 const ImpFinancialInterviewRepository = require('../../domain/repository/ImpFinancialInterviewRepository');
-const FinancialInterview = require("../../domain/entity/FinancialInterview");
 
 class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
@@ -26,7 +25,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
     // Fetch financial situation by relation
     async fetchFinancialSituationInfo ({ id_user_relation }) {
-        const rows = await db.query(
+        const [rows] = await db.query(
             `SELECT *
             FROM financial_situation
             WHERE id_user_relation = ?`,
@@ -38,7 +37,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
     // Fetch contributors by relation
     async fetchContributors ({ id_user_relation }) {
-        const rows = await db.query(
+        const [rows] = await db.query(
             `SELECT contributor, relation, income
             FROM contributing_people
             WHERE id_user_relation = ?`,
@@ -53,50 +52,41 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
         const base = await this.fetchFinancialSituationInfo({ id_user_relation });
         const contributorsRows = await this.fetchContributors({ id_user_relation });
 
-        return new FinancialInterview({
+        return {
             data: {
                 base,
                 contributors: contributorsRows,
             },
-            current_section: 1,
-        });
+        };
     }
 
     // Fetch ESC Goverment by relation
     async fetchEscGov ({ id_user_relation }) {
-        const rows =  await db.query(
+        const [rows] =  await db.query(
             `SELECT *
              FROM esc_government
              WHERE id_user_relation = ?`,
             [id_user_relation]
         );
 
-        const base = rows[0] || {};
-
-        return new FinancialInterview({
-            data: base,
-            current_section: 2,
-        });
+        return rows[0] || {};
     }
 
     // Fetch AMAI Wuestionary by relation
     async fetchAmaiQ ({ id_user_relation }) {
-        const rows =  await db.query(
+        const [rows] =  await db.query(
             `SELECT *
              FROM amai_questionnaire
              WHERE id_user_relation = ?`,
             [id_user_relation]
         );
 
-        return rows.map(row => new FinancialInterview({
-            data: row,
-            current_section: 3,
-        }));
+        return rows;
     }
 
     // Fetch results by relation
     async fetchResults ({ id_user_relation }) {
-        const rows = await db.query(
+        const [rows] = await db.query(
             `SELECT 
                 fs.total_income, 
                 fs.total_expenses,
@@ -113,10 +103,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
             [id_user_relation]
         );
 
-        return rows.map(row => new FinancialInterview({
-            data: row,
-            current_section: 4,
-        }));
+        return rows;
     }
 }
 
