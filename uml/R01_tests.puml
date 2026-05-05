@@ -1,126 +1,94 @@
-@startuml Registrar_Resultado_Prueba
+@startuml Crear_Aplicacion
 actor "Clinic User" as USR
 participant "EvaluacionView" as VEVAL
-participant "TestListView" as VLIST
-participant "TestActionModalView" as VACTION
-participant "RegisterResultModalView" as VREGISTER
-participant "main.js" as MAIN
-participant "TestRoutes" as TROUTE
-participant "TestController" as TCTRL
-participant "RegisterResultUseCase" as UC_REG
-participant "TestResult\n(Entity)" as ENT_RESULT
-participant "IResultRep" as IRREPO
-participant "ResultRep" as RREPO
+participant "main.js (logbook.js)" as MAIN
+participant "UserRoutes" as UROUTE
+participant "PostApplicationsController" as TCTRL
+participant "postApplicationUseCase" as UC_POST
+participant "impTestApplicationsRepository" as APPREPO
+participant "impTestResultsRepository" as RREPO
 database "DB" as DB
 
-== Abrir sesión y ver pruebas ==
+== Abrir vista y crear aplicación ==
 
-USR -> VEVAL : Click session card
-VEVAL -> MAIN : navigate('/sesion/:id_session')
-MAIN -> TROUTE : GET /api/sessions/:id_session/results\n[Authorization: Bearer JWT]
-TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
-TROUTE -> TCTRL : controller.getResultsBySession(req, res)
-TCTRL -> RREPO : findBySession(id_session)
-RREPO -> DB : SELECT tr.*, pt.test_name, pt.description\nFROM test_results tr\nJOIN psych_tests pt ON tr.id_test = pt.id_test\nWHERE tr.id_session = :id_session
-DB --> RREPO : [ { test_results + test_info } ]
-RREPO --> TCTRL : [ resultDTOs ]
-TCTRL --> TROUTE : HTTP 200 { data: [results] }
-TROUTE --> MAIN : HTTP 200 { data: [results] }
-MAIN -> VLIST : render([results])
-VLIST --> USR : Show test cards\n(BANFE | WAIS | REY | MOCA...)\ncon status badge por prueba
+USR -> VEVAL : Click [Crear Sesión]
+VEVAL -> VEVAL : openModal()\nclear inputAppName
+VEVAL --> USR : Show Modal\n(inputAppName*)
 
-== Seleccionar prueba y acción ==
+USR -> VEVAL : Fill application_name\nClick [Guardar]
 
-USR -> VLIST : Click test card\n(BANFE | WAIS | MOCA)
-VLIST -> VACTION : openActionModal(\n  id_results, id_test,\n  test_name, status)
-VACTION --> USR : Show Action Modal\n[Consultar Resultado]\n[Modificar Resultado]\n[Registrar Resultado]\n[Cancelar]
+VEVAL -> VEVAL : validate client-side\n(required, max 20 chars)
 
-USR -> VACTION : Click [Registrar Resultado]
-VACTION -> MAIN : requestTestData(id_results)
-MAIN -> TROUTE : GET /api/sessions/:id_session/\nresults/:id_results\n[Authorization: Bearer JWT]
-TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
-TROUTE -> TCTRL : controller.getResultById(req, res)
-TCTRL -> RREPO : findResultById(id_results)
-RREPO -> DB : SELECT * FROM test_results\nWHERE id_results = :id_results
-DB --> RREPO : { result_row }
-
-alt result status != 6 (ya tiene resultado)
-    RREPO --> TCTRL : { result with score }
-    TCTRL --> TROUTE : HTTP 409 { error }
-    TROUTE --> MAIN : HTTP 409 { error }
-    MAIN --> VACTION : Show error\n"Esta prueba ya tiene resultado.\nUsa Modificar Resultado."
+alt Empty or > 20 chars
+    VEVAL --> USR : showModalError(msg)
 end
 
-RREPO --> TCTRL : { result_row, status: 6 }
-TCTRL --> TROUTE : HTTP 200 { data: result }
-TROUTE --> MAIN : HTTP 200 { data: result }
-MAIN -> VACTION : closeModal()
-VACTION -> VREGISTER : openRegisterModal(\n  id_results, id_test,\n  test_name, id_session)
-VREGISTER --> USR : Show Register Modal\n(score*, interpretacion*,\nfecha*, notas)
+VEVAL -> MAIN : fetch POST /users/:id_user/applications\n{ application_name }
 
-== Llenar y enviar formulario ==
+MAIN -> UROUTE : POST /users/:id_user/applications\n{ application_name }
+UROUTE -> TCTRL : appController.createApplication(req, res)
+TCTRL -> UC_POST : execute({ id_user, application_name })
 
-USR -> VREGISTER : Fill fields\n(score, interpretacion, fecha, notas)
-USR -> VREGISTER : Click [Guardar]
+== Validaciones en Use Case ==
 
-VREGISTER -> VREGISTER : validate required fields\n(score, interpretacion, fecha)
+UC_POST -> APPREPO : fetchUserProtocol({ id_user })
+APPREPO -> DB : SELECT u.id_user, ui.protocol\nFROM users u\nINNER JOIN user_info ui ON u.id_user = ui.id_user\nWHERE u.id_user = ? AND u.eliminated = 0
+DB --> APPREPO : { id_user, protocol } | []
+APPREPO --> UC_POST : { id_user, protocol } | null
 
-alt Empty required fields
-    VREGISTER --> USR : Error "Todos los campos marcados\ncon * son obligatorios"
+alt user not found (null)
+    UC_POST --> TCTRL : throw Error 404\n'User not found'
+    TCTRL --> MAIN : HTTP 404 { error }
+    MAIN --> VEVAL : showModalError(json.error)
 end
 
-VREGISTER -> VREGISTER : validate field formats\n(score: entero ≥ 0,\nfecha: válida y no futura,\ninterpretacion: max 200 chars,\nnotas: max 500 chars)
-
-alt Invalid format
-    VREGISTER --> USR : Error "Formato incorrecto:\n[campo]: [detalle]"
+alt protocol null or 'Pending'
+    UC_POST --> TCTRL : throw Error 422\n'User has no valid protocol assigned'
+    TCTRL --> MAIN : HTTP 422 { error }
+    MAIN --> VEVAL : showModalError(json.error)
 end
 
-VREGISTER -> MAIN : submitResult({\n  id_results, id_test, id_session,\n  score, interpretacion, fecha, notas })
-MAIN -> TROUTE : PATCH /api/sessions/:id_session/\nresults/:id_results\n[Authorization: Bearer JWT]
-TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
-TROUTE -> TCTRL : controller.registerResult(req, res)
-TCTRL -> TCTRL : req.body { score, interpretacion,\nfecha, notas }
-TCTRL -> UC_REG : RegisterResultUseCase.execute({\n  id_results, id_test, score,\n  interpretacion, fecha, notas })
-
-UC_REG -> UC_REG : Validate business rules\n(id_results exists,\nstatus == 6 → no registrado aún,\nscore range válido según id_test)
-
-alt status != 6 (doble registro)
-    UC_REG --> TCTRL : throw DomainError\n("Resultado ya registrado")
-    TCTRL --> TROUTE : HTTP 409 { error }
-    TROUTE --> MAIN : HTTP 409 { error }
-    MAIN --> VREGISTER : Show error in modal
+alt application_name empty or > 20 chars
+    UC_POST --> TCTRL : throw Error 422\n'application_name is required /\nmust be 20 chars or less'
+    TCTRL --> MAIN : HTTP 422 { error }
+    MAIN --> VEVAL : showModalError(json.error)
 end
 
-alt score out of range for test
-    UC_REG --> TCTRL : throw DomainError\n("Score fuera de rango para [test_name]")
-    TCTRL --> TROUTE : HTTP 422 { error }
-    TROUTE --> MAIN : HTTP 422 { error }
-    MAIN --> VREGISTER : Show error in modal
+UC_POST -> APPREPO : fetchProtocolTests({ protocol })
+APPREPO -> DB : SELECT id_test\nFROM protocol_tests\nWHERE protocol = ?
+DB --> APPREPO : [ { id_test }, ... ]
+APPREPO --> UC_POST : id_test[]
+
+alt no tests for protocol
+    UC_POST --> TCTRL : throw Error 422\n'No tests found for protocol: X'
+    TCTRL --> MAIN : HTTP 422 { error }
+    MAIN --> VEVAL : showModalError(json.error)
 end
 
-UC_REG -> ENT_RESULT : update TestResult({\n  score, interpretacion,\n  date_applied: fecha,\n  notes: notas,\n  status: calificado })
-ENT_RESULT -> ENT_RESULT : Validate invariants\n(score: number ≥ 0,\ninterpretacion: max 200 chars,\nnotes: max 500 chars,\nfecha: valid date)
+== Persistencia ==
 
-alt Invariant violation
-    ENT_RESULT --> UC_REG : throw EntityError(mensaje)
-    UC_REG --> TCTRL : re-throw DomainError
-    TCTRL --> TROUTE : HTTP 422 { error }
-    TROUTE --> MAIN : HTTP 422 { error }
-    MAIN --> VREGISTER : Show entity error in modal
-end
+UC_POST -> APPREPO : saveApplication({ id_user, application_name })
+APPREPO -> DB : INSERT INTO test_applications\n(id_application, id_user, application_name, status=6, created_at)\nVALUES (uuid, ?, ?, 6, NOW())
+DB --> APPREPO : OK
+APPREPO -> DB : SELECT * FROM test_applications\nWHERE id_application = ?
+DB --> APPREPO : { application_row }
+APPREPO --> UC_POST : TestApplication entity
 
-ENT_RESULT --> UC_REG : resultEntity
-UC_REG -> RREPO : actualizarResultado(resultEntity)
-RREPO -> DB : UPDATE test_results SET\n  score = :score,\n  interpretation = :interpretacion,\n  date_applied = :fecha,\n  notes = :notas,\n  status = calificado\nWHERE id_results = :id_results
-DB --> RREPO : { rows_affected: 1 }
-IRREPO --> UC_REG : resultadoActualizado
-UC_REG -> UC_REG : map Entity → ResultDTO
-UC_REG --> TCTRL : ResultDTO
-TCTRL --> TROUTE : HTTP 200 OK { data: result }
-TROUTE --> MAIN : HTTP 200 OK { data: result }
-MAIN --> VREGISTER : closeModal()\n+ showSuccessToast(\n"[test_name] registrado con éxito")
-VREGISTER --> USR : Modal closes\n+ Toast "✓ [test_name] registrado con éxito"
-MAIN -> VLIST : update test card status\n→ badge "Calificado"
-VLIST --> USR : Test card actualizada\ncon badge "Calificado"
+UC_POST -> RREPO : createResults(idApplication, id_user, testIds[])
+RREPO -> DB : INSERT INTO test_results\n(id_results, id_user, id_application, id_test, status=6)\nVALUES\n(uuid,?,?,?,6), -- test 1\n(uuid,?,?,?,6), -- test 2\n...              -- 1 row per protocol test
+DB --> RREPO : { affectedRows: N }
+RREPO --> UC_POST : result
+
+UC_POST -> UC_POST : map entity → ApplicationDTO
+UC_POST --> TCTRL : ApplicationDTO
+TCTRL --> MAIN : HTTP 201 { data: ApplicationDTO }
+
+== Actualizar UI ==
+
+MAIN -> VEVAL : closeModal()
+VEVAL --> USR : Modal closes
+MAIN -> VEVAL : showToast()\n"Sesión creada con éxito"
+MAIN -> VEVAL : insertAdjacentHTML('beforebegin',\ncreateSessionCard(dto))
+VEVAL --> USR : Nueva session card visible\ncon badge "Por Comenzar" (status 6)
 
 @enduml
