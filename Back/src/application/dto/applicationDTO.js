@@ -4,12 +4,12 @@
 */
 
 class ApplicationDTO {
-  constructor ({ id_application, id_user, application_name, status, created_at }) {
-    this.id_application   = id_application;
-    this.id_user          = id_user;
-    this.application_name = application_name;
-    this.status           = status;
-    this.created_at       = created_at;
+  constructor (entity) {
+    this.idApplication   = entity.idApplication;
+    this.idUser          = entity.idUser;
+    this.applicationName = entity.applicationName;
+    this.status          = entity.status;
+    this.createdAt       = entity.createdAt;
   }
 }
 
