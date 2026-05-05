@@ -33,7 +33,7 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
 const mockGetProfile = jest.fn();
 
 // Mock the profile service to avoid hitting a real database. 7
-jest.mock('../../../Back/src/infrastructure/repositories/profileRepository', () => {
+jest.mock('../../../Back/src/infrastructure/repositories/ImpProfileRepository', () => {
   return jest.fn().mockImplementation(() => ({
     getById: mockGetProfile,
   }));
