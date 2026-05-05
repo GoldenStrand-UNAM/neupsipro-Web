@@ -1,6 +1,6 @@
 const db = require ('../database/database');
 const Tests = require('../../domain/entity/tests');
-const resultRepository = require('../../domain/repository/resultRespository');
+const resultRepository = require('../../domain/repository/resultRepository');
 
 
 class impTestResultsRepository extends resultRepository {

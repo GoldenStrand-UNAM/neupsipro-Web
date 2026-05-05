@@ -15,18 +15,18 @@ class consultUserUseCase {
     }
 
     const user = userEntities[0];
-    let assignedSessions = [];
+    let assignedApplications = [];
     const hasProtocol = user.protocol && user.protocol !== 'Pending';
     if (hasProtocol) {
-      assignedSessions = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
+      assignedApplications = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
-    const canStartIntervention = assignedSessions.some (session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
+    const canStartIntervention = assignedApplications.some (session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
 
     const cleanUser = UserDTO.fromEntity(user);
     return {
       ...cleanUser,
       hasProtocol,
-      assignedSessions,
+      assignedApplications,
       canStartIntervention,
     };
   }

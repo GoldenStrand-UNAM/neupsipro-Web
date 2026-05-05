@@ -10,7 +10,7 @@ class impTestApplicationsRepository extends TestApplicationRepository {
       WHERE ta.id_user = ?`,
       [id_user]
     );
-    return testApplications.map(row => new TestApplications(row));
+    return testApplications.map(row => new TestApplication(row));
   }
 
   // New method for creating new application
