@@ -1,6 +1,7 @@
 const db = require ('../database/database');
 const Tests = require('../../domain/entity/tests');
 const resultRepository = require('../../domain/repository/resultRepository');
+const { v4: uuidv4 } = require('uuid');
 
 
 class impTestResultsRepository extends resultRepository {
@@ -19,11 +20,11 @@ class impTestResultsRepository extends resultRepository {
     if (!tests || tests.length === 0) return [];
 
     // Build multi-row INSERT: one placeholder group per test
-    const placeholders = tests.map(() => '(?, ?, ?, 6)').join(', ');
-    const values       = tests.flatMap(id_test => [id_user, id_application, id_test]);
+    const placeholders = tests.map(() => '(?, ?, ?, ?, 6)').join(', ');
+    const values       = tests.flatMap(id_test => [uuidv4, id_user, id_application, id_test]);
 
     const [result] = await db.query(
-      `INSERT INTO test_results (id_user, id_application, id_test, status)
+      `INSERT INTO test_results (id_results, id_user, id_application, id_test, status)
        VALUES ${placeholders}`,
       values
     );
