@@ -11,8 +11,12 @@ class FinancialInterviewUseCase {
         const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
         const id_user_relation = relationResult[0][0]?.id_user_relation;
 
-        // fetch current section  
-        const sectionResult = await this.financialInterviewRepository.fetchCurrentSection({ id_user_relation });
+        // fetch inicial interview full progress
+        const inicialResult = await this.financialInterviewRepository.fetchInterviewProgress({ id_user_relation });
+        const inicialProgress = inicialResult[0];
+
+        // fetch financial progress 
+        const sectionResult = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
         const current_section = sectionResult[0][0]?.current_section;
 
         let rawData;
@@ -39,6 +43,8 @@ class FinancialInterviewUseCase {
 
         const entity = new FinancialInterview({
             current_section,
+            inicialProgress: inicialProgress,
+            financialProgress: sectionResult[0][0],
             data: rawData.data,
         });
 

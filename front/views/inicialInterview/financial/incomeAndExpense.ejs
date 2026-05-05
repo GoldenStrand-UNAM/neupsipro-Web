@@ -110,17 +110,20 @@
     </div>
 
     <script>
+        // Get data
         window.financialData = <%- JSON.stringify(data) %>;
 
+        // Send data for sections sidebar (subSteps)
         window.sidebarState = {
-            currentStep: <%= data.current_section %>,
-            completedSteps: [] // luego lo calculamos
+            currentStep: window.financialData.current_section,
+            completedSteps: window.financialData.data.completedSubSteps,
         };
 
+        // Send data for sections (steps)
         window.sectionsState = {
-            currentStep: 2, // estás en sección 2
-            completedSteps: [1],
-            subStep: <%= data.current_section %>
+            currentStep: 2,
+            completedSteps: window.financialData.data.completedSteps,
+            subStep: window.financialData.current_section
         };
     </script>
 

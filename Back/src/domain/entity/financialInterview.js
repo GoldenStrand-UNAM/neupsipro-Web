@@ -1,22 +1,23 @@
 class FinancialInterview {
-    constructor ({ current_section, data }) {
+    constructor ({ current_section, inicialProgress, financialProgress, data }) {
         this.current_section = current_section;
+        this.financialProgress = financialProgress;
 
         switch (current_section) {
             case 1:
-                this.data = this.mapFinancialSituation(data);
+                this.data = this.mapFinancialSituation(inicialProgress, financialProgress, data);
                 break;
 
             case 2:
-                this.data = this.mapEscGovernment(data);
+                this.data = this.mapEscGovernment(inicialProgress, financialProgress, data);
                 break;
 
             case 3:
-                this.data = this.mapAmai(data);
+                this.data = this.mapAmai(inicialProgress, financialProgress, data);
                 break;
 
             case 4:
-                this.data = this.mapResults(data);
+                this.data = this.mapResults(inicialProgress, financialProgress, data);
                 break;
 
             default:
@@ -85,7 +86,7 @@ class FinancialInterview {
     // ================================= Map =================================
 
     // Financial Situation
-    mapFinancialSituation (data) {
+    mapFinancialSituation (inicialProgress, financialProgress, data) {
         const base = data.base || {};
         const contributors = data.contributors || [];
 
@@ -101,11 +102,13 @@ class FinancialInterview {
         return {
             income: this.buildIncome(base, formattedContributors, totalContributors),
             expenses: this.buildExpenses(base),
+            completedSteps: this.mapInicialProgress(inicialProgress),
+            completedSubSteps: this.mapFinancialProgress(financialProgress),
         };
     }
 
     // ESC Goverment
-    mapEscGovernment (datas) {
+    mapEscGovernment (inicialProgress, financialProgress, datas) {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
@@ -131,11 +134,14 @@ class FinancialInterview {
 
             socioeconomicLevel: data.socioeconomic_level ?? null,
             total: Number(data.total) || 0,
+
+            completedSteps: this.mapInicialProgress(inicialProgress),
+            completedSubSteps: this.mapFinancialProgress(financialProgress),
         };
     }
 
     // AMAI Questionary
-    mapAmai (datas) {
+    mapAmai (inicialProgress, financialProgress, datas) {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
@@ -148,11 +154,14 @@ class FinancialInterview {
 
             socioeconomicLevel: data.socioeconomic_level?? null,
             total: Number(data.total) || 0,
+
+            completedSteps: this.mapInicialProgress(inicialProgress),
+            completedSubSteps: this.mapFinancialProgress(financialProgress),
         };
     }
 
     // Results
-    mapResults (datas) {
+    mapResults (inicialProgress, financialProgress, datas) {
         const data = Array.isArray(datas) ? datas[0] : datas;
 
         return {
@@ -168,7 +177,36 @@ class FinancialInterview {
                 level: data.socio_level_amai,
                 score: Number(data.total_amai) || 0,
             },
+
+            completedSteps: this.mapInicialProgress(inicialProgress),
+            completedSubSteps: this.mapFinancialProgress(financialProgress),
         };
+    }
+
+    // Inicial Interview Progress
+    mapInicialProgress (inicialProgress) {
+        const data = inicialProgress[0];
+
+        const completedSteps = [];
+
+        if (data.identification_completed) completedSteps.push(1);
+        if (data.financial_completed) completedSteps.push(2);
+        if (data.symptoms_completed) completedSteps.push(3);
+
+        return completedSteps;
+    }
+
+    // Financial Progress
+    mapFinancialProgress (financialProgress) {
+        const data = financialProgress;
+
+        const completedSubSteps = [];
+
+        if (data.income_completed&& data.expenses_completed) completedSubSteps.push(1);
+        if (data.esc_completed) completedSubSteps.push(2);
+        if (data.amai_completed) completedSubSteps.push(3);
+
+        return completedSubSteps;
     }
 }
 

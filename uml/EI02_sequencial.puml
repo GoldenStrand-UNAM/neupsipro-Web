@@ -32,7 +32,7 @@ REPO -> DB : SELECT id_user_relation\nFROM user_relation\nWHERE id_user = ?
 DB --> REPO : id_user_relation
 REPO --> UC : id_user_relation
 
-UC -> REPO : fetchCurrentSection(id_user_relation)
+UC -> REPO : fetchFinancialProgress(id_user_relation)
 
 REPO -> DB : SELECT current_section\nFROM financial_progress\nWHERE id_user_relation = ?
 
