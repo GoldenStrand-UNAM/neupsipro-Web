@@ -13,10 +13,20 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
         );
     }
 
-    // Fetch current section by relation
-    async fetchCurrentSection ({ id_user_relation }) {
+    // Fetch interview progress by relation
+    async fetchInterviewProgress ({ id_user_relation }) {
         return await db.query(
-            `SELECT current_section
+            `SELECT *
+             FROM initial_interview_progress
+             WHERE id_user_relation = ?`,
+            [id_user_relation]
+        );
+    }
+
+    // Fetch financial progress by relation
+    async fetchFinancialProgress ({ id_user_relation }) {
+        return await db.query(
+            `SELECT *
              FROM financial_progress
              WHERE id_user_relation = ?`,
             [id_user_relation]

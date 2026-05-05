@@ -5,9 +5,14 @@ class ImpFinancialInterviewRepository {
         throw new Error("fetchRelation() must be implemented");
     }
 
+    // Fetch interview progress by relation
+    async fetchInterviewProgress ({ id_user_relation: _id_user_relation }) {
+        throw new Error("fetchInterviewProgress() must be implemented");
+    }
+
     // Fetch current section by relation
-    async fetchCurrentSection ({ id_user_relation: _id_user_relation }) {
-        throw new Error("fetchCurrentSection() must be implemented");
+    async fetchFinancialProgress ({ id_user_relation: _id_user_relation }) {
+        throw new Error("fetchFinancialProgress() must be implemented");
     }
 
     // Fetch financial situation by relation
