@@ -20,12 +20,12 @@ class TestApplication {
     if (!this.applicationName || !String(this.applicationName).trim()) {
       throw new Error('application_name is required');
     }
-    if (String(this.applicationName).trim().length > 50) {
-      throw new Error('application_name must be 50 characters or less');
+    if (String(this.applicationName).trim().length > 20) {
+      throw new Error('application_name must be 20 characters or less');
     }
   }
 
-  
+
   getStatus (status) {
     if (!status) return null;
 

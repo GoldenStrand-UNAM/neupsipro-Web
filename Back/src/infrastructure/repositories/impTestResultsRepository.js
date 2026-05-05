@@ -3,7 +3,7 @@ const Tests = require('../../domain/entity/tests');
 const resultRepository = require('../../domain/repository/resultRespository');
 
 
-class TestResultsRepository extends ImpResultRepository {
+class impTestResultsRepository extends resultRepository {
   async fetchUserTests ({ id_user }) {
     const [tests] = await db.query(
       `SELECT *
@@ -33,4 +33,4 @@ class TestResultsRepository extends ImpResultRepository {
 
 }
 
-module.exports = TestResultsRepository;
+module.exports = impTestResultsRepository;
