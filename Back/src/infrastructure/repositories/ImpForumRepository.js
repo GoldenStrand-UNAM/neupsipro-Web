@@ -1,8 +1,8 @@
 const db = require ('../database/database');
-const impForumRepository = require('../../domain/repository/ImpForumRepository');
+const forumRepository = require('../../domain/repository/forumRepository');
 
 // Repository responsable for fetching publications from the database with author info and pagination
-class forumRepository extends impForumRepository {
+class ImpForumRepository extends forumRepository {
 
   async count () {
     const [[{ total }]] = await db.query('SELECT COUNT(*) AS total FROM publication');
@@ -32,4 +32,4 @@ class forumRepository extends impForumRepository {
   }
 }
 
-module.exports = forumRepository;
+module.exports = ImpForumRepository;

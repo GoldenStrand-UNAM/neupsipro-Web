@@ -1,15 +1,24 @@
 const express = require('express');
-const ProfileRepository = require('../../../infrastructure/repositories/profileRepository');
+const ImpProfileRepository = require('../../../infrastructure/repositories/ImpProfileRepository');
 const GetProfileUseCase = require('../../../application/usecase/users/getProfileUseCase');
 const ProfileController = require('../../controller/users/profile.controller');
-
-const router = express.Router();
+const JwtService = require('../../../infrastructure/external/jwt.service');
+const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware')
 const db = require('../../../infrastructure/database/database');
 
-const profileRepository = new ProfileRepository(db);
-const getProfileUseCase = new GetProfileUseCase(profileRepository);
-const profileController = new ProfileController(getProfileUseCase);
+module.exports = (_authUseCase) => {
+    const router = express.Router();
+    const impProfileRepository = new ImpProfileRepository(db);
+    const getProfileUseCase = new GetProfileUseCase(impProfileRepository);
+    const profileController = new ProfileController(getProfileUseCase);
+    const jwtService = new JwtService();
+    const authMiddleware = new AuthMiddleware(jwtService);
 
-router.get('/:userId', (req, res) => profileController.getProfile(req, res));
+router.get(
+    '/:userId',
+    authMiddleware.verifyToken,
+    (req, res) => profileController.getProfile(req, res)
+);
 
-module.exports = router;
+return router;
+};

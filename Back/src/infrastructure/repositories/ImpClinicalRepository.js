@@ -1,8 +1,8 @@
 const db = require('../database/database');
-const ImpClinicalRepository = require('../../domain/repository/ImpClinicalRepository');
+const clinicalRepository = require('../../domain/repository/clinicalRepository');
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 
-class ClinicalRepository extends ImpClinicalRepository {
+class ImpClinicalRepository extends clinicalRepository {
   async fetchActivePatients ({ search, page, limit }) {
     // Calculate offset for pagination
     const offset = (page - 1) * limit;
@@ -41,4 +41,4 @@ class ClinicalRepository extends ImpClinicalRepository {
     return rows[0]?.total ?? 0;
   }
 }
-module.exports = ClinicalRepository;
+module.exports = ImpClinicalRepository;

@@ -1,4 +1,4 @@
-const ImpProfileRepository = require('../../domain/repository/ImpProfileRepository');
+const profileRepository = require('../../domain/repository/profileRepository');
 const userProfile = require('../../domain/entity/userProfile');
 const db = require('../database/database');
 
@@ -6,7 +6,7 @@ const db = require('../database/database');
  * Implementation for the repository using MySQL.
  * It does a JOIN between multiple tables to consolidate data.
  */
-class profileRepository extends ImpProfileRepository {
+class ImpProfileRepository extends profileRepository {
   async getUserId (userId) {
     const query = `
             SELECT
@@ -52,4 +52,4 @@ class profileRepository extends ImpProfileRepository {
   }
 }
 
-module.exports = profileRepository;
+module.exports = ImpProfileRepository;
