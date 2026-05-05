@@ -109,7 +109,23 @@
 
     </div>
 
+    <script>
+        window.financialData = <%- JSON.stringify(data) %>;
+
+        window.sidebarState = {
+            currentStep: <%= data.current_section %>,
+            completedSteps: [] // luego lo calculamos
+        };
+
+        window.sectionsState = {
+            currentStep: 2, // estás en sección 2
+            completedSteps: [1],
+            subStep: <%= data.current_section %>
+        };
+    </script>
+
     <!-- Script -->
+    <script src="/js/financialMapper.js"></script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/sectionsStepper.js"></script>
     <script src="/js/sidebarTimeline.js"></script>
