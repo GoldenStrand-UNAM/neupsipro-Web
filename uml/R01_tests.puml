@@ -1,0 +1,126 @@
+@startuml Registrar_Resultado_Prueba
+actor "Clinic User" as USR
+participant "EvaluacionView" as VEVAL
+participant "TestListView" as VLIST
+participant "TestActionModalView" as VACTION
+participant "RegisterResultModalView" as VREGISTER
+participant "main.js" as MAIN
+participant "TestRoutes" as TROUTE
+participant "TestController" as TCTRL
+participant "RegisterResultUseCase" as UC_REG
+participant "TestResult\n(Entity)" as ENT_RESULT
+participant "IResultRep" as IRREPO
+participant "ResultRep" as RREPO
+database "DB" as DB
+
+== Abrir sesión y ver pruebas ==
+
+USR -> VEVAL : Click session card
+VEVAL -> MAIN : navigate('/sesion/:id_session')
+MAIN -> TROUTE : GET /api/sessions/:id_session/results\n[Authorization: Bearer JWT]
+TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
+TROUTE -> TCTRL : controller.getResultsBySession(req, res)
+TCTRL -> RREPO : findBySession(id_session)
+RREPO -> DB : SELECT tr.*, pt.test_name, pt.description\nFROM test_results tr\nJOIN psych_tests pt ON tr.id_test = pt.id_test\nWHERE tr.id_session = :id_session
+DB --> RREPO : [ { test_results + test_info } ]
+RREPO --> TCTRL : [ resultDTOs ]
+TCTRL --> TROUTE : HTTP 200 { data: [results] }
+TROUTE --> MAIN : HTTP 200 { data: [results] }
+MAIN -> VLIST : render([results])
+VLIST --> USR : Show test cards\n(BANFE | WAIS | REY | MOCA...)\ncon status badge por prueba
+
+== Seleccionar prueba y acción ==
+
+USR -> VLIST : Click test card\n(BANFE | WAIS | MOCA)
+VLIST -> VACTION : openActionModal(\n  id_results, id_test,\n  test_name, status)
+VACTION --> USR : Show Action Modal\n[Consultar Resultado]\n[Modificar Resultado]\n[Registrar Resultado]\n[Cancelar]
+
+USR -> VACTION : Click [Registrar Resultado]
+VACTION -> MAIN : requestTestData(id_results)
+MAIN -> TROUTE : GET /api/sessions/:id_session/\nresults/:id_results\n[Authorization: Bearer JWT]
+TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
+TROUTE -> TCTRL : controller.getResultById(req, res)
+TCTRL -> RREPO : findResultById(id_results)
+RREPO -> DB : SELECT * FROM test_results\nWHERE id_results = :id_results
+DB --> RREPO : { result_row }
+
+alt result status != 6 (ya tiene resultado)
+    RREPO --> TCTRL : { result with score }
+    TCTRL --> TROUTE : HTTP 409 { error }
+    TROUTE --> MAIN : HTTP 409 { error }
+    MAIN --> VACTION : Show error\n"Esta prueba ya tiene resultado.\nUsa Modificar Resultado."
+end
+
+RREPO --> TCTRL : { result_row, status: 6 }
+TCTRL --> TROUTE : HTTP 200 { data: result }
+TROUTE --> MAIN : HTTP 200 { data: result }
+MAIN -> VACTION : closeModal()
+VACTION -> VREGISTER : openRegisterModal(\n  id_results, id_test,\n  test_name, id_session)
+VREGISTER --> USR : Show Register Modal\n(score*, interpretacion*,\nfecha*, notas)
+
+== Llenar y enviar formulario ==
+
+USR -> VREGISTER : Fill fields\n(score, interpretacion, fecha, notas)
+USR -> VREGISTER : Click [Guardar]
+
+VREGISTER -> VREGISTER : validate required fields\n(score, interpretacion, fecha)
+
+alt Empty required fields
+    VREGISTER --> USR : Error "Todos los campos marcados\ncon * son obligatorios"
+end
+
+VREGISTER -> VREGISTER : validate field formats\n(score: entero ≥ 0,\nfecha: válida y no futura,\ninterpretacion: max 200 chars,\nnotas: max 500 chars)
+
+alt Invalid format
+    VREGISTER --> USR : Error "Formato incorrecto:\n[campo]: [detalle]"
+end
+
+VREGISTER -> MAIN : submitResult({\n  id_results, id_test, id_session,\n  score, interpretacion, fecha, notas })
+MAIN -> TROUTE : PATCH /api/sessions/:id_session/\nresults/:id_results\n[Authorization: Bearer JWT]
+TROUTE -> TROUTE : authMiddleware\nverify JWT → id_usuario
+TROUTE -> TCTRL : controller.registerResult(req, res)
+TCTRL -> TCTRL : req.body { score, interpretacion,\nfecha, notas }
+TCTRL -> UC_REG : RegisterResultUseCase.execute({\n  id_results, id_test, score,\n  interpretacion, fecha, notas })
+
+UC_REG -> UC_REG : Validate business rules\n(id_results exists,\nstatus == 6 → no registrado aún,\nscore range válido según id_test)
+
+alt status != 6 (doble registro)
+    UC_REG --> TCTRL : throw DomainError\n("Resultado ya registrado")
+    TCTRL --> TROUTE : HTTP 409 { error }
+    TROUTE --> MAIN : HTTP 409 { error }
+    MAIN --> VREGISTER : Show error in modal
+end
+
+alt score out of range for test
+    UC_REG --> TCTRL : throw DomainError\n("Score fuera de rango para [test_name]")
+    TCTRL --> TROUTE : HTTP 422 { error }
+    TROUTE --> MAIN : HTTP 422 { error }
+    MAIN --> VREGISTER : Show error in modal
+end
+
+UC_REG -> ENT_RESULT : update TestResult({\n  score, interpretacion,\n  date_applied: fecha,\n  notes: notas,\n  status: calificado })
+ENT_RESULT -> ENT_RESULT : Validate invariants\n(score: number ≥ 0,\ninterpretacion: max 200 chars,\nnotes: max 500 chars,\nfecha: valid date)
+
+alt Invariant violation
+    ENT_RESULT --> UC_REG : throw EntityError(mensaje)
+    UC_REG --> TCTRL : re-throw DomainError
+    TCTRL --> TROUTE : HTTP 422 { error }
+    TROUTE --> MAIN : HTTP 422 { error }
+    MAIN --> VREGISTER : Show entity error in modal
+end
+
+ENT_RESULT --> UC_REG : resultEntity
+UC_REG -> RREPO : actualizarResultado(resultEntity)
+RREPO -> DB : UPDATE test_results SET\n  score = :score,\n  interpretation = :interpretacion,\n  date_applied = :fecha,\n  notes = :notas,\n  status = calificado\nWHERE id_results = :id_results
+DB --> RREPO : { rows_affected: 1 }
+IRREPO --> UC_REG : resultadoActualizado
+UC_REG -> UC_REG : map Entity → ResultDTO
+UC_REG --> TCTRL : ResultDTO
+TCTRL --> TROUTE : HTTP 200 OK { data: result }
+TROUTE --> MAIN : HTTP 200 OK { data: result }
+MAIN --> VREGISTER : closeModal()\n+ showSuccessToast(\n"[test_name] registrado con éxito")
+VREGISTER --> USR : Modal closes\n+ Toast "✓ [test_name] registrado con éxito"
+MAIN -> VLIST : update test card status\n→ badge "Calificado"
+VLIST --> USR : Test card actualizada\ncon badge "Calificado"
+
+@enduml
