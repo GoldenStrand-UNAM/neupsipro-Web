@@ -10,7 +10,7 @@ class GetApplicationsByUserUseCase {
     const sessions = await this.impTestApplicationsRepository.fetchTestSessions({ id_user });
 
     // Map entities → DTOs before leaving the use case boundary
-    return sessions.map(s => new ApplicationDTO(s));
+    return sessions.map(s => new testApplicationDTO(s));
   }
 }
 
