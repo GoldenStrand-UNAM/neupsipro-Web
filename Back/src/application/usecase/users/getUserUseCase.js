@@ -1,9 +1,9 @@
 const UserDTO = require('../../dto/userDTO');
 
 class consultUserUseCase {
-  constructor (userRepository, testSessionsRepository) {
+  constructor (userRepository, impTestApplicationRepository) {
     this.userRepository = userRepository;
-    this.testSessionsRepository = testSessionsRepository;
+    this.impTestApplicationRepository = impTestApplicationRepository;
   }
 
   async execute ({ id_user }) {
@@ -18,7 +18,7 @@ class consultUserUseCase {
     let assignedSessions = [];
     const hasProtocol = user.protocol && user.protocol !== 'Pending';
     if (hasProtocol) {
-      assignedSessions = await this.testSessionsRepository.fetchTestSessions({ id_user });
+      assignedSessions = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
     const canStartIntervention = assignedSessions.some (session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
 
