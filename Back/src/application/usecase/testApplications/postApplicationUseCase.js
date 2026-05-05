@@ -1,39 +1,28 @@
-const db             = require('../../../infrastructure/database/database');
 const testApplicationDTO = require('../../dto/testApplicationDTO');
 
-// Research protocol requires: BANFE, WAIS, REY, Cuestionario
-// Clinical protocol requires: MOCA, Cuestionario, NIH
-const PROTOCOL_TESTS = {
-  Research: [1, 2, 3, 5], 
-  Clinical: [4, 5, 8],
-};
-
 class postApplicationUseCase {
-  constructor (impTestApplicationsRepository, impTestResultsRepository) {
+  constructor(impTestApplicationsRepository, impTestResultsRepository) {
     this.impTestApplicationsRepository = impTestApplicationsRepository;
-    this.impTestResultsRepository           = impTestResultsRepository;
+    this.impTestResultsRepository      = impTestResultsRepository;
   }
 
-  async execute ({ id_user, application_name }) {
+  async execute({ id_user, application_name }) {
     // 1. Verify user exists and retrieve their assigned protocol
-      const [userRows] = await db.query(
-        `SELECT u.id_user, ui.protocol 
-        FROM users u
-        INNER JOIN user_info ui ON u.id_user = ui.id_user
-        WHERE u.id_user = ? AND u.eliminated = 0`,
-        [id_user]
-      );
+    const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
 
-    if (!userRows.length) {
+    console.log('id_user recibido:', id_user);
+    console.log('userRecord:', userRecord);
+
+    if (!userRecord) {
       const err  = new Error('User not found');
       err.status = 404;
       throw err;
     }
 
-    const { protocol } = userRows[0];
+    const { protocol } = userRecord;
 
     // 2. Validate the user has a recognized protocol assigned
-    if (!protocol || !PROTOCOL_TESTS[protocol]) {
+    if (!protocol || protocol === 'Pending') {
       const err  = new Error('User has no valid protocol assigned');
       err.status = 422;
       throw err;
@@ -51,20 +40,29 @@ class postApplicationUseCase {
       throw err;
     }
 
-    // 4. Persist the application — repository returns a full entity
+    // 4. Fetch the tests associated with the protocol
+    const testIds = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
+
+    if (!testIds.length) {
+      const err  = new Error(`No tests found for protocol: ${protocol}`);
+      err.status = 422;
+      throw err;
+    }
+
+    // 5. Persist the application — repository returns a full entity
     const savedEntity = await this.impTestApplicationsRepository.saveApplication({
       id_user,
       application_name,
     });
 
-    // 5. Bulk-create the result rows for each test in the protocol
+    // 6. Bulk-create the result rows for each test in the protocol
     await this.impTestResultsRepository.createResults(
       savedEntity.idApplication,
       id_user,
-      PROTOCOL_TESTS[protocol]
+      testIds
     );
 
-    // 6. Return DTO — never expose the raw entity across boundaries
+    // 7. Return DTO — never expose the raw entity across boundaries
     return new testApplicationDTO(savedEntity);
   }
 }
