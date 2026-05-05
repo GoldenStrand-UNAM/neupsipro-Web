@@ -1,5 +1,4 @@
 // Interface contract for application persistence.
-// Every concrete repository must implement these methods.
 class applicationRepository {
   async saveApplication (_applicationEntity) {
     throw new Error('saveApplication() must be implemented');
