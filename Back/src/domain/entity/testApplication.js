@@ -1,33 +1,54 @@
-/* 
-    Represents the core business object for a test application session.
-    Validates its own invariants on construction — no invalid state can exist.
- */
+class TestApplication {
+  constructor (data) {
+    this.idApplication = data.id_application;
+    this.idUser = data.id_user;
+    this.applicationName = data.application_name;
+    this.status = this.getStatus(data.status);
+    this.createdAt = data.created_at;
 
- class TestApplication {
-  constructor ({ id_application, id_user, application_name, status, created_at }) {
-    this._validate({ application_name });
-
-    this.id_application  = id_application ?? null;
-    this.id_user         = id_user;
-    this.application_name = application_name.trim ();
-    this.status          = status ?? 6;
-    this.created_at      = created_at ?? new Date ();
+    // Raw status number kept for persistence (getStatus returns a string)
+    this._rawStatus = data.status ?? 6;
   }
 
-  // Called by the repository after INSERT to attach the generated PK
+    // Called by the repository after INSERT to attach the generated PK
   setId (id) {
-    this.id_application = id;
+    this.idApplication = id;
   }
 
-  // Internal validation
-  _validate ({ application_name }) {
-    if (!application_name || !application_name.trim()) {
+  // Validates invariants before persisting — throws if invalid
+  validate () {
+    if (!this.applicationName || !String(this.applicationName).trim()) {
       throw new Error('application_name is required');
     }
-    if (application_name.trim().length > 20) {
-      throw new Error('application_name must be 20 characters or less');
+    if (String(this.applicationName).trim().length > 50) {
+      throw new Error('application_name must be 50 characters or less');
+    }
+  }
+
+  
+  getStatus (status) {
+    if (!status) return null;
+
+    switch (status) {
+      case 1:
+        return 'En proceso de Aplicación';
+      case 2:
+        return 'En proceso de Calificar';
+      case 3:
+        return 'Elaborado';
+      case 4:
+        return 'Avanzado';
+      case 5:
+        return 'Completada';
+      case 6:
+        return 'Por Comenzar';
+      case 7:
+        return 'Calificado';
+      case 8:
+        return 'Entregado';
+      case 9:
+        return 'Caducada';
     }
   }
 }
-
 module.exports = TestApplication;
