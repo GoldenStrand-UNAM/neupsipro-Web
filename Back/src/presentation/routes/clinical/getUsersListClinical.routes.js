@@ -1,7 +1,5 @@
 const express = require('express');
 
-const router = express.Router();
-
 const ClinicalRepository = require('../../../infrastructure/repositories/clinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
 const getUsersClinicalListController = require('../../controller/clinical/getUsersListClinical.controller');

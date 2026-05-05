@@ -1,34 +1,34 @@
 const FinancialInterviewDTO  = require('../../../application/dto/financialInterviewDTO');
 
 class financialInterviewController {
-    constructor (financialInterviewUseCase) {
-        this.financialInterviewUseCase = financialInterviewUseCase;
+  constructor (financialInterviewUseCase) {
+    this.financialInterviewUseCase = financialInterviewUseCase;
+  }
+
+  // get financial interview
+  async getFinancialInterview (req, res) {
+
+    try {
+      const { id_user } = req.params;
+
+      const financialInterview = await this.financialInterviewUseCase.execute({
+        id_user,
+        section: 'financial',
+      });
+
+      const response = FinancialInterviewDTO.fromEntity(financialInterview);
+
+      return res.render('inicialInterview/financial/incomeAndExpense', {
+        data: response,
+        id_user,
+        activePage: 'usuarios',
+      });
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
     }
-
-    // get financial interview
-    async getFinancialInterview (req, res) {
-        
-        try {
-            const {id_user} = req.params;
-
-            const financialInterview = await this.financialInterviewUseCase.execute({
-                id_user, 
-                section: 'financial',
-            });
-
-            const response = FinancialInterviewDTO.fromEntity(financialInterview);
-
-            return res.render("inicialInterview/financial/incomeAndExpense", {
-                data: response,
-                id_user,
-                activePage: 'usuarios',
-            });
-        } catch (error) {
-            return res.status(400).json({
-                error: error.message,
-            });
-        }
-    }
+  }
 }
 
 module.exports = financialInterviewController;
