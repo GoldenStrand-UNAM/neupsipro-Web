@@ -5,7 +5,7 @@ const { v4: uuidv4 }            = require('uuid');
 
 class impTestApplicationsRepository extends TestApplicationRepository {
 
-  async fetchTestApplications({ id_user }) {
+  async fetchTestApplications ({ id_user }) {
     const [testApplications] = await db.query(
       `SELECT *
        FROM test_applications ta
@@ -15,17 +15,17 @@ class impTestApplicationsRepository extends TestApplicationRepository {
     return testApplications.map(row => new TestApplication(row));
   }
 
-  async saveApplication({ id_user, application_name }) {
+  async saveApplication ({ id_user, application_name }) {
     const id_application = uuidv4();
 
     await db.query(
       `INSERT INTO test_applications (id_application, id_user, application_name, status, created_at)
-       VALUES (?, ?, ?, 6, NOW())`,
+       VALUES (?, ?, ?, 1, NOW())`,
       [id_application, id_user, application_name.trim()]
     );
 
     const [rows] = await db.query(
-      `SELECT * FROM test_applications WHERE id_application = ?`,
+      'SELECT * FROM test_applications WHERE id_application = ?',
       [id_application]
     );
 
@@ -36,7 +36,7 @@ class impTestApplicationsRepository extends TestApplicationRepository {
    * Fetches the user record joined with user_info to retrieve the assigned protocol.
    * @returns {{ id_user: string, protocol: string } | null}
    */
-  async fetchUserProtocol({ id_user }) {
+  async fetchUserProtocol ({ id_user }) {
     const [rows] = await db.query(
       `SELECT u.id_user, ui.protocol
        FROM users u
@@ -52,9 +52,9 @@ class impTestApplicationsRepository extends TestApplicationRepository {
    * Fetches all test IDs registered for a given protocol.
    * @returns {string[]} Array of id_test values (empty if protocol has no tests).
    */
-  async fetchProtocolTests({ protocol }) {
+  async fetchProtocolTests ({ protocol }) {
     const [rows] = await db.query(
-      `SELECT id_test FROM protocol_tests WHERE protocol = ?`,
+      'SELECT id_test FROM protocol_tests WHERE protocol = ?',
       [protocol]
     );
 
