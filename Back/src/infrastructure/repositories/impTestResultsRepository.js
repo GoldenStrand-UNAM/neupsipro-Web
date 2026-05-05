@@ -3,7 +3,6 @@ const Tests = require('../../domain/entity/tests');
 const resultRepository = require('../../domain/repository/resultRepository');
 const { v4: uuidv4 } = require('uuid');
 
-
 class impTestResultsRepository extends resultRepository {
   async fetchUserTests ({ id_user }) {
     const [tests] = await db.query(

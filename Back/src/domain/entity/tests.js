@@ -10,27 +10,20 @@ class Tests {
     this.notes = data.notes;
     this.status = this.getStatus(data.status);
   }
+
   getStatus (status) {
     if (!status) return null;
+
     switch (status) {
       case 1:
-        return 'En proceso de Aplicación';
+        return 'Por comenzar';
       case 2:
-        return 'En proceso de Calificar';
+        return 'En proceso';
       case 3:
-        return 'Elaborado';
+        return 'Calificada';
       case 4:
-        return 'Avanzado';
-      case 5:
-        return 'Impreso';
-      case 6:
-        return 'Por Comenzar';
-      case 7:
-        return 'Calificado';
-      case 8:
         return 'Entregado';
-      case 9:
-        return 'Caducada';
+
     }
   }
 }
