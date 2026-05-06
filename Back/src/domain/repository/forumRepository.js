@@ -1,5 +1,5 @@
 
-class ImpForumRepository {
+class forumRepository {
 
   // Method to retrieve paginated forum data (must be implemented)
   async fetchAll () {
@@ -7,4 +7,4 @@ class ImpForumRepository {
   }
 }
 
-module.exports = ImpForumRepository;
+module.exports = forumRepository;

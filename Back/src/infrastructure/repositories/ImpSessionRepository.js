@@ -1,6 +1,6 @@
 const crypto = require ('crypto');
 
-class SessionRepository {
+class ImpSessionRepository {
   constructor (dbConnection) {
     this.dbConnection = dbConnection;
   }
@@ -28,4 +28,4 @@ class SessionRepository {
     }
   }
 }
-module.exports = SessionRepository;
+module.exports = ImpSessionRepository;
