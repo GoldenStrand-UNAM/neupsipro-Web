@@ -133,6 +133,9 @@
     filePreview.classList.add('hidden');
     emptyState.classList.remove('hidden');
     previewImg.src = '';
+
+  titleCount.innerText = '0/50';
+  document.getElementById('charCount').innerText = '0/500';
   }  
 
   tituloInput.addEventListener('input', () => {
@@ -143,6 +146,7 @@
 
   function limitContent(content) {
     const limit = 500;
+
     if (content.innerText.length > limit) {
         content.innerText = content.innerText.substring(0, limit);
         window.getSelection().selectAllChildren(content);
