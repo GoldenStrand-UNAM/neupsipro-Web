@@ -8,7 +8,7 @@ class RegPublicationUseCase {
   }
 
   async execute ({ id_usuario, titulo, contenido, image }) {
-    // Entity validation 
+    // Entity validation
     const publication = new Publication ({
       id_usuario,
       titulo,

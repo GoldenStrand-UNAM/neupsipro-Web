@@ -32,22 +32,22 @@ class ImpForumRepository extends forumRepository {
     return rows;
   }
   // Inserts a new publication, return its generated id
-    async save({ id_usuario, titulo, contenido, image }) {
+  async save ({ id_usuario, titulo, contenido, image }) {
     const id = uuidv4();
 
     await db.query(
-        `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
+      `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
          VALUES (?, ?, ?, ?, ?, NOW())`,
-        [id, id_usuario, titulo, contenido, image] 
+      [id, id_usuario, titulo, contenido, image]
     );
 
     const [rows] = await db.query(
-        'SELECT * FROM publication WHERE id_publication = ?',
-        [id]
+      'SELECT * FROM publication WHERE id_publication = ?',
+      [id]
     );
 
     return rows[0];
-}
+  }
 }
 
 module.exports = ImpForumRepository;

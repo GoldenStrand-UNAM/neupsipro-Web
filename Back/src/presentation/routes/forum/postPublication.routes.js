@@ -11,32 +11,32 @@ const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 module.exports = (authUseCase) => {
-    const router = express.Router();
+  const router = express.Router();
 
-    const repository = new ImpForumRepository();
-    const useCase = new RegPublicationUseCase(repository);
-    const controller = new PostPublicationController(useCase);
+  const repository = new ImpForumRepository();
+  const useCase = new RegPublicationUseCase(repository);
+  const controller = new PostPublicationController(useCase);
 
-    const jwtService = new JwtService();
-    const authMiddleware = new AuthMiddleware(jwtService);
-    const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
+  const jwtService = new JwtService();
+  const authMiddleware = new AuthMiddleware(jwtService);
+  const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-    router.get(
-        '/forum/post',
-        authMiddleware.verifyToken,
-        permissionsMiddleware.requirePermission('Forum', 'writing'),
-        (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
-    );
+  router.get(
+    '/forum/post',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Forum', 'writing'),
+    (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
+  );
 
-    router.post(
-        '/forum/post',
-        authMiddleware.verifyToken,                                     
-        permissionsMiddleware.requirePermission('Forum', 'writing'),
-        upload.single('imagen'),
-        validateImageMiddleware,
-        s3UploadMiddleware,
-        (req, res) => controller.registerPublication(req, res)
-    );
+  router.post(
+    '/forum/post',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Forum', 'writing'),
+    upload.single('imagen'),
+    validateImageMiddleware,
+    s3UploadMiddleware,
+    (req, res) => controller.registerPublication(req, res)
+  );
 
-    return router; 
+  return router;
 };
