@@ -1,5 +1,5 @@
 const express = require('express');
-const ForumRepository = require('../../../infrastructure/repositories/forumRepository');
+const ImpForumRepository = require('../../../infrastructure/repositories/ImpForumRepository');
 const PostPublicationController = require('../../controller/forum/postPublication.Controller');
 const RegPublicationUseCase = require('../../../application/usecase/forum/postPublicationUseCase');
 const upload = require('../../../infrastructure/external/multer.service');
@@ -13,7 +13,7 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 module.exports = (authUseCase) => {
     const router = express.Router();
 
-    const repository = new ForumRepository();
+    const repository = new ImpForumRepository();
     const useCase = new RegPublicationUseCase(repository);
     const controller = new PostPublicationController(useCase);
 
@@ -24,14 +24,14 @@ module.exports = (authUseCase) => {
     router.get(
         '/forum/post',
         authMiddleware.verifyToken,
-       // permissionsMiddleware.requirePermission('Forum', 'writing'),
+        permissionsMiddleware.requirePermission('Forum', 'writting'),
         (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
     );
 
     router.post(
         '/forum/post',
         authMiddleware.verifyToken,                                     
-        //permissionsMiddleware.requirePermission('Forum', 'writing'),
+        permissionsMiddleware.requirePermission('Forum', 'writting'),
         upload.single('imagen'),
         validateImageMiddleware,
         s3UploadMiddleware,

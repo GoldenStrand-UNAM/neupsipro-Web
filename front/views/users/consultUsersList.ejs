@@ -6,7 +6,7 @@
     <title>Usuarios - NeuPsi-Pro</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
-<body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
     <script src="/js/main.js"></script>
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
@@ -92,7 +92,7 @@ let debounceTimer;
 async function fetchUsers() {
     const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
     try {
-        const res  = await fetch(`/api/usuarios?${params}`);
+        const res  = await fetch(`/api/users?${params}`);
         const data = await res.json();
 
         if (!res.ok) {
