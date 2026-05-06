@@ -694,3 +694,5 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
+
+ALTER TABLE acl CHANGE writting writing BOOL NOT NULL;

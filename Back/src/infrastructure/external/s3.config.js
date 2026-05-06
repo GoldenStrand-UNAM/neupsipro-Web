@@ -5,7 +5,7 @@ require('dotenv').config();
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME || process.env.AWS_BUCKET;
 
 AWS.config.update({
-  signatureVersion: '',
+  signatureVersion: 'v4',
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
@@ -17,7 +17,7 @@ const uploadToS3 = async (filePath, fileName) => {
   // Read the temp file into a Buffer
   //We need to convert it to base64 in order to upload it, fs to process the file
 
-  // const data = await fs.readFile (filePath);
+  const data = await fs.readFile (filePath);
 
   //const base64data = Buffer.from(data, 'binary');
 
