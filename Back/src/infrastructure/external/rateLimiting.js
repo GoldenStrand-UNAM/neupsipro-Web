@@ -1,4 +1,4 @@
-const rateLimit = require('express-rate-limit')
+const rateLimit = require('express-rate-limit');
 
 // General rate limiter: 100 requests per 15 minutes
 const generalLimiter = rateLimit({
@@ -6,7 +6,7 @@ const generalLimiter = rateLimit({
   limit: 100,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-})
+});
 
 // Login limiter: 5 requests per 15 minutes
 const loginLimiter = rateLimit({
@@ -15,11 +15,11 @@ const loginLimiter = rateLimit({
   standardHeaders: 'draft-8',
   legacyHeaders: false,
 
-})
+});
 
 // Publication limiter: 5 requests per hour
 const publicationLimiter = rateLimit({
 
-})
+});
 
-module.exports = { generalLimiter, loginLimiter, publicationLimiter}
+module.exports = { generalLimiter, loginLimiter, publicationLimiter };
