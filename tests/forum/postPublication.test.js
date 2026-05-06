@@ -23,7 +23,7 @@ jest.mock('../../Back/src/infrastructure/external/rateLimiting', () => ({
   loginLimiter: (req, res, next) => next(),
 }));
 
-jest.mock('../../Back/src/infrastructure/repositories/forumRepository',() => {
+jest.mock('../../Back/src/infrastructure/repositories/ImpForumRepository',() => {
     return jest.fn().mockImplementation(() => ({
         save: jest.fn().mockResolvedValue({
             id_publication: '123',
@@ -49,7 +49,7 @@ describe('POST /upload (with mocked s3 service) SUCCESS', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         jest.isolateModules(() => {
-        ForumRepository = require('../../Back/src/infrastructure/repositories/forumRepository');
+        ForumRepository = require('../../Back/src/infrastructure/repositories/ImpForumRepository');
     });
     });
 
@@ -81,7 +81,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         jest.isolateModules(() => {
-        ForumRepository = require('../../Back/src/infrastructure/repositories/forumRepository');
+        ForumRepository = require('../../Back/src/infrastructure/repositories/ImpForumRepository');
     });
     });
 
