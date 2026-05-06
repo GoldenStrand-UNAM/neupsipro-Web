@@ -1,4 +1,4 @@
-class ImpClinicalRepository {
+class usersRepository {
   async fetchActivePatients ({ _search, _page, _limit }) {
     throw new Error('fetchActivePatients() must be implemented');
   }
@@ -6,4 +6,4 @@ class ImpClinicalRepository {
     throw new Error('countActivePatients() must be implemented');
   }
 }
-module.exports = ImpClinicalRepository;
+module.exports = usersRepository;

@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const ClinicalRepository = require('../../../infrastructure/repositories/clinicalRepository');
+const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
 const getUsersClinicalListController = require('../../controller/clinical/getUsersListClinical.controller');
 
@@ -13,7 +13,7 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 module.exports = (authUseCase) => {
   const router = express.Router();
 
-  const repository = new ClinicalRepository();
+  const repository = new ImpClinicalRepository();
   const useCase = new getClinicalListUseCase(repository);
   const controller = new getUsersClinicalListController(useCase);
 
