@@ -24,7 +24,7 @@ CREATE TABLE privilege_role (
 CREATE TABLE acl (
     id_acl         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     consultation   BOOL         NOT NULL,
-    writting       BOOL         NOT NULL,
+    writing       BOOL         NOT NULL,
     edit           BOOL         NOT NULL,
     eliminate      BOOL         NOT NULL
 );
@@ -129,11 +129,17 @@ CREATE TABLE user_info (
     notes                VARCHAR(100) NULL      COMMENT 'Clinical group notes',
     attendance           VARCHAR(80)  NOT NULL,
     initial_interview    INT          NULL      DEFAULT 0 COMMENT 'Status: por comenzar, en proceso, calificado',
+    banfe                INT          NULL,
+    wais                 INT          NULL,
+    rey                  INT          NULL,
+    moca_questionnaire   INT          NULL,
+    questionnaires       INT          NULL,
+    dr                   INT          NULL      COMMENT 'Status: elaborado, avanzado, impreso, entregado, por comenzar',
 	registration_date  DATE         NOT NULL,
     reference_number   VARCHAR(10)  NOT NULL,
     amputation_date    DATE         NOT NULL,
     protocol           ENUM('Research','Clinical', 'Pending') NOT NULL DEFAULT 'Pending', 
-    state             ENUM('Discharged','Stand_by', 'Declined', 'Active') NULL, -- estatus
+    state             ENUM('Discharged','Stand_by', 'Declined') NULL, -- estatus
 	is_child           BOOL         NOT NULL,
     group_intervention BOOL NOT NULL DEFAULT false,
     amputation_etiology  VARCHAR(80)  NULL,
@@ -693,4 +699,4 @@ ALTER TABLE user_info
 ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 
 ALTER TABLE user_info
-ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
+ADD COLUMN stage ENUM('Evaluation', 'Intervention', 'Graduation') NOT NULL DEFAULT 'Evaluation';
