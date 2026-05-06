@@ -24,14 +24,14 @@ module.exports = (authUseCase) => {
     router.get(
         '/forum/post',
         authMiddleware.verifyToken,
-        permissionsMiddleware.requirePermission('Forum', 'writting'),
+        permissionsMiddleware.requirePermission('Forum', 'writing'),
         (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
     );
 
     router.post(
         '/forum/post',
         authMiddleware.verifyToken,                                     
-        permissionsMiddleware.requirePermission('Forum', 'writting'),
+        permissionsMiddleware.requirePermission('Forum', 'writing'),
         upload.single('imagen'),
         validateImageMiddleware,
         s3UploadMiddleware,
