@@ -89,6 +89,7 @@ const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClini
 app.use('/', clinicalRoutes(authUseCase));
 
 const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+
 app.use('/', postPublicationRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {

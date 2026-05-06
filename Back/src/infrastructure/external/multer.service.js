@@ -1,15 +1,15 @@
 const multer = require('multer');
 const path = require('path');
 
-/*  Save file temporarily to disk before uploading to S3 
+/*  Save file temporarily to disk before uploading to S3
     where the file will be saved and what name it will have
 */
 const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
+  destination (req, file, callback) {
     const uploadPath = path.join(__dirname,'../../../../front/public/uploads/');
-    callback(null, uploadPath); 
+    callback(null, uploadPath);
   },
-  filename: function (req, file, callback) {
+  filename (req, file, callback) {
     // Unique name wtith date
     const uniqueName = `${Date.now()}_${file.originalname}`;
     callback(null, uniqueName);
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage : storage,
+  storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
 
   //filter to validate

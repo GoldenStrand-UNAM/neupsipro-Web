@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const fileType = require('file-type');
+
 const allowed_type = ['image/jpeg', 'image/png', 'image/webp'];
 const max_size = 5 * 1024 * 1024;
 

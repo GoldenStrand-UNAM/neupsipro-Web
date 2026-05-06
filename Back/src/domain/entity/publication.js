@@ -1,6 +1,6 @@
 
 class Publication {
-  constructor ( { id_publicacion, id_usuario, titulo, contenido, image, fecha_y_hora } ) {
+  constructor ({ id_publicacion, id_usuario, titulo, contenido, image, fecha_y_hora }) {
     this._validate (titulo);
 
     this.id_publicacion = id_publicacion || null;
