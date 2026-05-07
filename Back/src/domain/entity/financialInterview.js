@@ -1,5 +1,6 @@
 class FinancialInterview {
-  constructor ({ current_section, inicialProgress, financialProgress, data }) {
+  constructor ({ current_step, current_section, inicialProgress, financialProgress, data }) {
+    this.current_step = current_step;
     this.current_section = current_section;
     this.financialProgress = financialProgress;
 

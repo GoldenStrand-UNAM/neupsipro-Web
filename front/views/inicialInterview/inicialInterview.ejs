@@ -12,12 +12,12 @@
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
     <!-- Sidebar -->
-     <%- include('../../partials/sidebar.ejs') %>
+     <%- include('../partials/sidebar.ejs') %>
 
     <div class="flex-1 flex flex-col overflow-hidden">
 
         <!-- Header -->
-        <%- include('../../partials/header.ejs') %>
+        <%- include('../partials/header.ejs') %>
 
         <!-- Main -->
         <main class="flex-1 p-6 pb-0 md:pl-0 overflow-hidden">
@@ -40,14 +40,12 @@
 
                     <!--Sections-->
                     <div id="sections-stepper">
-                        <%- include('../../partials/sections.ejs') %>
+                        <%- include('../partials/sections.ejs') %>
                     </div>
 
                     <div class="grid md:grid-cols-2">
                         <div>
-                            <h1 class="font-bold section_title">
-                                2. Nivel Socioeconómico
-                            </h2>
+                            <h1 id="step-title" class="font-bold section_title"></h1>
                         </div>
 
                         <!--Navegation buttons-->
@@ -72,14 +70,57 @@
                         </div>
                     </div>
 
-                    <!--Section Title-->
-                    <h2 class="section_title">2.1 Ingresos y Egresos</h2>
+                    <!-- Section Title -->
+                    <h2 id="subStep-title" class="section_title"></h2>
 
-                    <!--Content-->
+                    <!-- Content -->
                     <div class="grid md:grid-cols-5">
-                        <div id="sidebar-timeline"><%- include('../../partials/sectionsSidebar.ejs') %></div>
-                        <div class="col-span-2"><%- include('../financial/incomes.ejs') %></div>
-                        <div class="col-span-2"><%- include('../financial/expenses.ejs') %></div>
+
+                        <!-- Sidebar -->
+                        <div id="sidebar-timeline">
+                            <%- include('../partials/sectionsSidebar.ejs') %>
+                        </div>
+
+                        <div id="dynamic-content" class="col-span-4">
+
+                            <!-- FINANCIAL 2.1 -->
+                            <div id="financial-section-1" class="financial-content hidden">
+                                <div class="grid md:grid-cols-2 gap-6">
+
+                                    <div>
+                                        <%- include('./financial/incomes.ejs') %>
+                                    </div>
+
+                                    <div>
+                                        <%- include('./financial/expenses.ejs') %>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- FINANCIAL 2.2 -->
+                            <div id="financial-section-2"
+                                class="financial-content hidden">
+
+                                <p>ESC sección pendiente</p>
+                            </div>
+
+                            <!-- FINANCIAL 2.3 -->
+                            <div id="financial-section-3"
+                                class="financial-content hidden">
+
+                                <p>AMAI sección pendiente</p>
+                            </div>
+
+                            <!-- FINANCIAL 2.4 -->
+                            <div id="financial-section-4"
+                                class="financial-content hidden">
+
+                                <p>Resultados sección pendiente</p>
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <!--Navegation buttons-->
@@ -116,6 +157,86 @@
     <script src="/js/sidebarTimeline.js"></script>
     
     <script>
+        // Functions that set titles ---------------------------------------
+
+        // Set by step
+        function setStepTitle(data) {
+            const steptitle = document.getElementById('step-title');
+
+            if (data.current_step === 1) {
+
+                steptitle.textContent =
+                    '1. Ficha de Identificación';
+
+            } else if (data.current_step === 2) {
+
+                steptitle.textContent =
+                    '2. Situación Financiera';
+
+            } else if (data.current_step === 3) {
+
+                steptitle.textContent =
+                    '3. Historia Clínica';
+
+            } else {
+
+                steptitle.textContent =
+                    'Sección no encontrada';
+            }
+        }
+
+        // Set by Substep
+        function setSubStepTitle(data) {
+            const subStepTitle = document.getElementById('subStep-title');
+
+            if (data.current_step === 2) {
+
+                if (data.current_section === 1) {
+                    subStepTitle.textContent = '2.1 Ingresos y Egresos';
+
+                } else if (data.current_section === 2) {
+                    subStepTitle.textContent = '2.2 ESC Gubernamental';
+
+                } else if (data.current_section === 3) {
+                    subStepTitle.textContent = '2.3 Cuestionario AMAI';
+
+                } else if (data.current_section === 4) {
+                    subStepTitle.textContent = '2.4 Resumen de Resultados';
+                }
+            }
+        }
+
+        // Functions that set content ---------------------------------------
+
+        // Financial Content
+        function setFinancialContent(data) {
+
+            // Hidde all
+            document.querySelectorAll('.financial-content')
+                .forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+            // Chance the correct substep
+            const activeSection =
+                document.getElementById(
+                    `financial-section-${data.current_section}`
+                );
+
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+        }
+        
+        // Set Content
+        function setContent(data) {
+            if(data.current_step === 1){
+                // missing
+            } else if (data.current_step === 2) {
+                setFinancialContent(data);
+            } 
+        }
+
         const id_user = "<%= id_user %>";
 
         async function loadFinancial() {
@@ -128,6 +249,11 @@
                     return;
                 }
 
+                // Set titles
+                setStepTitle(data);
+                setSubStepTitle(data);
+                setContent(data);
+
                 window.financialData = data;
                 window.renderFinancialData?.();
                 
@@ -139,7 +265,7 @@
                 };
 
                 window.sectionsState = {
-                    currentStep: data.current_step || 2,
+                    currentStep: data.current_step,
                     completedSteps: data.data.completedSteps,
                     subStep: data.current_section
                 };
