@@ -1,4 +1,5 @@
 const UserDTO = require('../../dto/userDTO');
+const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
 
 class consultUserUseCase {
   constructor (userRepository, impTestApplicationRepository) {
@@ -17,18 +18,27 @@ class consultUserUseCase {
     const user = userEntities[0];
     let assignedApplications = [];
     const hasProtocol = user.protocol && user.protocol !== 'Pending';
+
     if (hasProtocol) {
       assignedApplications = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
-    const canStartIntervention = assignedApplications.some (session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
+    const canStartIntervention = assignedApplications.some(session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
 
     const cleanUser = UserDTO.fromEntity(user);
+
+    const resolvedPhotoUrl = cleanUser.photo
+      ? await getPresignedUrl(cleanUser.photo)
+      : cleanUser.photo;
+
+    console.log(cleanUser);
     return {
       ...cleanUser,
+      photo: resolvedPhotoUrl,
       hasProtocol,
       assignedApplications,
       canStartIntervention,
     };
+
   }
 }
 
