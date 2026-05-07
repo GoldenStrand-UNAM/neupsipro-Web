@@ -30,8 +30,10 @@ class financialInterviewController {
   getFinancialPage (req, res) {
     try {
       res.locals.activePage = 'usuarios';
-      res.render('inicialInterview/financial/incomeAndExpense', {
+      res.render('inicialInterview/inicialInterview', {
         id_user: req.params.id_user,
+        current_step: 2,
+        current_section: 1,
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
