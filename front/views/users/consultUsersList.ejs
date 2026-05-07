@@ -193,10 +193,10 @@ searchInput.addEventListener("input", e => {
 
 function getStatusBadge(val) {
     const map = {
-        'Discharged': { label: 'Alta', border: '#E03232', text: '#E03232', bg:'rgba(224,50,50,0.33)'},
-        'Stand_by': { label: 'Stand By', border: '#1F893A', text: '#1F893A', bg:'rgba(31,137,58,0.33)'},
-        'Active': { label: 'En proceso', border: '#938B2E', text:'#938B2E', bg: 'rgba(147,139,46,0.33)'},
-        'Declined': { label: 'No ingresó',border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)'},
+      'Discharged': { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' },
+      'Stand_by': { label: 'Stand By', border: '#1560BD', text: '#1560BD', bg: 'rgba(21, 96, 189, 0.33)' },
+      'Active': { label: 'Activo', border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' },
+      'Declined': { label: 'No ingresó',border: '#95A5A6', text: '#7F8C8D', bg: 'rgba(149, 165, 166,0.33)' },
     };
     const m = map[val];
     if (!m) return `<span class="text-gray-300 text-xs"> - </span>`;
