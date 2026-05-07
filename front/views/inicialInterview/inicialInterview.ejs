@@ -88,11 +88,11 @@
                                 <div class="grid md:grid-cols-2 gap-6">
 
                                     <div>
-                                        <%- include('./financial/incomes.ejs') %>
+                                        <%- include('./financial/subStep1/incomes.ejs') %>
                                     </div>
 
                                     <div>
-                                        <%- include('./financial/expenses.ejs') %>
+                                        <%- include('./financial/subStep1/expenses.ejs') %>
                                     </div>
 
                                 </div>
@@ -102,7 +102,10 @@
                             <div id="financial-section-2"
                                 class="financial-content hidden">
 
-                                <p>ESC sección pendiente</p>
+                                <div>
+                                    <%- include('./financial/subStep2/esc.ejs') %>
+                                </div>
+
                             </div>
 
                             <!-- FINANCIAL 2.3 -->
@@ -208,7 +211,7 @@
 
         // Functions that set content ---------------------------------------
 
-        // Financial Content
+        // Financial Substep1 Content
         function setFinancialContent(data) {
 
             // Hidde all
@@ -252,10 +255,18 @@
                 // Set titles
                 setStepTitle(data);
                 setSubStepTitle(data);
+
+                // Render correct section
                 setContent(data);
 
+                // Save global data
                 window.financialData = data;
-                window.renderFinancialData?.();
+                console.log(data);
+
+                // Wait for DOM render and fill inputs
+                setTimeout(() => {
+                    window.renderFinancialData?.();
+                }, 0);
                 
                 document.getElementById("id_user").textContent = data.id_user || "";
 
