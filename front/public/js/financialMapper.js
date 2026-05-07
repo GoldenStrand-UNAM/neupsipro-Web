@@ -106,16 +106,83 @@ function renderFinancialData () {
   renderExpensesData(info);
 
   // Extra
-
   document.getElementById('economicSituation').value =
     info.expenses?.economicSituation || '';
 
   document.getElementById('numDependants').value =
     info.expenses?.numEconomicDependents || '';
 
+  // ESC
+  renderESCData(info);
+
   window.calculateTotal?.();
   window.calculateExpenses?.();
 
 }
+
+function setSelectValue (id, value) {
+
+  const select = document.getElementById(id);
+
+  if (!select) return;
+
+  // SIN VALOR -> placeholder
+  if (value === null || value === undefined || value === 100) {
+
+    select.value = '';
+
+    select.classList.remove('text-black');
+    select.classList.add('text-gray-400');
+
+    return;
+  }
+
+  // CON VALOR
+  select.value = String(value);
+
+  select.classList.remove('text-gray-400');
+  select.classList.add('text-black');
+}
+
+function renderESCData (info) {
+
+  // Inputs
+  document.getElementById('minIncome').value =
+    info.minIncome || '';
+
+  const totalExpenses = info.extra?.totalExpenses || 0;
+  const totalIncome = info.extra?.totalIncome || 0;
+  const familyExpenses =  (totalExpenses * 100) / totalIncome;
+
+  document.getElementById('familyExpenses').value =
+    (familyExpenses) ;
+
+  // ESC
+  setSelectValue('ocupation', info.ocupation);
+
+  setSelectValue('realRight', info.housing?.realRight);
+  setSelectValue('housingType', info.housing?.housingType);
+  setSelectValue('publicServices', info.housing?.publicServices);
+  setSelectValue('inhomeServices', info.housing?.inhomeServices);
+  setSelectValue('constructionMaterial', info.housing?.constructionMaterial);
+  setSelectValue('numBedrooms', info.housing?.numBedrooms);
+  setSelectValue('personsPerBedroom', info.housing?.personsPerBedroom);
+
+  // Family conditions
+  setSelectValue('treatmentTime', info.family_conditions?.treatmentTime);
+  setSelectValue('otherProblems', info.family_conditions?.otherProblems);
+  setSelectValue('familyHealth', info.family_conditions?.familyHealth);
+
+  // Results
+  document.getElementById('totalPuntuation').textContent =
+    info.total || 0;
+
+  document.getElementById('socioeconomicLevel').textContent =
+    info.socioeconomicLevel || '-';
+
+  window.calculateESCTotal?.();
+}
+
+window.calculateESCTotal = calculateESCTotal;
 
 window.renderFinancialData = renderFinancialData;

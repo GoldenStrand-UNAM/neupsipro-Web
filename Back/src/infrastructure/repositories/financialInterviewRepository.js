@@ -70,16 +70,38 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     };
   }
 
-  // Fetch ESC Goverment by relation
-  async fetchEscGov ({ id_user_relation }) {
-    const [rows] =  await db.query(
-      `SELECT *
-             FROM esc_government
-             WHERE id_user_relation = ?`,
+  async fetchExtraEscGov ({ id_user_relation }) {
+
+    const [rows] = await db.query(
+      `SELECT total_income,
+              total_expenses,
+              num_economic_dependents
+     FROM financial_situation
+     WHERE id_user_relation = ?`,
       [id_user_relation]
     );
 
     return rows[0] || {};
+  }
+
+  // Fetch ESC Government by relation
+  async fetchEscGov ({ id_user_relation }) {
+
+    const [rows] = await db.query(
+      `SELECT *
+     FROM esc_government
+     WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    const extra = await this.fetchExtraEscGov({
+      id_user_relation,
+    });
+
+    return {
+      ...(rows[0] || {}),
+      extra,
+    };
   }
 
   // Fetch AMAI Wuestionary by relation

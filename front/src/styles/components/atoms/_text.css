@@ -28,4 +28,9 @@
         @apply flex justify-end;
         @apply text-gray-400 gap-2;
     }
+
+    .level {
+        @apply font-bold text-black;
+        @apply pl-4 no-underline;
+    }
 }

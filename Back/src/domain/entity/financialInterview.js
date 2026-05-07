@@ -113,23 +113,29 @@ class FinancialInterview {
 
     return {
       minIncome: Number(data.min_income) || 0,
-      ocupation: data.ocupation ?? null,
+      ocupation: Number(data.ocupation ?? 100),
       familyExpenses: Number(data.family_expenses) || 0,
 
       housing: {
-        realRight: Number(data.real_right) || 0,
-        housingType: Number(data.housing_type) || 0,
-        publicServices: Number(data.public_services) || 0,
-        inhomeServices: Number(data.inhome_services) || 0,
-        constructionMaterial: Number(data.construction_material) || 0,
-        numBedrooms: Number(data.num_bedrooms) || 0,
-        personsPerBedroom: Number(data.persons_per_bedroom) || 0,
+        realRight: Number(data.real_right ?? 100),
+        housingType: Number(data.housing_type ?? 100),
+        publicServices: Number(data.public_services ?? 100),
+        inhomeServices: Number(data.inhome_services ?? 100),
+        constructionMaterial: Number(data.construction_material ?? 100),
+        numBedrooms: Number(data.num_bedrooms ?? 100),
+        personsPerBedroom: Number(data.persons_per_bedroom ?? 100),
       },
 
       family_conditions: {
-        treatmentTime: Number(data.treatment_time) || 0,
-        otherProblems: Number(data.other_problems) || 0,
-        familyHealth: Number(data.family_health) || 0,
+        treatmentTime: Number(data.treatment_time ?? 100),
+        otherProblems: Number(data.other_problems ?? 100),
+        familyHealth: Number(data.family_health ?? 100),
+      },
+
+      extra: {
+        totalIncome: Number(data.extra.total_income) || 0,
+        totalExpenses: Number(data.extra.total_expenses) || 0,
+        economicDependents: Number(data.extra.num_economic_dependents) || 0,
       },
 
       socioeconomicLevel: data.socioeconomic_level ?? null,
