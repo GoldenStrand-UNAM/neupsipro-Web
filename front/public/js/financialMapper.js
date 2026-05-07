@@ -115,6 +115,9 @@ function renderFinancialData () {
   // ESC
   renderESCData(info);
 
+  // AMAI
+  renderAMAIData(info);
+
   window.calculateTotal?.();
   window.calculateExpenses?.();
 
@@ -126,7 +129,7 @@ function setSelectValue (id, value) {
 
   if (!select) return;
 
-  // SIN VALOR -> placeholder
+  // Set gray selected options
   if (value === null || value === undefined || value === 100) {
 
     select.value = '';
@@ -137,7 +140,7 @@ function setSelectValue (id, value) {
     return;
   }
 
-  // CON VALOR
+  // Set black selected options
   select.value = String(value);
 
   select.classList.remove('text-gray-400');
@@ -183,6 +186,29 @@ function renderESCData (info) {
   window.calculateESCTotal?.();
 }
 
+function renderAMAIData (info) {
+  console.log('iNFO: ', info);
+
+  // Inputs
+  setSelectValue('lastStudies', info?.lastStudies);
+  setSelectValue('numBathrooms', info?.numBathrooms);
+  setSelectValue('numCar', info?.numCar);
+  setSelectValue('hasInternet', info?.hasInternet);
+  setSelectValue('hasWorked', info?.hasWorked);
+  setSelectValue('hasBedroom', info?.hasBedroom);
+
+  // Results
+  document.getElementById('totalPuntuation').textContent =
+    info.total || 0;
+
+  document.getElementById('socioeconomicLevel').textContent =
+    info.socioeconomicLevel || '-';
+
+  // Recalcular UI
+  window.calculateAMAITotal?.();
+}
+
 window.calculateESCTotal = calculateESCTotal;
+window.calculateAMAITotal?.();
 
 window.renderFinancialData = renderFinancialData;
