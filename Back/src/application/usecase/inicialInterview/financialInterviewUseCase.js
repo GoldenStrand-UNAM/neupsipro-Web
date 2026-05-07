@@ -19,33 +19,36 @@ class FinancialInterviewUseCase {
     const sectionResult = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
     const current_section = sectionResult[0][0]?.current_section;
 
+    let formattedData;
     let rawData;
 
-    // fetch info from current section
     switch (current_section) {
       case 1:
         rawData = await this.financialInterviewRepository.fetchFinancialSituation({ id_user_relation });
+        formattedData = rawData.data;
         break;
+
       case 2:
         rawData = await this.financialInterviewRepository.fetchEscGov({ id_user_relation });
+        formattedData = rawData;
         break;
+
       case 3:
         rawData = await this.financialInterviewRepository.fetchAmaiQ({ id_user_relation });
-        rawData = rawData[0];
+        formattedData = rawData[0];
         break;
+
       case 4:
         rawData = await this.financialInterviewRepository.fetchResults({ id_user_relation });
-        rawData = rawData[0];
+        formattedData = rawData[0];
         break;
-      default:
-        throw new Error(`Invalid financial section:  ${current_section}`);
     }
 
     const entity = new FinancialInterview({
       current_section,
       inicialProgress,
       financialProgress: sectionResult[0][0],
-      data: rawData.data,
+      data: formattedData,
     });
 
     return entity;

@@ -77,13 +77,13 @@
                     
                     <div>
                         <label class="input_label">Nombre</label>
-                        <input type="text" class="input" placeholder="María Luisa">
+                        <input type="text" class="person-name input" placeholder="María Luisa">
                     </div>
 
                     <div>
                         <label class="input_label">Relación</label>
                         <div>
-                            <select class="input text-gray-400">
+                            <select class="person-relation input text-gray-400">
                                 <option disabled selected>Selecciona una opción</option>
                                 <option>Madre</option>
                                 <option>Padre</option>
@@ -94,7 +94,7 @@
 
                     <div>
                         <label class="input_label">Cantidad de Ingresos</label>
-                        <input type="number" class="input" placeholder="$0.00">
+                        <input type="number" class="person-income input" placeholder="$0.00">
                     </div>
 
                 </div>
@@ -124,53 +124,81 @@
     // Update card person title with correct number
     function updateTitles() {
         container.querySelectorAll('.person-title')
-            .forEach((el, i) => el.textContent = `Persona ${i + 1}`);
+            .forEach((el, i) => {
+                el.textContent = `Persona ${i + 1}`;
+            });
     }
 
-    // Get total
+    // Calculate totals
     function calculateTotal() {
-        // For Section 1
-        const section1 =
-            getValue(document.getElementById('incomeExtra')) +
+
+        // SECTION 1
+        const financing =
+            getValue(document.getElementById('incomeExtra'));
+
+        const salaryAfter =
             getValue(document.getElementById('salaryAfter'));
 
-        document.getElementById('totalSectionOne').textContent = `$${section1.toFixed(2)}`;
+        const section1 = financing + salaryAfter;
 
-        // For Section 2
+        document.getElementById('totalSectionOne').textContent =
+            `$${section1.toFixed(2)}`;
+
+
+        // SECTION 2
         let section2 = 0;
-        container.querySelectorAll('input[type="number"]').forEach(input => {
-            section2 += getValue(input);
-        });
 
-        document.getElementById('totalSectionTwo').textContent = `$${section2.toFixed(2)}`;
+        container.querySelectorAll('.person-income')
+            .forEach(input => {
+                section2 += getValue(input);
+            });
 
-        // Set total incomes
+        document.getElementById('totalSectionTwo').textContent =
+            `$${section2.toFixed(2)}`;
+
+            
+        // TOTAL
         const total = section1 + section2;
-        document.getElementById('totalIncomes').textContent = `$${total.toFixed(2)}`;
+
+        document.getElementById('totalIncomes').textContent =
+            `$${total.toFixed(2)}`;
     }
 
-    // Insert add person button after cards
+    // Add contributor
     addBtn.addEventListener('click', () => {
+
         const clone = template.content.cloneNode(true);
+
         container.insertBefore(clone, addBtn);
+
         updateTitles();
         calculateTotal();
     });
 
-    // Continuosly getting total
+    // Recalculate on input
     container.addEventListener('input', calculateTotal);
 
-    // Delete card when click on delete button
+    document.querySelectorAll('#incomeExtra, #salaryAfter')
+        .forEach(input => {
+            input.addEventListener('input', calculateTotal);
+        });
+
+    // Delete contributor
     container.addEventListener('click', (e) => {
+
         if (e.target.closest('.delete-btn')) {
+
             e.target.closest('.rounded-xl').remove();
+
             updateTitles();
             calculateTotal();
         }
     });
 
-    // Get total listeners for section 1
-    document.querySelectorAll('#incomeExtra, #salaryAfter')
-        .forEach(input => input.addEventListener('input', calculateTotal));
+    // Expose globally
+    window.calculateTotal = calculateTotal;
+
+    // Initial calculation
+    calculateTotal();
 
 </script>
