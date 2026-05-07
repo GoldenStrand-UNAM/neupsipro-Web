@@ -136,12 +136,16 @@
 
             document.getElementById('totalExpenses').textContent =
                 `$${total.toFixed(2)}`;
+            
         }
 
         // Listen changes
         expensesInputs.forEach(input => {
             input.addEventListener('input', calculateExpenses);
         });
+
+        // Let the function use it globally
+        window.calculateExpenses = calculateExpenses;
 
         // inicial
         calculateExpenses();

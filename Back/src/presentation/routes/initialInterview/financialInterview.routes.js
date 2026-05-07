@@ -20,6 +20,13 @@ module.exports = (authUseCase) => {
   router.get(
     '/financial',
     authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('clinical', 'consultation'),
+    (req, res) => controller.getFinancialPage(req, res)
+  );
+
+  router.get(
+    '/api/financial/:id_user',
+    authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
     (req, res) => controller.getFinancialInterview(req, res)
   );

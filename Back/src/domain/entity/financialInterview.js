@@ -32,7 +32,7 @@ class FinancialInterview {
   // Salary after + schoolarship = Total Salary
   calculateTotalSalary (data) {
     const salaryAfter = Number(data.salary_after_sickness) || 0;
-    const scholarship = Number(data.scholarship) || 0;
+    const scholarship = Number(data.has_financing_schoolarship) || 0;
 
     return salaryAfter + scholarship;
   }

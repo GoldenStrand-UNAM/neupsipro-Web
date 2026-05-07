@@ -18,15 +18,23 @@ class financialInterviewController {
 
       const response = FinancialInterviewDTO.fromEntity(financialInterview);
 
-      return res.render('inicialInterview/financial/incomeAndExpense', {
-        data: response,
-        id_user,
-        activePage: 'usuarios',
-      });
+      //Successful response
+      res.status(200).json(response);
     } catch (error) {
       return res.status(400).json({
         error: error.message,
       });
+    }
+  }
+
+  getFinancialPage (req, res) {
+    try {
+      res.locals.activePage = 'usuarios';
+      res.render('inicialInterview/financial/incomeAndExpense', {
+        id_user: req.params.id_user,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   }
 }

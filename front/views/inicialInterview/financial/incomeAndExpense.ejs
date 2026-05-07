@@ -109,29 +109,56 @@
 
     </div>
 
-    <script>
-        // Get data
-        window.financialData = <%- JSON.stringify(data) %>;
-
-        // Send data for sections sidebar (subSteps)
-        window.sidebarState = {
-            currentStep: window.financialData.current_section,
-            completedSteps: window.financialData.data.completedSubSteps,
-        };
-
-        // Send data for sections (steps)
-        window.sectionsState = {
-            currentStep: 2,
-            completedSteps: window.financialData.data.completedSteps,
-            subStep: window.financialData.current_section
-        };
-    </script>
-
     <!-- Script -->
     <script src="/js/financialMapper.js"></script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/sectionsStepper.js"></script>
     <script src="/js/sidebarTimeline.js"></script>
+    
+    <script>
+        const id_user = "<%= id_user %>";
+
+        async function loadFinancial() {
+            try {
+                const res = await fetch(`/users/${id_user}/inicialInterview/api/financial/${id_user}`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return;
+                }
+
+                window.financialData = data;
+                window.renderFinancialData?.();
+                
+                document.getElementById("id_user").textContent = data.id_user || "";
+
+                window.sidebarState = {
+                    currentStep: data.current_section,
+                    completedSteps: data.data.completedSubSteps,
+                };
+
+                window.sectionsState = {
+                    currentStep: data.current_step || 2,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        loadFinancial();
+    </script>
 
 </body>
 </html>
