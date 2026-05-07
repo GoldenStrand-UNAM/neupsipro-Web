@@ -151,12 +151,12 @@ class FinancialInterview {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
-      lastStudies: data.last_studies ?? null,
-      numBathrooms: Number(data.num_bathrooms) || 0,
-      numCar: Number(data.num_car) || 0,
-      hasInternet: Number(data.has_internet) || 0,
-      hasWorked: Number(data.has_worked) || 0,
-      hasBedroom: Number(data.has_bedroom) || 0,
+      lastStudies: Number(data.last_studies ?? 100),
+      numBathrooms: Number(data.num_bathrooms ?? 100),
+      numCar: Number(data.num_car ?? 100),
+      hasInternet: Number(data.has_internet ?? 100),
+      hasWorked: Number(data.has_worked ?? 100),
+      hasBedroom: Number(data.has_bedroom ?? 100),
 
       socioeconomicLevel: data.socioeconomic_level ?? null,
       total: Number(data.total) || 0,

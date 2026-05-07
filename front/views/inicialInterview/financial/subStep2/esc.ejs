@@ -523,10 +523,10 @@
     // Detect changes automatically
     document.querySelectorAll('select').forEach(select => {
 
-        // color inicial
+        // inicial color 
         updateSelectColor(select);
 
-        // cambio de color + cálculo
+        // Calculate the color chance
         select.addEventListener('change', () => {
             updateSelectColor(select);
             calculateESCTotal();
