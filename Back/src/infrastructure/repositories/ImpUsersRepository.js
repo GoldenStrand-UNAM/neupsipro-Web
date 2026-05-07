@@ -1,9 +1,9 @@
-const db = require ('../database/database');
-const ImpUsersRepository = require('../../domain/repository/ImpUsersRepository');
+const db = require('../database/database');
+const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
 const User = require('../../domain/entity/User');
 
-class UsersRepository extends ImpUsersRepository {
+class ImpUsersRepository extends usersRepository {
 
   // Consult one User by id_user
   async fetchOne ({ id_user }) {
@@ -82,4 +82,4 @@ class UsersRepository extends ImpUsersRepository {
     return rows[0]?.total ?? 0;
   }
 }
-module.exports = UsersRepository;
+module.exports = ImpUsersRepository;
