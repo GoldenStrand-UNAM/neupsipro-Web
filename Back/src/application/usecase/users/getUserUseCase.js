@@ -22,7 +22,7 @@ class consultUserUseCase {
     if (hasProtocol) {
       assignedApplications = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
-    const canStartIntervention = assignedApplications.some(session => session.sessionName === 'Sesión inicial' && session.status === 'Completada');
+    const canStartIntervention = assignedApplications.some(application => application.applicationName === 'Aplicación inicial' && application.status === 'Entregado');
 
     const cleanUser = UserDTO.fromEntity(user);
 
@@ -30,7 +30,7 @@ class consultUserUseCase {
       ? await getPresignedUrl(cleanUser.photo)
       : cleanUser.photo;
 
-    console.log(cleanUser);
+    console.log(cleanUser, hasProtocol, assignedApplications, canStartIntervention);
     return {
       ...cleanUser,
       photo: resolvedPhotoUrl,
