@@ -1,8 +1,9 @@
 const db = require ('../database/database');
-const impForumRepository = require('../../domain/repository/ImpForumRepository');
+const forumRepository = require('../../domain/repository/forumRepository');
+const { v4: uuidv4 } = require('uuid');
 
 // Repository responsable for fetching publications from the database with author info and pagination
-class forumRepository extends impForumRepository {
+class ImpForumRepository extends forumRepository {
 
   async count () {
     const [[{ total }]] = await db.query('SELECT COUNT(*) AS total FROM publication');
@@ -30,6 +31,23 @@ class forumRepository extends impForumRepository {
     );
     return rows;
   }
+  // Inserts a new publication, return its generated id
+  async save ({ id_usuario, titulo, contenido, image }) {
+    const id = uuidv4();
+
+    await db.query(
+      `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
+         VALUES (?, ?, ?, ?, ?, NOW())`,
+      [id, id_usuario, titulo, contenido, image]
+    );
+
+    const [rows] = await db.query(
+      'SELECT * FROM publication WHERE id_publication = ?',
+      [id]
+    );
+
+    return rows[0];
+  }
 }
 
-module.exports = forumRepository;
+module.exports = ImpForumRepository;

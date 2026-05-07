@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();    
 
 const UserController = require("../../controller/users/getUser.controller");
-const UsersRepository = require("../../../infrastructure/repositories/usersRepository");
+const UsersRepository = require("../../../infrastructure/repositories/ImpUsersRepository");
 
 const impTestApplicationsRepository = require("../../../infrastructure/repositories/impTestApplicationRepository");
 const impTestResultsRepository      = require("../../../infrastructure/repositories/impTestResultsRepository");

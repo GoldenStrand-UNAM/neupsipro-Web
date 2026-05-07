@@ -136,3 +136,22 @@ function escapeHtml (str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+function showToast (message, type = 'success') {
+  document.getElementById('toast')?.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'toast';
+  toast.className = 'toast';
+  toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="toast-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            ${type === 'success'
+    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>'
+    : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}
+        </svg>
+        <span class="toast-msg">${escapeHtml(message)}</span>
+    `;
+
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
