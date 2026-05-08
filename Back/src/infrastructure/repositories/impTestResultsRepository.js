@@ -5,6 +5,28 @@ const { v4: uuidv4 } = require('uuid');
 
 class impTestResultsRepository extends resultRepository {
 
+
+    // Validate that a application exist before getting the tests
+    async fetchApplicationById({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT id_application, id_user, application_name, status, created_at
+       FROM test_applications
+       WHERE id_application = ?`,
+      [id_application]
+    );
+
+    if (rows.length === 0) return null;
+
+    const row = rows[0];
+    return {
+      idApplication:   row.id_application,
+      idUser:          row.id_user,
+      applicationName: row.application_name,
+      status:          row.status,
+      createdAt:       row.created_at,
+    };
+  }
+
   //Fetch all test for a specific application
   async fetchTestsByApplication({ id_user, id_application }) {
     const [rows] = await db.query(
