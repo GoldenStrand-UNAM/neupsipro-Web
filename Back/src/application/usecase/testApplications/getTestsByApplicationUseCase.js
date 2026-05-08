@@ -1,5 +1,3 @@
-// application/usecase/tests/getTestsByApplicationUseCase.js
-
 class getTestsByApplicationUseCase {
 
   // impTestResultsRepository owns everything related to test results and their session.
