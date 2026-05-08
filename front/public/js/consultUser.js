@@ -115,7 +115,7 @@ function populateLogbook (user) {
   } else {
     if (user.assignedApplications && user.assignedApplications.length > 0) {
       user.assignedApplications.forEach(application => {
-        container.innerHTML += createApplicationCard(application);
+        container.innerHTML += createApplicationCard(application, user.idUser);
       });
     }
     container.innerHTML += createAddSessionCard();
