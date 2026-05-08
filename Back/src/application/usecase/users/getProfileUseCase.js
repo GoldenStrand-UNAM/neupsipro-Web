@@ -1,5 +1,5 @@
 const userProfileDTO = require('../../dto/userProfileDTO');
-const { getPresignedUrl } = require('../../../infrastructure/external/s3.config')
+const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
 
 /**
  * Use Case: Get Profile Use case.
