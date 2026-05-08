@@ -24,6 +24,8 @@ class Tests {
         return 'Calificada';
       case 4:
         return 'Entregado';
+      case 5: 
+        return 'Caducada';
 
     }
   }
