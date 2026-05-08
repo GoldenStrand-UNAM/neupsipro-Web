@@ -1,7 +1,7 @@
 class Tests {
   constructor (data) {
     this.idTest = data.id_test;
-    this.idApplication = data.id_application; 
+    this.idApplication = data.id_application;
     this.testName = data.test_name;
     this.description = data.description;
     this.idResults = data.id_results;

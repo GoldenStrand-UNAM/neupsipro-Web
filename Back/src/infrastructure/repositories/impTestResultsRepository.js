@@ -5,9 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 
 class impTestResultsRepository extends resultRepository {
 
-
-    // Validate that a application exist before getting the tests
-    async fetchApplicationById({ id_application }) {
+  // Validate that a application exist before getting the tests
+  async fetchApplicationById ({ id_application }) {
     const [rows] = await db.query(
       `SELECT id_application, id_user, application_name, status, created_at
        FROM test_applications
@@ -19,16 +18,16 @@ class impTestResultsRepository extends resultRepository {
 
     const row = rows[0];
     return {
-      idApplication:   row.id_application,
-      idUser:          row.id_user,
+      idApplication: row.id_application,
+      idUser: row.id_user,
       applicationName: row.application_name,
-      status:          row.status,
-      createdAt:       row.created_at,
+      status: row.status,
+      createdAt: row.created_at,
     };
   }
 
   //Fetch all test for a specific application
-  async fetchTestsByApplication({ id_user, id_application }) {
+  async fetchTestsByApplication ({ id_user, id_application }) {
     const [rows] = await db.query(
       `SELECT tr.id_results,
               tr.id_application,
@@ -47,8 +46,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows.map(row => new Tests(row));
   }
-
-
 
   //New method for insert one result row per test in the resolved protocol
   async createResults (id_application, id_user, tests) {

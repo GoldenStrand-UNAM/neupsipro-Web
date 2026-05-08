@@ -21,7 +21,6 @@ module.exports = (authUseCase) => {
   const authMiddleware        = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-
   // Only manage the render
   router.get(
     '/usuarios/:id_user/aplicaciones/:id_application/pruebas',

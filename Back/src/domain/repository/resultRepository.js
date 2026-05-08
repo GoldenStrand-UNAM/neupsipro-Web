@@ -7,7 +7,7 @@ class resultRepository {
   }
 
   //Fetch all test results scoped to a specific application
-  async fetchTestsByApplication({ id_user, id_application }) {
+  async fetchTestsByApplication ({ id_user, id_application }) {
     throw new Error('fetchTestsByApplication() not implemented');
   }
 }

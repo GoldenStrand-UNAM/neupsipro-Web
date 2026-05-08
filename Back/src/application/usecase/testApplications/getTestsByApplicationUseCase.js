@@ -1,12 +1,12 @@
 class getTestsByApplicationUseCase {
 
   // impTestResultsRepository owns everything related to test results and their session.
-  constructor(impTestResultsRepository) {
+  constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
   // Returns all test results for a given session.
-  async execute({ id_user, id_application }) {
+  async execute ({ id_user, id_application }) {
 
     // 1. Verify the session exists and belongs to the requesting user
     const application = await this.impTestResultsRepository
@@ -30,14 +30,14 @@ class getTestsByApplicationUseCase {
 
     // 3. Map entities to DTOs — never expose raw entities across boundaries
     return tests.map(t => ({
-      idResults:      t.idResults,
-      idTest:         t.idTest,
-      testName:       t.testName,
-      status:         t.status,
-      score:          t.score,
+      idResults: t.idResults,
+      idTest: t.idTest,
+      testName: t.testName,
+      status: t.status,
+      score: t.score,
       interpretation: t.interpretation,
-      dateApplied:    t.dateApplied,
-      notes:          t.notes,
+      dateApplied: t.dateApplied,
+      notes: t.notes,
     }));
   }
 }
