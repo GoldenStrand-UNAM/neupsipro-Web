@@ -9,15 +9,14 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
 });
 
-
 pool.getConnection((err, connection) => {
   if (err) {
-      //eslint-disable-next-line no-console
-      console.error('Database connection error:', err);
+    //eslint-disable-next-line no-console
+    console.error('Database connection error:', err);
   } else {
-      //eslint-disable-next-line no-console
-      console.log('Successfully connected to the database');
-      connection.release();
+    //eslint-disable-next-line no-console
+    console.log('Successfully connected to the database');
+    connection.release();
   }
 });
 
