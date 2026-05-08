@@ -87,42 +87,6 @@ function renderExpensesData (info) {
     `$${expenses.totalExpenses || 0}`;
 }
 
-// Call all functions to get data
-function renderFinancialData () {
-
-  const financial = window.financialData;
-
-  if (!financial) return;
-
-  const info = financial.data;
-
-  // Incomes
-  renderIncomesData(info);
-
-  // Contributors
-  renderContributorsData(info);
-
-  // Expenses
-  renderExpensesData(info);
-
-  // Extra
-  document.getElementById('economicSituation').value =
-    info.expenses?.economicSituation || '';
-
-  document.getElementById('numDependants').value =
-    info.expenses?.numEconomicDependents || '';
-
-  // ESC
-  renderESCData(info);
-
-  // AMAI
-  renderAMAIData(info);
-
-  window.calculateTotal?.();
-  window.calculateExpenses?.();
-
-}
-
 function setSelectValue (id, value) {
 
   const select = document.getElementById(id);
@@ -187,7 +151,6 @@ function renderESCData (info) {
 }
 
 function renderAMAIData (info) {
-  console.log('iNFO: ', info);
 
   // Inputs
   setSelectValue('lastStudies', info?.lastStudies);
@@ -206,6 +169,70 @@ function renderAMAIData (info) {
 
   // Recalcular UI
   window.calculateAMAITotal?.();
+}
+
+function renderResultsData (info) {
+
+  // Incomes
+  document.getElementById('totalIncomeR').textContent =
+    info?.totalIncome || 0;
+
+  // Expenses
+  document.getElementById('totalExpensesR').textContent =
+    info?.totalExpenses || 0;
+
+  // ESC
+  document.getElementById('totalESC').textContent =
+    info.government?.score || 0;
+
+  document.getElementById('levelESC').textContent =
+    info.government?.level || '-';
+
+  // AMAI
+  document.getElementById('totalAMAI').textContent =
+    info.amai?.score || 0;
+
+  document.getElementById('levelAMAI').textContent =
+    info.amai?.level || '-';
+}
+
+// Call all functions to get data
+function renderFinancialData () {
+
+  const financial = window.financialData;
+
+  if (!financial) return;
+
+  const info = financial.data;
+
+  // Incomes
+  renderIncomesData(info);
+
+  // Contributors
+  renderContributorsData(info);
+
+  // Expenses
+  renderExpensesData(info);
+
+  // Extra
+  document.getElementById('economicSituation').value =
+    info.expenses?.economicSituation || '';
+
+  document.getElementById('numDependants').value =
+    info.expenses?.numEconomicDependents || '';
+
+  // ESC
+  renderESCData(info);
+
+  // AMAI
+  renderAMAIData(info);
+
+  // Results
+  renderResultsData(info);
+
+  window.calculateTotal?.();
+  window.calculateExpenses?.();
+
 }
 
 window.calculateESCTotal = calculateESCTotal;
