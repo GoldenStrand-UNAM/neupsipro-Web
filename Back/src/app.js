@@ -39,8 +39,8 @@ app.use (session({
 }));
 
 const dbPool = require('./infrastructure/database/database');
-const AuthRepository = require('./infrastructure/repositories/loginRepository');
-const SessionRepository = require('./infrastructure/repositories/sessionRepository');
+const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
+const SessionRepository = require('./infrastructure/repositories/ImpSessionRepository');
 const HashingService = require('./infrastructure/external/hashing.service');
 const JwtService = require('./infrastructure/external/jwt.service');
 const CacheService = require('./infrastructure/external/memoryCache.service');
@@ -92,12 +92,20 @@ const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClini
 
 app.use('/', clinicalRoutes(authUseCase));
 
+const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+
+app.use('/', postPublicationRoutes(authUseCase));
+
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });
 
+const profileRoutes = require('./presentation/routes/users/profile.routes');
+
+app.use('/api/profile', profileRoutes(authUseCase));
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
+
 });
 
 module.exports = app;

@@ -11,7 +11,8 @@ const mockCreateSession = jest.fn();
     - XSS
     - DDoS 
  */
-jest.mock('../../../Back/src/infrastructure/repositories/loginRepository', () => jest.fn().mockImplementation(() => ({
+jest.mock('../../../Back/src/infrastructure/repositories/ImpLoginRepository', () => {            
+    return jest.fn().mockImplementation(() => ({
             findByUsername: mockFindByUsername,
             getPrivileges: jest.fn().mockResolvedValue([]),
             getExceptions: jest.fn().mockResolvedValue([]),
@@ -21,7 +22,9 @@ jest.mock('../../../Back/src/infrastructure/external/hashing.service', () => jes
 
 jest.mock('../../../Back/src/infrastructure/external/jwt.service', () => jest.fn().mockImplementation(() => ({ generateToken: mockGenerateToken })));
 
-jest.mock('../../../Back/src/infrastructure/repositories/sessionRepository', () => jest.fn().mockImplementation(() => ({ createSession: mockCreateSession })));
+jest.mock('../../../Back/src/infrastructure/repositories/ImpSessionRepository', () => {
+    return jest.fn().mockImplementation(() => ({ createSession: mockCreateSession }));
+});
 
 const app = require('../../../Back/src/app');
 
