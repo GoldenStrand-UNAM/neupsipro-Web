@@ -1,0 +1,57 @@
+@startuml Consultar_Pruebas
+
+actor "Clinic User" as USR
+participant "EvaluacionView" as VEVAL
+participant "main.js (logbook.js)" as MAIN
+participant "UserRoutes" as UROUTE
+participant "GetTestsController" as TCTRL
+participant "getTestsUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Click en sesión: cargar pruebas ==
+
+USR -> VEVAL : Click [session card]
+VEVAL -> MAIN : fetch GET /users/:id_user/applications/:id_application/tests
+
+MAIN -> UROUTE : GET /users/:id_user/applications/:id_application/tests
+UROUTE -> TCTRL : testsController.getTests(req, res)
+TCTRL -> UC_GET : execute({ id_user, id_application })
+
+== Validaciones en Use Case ==
+
+UC_GET -> RREPO : fetchApplication({ id_user, id_application })
+RREPO -> DB : SELECT id_application, id_user\nFROM test_applications\nWHERE id_application = ? AND eliminated = 0
+DB --> RREPO : { application } | []
+RREPO --> UC_GET : { application } | null
+
+alt application not found (null)
+    UC_GET --> TCTRL : throw Error 404\n'Application not found'
+    TCTRL --> MAIN : HTTP 404 { error }
+    MAIN --> VEVAL : showError(json.error)
+end
+
+alt id_user mismatch
+    UC_GET --> TCTRL : throw Error 403\n'Forbidden'
+    TCTRL --> MAIN : HTTP 403 { error }
+    MAIN --> VEVAL : showError(json.error)
+end
+
+== Consulta de pruebas ==
+
+UC_GET -> RREPO : fetchTestResults({ id_user, id_application })
+RREPO -> DB : SELECT tr.id_results, tr.id_test,\npt.test_name, tr.status,\ntr.score, tr.date_applied\nFROM test_results tr\nINNER JOIN psych_tests pt\n  ON tr.id_test = pt.id_test\nWHERE tr.id_user = ?\n  AND tr.id_application = ?
+DB --> RREPO : [ { id_results, test_name, status, score, date_applied }, ... ]
+RREPO --> UC_GET : TestResult[]
+
+UC_GET -> UC_GET : map entities → TestResultDTO[]
+UC_GET --> TCTRL : TestResultDTO[]
+TCTRL --> MAIN : HTTP 200 { data: TestResultDTO[] }
+
+== Renderizar pruebas en UI ==
+
+MAIN -> VEVAL : renderTestList(dto[])
+VEVAL -> VEVAL : forEach test →\ncreateTestCard(dto)
+VEVAL --> USR : Lista de pruebas visible\n(test_name + badge status\n+ date_applied si aplica)
+
+@enduml
