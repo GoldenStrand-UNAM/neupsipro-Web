@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foro - NeuPsi-Pro</title>
+    <title>Pruebas - NeuPsi-Pro</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
@@ -19,7 +19,23 @@
         <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
             <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
 
-                
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-6">
+                    <h2 class="text-2xl font-medium">Pruebas</h2>
+                </div>
+
+                <!-- Test cards container — populated by testList.js via API -->
+                <div id="testListContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 pb-5">
+
+                    <!-- Skeletons shown while fetch is in progress -->
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+
+                </div>
+
+                <!-- Inline error message — hidden by default -->
+                <p id="testListError" class="hidden text-sm text-red-500 mt-2"></p>
 
             </div>
         </main>
@@ -27,5 +43,14 @@
     </div>
 
     <script src="/js/sidebar.js"></script>
+
+    <!-- Pass server-side params to client without inline injection risk -->
+    <script>
+        window.__TEST_PAGE__ = {
+            idUser:        '<%- id_user %>',
+            idApplication: '<%- id_application %>'
+        };
+    </script>
+
 </body>
 </html>

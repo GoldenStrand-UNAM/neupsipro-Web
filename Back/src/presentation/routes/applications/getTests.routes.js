@@ -1,5 +1,3 @@
-// presentation/routes/testRoutes.js
-
 const express = require('express');
 
 const impTestResultsRepository        = require('../../../infrastructure/repositories/impTestResultsRepository');

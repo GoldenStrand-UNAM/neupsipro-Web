@@ -80,6 +80,12 @@ const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
 app.use('/forum', forumRoutes(authUseCase));
 
+const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+
+app.use('/', postPublicationRoutes(authUseCase));
+
+// Users
+
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
@@ -92,9 +98,7 @@ const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClini
 
 app.use('/', clinicalRoutes(authUseCase));
 
-const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
 
-app.use('/', postPublicationRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
@@ -103,15 +107,25 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
-app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
 
-});
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
     activePage: 'usuario',
   });
+});
+
+// Applications
+
+const testRoutes = require('./presentation/routes/applications/getTests.routes');
+
+app.use('/', testRoutes(authUseCase));
+
+// 404 middleware
+
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+
 });
 
 module.exports = app;

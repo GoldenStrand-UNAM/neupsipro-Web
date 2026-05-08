@@ -1,4 +1,3 @@
-// presentation/controller/tests/getTestsByApplication.controller.js
 
 class getTestsByApplicationController {
   constructor (getTestsByApplicationUseCase) {
@@ -7,7 +6,7 @@ class getTestsByApplicationController {
   // Handles the view
   renderTests (req, res) {
     const { id_user, id_application } = req.params;
-    return res.render('tests/testList', { id_user, id_application });
+    return res.render('application/getTests', { id_user, id_application });
   }
 
   // Handles the API
@@ -15,7 +14,7 @@ class getTestsByApplicationController {
     const { id_user, id_application } = req.params;
 
     try {
-      const data = await this.useCase.execute({ id_user, id_application });
+      const data = await this.getTestsByApplicationUseCase.execute({ id_user, id_application });
       return res.status(200).json({ data });
 
     } catch (err) {
