@@ -150,6 +150,7 @@ CREATE TABLE user_info (
 -- ============================================================
 
 CREATE TABLE appointment (
+	id_appointment VARCHAR(36) NOT NULL PRIMARY KEY,
 	id_user_relation VARCHAR(36)  NOT NULL,
     issue VARCHAR(50) NOT NULL,
     date_time DATETIME NOT NULL,
@@ -712,5 +713,18 @@ ALTER COLUMN status SET DEFAULT 1;
 ALTER TABLE test_applications 
 ALTER COLUMN status SET DEFAULT 1;
 
-ALTER TABLE appointment 
-ADD id_appointment VARCHAR(36) NOT NULL PRIMARY KEY;
+ALTER TABLE test_applications 
+RENAME COLUMN id_session TO id_application;
+
+ALTER TABLE test_applications 
+RENAME COLUMN session_name TO application_name;
+
+ALTER TABLE test_results 
+DROP FOREIGN KEY fk_resullts_session;
+
+ALTER TABLE test_results 
+RENAME COLUMN id_session TO id_application; 
+
+ALTER TABLE test_results 
+ADD CONSTRAINT fk_results_application 
+FOREIGN KEY (id_application) REFERENCES test_applications (id_application);

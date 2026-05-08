@@ -22,7 +22,8 @@ class consultUserUseCase {
     if (hasProtocol) {
       assignedApplications = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
-    const canStartIntervention = assignedApplications.some(application => application.applicationName === 'Aplicación inicial' && application.status === 'Entregado');
+    const canStartIntervention = assignedApplications.some(a =>
+      a.status === 'Entregado');
 
     const cleanUser = UserDTO.fromEntity(user);
 
