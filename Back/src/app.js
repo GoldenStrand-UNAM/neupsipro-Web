@@ -75,6 +75,11 @@ app.use((req, res, next) => {
 
 app.use('/', homeRoutes(authMiddleware));
 
+// Dasboards
+const dashRoutes = require('./presentation/routes/clinical/getClinicalUserDashboard.routes');
+
+app.use('/dashboard', dashRoutes(authUseCase));
+
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
