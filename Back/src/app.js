@@ -86,7 +86,7 @@ app.use('/', usersRoutes(authUseCase));
 
 const userRoutes = require('./presentation/routes/users/getUser.Routes');
 
-app.use('/users', userRoutes);
+app.use('/users', userRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 

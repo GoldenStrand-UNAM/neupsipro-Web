@@ -47,8 +47,8 @@ class AuthorizationUseCase {
 
     //If exceptions is null, check for privileges per role
     const hasRolePrivilege = rolePrivileges.some(p =>
-      p.permited_action === requestedAction &&
-            entitiesNeeded.includes(p.permissions));
+      p.permittedAction === requestedAction &&
+      entitiesNeeded.some(entity => entity.toLowerCase() === p.permissions.toLowerCase()));
 
     return hasRolePrivilege;
   }

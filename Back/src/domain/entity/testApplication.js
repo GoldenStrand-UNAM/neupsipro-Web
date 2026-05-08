@@ -10,7 +10,7 @@ class TestApplication {
     this._rawStatus = data.status ?? 6;
   }
 
-    // Called by the repository after INSERT to attach the generated PK
+  // Called by the repository after INSERT to attach the generated PK
   setId (id) {
     this.idApplication = id;
   }

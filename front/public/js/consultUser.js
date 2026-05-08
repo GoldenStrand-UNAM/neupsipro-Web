@@ -1,164 +1,136 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const user = window.__USER_DATA__;
-  if (!user) {
-    console.warn('No se recibió ningún usuario del servidor');
-    return;
-  }
+/* eslint-env browser */
+/* global getStatusStyle, createApplicationCard, createAddSessionCard */
 
-  const canStartIntervention = user.canStartIntervention !== undefined
-    ? user.canStartIntervention
-    : (user.assignedApplications && user.assignedApplications.some(a => a.applicationName === 'Sesión inicial' && a.status === 'Entregado'));
+// 1. Separamos la lógica de la tarjeta en su propia función
+function toggleInterventionCard (canStartIntervention) {
+  const statusCard = document.getElementById('statusCard');
+  const btnIntervention = document.getElementById('btnIntervention');
+  const warningText = document.getElementById('warningText');
+
+  if (!statusCard || !btnIntervention) return;
 
   if (!canStartIntervention) {
-    const interventionCard = document.getElementById('statusCard');
-    const btnIntervention = document.getElementById('btnIntervention');
+    statusCard.classList.remove('bg-[#002B79]/30');
+    statusCard.classList.add('bg-gray-200/30', 'pointer-events-none');
 
-    if (interventionCard && btnIntervention) {
-      interventionCard.classList.add('opacity-50', 'pointer-events-none');
+    btnIntervention.classList.remove('bg-[#3350A9]');
+    btnIntervention.classList.add('bg-gray-400');
+    btnIntervention.disabled = true;
 
-      interventionCard.classList.add('grayscale');
+    if (warningText) warningText.classList.remove('hidden');
+  } else {
+    statusCard.classList.remove('bg-gray-200/30', 'pointer-events-none');
+    statusCard.classList.add('bg-[#002B79]/30');
 
-      btnIntervention.classList.remove('bg-[#3350A9]');
-      btnIntervention.classList.add('bg-gray-400');
-      btnIntervention.disabled = true;
-    }
+    btnIntervention.classList.add('bg-[#3350A9]');
+    btnIntervention.classList.remove('bg-gray-400');
+    btnIntervention.disabled = false;
+
+    if (warningText) warningText.classList.add('hidden');
   }
+}
 
-  // Personal Info
-  document.getElementById('userName').textContent =
-                user.name || 'Sin nombre';
+// 2. Separamos la función para dar formato a la fecha
+function formatAppointmentDate (dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString('es-MX', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
 
-  document.getElementById('userCode').textContent =
-                user.referenceNumber || 'N/A';
+// 3. Arreglamos la inyección de objetos usando un objeto Map (corrige warning de seguridad)
+function getStatusBadge (val) {
+  const statusMap = new Map([
+    ['Discharged', { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' }],
+    ['Stand_by', { label: 'Stand By', border: '#1560BD', text: '#1560BD', bg: 'rgba(21, 96, 189, 0.33)' }],
+    ['Active', { label: 'Activo', border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' }],
+    ['Declined', { label: 'No ingresó', border: '#95A5A6', text: '#7F8C8D', bg: 'rgba(149, 165, 166,0.33)' }],
+  ]);
 
-  // First Column
-  document.getElementById('userAge').textContent =
-                user.age || 'N/A';
+  const m = statusMap.get(val);
+  if (!m) return '<span class="text-gray-300 text-xl"> - </span>';
+  return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
+}
 
-  document.getElementById('userDate').textContent =
-                user.registrationDate
-                  ? new Date(user.registrationDate).toLocaleDateString()
-                  : 'N/A';
+// 4. Pasamos los parámetros como un objeto para evitar el error "too many parameters"
+function setStatus ({ textId, cardId, tagId, iconId, status }) {
+  const value = status || 'N/A';
+  document.getElementById(textId).textContent = value;
 
-  document.getElementById('userPhase').textContent =
-                user.phase || 'N/A';
+  const colors = getStatusStyle(value);
 
-  document.getElementById('groupIntervention').textContent =
-                user.groupIntervention || 'N/A';
+  const card = document.getElementById(cardId);
+  if (card) card.classList.add(colors.card);
 
-  document.getElementById('etiology').textContent =
-                user.amputationEtiology || 'N/A';
+  const tag = document.getElementById(tagId);
+  if (tag) tag.classList.add(colors.tag);
 
-  // Second Column
-  document.getElementById('prosthetist').textContent =
-                user.prosthetist || 'N/A';
+  const icon = document.getElementById(iconId);
+  if (icon) icon.innerHTML = colors.icon;
+}
 
-  document.getElementById('neuroDate').textContent =
-                user.neuroEntryDate
-                  ? new Date(user.neuroEntryDate).toLocaleDateString()
-                  : 'N/A';
+// 5. Agrupamos la inyección de datos personales en una función
+function populateUserInfo (user) {
+  document.getElementById('userName').textContent = user.name || 'Sin nombre';
+  document.getElementById('userCode').textContent = user.referenceNumber || 'N/A';
+  document.getElementById('userAge').textContent = user.age || 'N/A';
+  document.getElementById('userDate').textContent = user.registrationDate
+    ? new Date(user.registrationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('userPhase').textContent = user.phase || 'N/A';
+  document.getElementById('groupIntervention').textContent = user.groupIntervention || 'N/A';
+  document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
 
-  document.getElementById('amputationDate').textContent =
-                user.amputationDate
-                  ? new Date(user.amputationDate).toLocaleDateString()
-                  : 'N/A';
-
-  document.getElementById('amputationLevel').textContent =
-                user.amputationLevel || 'N/A';
-
-  document.getElementById('laterality').textContent =
-                user.laterality || 'N/A';
+  document.getElementById('prosthetist').textContent = user.prosthetist || 'N/A';
+  document.getElementById('neuroDate').textContent = user.neuroEntryDate
+    ? new Date(user.neuroEntryDate).toLocaleDateString() : 'N/A';
+  document.getElementById('amputationDate').textContent = user.amputationDate
+    ? new Date(user.amputationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('amputationLevel').textContent = user.amputationLevel || 'N/A';
+  document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
   document.getElementById('state').innerHTML = getStatusBadge(user.state);
+  document.getElementById('nextApt').textContent = formatAppointmentDate(user.nextAppointment) || 'N/A';
+  document.getElementById('protocol').textContent = user.protocol || 'N/A';
+  document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
+}
 
-  document.getElementById('nextApt').textContent =
-                formatAppointmentDate(user.nextAppointment) || 'N/A';
-
-  document.getElementById('protocol').textContent =
-                user.protocol || 'N/A';
-
-  document.getElementById('clinic').textContent =
-                user.assignedClinic || 'N/A';
-
-  function setStatus (textId, cardId, tagId, iconId, status) {
-    const value = status || 'N/A';
-
-    document.getElementById(textId).textContent = value;
-
-    const colors = getStatusStyle(value);
-
-    // card
-    const card = document.getElementById(cardId);
-    if (card) card.classList.add(colors.card);
-
-    // tag
-    const tag = document.getElementById(tagId);
-    if (tag) tag.classList.add(colors.tag);
-
-    // icon
-    const icon = document.getElementById(iconId);
-    if (icon) icon.innerHTML = colors.icon;
-  }
-
-  function getStatusBadge (val) {
-    const map = {
-      'Discharged': { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' },
-      'Stand_by': { label: 'Stand By', border: '#1560BD', text: '#1560BD', bg: 'rgba(21, 96, 189, 0.33)' },
-      'Active': { label: 'Activo', border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' },
-      'Declined': { label: 'No ingresó',border: '#95A5A6', text: '#7F8C8D', bg: 'rgba(149, 165, 166,0.33)' },
-    };
-    const m = map[val];
-    if (!m) return '<span class="text-gray-300 text-xl"> - </span>';
-    return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
-  }
-
-  function formatAppointmentDate (dateString) {
-    const date = new Date(dateString);
-
-    return date.toLocaleString('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  }
-
-  // Using function
-  setStatus(
-    'initialInterview',
-    'initialInterviewCard',
-    'initialInterviewTag',
-    'initialInterviewIcon',
-    user.initialInterview
-  );
-
+// 6. Agrupamos la generación del Logbook
+function populateLogbook (user) {
   const container = document.getElementById('logbookContainer');
+  if (!container) return;
+
   container.innerHTML = '';
 
   if (!user.hasProtocol) {
     container.innerHTML = `
-                    <div class="col-span-1 md:col-span-3 flex justify-center items-center py-12">
-                        <p class="text-gray-500 text-xl font-medium">Aún no hay protocolo asignado</p>
-                    </div>
-                `;
+      <div class="col-span-1 md:col-span-3 flex justify-center items-center py-12">
+        <p class="text-gray-500 text-xl font-medium">Aún no hay protocolo asignado</p>
+      </div>
+    `;
   } else {
     if (user.assignedApplications && user.assignedApplications.length > 0) {
       user.assignedApplications.forEach(application => {
-        const cardHTML = createApplicationCard(application);
-        container.innerHTML += cardHTML;
+        container.innerHTML += createApplicationCard(application);
       });
     }
     container.innerHTML += createAddSessionCard();
   }
+}
 
-  //SHOW MORE
+// 7. Agrupamos la lógica del botón de "Ver más"
+function setupShowMoreToggle () {
   const btnShowMore = document.getElementById('btnShowMore');
   const textShowMore = document.getElementById('textShowMore');
   const extraFields = document.querySelectorAll('.extra-field');
   const iconMore = document.getElementById('iconMore');
   const iconLess = document.getElementById('iconLess');
+
+  if (!btnShowMore) return;
 
   let isShowingMore = false;
 
@@ -189,4 +161,31 @@ document.addEventListener('DOMContentLoaded', () => {
       iconMore.classList.add('block');
     }
   });
+}
+
+// --- FUNCIÓN PRINCIPAL ---
+document.addEventListener('DOMContentLoaded', () => {
+  const user = window.__USER_DATA__;
+  if (!user) return;
+
+  // 1. Activar o desactivar tarjeta
+  toggleInterventionCard(!!user.canStartIntervention);
+
+  // 2. Llenar info de usuario
+  populateUserInfo(user);
+
+  // 3. Establecer status (pasando un solo objeto como parámetro)
+  setStatus({
+    textId: 'initialInterview',
+    cardId: 'initialInterviewCard',
+    tagId: 'initialInterviewTag',
+    iconId: 'initialInterviewIcon',
+    status: user.initialInterview,
+  });
+
+  // 4. Cargar logbook
+  populateLogbook(user);
+
+  // 5. Configurar botón ver más
+  setupShowMoreToggle();
 });
