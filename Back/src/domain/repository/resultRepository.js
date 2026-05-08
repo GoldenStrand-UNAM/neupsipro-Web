@@ -1,11 +1,6 @@
 // Interface contract for test result persistence.
 class resultRepository {
 
-  //Fetch all test results for a user
-  async fetchUserTests({ id_user }) {
-    throw new Error('fetchUserTests() not implemented');
-  }
-
   //Insert one result row per test linked to a session
   async createResults (_id_application, _id_user, _tests) {
     throw new Error('createResults() must be implemented');
