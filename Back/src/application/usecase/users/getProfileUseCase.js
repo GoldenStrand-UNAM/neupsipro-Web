@@ -1,4 +1,5 @@
 const userProfileDTO = require('../../dto/userProfileDTO');
+const { getPresignedUrl } = require('../../../infrastructure/external/s3.config')
 
 /**
  * Use Case: Get Profile Use case.
@@ -15,6 +16,11 @@ class getProfileUseCase {
     if (!userEntity) {
       throw new Error('USER_NOT_FOUND');
     }
+    const rawPhotoKey = userEntity.profilePhoto;
+
+    const signedUrl = await getPresignedUrl(rawPhotoKey);
+
+    userEntity.profilePhoto = signedUrl;
 
     return new userProfileDTO(userEntity);
   }
