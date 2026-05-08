@@ -1,4 +1,4 @@
-class ImpInteractionRepository {
+class interactionRepository {
   // Method to retrive one publication with its interactions.
   async fetchAllFromOne () {
     throw new Error('fetchAllFromOne() interaction is not working.');
@@ -13,4 +13,4 @@ class ImpInteractionRepository {
   }
 
 }
-module.exports = ImpInteractionRepository;
+module.exports = interactionRepository;

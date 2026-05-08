@@ -16,7 +16,7 @@ jest.mock('../../Back/src/infrastructure/external/rateLimiting', () => ({
   loginLimiter: (req, res, next) => next(),
 }));
 
-const ForumRepository = require('../../Back/src/infrastructure/repositories/forumRepository');
+const ForumRepository = require('../../Back/src/infrastructure/repositories/ImpForumRepository');
 
 const app = require('../../Back/src/app');
 

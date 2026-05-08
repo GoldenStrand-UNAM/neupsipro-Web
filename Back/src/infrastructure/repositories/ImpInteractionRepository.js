@@ -1,7 +1,7 @@
 const db = require ('../database/database');
-const ImpInteractionRepository = require('../../domain/repository/ImpInteractionRepository');
+const InteractionRepository = require('../../domain/repository/interactionRepository');
 
-class InteractionRepository extends ImpInteractionRepository {
+class ImpInteractionRepository extends InteractionRepository {
   async fetchAllFromOne ({ idPublication }) {
     if (!idPublication || idPublication === '') {
       throw  new Error('Missing ID');
@@ -47,4 +47,4 @@ class InteractionRepository extends ImpInteractionRepository {
     return result[0];
   }
 }
-module.exports = InteractionRepository;
+module.exports = ImpInteractionRepository;

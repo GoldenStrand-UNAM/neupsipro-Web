@@ -2,9 +2,9 @@ const express = require('express');
 
 const PublicationController = require('../../controller/forum/getPublication.Controller');
 const GetPublicationUseCase =  require('../../../application/usecase/forum/getPublicationUseCase');
-const InteractionRepository = require('../../../infrastructure/repositories/interactionRepository');
-const PublicationRepository = require('../../../infrastructure/repositories/forumRepository');
-const UsersRepository = require('../../../infrastructure/repositories/usersRepository');
+const InteractionRepository = require('../../../infrastructure/repositories/ImpInteractionRepository');
+const PublicationRepository = require('../../../infrastructure/repositories/ImpInteractionRepository');
+const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
