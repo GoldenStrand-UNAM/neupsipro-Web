@@ -2,27 +2,56 @@
 
 start
 
-:Click on test;
-: Message "¿Desea registrar resultados de pruebas?" appears;
-if (¿Desea registrar resultados de pruebas?) then (No)
-  stop
-else (Si)
+:Select test;
+
+:Show modal with options;
+note right
+- Registrar resultados
+- Modificar resultados
+- Consultar resultados
+end note
+
+:Select "Registrar resultados";
+
+:Show register results modal;
+
+:Enter score number;
+
+:System interprets result automatically;
+
+:Show live interpretation;
+note right
+Only one word
+Example:
+"Normal"
+"Low"
+"High"
+end note
+
+:Enter notes;
+
+if (¿Desea guardar resultados?) then (Sí)
+
+    :Validate data;
+
+    if (¿Datos correctos?) then (Sí)
+
+        :Save data in database;
+        :Show confirmation message;
+        stop
+
+    else (No)
+
+        :Show error message;
+        stop
+
+    endif
+
+else (No)
+
+    :Close modal;
+    stop
+
 endif
-
-repeat
-  :Get section for test;
-  :Render format on screen;
-  :Use edits fields to enter score;
-  :Click on "Guardar resultados"; 
-  :Validate data;
-repeat while (¿Correct data?) is (No) -> :Show error message if data is incorrect;
-
-  :Show confirmation message if data is correct;
--> Sí;
-
-:Interpratate results;
-:Save data in database;
-
-stop
 
 @enduml
