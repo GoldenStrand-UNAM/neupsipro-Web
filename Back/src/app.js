@@ -29,6 +29,7 @@ const AuthService = require("./infrastructure/auth/AuthService");
 const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
 const LogoutUseCase = require("./application/Usecase/auth/logoutUseCase");
 const AuthorizationUseCase = require("./application/Usecase/auth/authorizationUseCase");
+const PostUserUseCase = require("./application/Usecase/users/postUserUseCase");
 const LoginController = require("./presentation/controller/auth/login.controller");
 const LogoutController = require("./presentation/controller/auth/logout.controller");
 const authRoutes = require("./presentation/routes/auth/auth.routes");
@@ -41,6 +42,7 @@ app.use (session({
 const dbPool = require("./infrastructure/database/database");
 const AuthRepository = require("./infrastructure/repositories/loginRepository");
 const SessionRepository = require("./infrastructure/repositories/sessionRepository");
+const UserRepository = require("./infrastructure/repositories/usersRepository");
 const HashingService = require("./infrastructure/external/hashing.service");
 const JwtService = require("./infrastructure/external/jwt.service");
 const CacheService = require("./infrastructure/external/memoryCache.service");
@@ -55,6 +57,7 @@ const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
+const userRepository = new UserRepository();
 
 
 const authMiddleware = new AuthMiddleware(jwtService, authService);
@@ -62,6 +65,7 @@ const authMiddleware = new AuthMiddleware(jwtService, authService);
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
 const logoutUseCase = new LogoutUseCase(authService);
 const authUseCase = new AuthorizationUseCase(authRepository);
+const postUserUseCase = new PostUserUseCase(userRepository, hashingService);
 
 const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
@@ -85,6 +89,9 @@ app.use('/forum', forumRoutes(authUseCase));
 
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 app.use('/', usersRoutes(authUseCase));
+
+const userRoutes = require('./presentation/routes/users/postUser.routes');
+app.use('/', userRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 app.use('/', clinicalRoutes(authUseCase));

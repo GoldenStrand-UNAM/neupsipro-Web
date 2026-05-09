@@ -27,6 +27,8 @@ class forumRepository extends impForumRepository {
             FROM publication p
             INNER JOIN users u 
                 ON p.id_user = u.id_user
+            INNER JOIN user_info i
+                ON p.id_user = i.id_user
             ORDER BY p.time_and_date DESC
             LIMIT ?, ?`,
             [Number(offset), Number(limit)]
