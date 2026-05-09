@@ -81,6 +81,32 @@ class impTestResultsRepository extends resultRepository {
     };
   }
 
+  //Update an existing result row with score, interpretation, notes and status.
+    async saveResult({ id_results, score, interpretation, notes }) {
+    await db.query(
+      `UPDATE test_results
+       SET score          = ?,
+           interpretation = ?,
+           notes          = ?,
+           date_applied   = CURDATE(),
+           status         = 3
+       WHERE id_results = ?`,
+      [score, interpretation, notes ?? null, id_results]
+    );
+
+    // Return the updated row as a Tests entity
+    const [rows] = await db.query(
+      `SELECT tr.id_results, tr.id_application, tr.id_test,
+              pt.test_name, tr.status, tr.score,
+              tr.interpretation, tr.date_applied, tr.notes
+       FROM test_results tr
+       JOIN psych_tests pt ON tr.id_test = pt.id_test
+       WHERE tr.id_results = ?`,
+      [id_results]
+    );
+    return new Tests(rows[0]);
+  }
+
 }
 
 module.exports = impTestResultsRepository;
