@@ -1,5 +1,5 @@
 class postBANFEUseCase {
-  constructor(impTestResultsRepository) {
+  constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
@@ -7,7 +7,7 @@ class postBANFEUseCase {
    * Saves BANFE score, recalculates interpretation server-side,
    * and updates the result row to status 3 (Calificada).
  */
-  async execute({ id_user, id_application, score, notes }) {
+  async execute ({ id_user, id_application, score, notes }) {
 
     // 1. Validate score is present and is a number
     const parsed = Number(score);
@@ -28,7 +28,7 @@ class postBANFEUseCase {
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
-      id_test: 1, 
+      id_test: 1,
     });
 
     if (!row) {
@@ -42,22 +42,22 @@ class postBANFEUseCase {
 
     // 5. Persist the result
     const updated = await this.impTestResultsRepository.saveResult({
-      id_results:     row.idResults,
-      score:          parsed,
+      id_results: row.idResults,
+      score: parsed,
       interpretation,
-      notes:          notes ?? null,
+      notes: notes ?? null,
     });
 
     // 6. Return DTO — never expose raw entity across boundaries
     return {
-      idResults:      updated.idResults,
-      idTest:         updated.idTest,
-      testName:       updated.testName,
-      status:         updated.status,
-      score:          updated.score,
+      idResults: updated.idResults,
+      idTest: updated.idTest,
+      testName: updated.testName,
+      status: updated.status,
+      score: updated.score,
       interpretation: updated.interpretation,
-      dateApplied:    updated.dateApplied,
-      notes:          updated.notes,
+      dateApplied: updated.dateApplied,
+      notes: updated.notes,
     };
   }
 
@@ -65,7 +65,7 @@ class postBANFEUseCase {
    * BANFE interpretation ranges.
    * Score is an integer between 0 and 200.
    */
-  resolveInterpretation(score) {
+  resolveInterpretation (score) {
     if (score <= 69)                   return 'Discapacidad';
     if (score >= 70 && score <= 84)    return 'Limítrofe';
     if (score >= 85 && score <= 115)   return 'Promedio';

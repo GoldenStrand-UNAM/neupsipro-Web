@@ -98,8 +98,6 @@ const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClini
 
 app.use('/', clinicalRoutes(authUseCase));
 
-
-
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });
@@ -107,7 +105,6 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
-
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {

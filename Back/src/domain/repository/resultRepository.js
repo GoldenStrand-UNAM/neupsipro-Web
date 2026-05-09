@@ -12,13 +12,13 @@ class resultRepository {
   }
 
   //Fetch a single result row to validate it exists before saving.
-  async fetchResultRow({ id_user, id_application, id_test }) {
-  throw new Error('fetchResultRow() not implemented');
+  async fetchResultRow ({ id_user, id_application, id_test }) {
+    throw new Error('fetchResultRow() not implemented');
   }
 
   //Update an existing result row with score, interpretation, notes and status.
-  async saveResult({ id_results, score, interpretation, notes }) {
-  throw new Error('saveResult() not implemented');
+  async saveResult ({ id_results, score, interpretation, notes }) {
+    throw new Error('saveResult() not implemented');
   }
 }
 

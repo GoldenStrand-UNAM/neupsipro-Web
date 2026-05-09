@@ -65,7 +65,7 @@ class impTestResultsRepository extends resultRepository {
   }
 
   //Fetch a single result row to validate it exists before saving.
-    async fetchResultRow({ id_user, id_application, id_test }) {
+  async fetchResultRow ({ id_user, id_application, id_test }) {
     const [rows] = await db.query(
       `SELECT id_results, status
        FROM test_results
@@ -77,12 +77,12 @@ class impTestResultsRepository extends resultRepository {
     if (rows.length === 0) return null;
     return {
       idResults: rows[0].id_results,
-      status:    rows[0].status,
+      status: rows[0].status,
     };
   }
 
   //Update an existing result row with score, interpretation, notes and status.
-    async saveResult({ id_results, score, interpretation, notes }) {
+  async saveResult ({ id_results, score, interpretation, notes }) {
     await db.query(
       `UPDATE test_results
        SET score          = ?,

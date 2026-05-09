@@ -1,40 +1,40 @@
 (function () {
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────────
 
-    function escapeHTML(str) {
-        if (str === null || str === undefined) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+  function escapeHTML (str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
-    // Map status label to CSS variant (mirrors logbook.js pattern)
-    const _statusMap = {
-        'Por comenzar': 'neutral',
-        'En proceso':   'warning',
-        'Calificada':   'warning',
-        'Entregado':    'success',
-        "Caducada": "fatal",
-    };
+  // Map status label to CSS variant (mirrors logbook.js pattern)
+  const _statusMap = {
+    'Por comenzar': 'neutral',
+    'En proceso': 'warning',
+    'Calificada': 'warning',
+    'Entregado': 'success',
+    'Caducada': 'fatal',
+  };
 
-    function getVariant(status) {
-        return _statusMap[status] || 'neutral';
-    }
+  function getVariant (status) {
+    return _statusMap[status] || 'neutral';
+  }
 
-    // ── Card builder ────────────────────────────────────────────────────────────
+  // ── Card builder ────────────────────────────────────────────────────────────
 
-    function createTestCard(test) {
-        const variant = getVariant(test.status);
+  function createTestCard (test) {
+    const variant = getVariant(test.status);
 
-        const dateFormatted = test.dateApplied
-            ? new Date(test.dateApplied).toLocaleDateString('es-MX')
-            : 'Sin fecha';
+    const dateFormatted = test.dateApplied
+      ? new Date(test.dateApplied).toLocaleDateString('es-MX')
+      : 'Sin fecha';
 
-        return `
+    return `
             <div class="application-card application-card--${variant}">
 
                 <!-- Status badge -->
@@ -64,73 +64,71 @@
 
                     <!-- Score if available -->
                     ${test.score !== null
-                        ? `<p class="text-sm text-gray-600">Puntaje: ${escapeHTML(String(test.score))}</p>`
-                        : ''}
+    ? `<p class="text-sm text-gray-600">Puntaje: ${escapeHTML(String(test.score))}</p>`
+    : ''}
 
                 </div>
             </div>
         `;
-    }
+  }
 
-    // ── Render helpers ──────────────────────────────────────────────────────────
+  // ── Render helpers ──────────────────────────────────────────────────────────
 
-    function showError(message) {
-        const el = document.getElementById('testListError');
-        if (!el) return;
-        el.textContent = message;
-        el.classList.remove('hidden');
-    }
+  function showError (message) {
+    const el = document.getElementById('testListError');
+    if (!el) return;
+    el.textContent = message;
+    el.classList.remove('hidden');
+  }
 
-    function removeSkeletons() {
-        document.querySelectorAll('.test-card-skeleton')
-            .forEach(el => el.remove());
-    }
+  function removeSkeletons () {
+    document.querySelectorAll('.test-card-skeleton')
+      .forEach(el => el.remove());
+  }
 
-    // ── Main fetch ──────────────────────────────────────────────────────────────
+  // ── Main fetch ──────────────────────────────────────────────────────────────
 
-    async function loadTests(idUser, idApplication) {
-        const container = document.getElementById('testListContainer');
+  async function loadTests (idUser, idApplication) {
+    const container = document.getElementById('testListContainer');
 
-        try {
-            const res = await fetch(
-                `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas`
-            );
+    try {
+      const res = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas`);
 
-            const json = await res.json();
+      const json = await res.json();
 
-            removeSkeletons();
+      removeSkeletons();
 
-            if (!res.ok) {
-                showError(json.error || 'Error al cargar las pruebas');
-                return;
-            }
+      if (!res.ok) {
+        showError(json.error || 'Error al cargar las pruebas');
+        return;
+      }
 
-            if (!json.data || json.data.length === 0) {
-                container.innerHTML = `
+      if (!json.data || json.data.length === 0) {
+        container.innerHTML = `
                     <p class="text-sm text-gray-400 col-span-3 text-center py-8">
                         No hay pruebas asignadas para esta sesión.
                     </p>
                 `;
-                return;
-            }
+        return;
+      }
 
-            // Render one card per test result
-            json.data.forEach(test => {
-                container.insertAdjacentHTML('beforeend', createTestCard(test));
-            });
+      // Render one card per test result
+      json.data.forEach(test => {
+        container.insertAdjacentHTML('beforeend', createTestCard(test));
+      });
 
-        } catch (err) {
-            removeSkeletons();
-            showError('No se pudo conectar con el servidor');
-            console.error('[testList] fetch error:', err);
-        }
+    } catch (err) {
+      removeSkeletons();
+      showError('No se pudo conectar con el servidor');
+      console.error('[testList] fetch error:', err);
     }
+  }
 
-    // ── Init ────────────────────────────────────────────────────────────────────
+  // ── Init ────────────────────────────────────────────────────────────────────
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const { idUser, idApplication } = window.__TEST_PAGE__;
-        loadTests(idUser, idApplication);
-    });
+  document.addEventListener('DOMContentLoaded', () => {
+    const { idUser, idApplication } = window.__TEST_PAGE__;
+    loadTests(idUser, idApplication);
+  });
 
 })();
