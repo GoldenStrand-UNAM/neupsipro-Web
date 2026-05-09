@@ -39,11 +39,15 @@ function openBANFEModal(idUser, idApplication, test, mode) {
 
       <div class="modal__body flex flex-col gap-6">
 
+        <div class="flex flex-col md:flex-row gap-4">
+
         <!-- Score -->
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-gray-700">
+        <div class="flex-1 flex flex-col gap-1 min-w-0">
+
+          <label class="text-2xl font-regular">
             Puntaje ${!isConsult ? '<span class="text-red-500">*</span>' : ''}
           </label>
+
           <input
             id="inputBANFEScore"
             type="number"
@@ -52,29 +56,61 @@ function openBANFEModal(idUser, idApplication, test, mode) {
             placeholder="0 – 200"
             value="${escapeHTML(String(prefillScore))}"
             ${isConsult ? 'disabled' : ''}
-            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition
+            class="w-full h-[52px]
+                   border border-gray-300
+                   rounded-lg
+                   px-4
+                   text-sm
+                   focus:outline-none
+                   focus:ring-2
+                   focus:ring-[#3350A9]
+                   focus:border-transparent
+                   transition
                    ${isConsult ? 'bg-gray-50 cursor-default' : ''}"/>
-          <p class="text-xs text-gray-400">Número entero entre 0 y 200</p>
-          <p id="banfeScoreError" class="text-xs text-red-500 hidden"></p>
+
+          <p class="text-xs text-gray-400">
+            Número entero entre 0 y 200
+          </p>
+
+          <p
+            id="banfeScoreError"
+            class="text-xs text-red-500 hidden">
+          </p>
         </div>
 
-        <!-- Live interpretation -->
-        <div class="flex flex-col gap-1">
-          <span class="text-sm font-medium text-gray-700">Interpretación</span>
-          <span id="banfeInterpretation" class="text-lg font-semibold text-black min-h-7">
-            ${escapeHTML(prefillInterp)}
-          </span>
+        <!-- Interpretation -->
+        <div class="flex-1 flex flex-col gap-1 min-w-0">
+
+          <label class="text-2xl font-regular">
+            Interpretación
+          </label>
+
+          <div
+            class="w-full h-[52px]
+                   flex items-center
+                   border border-gray-300
+                   rounded-lg
+                   px-4
+                   bg-gray-50">
+
+            <span
+              id="banfeInterpretation"
+              class="text-sm text-gray-800 truncate">
+
+              ${escapeHTML(prefillInterp)}
+
+            </span>
+          </div>
         </div>
+      </div>
 
         <!-- Notes -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
+          <label class="text-2xl font-regular">Notas</label>
           <textarea
             id="inputBANFENotes"
             rows="4"
-            placeholder="Observaciones opcionales..."
+            placeholder="Observaciones "
             ${isConsult ? 'disabled' : ''}
             class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
@@ -87,18 +123,80 @@ function openBANFEModal(idUser, idApplication, test, mode) {
 
         <!-- Actions -->
         <div class="flex justify-end gap-3">
-          <button id="btnCancelBANFE"
-            class="flex items-center gap-2 px-5 py-2 rounded-lg border
-                   border-gray-300 text-gray-700 text-sm hover:bg-gray-50
-                   transition cursor-pointer">
-            ${isConsult ? 'Cerrar' : 'Cancelar'}
+          
+          <button
+            id="btnCancelBANFE"
+            class="flex-1 flex items-center justify-center gap-3
+                  px-4 py-3
+                  border border-gray-300
+                  rounded-2xl
+                  font-regular
+                  hover:bg-gray-50
+                  transition-colors
+                  cursor-pointer">
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-8 h-8">
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+
+            <span class="whitespace-nowrap">
+              ${isConsult ? 'Cerrar' : 'Cancelar'}
+            </span>
+
           </button>
+
           ${!isConsult ? `
-          <button id="btnSaveBANFE"
-            class="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#3350A9]
-                   text-white text-sm hover:bg-[#2a4190] transition cursor-pointer">
-            Guardar
-          </button>` : ''}
+          <button
+            id="btnSaveBANFE"
+            class="flex-1 flex items-center justify-center gap-3
+                  px-4 py-3
+                  rounded-2xl
+                  bg-[#3350A9]
+                  text-white
+                  font-regular
+                  hover:bg-[#2a4190]
+                  transition-colors
+                  cursor-pointer">
+
+            <!-- Save -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-8 h-8">
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17 21v-8H7v8"/>
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M7 3v5h8"/>
+            </svg>
+
+            <span class="whitespace-nowrap">
+              Guardar
+            </span>
+
+          </button>
+          ` : ''}
         </div>
 
       </div>
