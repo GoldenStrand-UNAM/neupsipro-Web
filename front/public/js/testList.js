@@ -191,7 +191,7 @@ function openBANFEModal(idUser, idApplication) {
         <div class="flex flex-col gap-1">
           <span class="text-sm font-medium text-gray-700">Interpretación</span>
           <span id="banfeInterpretation"
-                class="text-lg font-semibold text-[#3350A9] min-h-7">
+                class="text-lg font-semibold text-black min-h-7">
             —
           </span>
         </div>
@@ -331,5 +331,23 @@ function openBANFEModal(idUser, idApplication) {
 
       const badge = card.querySelector('.application-card__badge');
       if (badge) badge.querySelector('p').textContent = dto.status;
+    }
+
+    // ── Toast ───────────────────────────────────────────────────────────────────
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-6 right-6 z-50 flex items-center gap-3
+                        bg-[#002B7A] text-white px-5 py-3 rounded-xl shadow-lg text-sm`;
+      toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
 }
