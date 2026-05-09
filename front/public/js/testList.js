@@ -132,3 +132,112 @@
   });
 
 })();
+
+// ================================
+//
+// BANFE interpretation 
+//
+// ================================
+
+function interpretBANFE(score) {
+  const n = Number(score);
+  if (isNaN(n))      return '';
+  if (n <= 69)       return 'Discapacidad';
+  if (n <= 84)       return 'Limítrofe';
+  if (n <= 115)      return 'Promedio';
+  return 'Promedio alto';
+}
+
+// ── BANFE modal builder ─────────────────────────────────────────────────────
+
+function openBANFEModal(idUser, idApplication) {
+  // Remove any existing modal before injecting a new one
+  const existing = document.getElementById('modalBANFE');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalBANFE';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+
+      <!-- Header -->
+      <div class="modal__header">
+        <h2 class="modal__title">BANFE</h2>
+        <button id="btnCloseBANFE" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal__body flex flex-col gap-6">
+
+        <!-- Score input -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-gray-700">
+            Puntaje <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="inputBANFEScore"
+            type="number"
+            min="0"
+            max="200"
+            placeholder="0 – 200"
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition"
+          />
+          <p class="text-xs text-gray-400">Número entero entre 0 y 200</p>
+          <p id="banfeScoreError" class="text-xs text-red-500 hidden"></p>
+        </div>
+
+        <!-- Live interpretation -->
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-medium text-gray-700">Interpretación</span>
+          <span id="banfeInterpretation"
+                class="text-lg font-semibold text-[#3350A9] min-h-[1.75rem]">
+            —
+          </span>
+        </div>
+
+        <!-- Notes input -->
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-gray-700">Notas</label>
+          <textarea
+            id="inputBANFENotes"
+            rows="4"
+            placeholder="Observaciones opcionales..."
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition resize-none"
+          ></textarea>
+        </div>
+
+        <!-- API error -->
+        <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-3">
+          <button id="btnCancelBANFE"
+            class="flex items-center gap-2 px-5 py-2 rounded-lg border
+                   border-gray-300 text-gray-700 text-sm hover:bg-gray-50
+                   transition cursor-pointer">
+            Cancelar
+          </button>
+          <button id="btnSaveBANFE"
+            class="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#3350A9]
+                   text-white text-sm hover:bg-[#2a4190] transition cursor-pointer">
+            Guardar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+}
