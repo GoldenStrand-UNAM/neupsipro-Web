@@ -1,0 +1,89 @@
+@startuml
+title Sequence Diagram: Profile Consultation
+
+actor User
+boundary ProfileView as View
+control ProfileViewModel as VM
+participant GetUserProfileUseCase as UC
+participant "UserRepository\n(Interface)" as Repo
+participant "UserRepositoryImpl\n(Implementation)" as RepoImpl
+participant RemoteDataSource as Remote
+participant "ApiService\n(Retrofit)" as Api
+database "External API" as Backend
+
+== Profile Loading Process ==
+
+User -> View : Opens Profile Screen
+activate View
+
+View -> VM : onLoadProfile()
+activate VM
+VM -> View : showLoadingSpinner()
+
+VM -> UC : execute()
+activate UC
+
+UC -> Repo : getUserProfileInfo()
+activate Repo
+
+Repo -> RepoImpl : getUserProfileInfo()
+activate RepoImpl
+
+RepoImpl -> Remote : fetchUserProfile()
+activate Remote
+
+Remote -> Api : getUserProfile()
+activate Api
+
+alt #LightBlue Case 1: Success (200 OK)
+    Api -> Backend : HTTP GET /profile
+    activate Backend
+    Backend --> Api : JSON Payload
+    deactivate Backend
+    
+    Api --> Remote : Response.success(UserDTO)
+    Remote --> RepoImpl : UserDTO
+    RepoImpl -> RepoImpl : Map DTO to Entity
+    RepoImpl --> Repo : UserEntity
+    Repo --> UC : UserEntity
+    UC --> VM : Result.Success(UserEntity)
+    VM --> View : updateViewState(DisplayData)
+    View -> User : Show profile info
+
+else #Pink Case 2: Server Error (404/500)
+    Api -> Backend : HTTP GET /profile
+    activate Backend
+    Backend --> Api : Error Response
+    deactivate Backend
+    
+    Api --> Remote : Response.error(404/500)
+    Remote --> RepoImpl : throw ServerException
+    RepoImpl --> Repo : throw Exception
+    Repo --> UC : Result.Error(ServerError)
+    UC --> VM : Result.Error(ServerError)
+    VM --> View : updateViewState(ShowErrorMessage)
+    View -> User : "Profile not found / Server Error"
+    View -> View : Redirect to Home
+
+else #Tomato Case 3: No Internet / Timeout
+    Api -X Backend : Connection Failed
+    Api --> Remote : throw IOException
+    deactivate Api
+    
+    Remote --> RepoImpl : throw NetworkException
+    deactivate Remote
+    
+    RepoImpl --> Repo : throw Exception
+    deactivate RepoImpl
+    deactivate Repo
+    
+    UC --> VM : Result.Error(NoInternet)
+    deactivate UC
+    
+    VM --> View : updateViewState(ShowNetworkError)
+    View -> User : "Check your internet connection"
+    deactivate VM
+end
+
+deactivate View
+@enduml

@@ -1,8 +1,8 @@
 const UsersDTO = require('../../dto/usersDTO');
 
 class PostUserUseCase {
-    constructor (UserRepository, hashingService) {
-        this.UserRepository = UserRepository;
+    constructor (userRepository, hashingService) {
+        this.userRepository = userRepository;
         this.hashingService = hashingService;
     }
 
@@ -31,7 +31,7 @@ class PostUserUseCase {
         pairs,
         });
 
-        const saved = await this.UserRepository.save(user);
+        const saved = await this.userRepository.save(user);
 
         // Map saved into clean DTO for the client
         return UsersDTO.fromEntity(saved);
