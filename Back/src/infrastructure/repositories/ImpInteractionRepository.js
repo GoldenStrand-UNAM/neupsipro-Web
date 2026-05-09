@@ -31,7 +31,7 @@ class ImpInteractionRepository extends InteractionRepository {
     }
     const result = await db.query(`SELECT COUNT(*) AS likes
             FROM interaction i
-            WHERE i.id_publication = '87981835-3abc-11f1-b5a8-dc2148751be6' AND i.is_like = 1;
+            WHERE i.id_publication = ? AND i.is_like = 1;
             `, [idPublication]);
     return result[0];
   }
@@ -42,7 +42,7 @@ class ImpInteractionRepository extends InteractionRepository {
     }
     const result = await db.query(`SELECT COUNT(*) AS comments
             FROM interaction i
-            WHERE i.id_publication = '87981835-3abc-11f1-b5a8-dc2148751be6' AND i.is_like = 0;
+            WHERE i.id_publication = ? AND i.is_like = 0;
             `, [idPublication]);
     return result[0];
   }

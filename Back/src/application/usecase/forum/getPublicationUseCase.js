@@ -11,7 +11,6 @@ class getPublicationUseCase {
 
   // Execute method for this use case that returns a post interaction DTO.
   async execute ({ idPublication }) {
-
     // It gets a publication with the necessary user information.
     const publication = await this.forumRepository.fetchOneUser({ idPublication });
     // Gets an array of comments with the necessary user information of each one.
