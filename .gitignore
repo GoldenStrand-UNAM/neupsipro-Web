@@ -40,6 +40,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+coverage/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -67,6 +68,8 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.test
+.env.production
 .env.*
 !.env.example
 
@@ -146,3 +149,6 @@ Icon
 
 # Package-locked
 package-lock.json
+
+
+output.css
