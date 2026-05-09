@@ -1,0 +1,23 @@
+@layer components {
+  .toast {
+    @apply fixed z-50 flex items-center gap-3;
+    @apply px-4 py-3 rounded-xl shadow-lg;
+    @apply text-white text-sm font-medium;
+    @apply transition-all duration-300 ease-in-out;
+    @apply max-w-[320px] w-[90%];
+    @apply bottom-6;
+    /* Mobile: centered */
+    @apply left-1/2 -translate-x-1/2;
+    /* Desktop: bottom right */
+    @apply sm:left-auto sm:right-6 sm:translate-x-0;
+    background-color: #002B79;
+  }
+
+  .toast-icon {
+    @apply inline-block w-[18px] h-[18px] md:w-[22px] md:h-[22px] text-white flex-shrink-0;
+  }
+
+  .toast-msg {
+    @apply flex-1 leading-snug line-clamp-2;
+  }
+}
