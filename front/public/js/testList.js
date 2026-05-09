@@ -27,50 +27,43 @@
 
   // ── Card builder ────────────────────────────────────────────────────────────
 
-  function createTestCard (test) {
-    const variant = getVariant(test.status);
+function createTestCard(test, idUser, idApplication) {
+  const variant = getVariant(test.status);
+  const dateFormatted = test.dateApplied
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX')
+    : 'Sin fecha';
 
-    const dateFormatted = test.dateApplied
-      ? new Date(test.dateApplied).toLocaleDateString('es-MX')
-      : 'Sin fecha';
+  // Cards are buttons only when the test has id_test 1 (BANFE) — extend for others later
+  const isClickable = test.idTest === 1;
 
-    return `
-            <div class="application-card application-card--${variant}">
+  return `
+    <div class="application-card application-card--${variant} ${isClickable ? 'cursor-pointer' : ''}"
+         data-id-results="${escapeHTML(test.idResults)}"
+         data-id-test="${escapeHTML(String(test.idTest))}"
+         ${isClickable
+           ? `onclick="openBANFEModal('${escapeHTML(idUser)}', '${escapeHTML(idApplication)}')"` 
+           : ''}>
 
-                <!-- Status badge -->
-                <div class="application-card__badge application-card__badge--${variant}">
-                    <p>${escapeHTML(test.status) || 'N/A'}</p>
-                </div>
+      <div class="application-card__badge application-card__badge--${variant}">
+        <p>${escapeHTML(test.status) || 'N/A'}</p>
+      </div>
 
-                <div class="application-card__content">
-
-                    <!-- Test icon -->
-                    <svg class="application-card__icon" fill="none" stroke="currentColor"
-                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                 a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-
-                    <!-- Test name -->
-                    <h3 class="application-card__title">
-                        ${escapeHTML(test.testName)}
-                    </h3>
-
-                    <!-- Date applied if available -->
-                    <p class="application-card__date">
-                        Aplicada: ${dateFormatted}
-                    </p>
-
-                    <!-- Score if available -->
-                    ${test.score !== null
-    ? `<p class="text-sm text-gray-600">Puntaje: ${escapeHTML(String(test.score))}</p>`
-    : ''}
-
-                </div>
-            </div>
-        `;
-  }
+      <div class="application-card__content">
+        <svg class="application-card__icon" fill="none" stroke="currentColor"
+             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                   a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3 class="application-card__title">${escapeHTML(test.testName)}</h3>
+        <p class="application-card__date">Aplicada: ${dateFormatted}</p>
+        ${test.score !== null
+          ? `<p class="text-sm text-gray-600">Puntaje: ${escapeHTML(String(test.score))}</p>`
+          : ''}
+      </div>
+    </div>
+  `;
+}
 
   // ── Render helpers ──────────────────────────────────────────────────────────
 
@@ -198,7 +191,7 @@ function openBANFEModal(idUser, idApplication) {
         <div class="flex flex-col gap-1">
           <span class="text-sm font-medium text-gray-700">Interpretación</span>
           <span id="banfeInterpretation"
-                class="text-lg font-semibold text-[#3350A9] min-h-[1.75rem]">
+                class="text-lg font-semibold text-[#3350A9] min-h-7">
             —
           </span>
         </div>
