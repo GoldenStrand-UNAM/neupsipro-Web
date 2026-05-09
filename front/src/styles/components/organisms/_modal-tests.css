@@ -1,0 +1,96 @@
+@layer components {
+
+    /* =========================
+       PAGE PREVIEW
+    ========================== */
+
+    .modal-preview-page {
+        @apply min-h-screen
+               flex items-center justify-center
+               bg-[#ECECEC]
+               p-10;
+    }
+
+    /* =========================
+       OVERLAY
+    ========================== */
+
+    .modal-overlay {
+        @apply fixed inset-0
+               flex items-center justify-center
+               bg-black/10
+               z-50;
+    }
+
+    /* =========================
+       MODAL
+    ========================== */
+
+    .modal {
+        @apply bg-white
+               w-full
+               max-w-[822px]
+               min-h-[724px]
+               rounded-[44px]
+               border border-[#575757]/40
+               shadow-[0_4px_10px_rgba(0,0,0,0.18)]
+               overflow-hidden;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    .modal__header {
+        @apply relative
+               flex items-center justify-center
+               h-[129px]
+               border-b border-[#575757]/40;
+    }
+
+    /* =========================
+       TITLE
+    ========================== */
+
+    .modal__title {
+        @apply text-[3rem]
+               leading-none
+               font-normal
+               text-black;
+    }
+
+    /* =========================
+       CLOSE BUTTON
+    ========================== */
+
+    .modal__close {
+        @apply absolute
+               right-10
+               flex items-center justify-center
+               w-[41px]
+               h-[41px]
+               text-black
+               transition-opacity
+               duration-200;
+    }
+
+    .modal__close:hover {
+        @apply opacity-60;
+    }
+
+    /* =========================
+       CLOSE ICON
+    ========================== */
+
+    .modal__close-icon {
+        @apply w-full h-full;
+    }
+
+    /* =========================
+       BODY
+    ========================== */
+
+    .modal__body {
+        @apply p-10;
+    }
+}
