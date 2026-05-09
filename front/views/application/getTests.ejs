@@ -63,7 +63,19 @@
             idApplication: '<%- id_application %>'
         };
     </script>
-    <script src="/js/testList.js"></script>
+    
+    <!-- 1. Shared utilities — must load first -->
+    <script src="/js/tests/utils.js"></script>
+
+    <!-- 2. Test registry — must load before any modal -->
+    <script src="/js/tests/config/test.config.js"></script>
+
+    <!-- 3. Modals — load all registered test modals -->
+    <script src="/js/tests/modals/options.modal.js"></script>
+    <script src="/js/tests/modals/banfe.modal.js"></script>
+
+    <!-- 4. Orchestrator — loads last, depends on everything above -->
+    <script src="/js/tests/testList.js"></script>
 
 
 </body>
