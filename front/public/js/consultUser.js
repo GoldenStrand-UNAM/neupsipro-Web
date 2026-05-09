@@ -1,7 +1,7 @@
-/* eslint-env browser */
 /* global getStatusStyle, createApplicationCard, createAddSessionCard */
+/* global document, window */
 
-// 1. Separamos la lógica de la tarjeta en su propia función
+//Function for intervention card (when it is disabled or active)
 function toggleInterventionCard (canStartIntervention) {
   const statusCard = document.getElementById('statusCard');
   const btnIntervention = document.getElementById('btnIntervention');
@@ -30,7 +30,7 @@ function toggleInterventionCard (canStartIntervention) {
   }
 }
 
-// 2. Separamos la función para dar formato a la fecha
+// funtion to show appointment date in the correct format
 function formatAppointmentDate (dateString) {
   const date = new Date(dateString);
   return date.toLocaleString('es-MX', {
@@ -43,7 +43,7 @@ function formatAppointmentDate (dateString) {
   });
 }
 
-// 3. Arreglamos la inyección de objetos usando un objeto Map (corrige warning de seguridad)
+// color mapping
 function getStatusBadge (val) {
   const statusMap = new Map([
     ['Discharged', { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' }],
@@ -57,7 +57,7 @@ function getStatusBadge (val) {
   return `<span class="btn-badge" style="border-color:${m.border}; color:${m.text}; background-color:${m.bg};">${m.label}</span>`;
 }
 
-// 4. Pasamos los parámetros como un objeto para evitar el error "too many parameters"
+// parameters as objects
 function setStatus ({ textId, cardId, tagId, iconId, status }) {
   const value = status || 'N/A';
   document.getElementById(textId).textContent = value;
@@ -74,7 +74,7 @@ function setStatus ({ textId, cardId, tagId, iconId, status }) {
   if (icon) icon.innerHTML = colors.icon;
 }
 
-// 5. Agrupamos la inyección de datos personales en una función
+// personal data inyection
 function populateUserInfo (user) {
   document.getElementById('userName').textContent = user.name || 'Sin nombre';
   document.getElementById('userCode').textContent = user.referenceNumber || 'N/A';
@@ -99,7 +99,7 @@ function populateUserInfo (user) {
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 
-// 6. Agrupamos la generación del Logbook
+// Logbook generation
 function populateLogbook (user) {
   const container = document.getElementById('logbookContainer');
   if (!container) return;
@@ -122,7 +122,6 @@ function populateLogbook (user) {
   }
 }
 
-// 7. Agrupamos la lógica del botón de "Ver más"
 function setupShowMoreToggle () {
   const btnShowMore = document.getElementById('btnShowMore');
   const textShowMore = document.getElementById('textShowMore');
@@ -163,18 +162,14 @@ function setupShowMoreToggle () {
   });
 }
 
-// --- FUNCIÓN PRINCIPAL ---
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;
   if (!user) return;
 
-  // 1. Activar o desactivar tarjeta
   toggleInterventionCard(!!user.canStartIntervention);
 
-  // 2. Llenar info de usuario
   populateUserInfo(user);
 
-  // 3. Establecer status (pasando un solo objeto como parámetro)
   setStatus({
     textId: 'initialInterview',
     cardId: 'initialInterviewCard',
@@ -183,9 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     status: user.initialInterview,
   });
 
-  // 4. Cargar logbook
   populateLogbook(user);
 
-  // 5. Configurar botón ver más
   setupShowMoreToggle();
 });
