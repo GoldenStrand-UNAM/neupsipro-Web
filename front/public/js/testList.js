@@ -36,12 +36,14 @@ function createTestCard(test, idUser, idApplication) {
   // Cards are buttons only when the test has id_test 1 (BANFE) — extend for others later
   const isClickable = test.idTest === 1;
 
+  const testJson = escapeHTML(JSON.stringify(test));
+
   return `
     <div class="application-card application-card--${variant} ${isClickable ? 'cursor-pointer' : ''}"
          data-id-results="${escapeHTML(test.idResults)}"
          data-id-test="${escapeHTML(String(test.idTest))}"
          ${isClickable
-           ? `onclick="openBANFEModal('${escapeHTML(idUser)}', '${escapeHTML(idApplication)}')"` 
+           ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson})'` 
            : ''}>
 
       <div class="application-card__badge application-card__badge--${variant}">
@@ -64,6 +66,7 @@ function createTestCard(test, idUser, idApplication) {
     </div>
   `;
 }
+
 
   // ── Render helpers ──────────────────────────────────────────────────────────
 
@@ -126,6 +129,8 @@ function createTestCard(test, idUser, idApplication) {
 
 })();
 
+
+
 // ================================
 //
 // BANFE interpretation 
@@ -143,7 +148,7 @@ function interpretBANFE(score) {
 
 // ── BANFE modal builder ─────────────────────────────────────────────────────
 
-function openBANFEModal(idUser, idApplication) {
+function openBANFEModal(idUser, idApplication, test) {
   // Remove any existing modal before injecting a new one
   const existing = document.getElementById('modalBANFE');
   if (existing) existing.remove();
