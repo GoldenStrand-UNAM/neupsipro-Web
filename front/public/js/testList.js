@@ -107,7 +107,7 @@ function createTestCard(test, idUser, idApplication) {
 
       // Render one card per test result
       json.data.forEach(test => {
-        container.insertAdjacentHTML('beforeend', createTestCard(test));
+        container.insertAdjacentHTML('beforeend', createTestCard(test, idUser, idApplication));
       });
 
     } catch (err) {
