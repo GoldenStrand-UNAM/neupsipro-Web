@@ -233,4 +233,34 @@ function openBANFEModal(idUser, idApplication) {
 
   document.body.appendChild(modal);
 
+  // ── Live interpretation on input ─────────────────────────────────────────
+  const scoreInput      = document.getElementById('inputBANFEScore');
+  const interpretLabel  = document.getElementById('banfeInterpretation');
+  const scoreError      = document.getElementById('banfeScoreError');
+  const apiError        = document.getElementById('banfeApiError');
+
+  scoreInput.addEventListener('input', () => {
+    const raw = scoreInput.value;
+    scoreError.classList.add('hidden');
+
+    // Block non-integer input
+    if (!/^\d*$/.test(raw)) {
+      scoreInput.value = raw.replace(/\D/g, '');
+    }
+
+    const n = Number(scoreInput.value);
+    if (scoreInput.value === '' || isNaN(n)) {
+      interpretLabel.textContent = '—';
+      return;
+    }
+
+    if (n < 0 || n > 200) {
+      interpretLabel.textContent = '—';
+      scoreError.textContent = 'El puntaje debe estar entre 0 y 200';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+
+    interpretLabel.textContent = interpretBANFE(n);
+  });
 }
