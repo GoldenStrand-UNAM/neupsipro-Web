@@ -263,4 +263,73 @@ function openBANFEModal(idUser, idApplication) {
 
     interpretLabel.textContent = interpretBANFE(n);
   });
+
+    // ── Close handlers ────────────────────────────────────────────────────────
+  function closeModal() {
+    modal.remove();
+  }
+
+  document.getElementById('btnCloseBANFE').addEventListener('click', closeModal);
+  document.getElementById('btnCancelBANFE').addEventListener('click', closeModal);
+
+  // Close on overlay click (outside the modal card)
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // ── Save handler ──────────────────────────────────────────────────────────
+  document.getElementById('btnSaveBANFE').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+    scoreError.classList.add('hidden');
+
+    const score = Number(scoreInput.value);
+    const notes = document.getElementById('inputBANFENotes').value.trim() || null;
+
+    // Client-side guard before hitting the API
+    if (!scoreInput.value || isNaN(score) || score < 0 || score > 200) {
+      scoreError.textContent = 'Ingresa un puntaje válido entre 0 y 200';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados`,
+        {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ score, notes }),
+        }
+      );
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      // Update the card badge in the list without a full reload
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      console.error('[BANFE] post error:', err);
+    }
+  });
+
+  // ── Update card badge after save ────────────────────────────────────────────
+
+    function updateTestCardStatus(dto) {
+      // Each card has data-id-results to identify it in the DOM
+      const card = document.querySelector(`[data-id-results="${dto.idResults}"]`);
+      if (!card) return;
+
+      const badge = card.querySelector('.application-card__badge');
+      if (badge) badge.querySelector('p').textContent = dto.status;
+    }
 }
