@@ -1,0 +1,28 @@
+@startuml Registro de resultados de pruebas
+
+start
+
+:Click on test;
+: Message "¿Desea registrar resultados de pruebas?" appears;
+if (¿Desea registrar resultados de pruebas?) then (No)
+  stop
+else (Si)
+endif
+
+repeat
+  :Get section for test;
+  :Render format on screen;
+  :Use edits fields to enter score;
+  :Click on "Guardar resultados"; 
+  :Validate data;
+repeat while (¿Correct data?) is (No) -> :Show error message if data is incorrect;
+
+  :Show confirmation message if data is correct;
+-> Sí;
+
+:Interpratate results;
+:Save data in database;
+
+stop
+
+@enduml
