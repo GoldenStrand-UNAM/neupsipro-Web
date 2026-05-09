@@ -64,6 +64,23 @@ class impTestResultsRepository extends resultRepository {
     return result;
   }
 
+  //Fetch a single result row to validate it exists before saving.
+    async fetchResultRow({ id_user, id_application, id_test }) {
+    const [rows] = await db.query(
+      `SELECT id_results, status
+       FROM test_results
+       WHERE id_user        = ?
+         AND id_application = ?
+         AND id_test        = ?`,
+      [id_user, id_application, id_test]
+    );
+    if (rows.length === 0) return null;
+    return {
+      idResults: rows[0].id_results,
+      status:    rows[0].status,
+    };
+  }
+
 }
 
 module.exports = impTestResultsRepository;
