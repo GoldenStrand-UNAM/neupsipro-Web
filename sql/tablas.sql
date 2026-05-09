@@ -694,3 +694,12 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
+
+ALTER TABLE acl CHANGE writting writing BOOL NOT NULL;
+
+CREATE TABLE user_clinical (
+    id_user      VARCHAR(36) NOT NULL PRIMARY KEY,
+    affiliation  VARCHAR(20) NULL ,
+    activity     VARCHAR(20) NULL ,
+    CONSTRAINT fk_user_clinical_user FOREIGN KEY (id_user) REFERENCES users (id_user)
+);

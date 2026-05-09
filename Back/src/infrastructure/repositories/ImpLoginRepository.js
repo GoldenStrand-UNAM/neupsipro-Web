@@ -42,7 +42,7 @@ class AuthRepository {
   async getExceptions (idUser) {
     try {
       const [rows] = await this.db.execute(`
-                SELECT m.module AS module_name, acl.consultation, acl.writting, acl.edit, acl.eliminate
+                SELECT m.module AS module_name, acl.consultation, acl.writing, acl.edit, acl.eliminate
                 FROM access_role ar
                 JOIN acl ON ar.id_acl = acl.id_acl
                 JOIN acl_modules am ON acl.id_acl = am.id_acl
