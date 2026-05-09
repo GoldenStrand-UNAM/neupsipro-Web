@@ -1,6 +1,6 @@
-@startuml EI02_Activity
+@startuml GU01_Activity
 
-title Socioeconomic Level Interview - Activity Diagram (NeuPsi-Pro)
+title Create USer - Activity Diagram (NeuPsi-Pro)
 
 |User|
 start

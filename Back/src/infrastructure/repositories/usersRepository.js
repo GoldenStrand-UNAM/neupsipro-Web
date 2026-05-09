@@ -1,6 +1,7 @@
 const db = require("../database/database");
 const ImpUsersRepository = require("../../domain/repository/ImpUsersRepository");
 const userSummary = require("../../domain/entity/userSummaryEntity");
+const { v4: uuidv4 } = require('uuid');
 
 class UsersRepository extends ImpUsersRepository {
     async fetchActivePatients ({ search, page, limit }) {
@@ -43,6 +44,33 @@ class UsersRepository extends ImpUsersRepository {
             [searchParam, searchParam]
         );
         return rows[0]?.total ?? 0;
+    }
+
+    async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, neuroStatus, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
+        const connection = await db.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            await connection.query(
+            `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [idUSer, idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash]
+            );
+
+            await connection.query(
+            `INSERT INTO user_info (assigned, neuro_status, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prothesist, neuro_entry_date, amputation_date, pairs)
+            VALUES (?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?)`,
+            [assigned, neuroStatus, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs] 
+            );
+
+            await connection.commit();
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
     }
 }
 module.exports = UsersRepository;
