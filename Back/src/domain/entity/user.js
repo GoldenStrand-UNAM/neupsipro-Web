@@ -31,7 +31,7 @@ class User {
     let months = today.getMonth() - birth.getMonth();
     let days = today.getDate() - birth.getDate();
     if (days < 0) {
-      months--;
+      months -= 1;
       const daysInPreviousMonth = new Date(
         today.getFullYear(),
         today.getMonth(),
@@ -40,7 +40,7 @@ class User {
       days += daysInPreviousMonth;
     }
     if (months < 0) {
-      years--;
+      years -= 1;
       months += 12;
     }
 
