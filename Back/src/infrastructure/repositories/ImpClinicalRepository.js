@@ -1,6 +1,8 @@
 const db = require('../database/database');
 const clinicalRepository = require('../../domain/repository/clinicalRepository');
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
+const Clinical = require('../../domain/entity/clinical');
+const User = require('../../domain/entity/User');
 
 class ImpClinicalRepository extends clinicalRepository {
   async fetchActivePatients ({ search, page, limit }) {
@@ -49,6 +51,42 @@ class ImpClinicalRepository extends clinicalRepository {
       [searchParam, searchParam]
     );
     return rows[0]?.total ?? 0;
+  }
+
+  async fetchClinical ({ id_user }) {
+    const [clinicalData] = await db.query (`SELECT 
+      u.first_name, 
+      u.lastname_p, 
+      u.lastname_m,
+      u.email,
+      uc.affiliation,
+      uc.activity,
+      uc.emergency_contact_name,
+      uc.emergency_contact_phone,
+      uc.emergency_contact_relation,
+      uc.start_date,
+      uc.finish_date,
+      uc.hours
+  FROM users u
+  LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
+  WHERE u.id_user = ?;`, [id_user]);
+    return clinicalData.map(row => new Clinical(row));
+  }
+
+  async fetchPatientsAssigned ({ id_user }) {
+    const [patientsData] = await db.query (`SELECT 
+        p.id_user AS patient_id,
+        p.first_name AS patient_name, 
+        p.lastname_p AS patient_lastname_p, 
+        p.lastname_m AS patient_lastname_m,
+        ui.state AS patient_state,
+        ur.assignment_date,
+        ur.type AS relation_type
+    FROM user_relation ur
+    INNER JOIN users p ON ur.id_user = p.id_user
+    LEFT JOIN user_info ui ON p.id_user = ui.id_user
+    WHERE ur.id_clinic_user = ?;`, [id_user]);
+    return patientsData.map(row => new User(row));
   }
 }
 module.exports = ImpClinicalRepository;

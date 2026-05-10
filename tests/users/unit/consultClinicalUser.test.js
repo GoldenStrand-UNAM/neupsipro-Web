@@ -25,9 +25,9 @@ const app = require('../../../Back/src/app');
 
 
 // Check users Endpoint
-describe('GET /clinico', () => {
+describe('GET /clinical', () => {
   test('retorna status 200', async () => {
-    const response = await request(app).get('/clinico');
+    const response = await request(app).get('/clinical');
     expect(response.status).toBe(200);
   });
 });

@@ -88,6 +88,10 @@ const userRoutes = require('./presentation/routes/users/getUser.Routes');
 
 app.use('/users', userRoutes(authUseCase));
 
+const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
+
+app.use('/clinical', clinicalUserRoutes(authUseCase));
+
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 
 app.use('/', clinicalRoutes(authUseCase));
