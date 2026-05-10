@@ -92,6 +92,10 @@ const postPublicationRoutes = require('./presentation/routes/forum/postPublicati
 
 app.use('/', postPublicationRoutes(authUseCase));
 
+const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
+
+app.use('/', dashboardRoutes(authUseCase));
+
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });
