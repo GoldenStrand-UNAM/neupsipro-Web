@@ -1,0 +1,118 @@
+@startuml Post_WAIS
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "WAIS.modal.js" as BMODAL
+participant "optionsModal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "UserRoutes" as UROUTE
+participant "postWAISController" as TCTRL
+participant "postWAISUseCase" as UC_POST
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card WAIS]
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)
+
+USR -> OMODAL : Click [Registrar resultados]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> BMODAL : config.openRegister(idUser, idApplication, test)\n→ openWAISModal(idUser, idApplication, test, 'register')
+BMODAL --> USR : Modal de registro visible\n(input score + notes + contador)
+
+== Interpretación en vivo ==
+
+USR -> BMODAL : Ingresa score (número)
+BMODAL -> BMODAL : validateInput(score)\n- solo dígitos\n- no negativo\n- no > 200
+
+alt Input inválido
+    BMODAL --> USR : showInputError(msg)\n"El puntaje debe estar entre 0 y 200"
+end
+
+BMODAL -> BMODAL : interpretWAIS(score)\n≤69 → "Discapacidad"\n70-84 → "Limítrofe"\n85-115 → "Promedio"\n116+ → "Promedio alto"
+BMODAL --> USR : Muestra interpretación en vivo\n(sin submit)
+
+== Validación de notas ==
+
+USR -> BMODAL : Ingresa notas
+BMODAL -> BMODAL : contador actualiza\ntextContent = len / 200
+BMODAL --> USR : Contador visible en rojo\nsi len >= 200
+
+== Guardar resultados ==
+
+USR -> BMODAL : Click [Guardar]
+BMODAL -> BMODAL : validate client-side\n- score válido (0-200)\n- notas max 200 chars
+
+alt Datos inválidos
+    BMODAL --> USR : showScoreError(msg)
+end
+
+BMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/2/resultados\n{ score, notes }
+
+UROUTE -> TCTRL : controller.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application,\nid_test: 2, score, notes })
+
+== Validaciones en Use Case ==
+
+UC_POST -> UC_POST : validate score\n- no vacío\n- es número\n- entre 0 y 200
+
+alt score inválido
+    UC_POST --> TCTRL : throw Error 422\n'score must be a valid number'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+alt score fuera de rango
+    UC_POST --> TCTRL : throw Error 422\n'score must be between 0 and 200'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+alt notes > 200 caracteres
+    UC_POST --> TCTRL : throw Error 422\n'notes must be 200 characters or less'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 2 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 2
+DB --> RREPO : { id_results, status } | []
+RREPO --> UC_POST : { id_results, status } | null
+
+alt result row not found (null)
+    UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
+    TCTRL --> BMODAL : HTTP 404 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+== Interpretación en Use Case ==
+
+UC_POST -> UC_POST : resolveInterpretation(score)\n≤69 → "Discapacidad"\n70-79 → "Limítrofe"\n80-89 → "Promedio Bajo"\n90-109 → "Promedio"\n110-119 → "Promedio Alto"\n120-129 → "Superior"\n130+ → "Alta capacidad intelectual"
+note right
+  El servidor recalcula la interpretación
+  para no confiar en el cliente
+end note
+
+== Persistencia ==
+
+UC_POST -> RREPO : saveResult({ id_results, score,\ninterpretation, notes })
+RREPO -> DB : UPDATE test_results\nSET score = ?,\n    interpretation = ?,\n    notes = ?,\n    date_applied = CURDATE(),\n    status = 3\nWHERE id_results = ?
+DB --> RREPO : OK
+RREPO -> DB : SELECT tr.*, pt.test_name\nFROM test_results tr\nJOIN psych_tests pt ON tr.id_test = pt.id_test\nWHERE tr.id_results = ?
+DB --> RREPO : { updated row }
+RREPO --> UC_POST : Tests entity
+
+UC_POST -> UC_POST : map entity → TestResultDTO
+UC_POST --> TCTRL : TestResultDTO
+TCTRL --> BMODAL : HTTP 200 { data: TestResultDTO }
+
+== Actualizar UI ==
+
+BMODAL -> BMODAL : closeModal()
+BMODAL -> TLIST : updateTestCardStatus(dto)\nbadge → "Calificada"
+BMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
+
+@enduml
