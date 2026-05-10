@@ -7,7 +7,6 @@ class GetMenuClinicalUsersController {
   async getMenuClinicalUsers (req, res) {
     try {
       //Exceute useCase
-      console.log('pasa a controller ->');
       const result = await this.GetMenuClinicalUsersUseCase.execute();
       res.status(200).json(result);
     } catch (error) {
