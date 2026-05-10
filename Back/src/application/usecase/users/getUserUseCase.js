@@ -31,7 +31,6 @@ class consultUserUseCase {
       ? await getPresignedUrl(cleanUser.photo)
       : cleanUser.photo;
 
-    console.log(cleanUser, hasProtocol, assignedApplications, canStartIntervention);
     return {
       ...cleanUser,
       photo: resolvedPhotoUrl,
