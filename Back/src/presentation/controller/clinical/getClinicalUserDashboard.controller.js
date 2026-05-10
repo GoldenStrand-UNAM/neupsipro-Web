@@ -6,7 +6,7 @@ class GetClinicalUserDashboardController {
   async getClinicalDashboard (request, response) {
     try {
       const { idClinicalUser } = request.params;
-      const result = await this.getClinicalUserDashboardUseCase ({ idClinicalUser });
+      const result = await this.getClinicalUserDashboardUseCase.execute ({ idClinicalUser });
       response.status(200).json(result);
     } catch (error) {
       response.status(500).json({ error: error.message });

@@ -5,9 +5,7 @@ class GetMenuClinicalUsersUseCase {
     this.userClinicalRepository = userClinicalRepository;
   }
   async execute () {
-    console.log ('pasa a use case ->');
     const users = await this.userClinicalRepository.fetchClinicalUsers();
-    console.log(users);
     if (!users) {
       throw new Error('USER_NOT_FOUND');
     }
