@@ -24,7 +24,14 @@ class postBANFEUseCase {
       throw err;
     }
 
-    // 3. Verify the result row exists for this user, session and test
+    // 3. Validate notes length if provided
+    if (notes && String(notes).length > 200) {
+      const err = new Error('notes must be 200 characters or less');
+      err.status = 422;
+      throw err;
+    }
+
+    // 4. Verify the result row exists for this user, session and test
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
@@ -37,10 +44,10 @@ class postBANFEUseCase {
       throw err;
     }
 
-    // 4. Recalculate interpretation server-side — never trust the client
+    // 5. Recalculate interpretation server-side — never trust the client
     const interpretation = this.resolveInterpretation(parsed);
 
-    // 5. Persist the result
+    // 6. Persist the result
     const updated = await this.impTestResultsRepository.saveResult({
       id_results: row.idResults,
       score: parsed,
@@ -48,7 +55,7 @@ class postBANFEUseCase {
       notes: notes ?? null,
     });
 
-    // 6. Return DTO — never expose raw entity across boundaries
+    // 7. Return DTO — never expose raw entity across boundaries
     return {
       idResults: updated.idResults,
       idTest: updated.idTest,

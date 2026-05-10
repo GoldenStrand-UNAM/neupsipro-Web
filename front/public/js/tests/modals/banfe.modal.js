@@ -24,7 +24,78 @@ function openBANFEModal(idUser, idApplication, test, mode) {
   const modal = document.createElement('div');
   modal.id        = 'modalBANFE';
   modal.className = 'modal-overlay';
-  modal.innerHTML = `
+  modal.innerHTML =  isConsult ? `
+    <div class="modal">
+
+      <div class="modal__header">
+        <h2 class="modal__title">BANFE</h2>
+        <button id="btnCloseBANFE" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body flex flex-col">
+
+        <!-- Row: Fecha -->
+        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
+          <span class="w-40 shrink-0 text-gray-400 text-base">Fecha</span>
+          <span class="text-lg text-gray-900">
+            ${test.dateApplied
+              ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+              : '—'}
+          </span>
+        </div>
+
+        <!-- Row: Puntaje -->
+        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
+          <span class="w-40 shrink-0 text-gray-400 text-base">Puntaje</span>
+          <span class="text-lg text-gray-900 font-medium">
+            ${test.score !== null ? escapeHTML(String(test.score)) : '—'}
+          </span>
+        </div>
+
+        <!-- Row: Interpretación -->
+        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
+          <span class="w-40 shrink-0 text-gray-400 text-base">Interpretación</span>
+          <span class="text-lg text-gray-900 font-medium">
+            ${escapeHTML(prefillInterp)}
+          </span>
+        </div>
+
+        <!-- Row: Notas -->
+        <div class="flex items-start gap-6 py-5">
+          <span class="w-40 shrink-0 text-gray-400 text-base">Notas</span>
+          <span class="text-lg text-gray-900 leading-relaxed">
+            ${prefillNotes ? escapeHTML(prefillNotes) : '—'}
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end pt-4 border-t border-gray-200">
+          <button id="btnCancelBANFE"
+            class="flex items-center gap-3 px-6 py-3
+                   border border-gray-300 rounded-2xl
+                   text-base hover:bg-gray-50
+                   transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  ` :
+  
+
+  `
     <div class="modal">
 
       <div class="modal__header">
@@ -110,6 +181,7 @@ function openBANFEModal(idUser, idApplication, test, mode) {
           <textarea
             id="inputBANFENotes"
             rows="4"
+            maxlength="200"
             placeholder="Observaciones "
             ${isConsult ? 'disabled' : ''}
             class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
@@ -117,6 +189,8 @@ function openBANFEModal(idUser, idApplication, test, mode) {
                    focus:border-transparent transition resize-none
                    ${isConsult ? 'bg-gray-50 cursor-default' : ''}"
           >${escapeHTML(prefillNotes)}</textarea>
+          <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">0 / 200</p>
+
         </div>
 
         <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
@@ -206,6 +280,9 @@ function openBANFEModal(idUser, idApplication, test, mode) {
   document.body.appendChild(modal);
 
   const scoreInput     = document.getElementById('inputBANFEScore');
+
+  const notesInput     = document.getElementById('inputBANFENotes');
+  const notesCount     = document.getElementById('banfeNotesCount');
   const interpretLabel = document.getElementById('banfeInterpretation');
   const scoreError     = document.getElementById('banfeScoreError');
   const apiError       = document.getElementById('banfeApiError');
@@ -215,6 +292,15 @@ function openBANFEModal(idUser, idApplication, test, mode) {
   document.getElementById('btnCloseBANFE').addEventListener('click', closeModal);
   document.getElementById('btnCancelBANFE').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  notesInput.addEventListener('input', () => {
+  const len = notesInput.value.length;
+  notesCount.textContent = `${len} / 200`;
+
+  // Turn red when at the limit
+  notesCount.classList.toggle('text-red-500', len >= 200);
+  notesCount.classList.toggle('text-gray-400', len < 200);
+  });
 
   // Live interpretation — only in register/modify modes
   if (!isConsult) {
