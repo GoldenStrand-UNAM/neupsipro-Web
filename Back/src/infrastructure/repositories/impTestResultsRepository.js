@@ -107,6 +107,20 @@ class impTestResultsRepository extends resultRepository {
     return new Tests(rows[0]);
   }
 
+  // Fetch the schooling level of a user from their initial interview.
+
+async fetchUserSchooling({ id_user }) {
+  const [rows] = await db.query(
+    `SELECT ii.schooling
+     FROM initial_interview ii
+     INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
+     WHERE ur.id_user = ?
+     LIMIT 1`,
+    [id_user]
+  );
+  return rows.length ? rows[0].schooling : null;
+}
+
 }
 
 module.exports = impTestResultsRepository;

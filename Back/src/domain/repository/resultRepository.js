@@ -20,6 +20,11 @@ class resultRepository {
   async saveResult ({ id_results, score, interpretation, notes }) {
     throw new Error('saveResult() not implemented');
   }
+
+  // Fetch schooling level for a user from their initial interview.
+  async fetchUserSchooling({ id_user }) {
+    throw new Error('fetchUserSchooling() not implemented');
+  }
 }
 
 module.exports = resultRepository;
