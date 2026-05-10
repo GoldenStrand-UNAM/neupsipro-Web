@@ -28,8 +28,20 @@ const TEST_REGISTRY = {
     endpoint:    (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados`,
   },
+
+  // MOCA
   
-  // ...
+    4: {
+    name:        'MOCA',
+    openRegister: (idUser, idApplication, test) =>
+      openMOCAModal(idUser, idApplication, test, 'register'),
+    openModify:  (idUser, idApplication, test) =>
+      openMOCAModal(idUser, idApplication, test, 'modify'),
+    openConsult: (idUser, idApplication, test) =>
+      openMOCAModal(idUser, idApplication, test, 'consult'),
+    endpoint:    (idUser, idApplication) =>
+      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados`,
+  },
 
 
 
