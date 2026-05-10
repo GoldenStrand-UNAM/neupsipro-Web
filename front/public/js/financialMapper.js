@@ -205,6 +205,9 @@ function renderFinancialData () {
 
   const info = financial.data;
 
+  document.getElementById('id_user').textContent =
+    info.id_user || '-';
+
   // Incomes
   renderIncomesData(info);
 

@@ -11,7 +11,7 @@
 
     .section_title {
         @apply text-lg font-semibold;
-        @apply pb-2 pt-4;
+        @apply pb-4 pt-4;
     }
 
     .total {
