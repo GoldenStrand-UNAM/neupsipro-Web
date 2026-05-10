@@ -24,7 +24,7 @@ function openBANFEModal(idUser, idApplication, test, mode) {
   const modal = document.createElement('div');
   modal.id        = 'modalBANFE';
   modal.className = 'modal-overlay';
-  modal.innerHTML =  isConsult ? `
+  modal.innerHTML =   isConsult ? `
     <div class="modal">
 
       <div class="modal__header">
@@ -40,37 +40,79 @@ function openBANFEModal(idUser, idApplication, test, mode) {
       <div class="modal__body flex flex-col">
 
         <!-- Row: Fecha -->
-        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
-          <span class="w-40 shrink-0 text-gray-400 text-base">Fecha</span>
-          <span class="text-lg text-gray-900">
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6
+                    py-5
+                    border-b border-gray-200
+                    items-start">
+
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
+            Fecha:
+          </span>
+
+          <span class="text-base sm:text-lg text-gray-900">
             ${test.dateApplied
-              ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+              ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })
               : '—'}
           </span>
+
         </div>
 
         <!-- Row: Puntaje -->
-        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
-          <span class="w-40 shrink-0 text-gray-400 text-base">Puntaje</span>
-          <span class="text-lg text-gray-900 font-medium">
+        <div class="flex flex-col sm:flex-row
+                    sm:items-start
+                    gap-2 sm:gap-6
+                    py-5
+                    border-b border-gray-200">
+
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
+            Puntaje:
+          </span>
+
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
             ${test.score !== null ? escapeHTML(String(test.score)) : '—'}
           </span>
-        </div>
 
+        </div>
         <!-- Row: Interpretación -->
-        <div class="flex items-start gap-6 py-5 border-b border-gray-200">
-          <span class="w-40 shrink-0 text-gray-400 text-base">Interpretación</span>
-          <span class="text-lg text-gray-900 font-medium">
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6
+                    py-5
+                    border-b border-gray-200
+                    items-start">
+
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
+            Interpretación:
+          </span>
+
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
             ${escapeHTML(prefillInterp)}
           </span>
+
         </div>
 
         <!-- Row: Notas -->
-        <div class="flex items-start gap-6 py-5">
-          <span class="w-40 shrink-0 text-gray-400 text-base">Notas</span>
-          <span class="text-lg text-gray-900 leading-relaxed">
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6
+                    py-5
+                    border-b border-gray-200
+                    items-start">
+
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
+            Notas:
+          </span>
+
+          <span class="text-base sm:text-lg
+                      text-gray-900
+                      leading-relaxed
+                      break-words">
             ${prefillNotes ? escapeHTML(prefillNotes) : '—'}
           </span>
+
         </div>
 
         <!-- Actions -->
