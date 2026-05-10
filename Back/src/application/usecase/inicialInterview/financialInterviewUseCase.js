@@ -45,6 +45,7 @@ class FinancialInterviewUseCase {
     }
 
     const entity = new FinancialInterview({
+      id_user,
       current_step: inicialProgress[0].current_step,
       current_section,
       inicialProgress,

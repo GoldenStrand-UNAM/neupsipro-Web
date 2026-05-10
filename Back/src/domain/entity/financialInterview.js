@@ -1,5 +1,6 @@
 class FinancialInterview {
-  constructor ({ current_step, current_section, inicialProgress, financialProgress, data }) {
+  constructor ({ id_user, current_step, current_section, inicialProgress, financialProgress, data }) {
+    this.id_user = id_user,
     this.current_step = current_step;
     this.current_section = current_section;
     this.financialProgress = financialProgress;
@@ -104,6 +105,7 @@ class FinancialInterview {
       expenses: this.buildExpenses(base),
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+      id_user: this.id_user,
     };
   }
 
@@ -143,6 +145,7 @@ class FinancialInterview {
 
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+      id_user: this.id_user,
     };
   }
 
@@ -163,6 +166,7 @@ class FinancialInterview {
 
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+      id_user: this.id_user,
     };
   }
 
@@ -186,6 +190,7 @@ class FinancialInterview {
 
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+      id_user: this.id_user,
     };
   }
 

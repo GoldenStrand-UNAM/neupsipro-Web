@@ -24,7 +24,7 @@
             <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto space-y-6 mt-6">
 
                 <!--Main Header-->
-                <div>
+                <div class="sticky top-0 z-30 bg-white pb-4">
                     <h1 class="text-xl font-bold">
                         <svg class = "black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -39,7 +39,7 @@
                 <div class="w-full pt-0 p-3">                    
 
                     <!--Sections-->
-                    <div id="sections-stepper">
+                    <div id="sections-stepper" class="sticky top-10 z-50 bg-white pb-4">
                         <%- include('../partials/sections.ejs') %>
                     </div>
 
@@ -51,7 +51,7 @@
                         <!--Navegation buttons-->
                         <div class="pt-4 pr-6 p-1 flex justify-end gap-2">
                             <!--Previus-->
-                            <button class="btn-mini bg-[#3350A9]">
+                            <button class="prevBtn btn-mini bg-[#3350A9]">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
@@ -60,7 +60,7 @@
                             </button>
 
                             <!--Next-->
-                            <button class="btn-mini bg-[#3350A9]">
+                            <button class="nextBtn btn-mini bg-[#3350A9]">
                                 <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
@@ -71,13 +71,13 @@
                     </div>
 
                     <!-- Section Title -->
-                    <h2 id="subStep-title" class="section_title"></h2>
+                    <h2 id="subStep-title" class="section_title pl-60"></h2>
 
                     <!-- Content -->
                     <div class="grid md:grid-cols-5">
 
                         <!-- Sidebar -->
-                        <div id="sidebar-timeline">
+                        <div id="sidebar-timeline" class="z-10">
                             <%- include('../partials/sectionsSidebar.ejs') %>
                         </div>
 
@@ -85,7 +85,7 @@
 
                             <!-- FINANCIAL 2.1 -->
                             <div id="financial-section-1" class="financial-content hidden">
-                                <div class="grid md:grid-cols-2 gap-6">
+                                <div class="grid md:grid-cols-2 gap-4">
 
                                     <div>
                                         <%- include('./financial/subStep1/incomes.ejs') %>
@@ -133,7 +133,7 @@
                     <!--Navegation buttons-->
                     <div class="pt-4 pr-6 p-1 flex justify-end gap-2">
                         <!--Previus-->
-                        <button class="btn-mini bg-[#3350A9]">
+                        <button class="prevBtn btn-mini bg-[#3350A9]">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -142,7 +142,7 @@
                         </button>
 
                         <!--Next-->
-                        <button class="btn-mini bg-[#3350A9]">
+                        <button class="nextBtn btn-mini bg-[#3350A9]">
                             <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -299,6 +299,83 @@
         }
 
         loadFinancial();
+
+        // Listener for change substep
+        document.querySelectorAll('.timeline-step').forEach(step => {
+            step.addEventListener('click', () => {
+
+                const section = Number(step.dataset.step);
+
+                // Update current section
+                window.financialData.current_section = section;
+
+                // update titles
+                setSubStepTitle(window.financialData);
+
+                // update content
+                setFinancialContent(window.financialData);
+
+                // update sidebar
+                window.sidebarState.currentStep = section;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+            });
+        });
+
+        // NEXT buttons
+        document.querySelectorAll('.nextBtn').forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                let current = window.financialData.current_section;
+
+                // max section = 4
+                if (current < 4) {
+
+                    current++;
+
+                    window.financialData.current_section = current;
+
+                    setSubStepTitle(window.financialData);
+                    setFinancialContent(window.financialData);
+
+                    window.sidebarState.currentStep = current;
+
+                    if (window.renderSidebar) {
+                        window.renderSidebar();
+                    }
+                }
+            });
+        });
+
+
+        // PREVIOUS buttons
+        document.querySelectorAll('.prevBtn').forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                let current = window.financialData.current_section;
+
+                // min section = 1
+                if (current > 1) {
+
+                    current--;
+
+                    window.financialData.current_section = current;
+
+                    setSubStepTitle(window.financialData);
+                    setFinancialContent(window.financialData);
+
+                    window.sidebarState.currentStep = current;
+
+                    if (window.renderSidebar) {
+                        window.renderSidebar();
+                    }
+                }
+            });
+        });
     </script>
 
 </body>
