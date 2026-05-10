@@ -68,7 +68,6 @@ Browser -> Browser: renderGenderChart (Doughnut)
 Browser -> Browser: initStandByPanel(list)
 Browser -> Browser: loadStandByDetail(list[0])
 
-== 3. Stand-by detail - /api/dashboard/standby/:ref ==
 Browser -> Router: GET /api/dashboard/standby/F-001
 Router -> Auth: verifyToken + requirePermission
 Auth --> Router: OK
@@ -91,7 +90,6 @@ DetailUC --> Ctrl: StandByDetailDTO
 Ctrl --> Browser: 200 OK + JSON
 Browser -> Browser: render avatar + info-rows + pills
 
-== 4. User picks another reference number ==
 User -> Browser: Select F-004
 Browser -> Browser: loadStandByDetail("F-004")
 note right
