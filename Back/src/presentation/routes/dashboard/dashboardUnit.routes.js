@@ -28,13 +28,13 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/api/dashboard/summary',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getSummary(req, res)
   );
 
   router.get(
     '/api/dashboard/standby/:reference_number',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getStandByDetail(req, res)
   );
 
