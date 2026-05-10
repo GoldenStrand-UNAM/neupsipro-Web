@@ -1,4 +1,4 @@
-function interpretBANFE(score) {
+function interpretBANFE (score) {
   const n = Number(score);
   if (isNaN(n))  return '';
   if (n <= 69)   return 'Discapacidad';
@@ -7,7 +7,7 @@ function interpretBANFE(score) {
   return 'Promedio alto';
 }
 
-function openBANFEModal(idUser, idApplication, test, mode) {
+function openBANFEModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalBANFE');
   if (existing) existing.remove();
 
@@ -52,12 +52,12 @@ function openBANFEModal(idUser, idApplication, test, mode) {
 
           <span class="text-base sm:text-lg text-gray-900">
             ${test.dateApplied
-              ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                })
-              : '—'}
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    : '—'}
           </span>
 
         </div>
@@ -135,9 +135,8 @@ function openBANFEModal(idUser, idApplication, test, mode) {
     </div>
 
   ` :
-  
 
-  `
+    `
     <div class="modal">
 
       <div class="modal__header">
@@ -329,19 +328,19 @@ function openBANFEModal(idUser, idApplication, test, mode) {
   const scoreError     = document.getElementById('banfeScoreError');
   const apiError       = document.getElementById('banfeApiError');
 
-  function closeModal() { modal.remove(); }
+  function closeModal () { modal.remove(); }
 
   document.getElementById('btnCloseBANFE').addEventListener('click', closeModal);
   document.getElementById('btnCancelBANFE').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
   notesInput.addEventListener('input', () => {
-  const len = notesInput.value.length;
-  notesCount.textContent = `${len} / 200`;
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
 
-  // Turn red when at the limit
-  notesCount.classList.toggle('text-red-500', len >= 200);
-  notesCount.classList.toggle('text-gray-400', len < 200);
+    // Turn red when at the limit
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
   });
 
   // Live interpretation — only in register/modify modes
@@ -389,9 +388,9 @@ function openBANFEModal(idUser, idApplication, test, mode) {
 
       try {
         const res = await fetch(config.endpoint(idUser, idApplication), {
-          method:  'POST',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ score, notes }),
+          body: JSON.stringify({ score, notes }),
         });
 
         const json = await res.json();

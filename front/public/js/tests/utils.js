@@ -1,4 +1,4 @@
-function escapeHTML(str) {
+function escapeHTML (str) {
   if (str === null || str === undefined) return '';
   return String(str)
     .replace(/&/g, '&amp;')
@@ -8,18 +8,18 @@ function escapeHTML(str) {
     .replace(/'/g, '&#039;');
 }
 
-function getVariant(status) {
+function getVariant (status) {
   const map = {
     'Por comenzar': 'neutral',
-    'En proceso':   'warning',
-    'Calificada':   'success',
-    'Entregada':    'success',
-    'Caducada':     'fatal',
+    'En proceso': 'warning',
+    'Calificada': 'success',
+    'Entregada': 'success',
+    'Caducada': 'fatal',
   };
   return map[status] || 'neutral';
 }
 
-function showToast(message) {
+function showToast (message) {
   const toast = document.createElement('div');
   toast.className = 'fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#002B7A] text-white px-5 py-3 rounded-xl shadow-lg text-sm';
   toast.innerHTML = `
@@ -34,12 +34,12 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
-function removeSkeletons() {
+function removeSkeletons () {
   document.querySelectorAll('.test-card-skeleton').forEach(el => el.remove());
 }
 
 // Updates badge text and variant class on a card after a successful save
-function updateTestCardStatus(dto) {
+function updateTestCardStatus (dto) {
   const card = document.querySelector(`[data-id-results="${dto.idResults}"]`);
   if (!card) return;
 

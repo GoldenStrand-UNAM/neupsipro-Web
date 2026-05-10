@@ -1,19 +1,19 @@
 // MoCA-specific modal.
 // mode: 'register' | 'modify' | 'consult'
 
-function resolveSchoolingYears(schooling) {
+function resolveSchoolingYears (schooling) {
   const map = {
     'Sin escolaridad': 0,
-    'Primaria':        6,
-    'Secundaria':      9,
-    'Bachillerato':    12,
-    'Licenciatura':    16,
-    'Posgrado':        18,
+    'Primaria': 6,
+    'Secundaria': 9,
+    'Bachillerato': 12,
+    'Licenciatura': 16,
+    'Posgrado': 18,
   };
   return map[schooling] ?? null;
 }
 
-function resolveMOCAFinalScore(raw, schoolingYears) {
+function resolveMOCAFinalScore (raw, schoolingYears) {
   let final = raw;
   if (schoolingYears !== null && schoolingYears <= 12 && raw <= 28) {
     final = raw + 2;
@@ -21,14 +21,14 @@ function resolveMOCAFinalScore(raw, schoolingYears) {
   return Math.min(final, 30);
 }
 
-function interpretMOCA(finalScore) {
+function interpretMOCA (finalScore) {
   if (finalScore >= 26) return 'Rendimiento cognitivo normal';
   if (finalScore >= 18) return 'Deterioro cognitivo leve';
   if (finalScore >= 10) return 'Deterioro cognitivo moderado';
   return 'Deterioro cognitivo grave';
 }
 
-async function openMOCAModal(idUser, idApplication, test, mode) {
+async function openMOCAModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalMOCA');
   if (existing) existing.remove();
 
@@ -72,10 +72,10 @@ async function openMOCAModal(idUser, idApplication, test, mode) {
           <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Fecha:</span>
           <span class="text-base sm:text-lg text-gray-900">
             ${test.dateApplied
-              ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
-                  day: 'numeric', month: 'long', year: 'numeric'
-                })
-              : '—'}
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    })
+    : '—'}
           </span>
         </div>
 
@@ -137,7 +137,7 @@ async function openMOCAModal(idUser, idApplication, test, mode) {
   ` :
 
   // ── Register / Modify mode ────────────────────────────────────────────────
-  `
+    `
     <div class="modal">
 
       <div class="modal__header">
@@ -302,7 +302,7 @@ async function openMOCAModal(idUser, idApplication, test, mode) {
   // Schooling years — fetched async, used for live bonus calculation
   let schoolingYears = null;
 
-  function closeModal() { modal.remove(); }
+  function closeModal () { modal.remove(); }
 
   document.getElementById('btnCloseMOCA').addEventListener('click', closeModal);
   document.getElementById('btnCancelMOCA').addEventListener('click', closeModal);
@@ -341,7 +341,7 @@ async function openMOCAModal(idUser, idApplication, test, mode) {
   });
 
   // ── Live score + interpretation ───────────────────────────────────────────
-  function updateLiveScores() {
+  function updateLiveScores () {
     scoreError.classList.add('hidden');
 
     // Strip non-digits
@@ -391,9 +391,9 @@ async function openMOCAModal(idUser, idApplication, test, mode) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ score, notes }),
+        body: JSON.stringify({ score, notes }),
       });
 
       const json = await res.json();

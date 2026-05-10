@@ -1,6 +1,6 @@
 class postMOCAUseCase {
 
-  constructor(impTestResultsRepository) {
+  constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
@@ -8,14 +8,14 @@ class postMOCAUseCase {
    * Maps schooling label to years of education.
    * Used to determine if the +2 bonus applies.
    */
-  resolveSchoolingYears(schooling) {
+  resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria':        6,
-      'Secundaria':      9,
-      'Bachillerato':    12,
-      'Licenciatura':    16,
-      'Posgrado':        18,
+      'Primaria': 6,
+      'Secundaria': 9,
+      'Bachillerato': 12,
+      'Licenciatura': 16,
+      'Posgrado': 18,
     };
     return map[schooling] ?? null;
   }
@@ -26,7 +26,7 @@ class postMOCAUseCase {
    * - +2 bonus if schooling <= 12 years AND base score <= 28
    * - Final score capped at 30
    */
-  resolveScore(rawScore, schoolingYears) {
+  resolveScore (rawScore, schoolingYears) {
     let final = rawScore;
     if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 28) {
       final = rawScore + 2;
@@ -37,7 +37,7 @@ class postMOCAUseCase {
   /**
    * MoCA interpretation ranges based on final score.
    */
-  resolveInterpretation(finalScore) {
+  resolveInterpretation (finalScore) {
     if (finalScore >= 26) return 'Rendimiento cognitivo normal';
     if (finalScore >= 18) return 'Deterioro cognitivo leve';
     if (finalScore >= 10) return 'Deterioro cognitivo moderado';
@@ -45,7 +45,7 @@ class postMOCAUseCase {
   }
 
   // Process MOCA results: validate input, apply scoring rules, and persist final score and interpretation.
-  async execute({ id_user, id_application, score, notes }) {
+  async execute ({ id_user, id_application, score, notes }) {
 
     // 1. Validate score is present and numeric
     const raw = Number(score);
@@ -73,7 +73,7 @@ class postMOCAUseCase {
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
-      id_test: 4, 
+      id_test: 4,
     });
 
     if (!row) {
@@ -93,21 +93,21 @@ class postMOCAUseCase {
     // 7. Persist — save the final score (after bonus), not the raw score
     const updated = await this.impTestResultsRepository.saveResult({
       id_results: row.idResults,
-      score:      finalScore,
+      score: finalScore,
       interpretation,
-      notes:      notes ?? null,
+      notes: notes ?? null,
     });
 
     // 8. Return DTO with all fields the client needs
     return {
-      idResults:      updated.idResults,
-      idTest:         updated.idTest,
-      testName:       updated.testName,
-      status:         updated.status,
-      score:          updated.score,
+      idResults: updated.idResults,
+      idTest: updated.idTest,
+      testName: updated.testName,
+      status: updated.status,
+      score: updated.score,
       interpretation: updated.interpretation,
-      dateApplied:    updated.dateApplied,
-      notes:          updated.notes,
+      dateApplied: updated.dateApplied,
+      notes: updated.notes,
     };
   }
 }

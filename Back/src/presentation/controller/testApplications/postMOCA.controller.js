@@ -1,9 +1,9 @@
 class postMOCAController {
-  constructor(useCase) {
+  constructor (useCase) {
     this.useCase = useCase;
   }
 
-  async postResult(req, res) {
+  async postResult (req, res) {
     const { id_user, id_application } = req.params;
     const { score, notes }            = req.body;
 

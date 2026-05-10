@@ -4,47 +4,45 @@ const TEST_REGISTRY = {
   //BANFE
 
   1: {
-    name:        'BANFE',
+    name: 'BANFE',
     openRegister: (idUser, idApplication, test) =>
       openBANFEModal(idUser, idApplication, test, 'register'),
-    openModify:  (idUser, idApplication, test) =>
+    openModify: (idUser, idApplication, test) =>
       openBANFEModal(idUser, idApplication, test, 'modify'),
     openConsult: (idUser, idApplication, test) =>
       openBANFEModal(idUser, idApplication, test, 'consult'),
-    endpoint:    (idUser, idApplication) =>
+    endpoint: (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados`,
   },
 
   //WAIS
 
   2: {
-    name:        'WAIS',
+    name: 'WAIS',
     openRegister: (idUser, idApplication, test) =>
       openWAISModal(idUser, idApplication, test, 'register'),
-    openModify:  (idUser, idApplication, test) =>
+    openModify: (idUser, idApplication, test) =>
       openWAISModal(idUser, idApplication, test, 'modify'),
     openConsult: (idUser, idApplication, test) =>
       openWAISModal(idUser, idApplication, test, 'consult'),
-    endpoint:    (idUser, idApplication) =>
+    endpoint: (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados`,
   },
 
   // MOCA
-  
-    4: {
-    name:        'MOCA',
+
+  4: {
+    name: 'MOCA',
     openRegister: (idUser, idApplication, test) =>
       openMOCAModal(idUser, idApplication, test, 'register'),
-    openModify:  (idUser, idApplication, test) =>
+    openModify: (idUser, idApplication, test) =>
       openMOCAModal(idUser, idApplication, test, 'modify'),
     openConsult: (idUser, idApplication, test) =>
       openMOCAModal(idUser, idApplication, test, 'consult'),
-    endpoint:    (idUser, idApplication) =>
+    endpoint: (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados`,
     schoolingEndpoint: (idUser) =>
       `/api/usuarios/${idUser}/escolaridad`,
   },
-
-
 
 };

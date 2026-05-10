@@ -109,18 +109,29 @@ class impTestResultsRepository extends resultRepository {
 
   // Fetch the schooling level of a user from their initial interview.
 
-async fetchUserSchooling({ id_user }) {
-  const [rows] = await db.query(
-    `SELECT ii.schooling
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling
      FROM initial_interview ii
      INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
      WHERE ur.id_user = ?
      LIMIT 1`,
-    [id_user]
-  );
-  console.log('[fetchUserSchooling] id_user:', id_user, '| rows:', rows);
-  return rows.length ? rows[0].schooling : null;
-}
+      [id_user]
+    );
+    console.log('[fetchUserSchooling] id_user:', id_user, '| rows:', rows);
+    return rows.length ? rows[0].schooling : null;
+  }
+
+  // Fetch age of user for REY test
+  async fetchUserAge ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT birthdate
+     FROM users
+     WHERE id_user = ?`,
+      [id_user]
+    );
+    return rows.length ? rows[0].birthdate : null;
+  }
 
 }
 

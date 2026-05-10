@@ -1,4 +1,4 @@
-function openOptionsModal(idUser, idApplication, test) {
+function openOptionsModal (idUser, idApplication, test) {
   const existing = document.getElementById('modalOptions');
   if (existing) existing.remove();
 
@@ -87,7 +87,7 @@ function openOptionsModal(idUser, idApplication, test) {
 
   document.body.appendChild(modal);
 
-  function closeModal() { modal.remove(); }
+  function closeModal () { modal.remove(); }
 
   document.getElementById('btnCloseOptions').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });

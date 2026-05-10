@@ -4,7 +4,7 @@ const impTestResultsRepository        = require('../../../infrastructure/reposit
 const getTestsByApplicationUseCase    = require('../../../application/usecase/testApplications/getTestsByApplicationUseCase');
 const getTestsByApplicationController = require('../../controller/testApplications/getTestsByApplication.controller');
 
-//BANFE 
+//BANFE
 
 const postBANFEUseCase    = require('../../../application/usecase/testApplications/postBANFEUseCase');
 const postBANFEController = require('../../controller/testApplications/postBANFE.controller');
@@ -19,7 +19,6 @@ const postWAISController = require('../../controller/testApplications/postWAIS.c
 const postMOCAUseCase    = require('../../../application/usecase/testApplications/postMOCAUseCase');
 const postMOCAController = require('../../controller/testApplications/postMOCA.controller');
 
-
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -31,7 +30,7 @@ module.exports = (authUseCase) => {
   const useCase         = new getTestsByApplicationUseCase(testResultsRepo);
   const controller      = new getTestsByApplicationController(useCase);
 
-  //BANFE 
+  //BANFE
 
   const banfeUseCase    = new postBANFEUseCase(testResultsRepo);
   const banfeController = new postBANFEController(banfeUseCase);
@@ -41,8 +40,7 @@ module.exports = (authUseCase) => {
   const waisUseCase    = new postWAISUseCase(testResultsRepo);
   const waisController = new postWAISController(waisUseCase);
 
-
-  //MOCA  
+  //MOCA
   const mocaUseCase    = new postMOCAUseCase(testResultsRepo);
   const mocaController = new postMOCAController(mocaUseCase);
 
@@ -102,11 +100,11 @@ module.exports = (authUseCase) => {
           console.log('[escolaridad endpoint] schooling:', schooling);
           const map = {
             'Sin escolaridad': 0,
-            'Primaria':        6,
-            'Secundaria':      9,
-            'Bachillerato':    12,
-            'Licenciatura':    16,
-            'Posgrado':        18,
+            'Primaria': 6,
+            'Secundaria': 9,
+            'Bachillerato': 12,
+            'Licenciatura': 16,
+            'Posgrado': 18,
           };
           const years = map[schooling] ?? null;
           res.status(200).json({ schooling, years });
@@ -114,8 +112,6 @@ module.exports = (authUseCase) => {
         .catch(err => res.status(500).json({ error: err.message }));
     }
   );
-
-
 
   return router;
 };
