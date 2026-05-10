@@ -71,6 +71,38 @@ module.exports = (authUseCase) => {
     (req, res) => waisController.postResult(req, res)
   );
 
+  //MOCA
+  router.post(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('tests', 'consultation'),
+    (req, res) => moCAController.postResult(req, res)
+  );
+
+  // GET schooling for a user — used by MoCA modal to display education years
+router.get(
+  '/api/usuarios/:id_user/escolaridad',
+  authMiddleware.verifyToken,
+  (req, res) => {
+    const { id_user } = req.params;
+    testResultsRepo.fetchUserSchooling({ id_user })
+      .then(schooling => {
+        const map = {
+          'Sin escolaridad': 0,
+          'Primaria':        6,
+          'Secundaria':      9,
+          'Bachillerato':    12,
+          'Licenciatura':    16,
+          'Posgrado':        18,
+        };
+        const years = map[schooling] ?? null;
+        res.status(200).json({ schooling, years });
+      })
+      .catch(err => res.status(500).json({ error: err.message }));
+  }
+);
+
+
 
   return router;
 };
