@@ -1,0 +1,101 @@
+@startuml dashboard_sequence
+title Neuropsychology Unit Dashboard
+
+actor "User\n(Admin/Clinical)" as User
+participant "Browser\n(dashboard.ejs)" as Browser
+participant "Express\nRouter" as Router
+participant "Auth &\nPermissions\nMiddleware" as Auth
+participant "Dashboard\nController" as Ctrl
+participant "GetDashboardSummary\nUseCase" as SummaryUC
+participant "GetStandByDetail\nUseCase" as DetailUC
+participant "ImpDashboard\nRepository" as Repo
+database "DB" as DB
+participant "S3 Helper\n(getPresignedUrl)" as S3
+
+User -> Browser: Click "Mi panel"
+Browser -> Router: GET /dashboard
+Router -> Auth: verifyToken + requirePermission
+Auth --> Router: OK
+Router -> Ctrl: getDashboardPage(req, res)
+Ctrl --> Browser: render dashboard.ejs (HTML shell)
+Browser --> User: View with "Loading..."
+
+Browser -> Router: GET /api/dashboard/summary
+Router -> Auth: verifyToken + requirePermission
+Auth --> Router: OK
+Router -> Ctrl: getSummary(req, res)
+Ctrl -> SummaryUC: execute()
+
+note right of SummaryUC
+  5 queries run in parallel
+  via Promise.all
+end note
+
+SummaryUC -> Repo: fetchCounts()
+Repo -> DB: SELECT classified buckets
+DB --> Repo: { discharged, in_intervention, ... }
+Repo --> SummaryUC: DashboardCountsEntity
+
+SummaryUC -> Repo: fetchAgeDistribution()
+Repo -> DB: SELECT age ranges
+DB --> Repo: rows
+Repo --> SummaryUC: AgeBucketEntity[]
+
+SummaryUC -> Repo: fetchGenderDistribution()
+Repo -> DB: SELECT genders
+DB --> Repo: rows
+Repo --> SummaryUC: GenderBucketEntity[]
+
+SummaryUC -> Repo: fetchTestCounts()
+Repo -> DB: SELECT psych_tests + counts
+DB --> Repo: rows
+Repo --> SummaryUC: TestCountEntity[]
+
+SummaryUC -> Repo: fetchStandByList()
+Repo -> DB: SELECT reference_numbers
+DB --> Repo: rows
+Repo --> SummaryUC: string[]
+
+SummaryUC -> SummaryUC: build DashboardSummaryDTO
+SummaryUC --> Ctrl: DashboardSummaryDTO
+Ctrl --> Browser: 200 OK + JSON
+
+Browser -> Browser: renderTopCubes(counts)
+Browser -> Browser: renderBottomCubes(testCounts)
+Browser -> Browser: renderFlowChart (Polar)
+Browser -> Browser: renderAgeChart (Bar)
+Browser -> Browser: renderGenderChart (Doughnut)
+Browser -> Browser: initStandByPanel(list)
+Browser -> Browser: loadStandByDetail(list[0])
+
+== 3. Stand-by detail - /api/dashboard/standby/:ref ==
+Browser -> Router: GET /api/dashboard/standby/F-001
+Router -> Auth: verifyToken + requirePermission
+Auth --> Router: OK
+Router -> Ctrl: getStandByDetail(req, res)
+Ctrl -> Ctrl: validate reference_number
+Ctrl -> DetailUC: execute("F-001")
+DetailUC -> Repo: fetchStandByDetail("F-001")
+Repo -> DB: SELECT user + schooling + GROUP_CONCAT(clinics)
+DB --> Repo: row
+Repo --> DetailUC: StandByDetailEntity
+
+alt entity.profilePhoto exists
+  DetailUC -> S3: getPresignedUrl(key)
+  S3 --> DetailUC: signed URL
+  DetailUC -> DetailUC: entity.profilePhoto = signed URL
+end
+
+DetailUC -> DetailUC: build StandByDetailDTO\n(calculate age, format dates)
+DetailUC --> Ctrl: StandByDetailDTO
+Ctrl --> Browser: 200 OK + JSON
+Browser -> Browser: render avatar + info-rows + pills
+
+== 4. User picks another reference number ==
+User -> Browser: Select F-004
+Browser -> Browser: loadStandByDetail("F-004")
+note right
+  Repeats the flow from step 3
+end note
+
+@enduml
