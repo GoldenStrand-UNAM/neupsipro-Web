@@ -1,3 +1,4 @@
+const clinicalDashboardDTO = require('../../dto/clinicalDashboardDTO');
 
 class GetClinicalUserDashboardUseCase {
   constructor (usersRepository, appointmentRepository) {
@@ -10,10 +11,9 @@ class GetClinicalUserDashboardUseCase {
       this.usersRepository.fetchAllWithClinical({ idClinicalUser }),
       this.appointmentRepository.fecthAppointmentWithClinical({ idClinicalUser }),
     ]);
-
-    console.log(numberUsers);
-    console.log(users);
-    console.log(appointments);
+    const dto = new clinicalDashboardDTO.clinicalDashboardDTO(numberUsers[0], users, appointments);
+    console.log(dto.users.usersList);
+    return dto;
   }
 }
 module.exports = GetClinicalUserDashboardUseCase;

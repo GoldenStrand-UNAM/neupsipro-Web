@@ -44,32 +44,5 @@ class ImpUsersRepository extends usersRepository {
     );
     return rows[0]?.total ?? 0;
   }
-
-  async fetchNumberUsers ({ idClinicalUser }) {
-    const [numbers] = await db.query (
-      `SELECT 
-        COUNT(*) AS totalUsers,
-        SUM(CASE WHEN ui.protocol = 'Clinical' THEN 1 ELSE 0 END) as total_clinical,
-        SUM(CASE WHEN ui.protocol = 'Research' THEN 1 ELSE 0 END) as total_research
-      FROM users u
-        JOIN user_info ui ON ui.id_user = u.id_user
-        JOIN user_relation ur ON u.id_user = ur.id_user
-      WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND ui.state = 'Active';`,
-      [idClinicalUser]
-    );
-    return numbers;
-  }
-
-  async fetchAllWithClinical ({ idClinicalUser }) {
-    const [users] = await db.query (
-      `SELECT ui.id_user, u.first_name, u.lastname_p, u.lastname_m
-      FROM user_info ui
-	      JOIN users u ON u.id_user = ui.id_user
-	      JOIN user_relation ur ON ui.id_user = ur.id_user
-      WHERE ur.id_clinic_user = 1 AND ur.type = 'assigned' AND ui.state = 'Active';`,
-      [idClinicalUser]
-    );
-    return users;
-  }
 }
 module.exports = ImpUsersRepository;
