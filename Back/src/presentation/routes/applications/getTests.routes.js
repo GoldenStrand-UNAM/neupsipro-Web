@@ -9,6 +9,10 @@ const getTestsByApplicationController = require('../../controller/testApplicatio
 const postBANFEUseCase    = require('../../../application/usecase/testApplications/postBANFEUseCase');
 const postBANFEController = require('../../controller/testApplications/postBANFE.controller');
 
+//WAIS
+
+const postWAISUseCase    = require('../../../application/usecase/testApplications/postWAISUseCase');
+const postWAISController = require('../../controller/testApplications/postWAIS.controller');
 
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
@@ -25,6 +29,11 @@ module.exports = (authUseCase) => {
 
   const banfeUseCase    = new postBANFEUseCase(testResultsRepo);
   const banfeController = new postBANFEController(banfeUseCase);
+
+  //WAIS
+
+  const waisUseCase    = new postWAISUseCase(testResultsRepo);
+  const waisController = new postWAISController(waisUseCase);
 
   const jwtService            = new JwtService();
   const authMiddleware        = new AuthMiddleware(jwtService);
@@ -52,6 +61,14 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => banfeController.postResult(req, res)
+  );
+
+  //WAIS
+  router.post(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => waisController.postResult(req, res)
   );
 
 
