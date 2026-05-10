@@ -118,6 +118,7 @@ async fetchUserSchooling({ id_user }) {
      LIMIT 1`,
     [id_user]
   );
+  console.log('[fetchUserSchooling] id_user:', id_user, '| rows:', rows);
   return rows.length ? rows[0].schooling : null;
 }
 

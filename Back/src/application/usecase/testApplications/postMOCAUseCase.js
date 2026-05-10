@@ -73,7 +73,7 @@ class postMOCAUseCase {
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
-      id_test: 2, // MoCA is id_test = 2
+      id_test: 4, 
     });
 
     if (!row) {
@@ -112,4 +112,4 @@ class postMOCAUseCase {
   }
 }
 
-module.exports = postMoCAUseCase;
+module.exports = postMOCAUseCase;

@@ -41,6 +41,8 @@ const TEST_REGISTRY = {
       openMOCAModal(idUser, idApplication, test, 'consult'),
     endpoint:    (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados`,
+    schoolingEndpoint: (idUser) =>
+      `/api/usuarios/${idUser}/escolaridad`,
   },
 
 

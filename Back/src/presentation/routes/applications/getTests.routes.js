@@ -14,6 +14,12 @@ const postBANFEController = require('../../controller/testApplications/postBANFE
 const postWAISUseCase    = require('../../../application/usecase/testApplications/postWAISUseCase');
 const postWAISController = require('../../controller/testApplications/postWAIS.controller');
 
+//MOCA
+
+const postMOCAUseCase    = require('../../../application/usecase/testApplications/postMOCAUseCase');
+const postMOCAController = require('../../controller/testApplications/postMOCA.controller');
+
+
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -34,6 +40,11 @@ module.exports = (authUseCase) => {
 
   const waisUseCase    = new postWAISUseCase(testResultsRepo);
   const waisController = new postWAISController(waisUseCase);
+
+
+  //MOCA  
+  const mocaUseCase    = new postMOCAUseCase(testResultsRepo);
+  const mocaController = new postMOCAController(mocaUseCase);
 
   const jwtService            = new JwtService();
   const authMiddleware        = new AuthMiddleware(jwtService);
@@ -75,32 +86,34 @@ module.exports = (authUseCase) => {
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('tests', 'consultation'),
-    (req, res) => moCAController.postResult(req, res)
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => mocaController.postResult(req, res)
   );
 
   // GET schooling for a user — used by MoCA modal to display education years
-router.get(
-  '/api/usuarios/:id_user/escolaridad',
-  authMiddleware.verifyToken,
-  (req, res) => {
-    const { id_user } = req.params;
-    testResultsRepo.fetchUserSchooling({ id_user })
-      .then(schooling => {
-        const map = {
-          'Sin escolaridad': 0,
-          'Primaria':        6,
-          'Secundaria':      9,
-          'Bachillerato':    12,
-          'Licenciatura':    16,
-          'Posgrado':        18,
-        };
-        const years = map[schooling] ?? null;
-        res.status(200).json({ schooling, years });
-      })
-      .catch(err => res.status(500).json({ error: err.message }));
-  }
-);
+  router.get(
+    '/api/usuarios/:id_user/escolaridad',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => {
+      const { id_user } = req.params;
+      testResultsRepo.fetchUserSchooling({ id_user })
+        .then(schooling => {
+          console.log('[escolaridad endpoint] schooling:', schooling);
+          const map = {
+            'Sin escolaridad': 0,
+            'Primaria':        6,
+            'Secundaria':      9,
+            'Bachillerato':    12,
+            'Licenciatura':    16,
+            'Posgrado':        18,
+          };
+          const years = map[schooling] ?? null;
+          res.status(200).json({ schooling, years });
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+    }
+  );
 
 
 
