@@ -376,6 +376,17 @@
                 }
             });
         });
+
+        // No negative values
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+
+            input.addEventListener('keydown', (e) => {
+
+                if (e.key === '-' || e.key === '+' || e.key === 'e') {
+                    e.preventDefault();
+                }
+            });
+        });
     </script>
 
 </body>
