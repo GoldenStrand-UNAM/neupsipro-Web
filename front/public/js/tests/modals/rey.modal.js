@@ -291,5 +291,135 @@ async function openREYModal(idUser, idApplication, test, mode) {
       </div>
     </div>
   `;
-            }
+  
+  document.body.appendChild(modal);
+
+  const scoreInput      = document.getElementById('inputREYScore');
+  const normativeLabel  = document.getElementById('REYNormativeScore');
+  const scoreError      = document.getElementById('REYScoreError');
+  const apiError        = document.getElementById('REYApiError');
+  const notesInput      = document.getElementById('inputREYNotes');
+  const notesCount      = document.getElementById('REYNotesCount');
+  const infoText        = document.getElementById('REYInfoText');
+
+  function closeModal() { modal.remove(); }
+
+  document.getElementById('btnCloseREY').addEventListener('click', closeModal);
+  document.getElementById('btnCancelREY').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  if (isConsult) return;
+
+  // ── Fetch schooling + age in parallel ────────────────────────────────────
+  const config = TEST_REGISTRY[3];
+
+  let educationBlock = null;
+  let ageRange       = null;
+
+  try {
+    const [sRes, aRes] = await Promise.all([
+      fetch(config.schoolingEndpoint(idUser)),
+      fetch(config.ageEndpoint(idUser)),
+    ]);
+
+    const sJson = await sRes.json();
+    const aJson = await aRes.json();
+
+    const schoolingYears = resolveSchoolingYears(sJson.schooling);
+    educationBlock       = resolveEducationBlock(schoolingYears);
+    ageRange             = resolveAgeRange(aJson.age);
+
+    const schoolingLabel = sJson.schooling ?? 'Sin datos';
+    const ageLabel       = aJson.age !== null ? `${aJson.age} años` : 'Sin datos';
+    const blockLabel     = educationBlock === '>12' ? 'Más de 12 años' : '1 a 12 años';
+
+    infoText.textContent =
+      `Escolaridad: ${schoolingLabel} (${blockLabel}) · Edad: ${ageLabel} · Rango: ${ageRange ?? 'fuera de tabla'}`;
+
+  } catch {
+    infoText.textContent = 'No se pudieron cargar los datos del paciente';
+  }
+
+  // ── Live normative score ──────────────────────────────────────────────────
+  function updateLiveScore() {
+    scoreError.classList.add('hidden');
+
+    if (!/^\d*$/.test(scoreInput.value)) {
+      scoreInput.value = scoreInput.value.replace(/\D/g, '');
+    }
+
+    const percentile = Number(scoreInput.value);
+
+    if (scoreInput.value === '' || isNaN(percentile)) {
+      normativeLabel.textContent = '—';
+      return;
+    }
+
+    if (percentile > 95) {
+      normativeLabel.textContent = '—';
+      scoreError.textContent = 'El percentil debe estar entre 0 y 95';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+
+    if (!educationBlock || !ageRange) {
+      normativeLabel.textContent = 'Sin datos suficientes';
+      return;
+    }
+
+    const normative = resolveNormativeScore(percentile, educationBlock, ageRange);
+    normativeLabel.textContent = normative !== null ? String(normative) : '—';
+  }
+
+  scoreInput.addEventListener('input', updateLiveScore);
+  if (scoreInput.value !== '') updateLiveScore();
+
+  // ── Notes counter ─────────────────────────────────────────────────────────
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
+  });
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  document.getElementById('btnSaveREY').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+    scoreError.classList.add('hidden');
+
+    const score = Number(scoreInput.value);
+    const notes = notesInput.value.trim() || null;
+
+    if (!scoreInput.value || isNaN(score) || score < 0 || score > 95) {
+      scoreError.textContent = 'Ingresa un percentil válido entre 0 y 95';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ score, notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      console.error('[REY] post error:', err);
+    }
+  });
+}
         
