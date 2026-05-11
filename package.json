@@ -39,6 +39,7 @@
     "express-rate-limit": "^8.3.2",
     "express-session": "^1.19.0",
     "file-type": "^16.5.4",
+    "flatpickr": "^4.6.13",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.22.0",
@@ -60,6 +61,6 @@
     "jest": "^30.3.0",
     "lint-staged": "^16.4.0",
     "supertest": "^7.2.2",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.3.0"
   }
 }

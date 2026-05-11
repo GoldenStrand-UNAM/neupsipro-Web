@@ -8,7 +8,7 @@ class UsersDTO {
         this.birthdate = user.birthdate;
         this.passwordHash = user.passwordHash;
         this.assigned = user.assigned;
-        this.neuroStatus = user.neuroStatus;
+        this.phase = user.phase;
         this.basePathology = user.basePathology;
         this.modality = user.modality;
         this.profilePhoto = user.profilePhoto;
