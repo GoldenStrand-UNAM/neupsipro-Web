@@ -114,5 +114,36 @@ module.exports = (authUseCase) => {
     }
   );
 
+  // GET REY age for modal
+  router.get(
+    '/api/usuarios/:id_user/edad',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => {
+      const { id_user } = req.params;
+      testResultsRepo.fetchUserAge({ id_user })
+        .then(birthdate => {
+          if (!birthdate) return res.status(200).json({ age: null });
+          const today = new Date();
+          const birth = new Date(birthdate);
+          let years = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years--;
+          res.status(200).json({ age: years });
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+    }
+  );
+
+  //POST REY Results
+  router.post(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('tests', 'consultation'),
+    (req, res) => reyController.postResult(req, res)
+  );
+
+
+
   return router;
 };
