@@ -213,6 +213,52 @@
             }
         }
 
+        // Get content by substep
+        async function loadSection(section) {
+
+            try {
+
+                const res = await fetch(
+                    `/users/${id_user}/inicialInterview/api/${id_user}/financial/${section}`
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return;
+                }
+
+                window.financialData = data;
+                // update sections state
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                setSubStepTitle(data);
+                setFinancialContent(data);
+
+                window.sidebarState.currentStep = section;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+                setTimeout(() => {
+                    window.renderFinancialData?.();
+                }, 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
         // Functions that set content ---------------------------------------
 
         // Financial Substep1 Content
@@ -248,46 +294,22 @@
 
         async function loadFinancial() {
             try {
-                const res = await fetch(`/users/${id_user}/inicialInterview/api/financial/${id_user}`);
-                const data = await res.json();
 
-                if (!res.ok) {
-                    console.error(data.error);
-                    return;
-                }
+                await loadSection(1);
+
+                const data = window.financialData;
 
                 // Set titles
                 setStepTitle(data);
-                setSubStepTitle(data);
 
-                // Render correct section
-                setContent(data);
-
-                // Save global data
-                window.financialData = data;
-                console.log(data);
-
-                // Wait for DOM render and fill inputs
-                setTimeout(() => {
-                    window.renderFinancialData?.();
-                }, 0);
-                
-                document.getElementById("id_user").textContent = data.id_user || "";
-
-                window.sidebarState = {
-                    currentStep: data.current_section,
-                    completedSteps: data.data.completedSubSteps,
-                };
+                document.getElementById("id_user").textContent =
+                    data.id_user || "";
 
                 window.sectionsState = {
                     currentStep: data.current_step,
                     completedSteps: data.data.completedSteps,
                     subStep: data.current_section
                 };
-
-                if (window.renderSidebar) {
-                    window.renderSidebar();
-                }
 
                 if (window.renderSections) {
                     window.renderSections();
@@ -302,12 +324,12 @@
 
         // Listener for change substep
         document.querySelectorAll('.timeline-step').forEach(step => {
-            step.addEventListener('click', () => {
+            step.addEventListener('click', async () => {
 
                 const section = Number(step.dataset.step);
 
                 // Update current section
-                window.financialData.current_section = section;
+                await loadSection(section);
 
                 // update titles
                 setSubStepTitle(window.financialData);
@@ -327,7 +349,7 @@
         // NEXT buttons
         document.querySelectorAll('.nextBtn').forEach(button => {
 
-            button.addEventListener('click', () => {
+            button.addEventListener('click', async () => {
 
                 let current = window.financialData.current_section;
 
@@ -336,7 +358,7 @@
 
                     current++;
 
-                    window.financialData.current_section = current;
+                    await loadSection(current);
 
                     setSubStepTitle(window.financialData);
                     setFinancialContent(window.financialData);
@@ -354,7 +376,7 @@
         // PREVIOUS buttons
         document.querySelectorAll('.prevBtn').forEach(button => {
 
-            button.addEventListener('click', () => {
+            button.addEventListener('click', async () => {
 
                 let current = window.financialData.current_section;
 
@@ -363,7 +385,7 @@
 
                     current--;
 
-                    window.financialData.current_section = current;
+                    await loadSection(current);
 
                     setSubStepTitle(window.financialData);
                     setFinancialContent(window.financialData);

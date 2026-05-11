@@ -25,7 +25,7 @@ module.exports = (authUseCase) => {
   );
 
   router.get(
-    '/api/financial/:id_user',
+    '/api/:id_user/:step/:subStep',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
     (req, res) => controller.getFinancialInterview(req, res)
