@@ -6,7 +6,7 @@ class PostUserUseCase {
         this.hashingService = hashingService;
     }
 
-    async execute ({ idRole = 2, userName, firstName, lastnameP, lastnameM, birthdate, password, assigned, neuroStatus, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
+    async execute ({ idRole = 2, userName, firstName, lastnameP, lastnameM, birthdate, password, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
         const passwordHash = await this.hashingService.hash(password);
         
         // Entity validation
@@ -19,7 +19,7 @@ class PostUserUseCase {
         birthdate,
         passwordHash,
         assigned,
-        neuroStatus,
+        phase,
         basePathology,
         modality,
         profilePhoto: profilePhoto || null,

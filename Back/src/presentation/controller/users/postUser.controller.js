@@ -6,7 +6,7 @@ class PostUserController {
     async postUser (req, res) {
         try {
             // Extract query params 
-            const { id_role = "2", user_name, first_name, lastname_p, lastname_m = null, birthdate, password_hash, assigned, neuro_status, base_pathology, modality, profile_photo = null, reference_number, amputation_date, laterality, prothesist, neuro_entry_date, pairs } = req.body;
+            const { id_role = "2", user_name, first_name, lastname_p, lastname_m = null, birthdate, password_hash, assigned, phase, base_pathology, modality, profile_photo = null, reference_number, amputation_date, laterality, prothesist, neuro_entry_date, pairs } = req.body;
             
             //Successful response
             res.status(200).json(result);

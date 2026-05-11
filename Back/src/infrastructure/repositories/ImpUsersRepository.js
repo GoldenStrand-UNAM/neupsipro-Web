@@ -45,7 +45,7 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
-  async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, neuroStatus, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
+  async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
     const connection = await db.getConnection();
 
     try {
@@ -58,9 +58,9 @@ class ImpUsersRepository extends usersRepository {
       );
 
       await connection.query(
-      `INSERT INTO user_info (assigned, neuro_status, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prothesist, neuro_entry_date, amputation_date, pairs)
+      `INSERT INTO user_info (assigned, phase, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prothesist, neuro_entry_date, amputation_date, pairs)
       VALUES (?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?)`,
-      [assigned, neuroStatus, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs] 
+      [assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs] 
       );
 
       await connection.commit();
