@@ -31,6 +31,22 @@ const TEST_REGISTRY = {
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados`,
   },
 
+  3: {
+    name:         'REY',
+    openRegister: (idUser, idApplication, test) =>
+      openREYModal(idUser, idApplication, test, 'register'),
+    openModify:   (idUser, idApplication, test) =>
+      openREYModal(idUser, idApplication, test, 'modify'),
+    openConsult:  (idUser, idApplication, test) =>
+      openREYModal(idUser, idApplication, test, 'consult'),
+    endpoint: (idUser, idApplication) =>
+      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados`,
+    schoolingEndpoint: (idUser) =>
+      `/api/usuarios/${idUser}/escolaridad`,
+    ageEndpoint: (idUser) =>
+      `/api/usuarios/${idUser}/edad`,
+  },
+
   // MOCA
 
   4: {
