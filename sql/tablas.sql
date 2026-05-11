@@ -705,5 +705,5 @@ CREATE TABLE user_clinical (
 );
 
 ALTER TABLE users 
-ADD COLUMN gender enum('Man','Woman','other','not especified') 
+ADD COLUMN gender enum('Man','Woman','Other','not especified') 
 NULL AFTER birthdate;
