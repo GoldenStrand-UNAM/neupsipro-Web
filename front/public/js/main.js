@@ -137,6 +137,7 @@ function escapeHtml (str) {
     .replace(/'/g, '&#039;');
 }
 
+// eslint-disable-next-line no-unused-vars
 function showToast (message, type = 'success') {
   document.getElementById('toast')?.remove();
 

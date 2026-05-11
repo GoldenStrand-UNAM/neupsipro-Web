@@ -1,17 +1,6 @@
 // MoCA-specific modal.
 // mode: 'register' | 'modify' | 'consult'
-
-function resolveSchoolingYears (schooling) {
-  const map = {
-    'Sin escolaridad': 0,
-    'Primaria': 6,
-    'Secundaria': 9,
-    'Bachillerato': 12,
-    'Licenciatura': 16,
-    'Posgrado': 18,
-  };
-  return map[schooling] ?? null;
-}
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
 
 function resolveMOCAFinalScore (raw, schoolingYears) {
   let final = raw;
@@ -28,6 +17,7 @@ function interpretMOCA (finalScore) {
   return 'Deterioro cognitivo grave';
 }
 
+// eslint-disable-next-line no-unused-vars
 async function openMOCAModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalMOCA');
   if (existing) existing.remove();
@@ -411,6 +401,7 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
     } catch (err) {
       apiError.textContent = 'No se pudo conectar con el servidor';
       apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
       console.error('[MOCA] post error:', err);
     }
   });

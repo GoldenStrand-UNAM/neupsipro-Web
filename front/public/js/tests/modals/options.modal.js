@@ -1,3 +1,6 @@
+/* global escapeHTML, TEST_REGISTRY */
+
+// eslint-disable-next-line no-unused-vars
 function openOptionsModal (idUser, idApplication, test) {
   const existing = document.getElementById('modalOptions');
   if (existing) existing.remove();

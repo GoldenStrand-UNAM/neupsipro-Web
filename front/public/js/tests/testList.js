@@ -1,3 +1,5 @@
+/* global getVariant, TEST_REGISTRY, escapeHTML, removeSkeletons, showError, openOptionsModal */
+
 (function () {
 
   // ── Card builder ────────────────────────────────────────────────────────────

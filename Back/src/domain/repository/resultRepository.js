@@ -7,27 +7,27 @@ class resultRepository {
   }
 
   //Fetch all test results scoped to a specific application
-  async fetchTestsByApplication ({ id_user, id_application }) {
+  async fetchTestsByApplication ({ _id_user, _id_application }) {
     throw new Error('fetchTestsByApplication() not implemented');
   }
 
   //Fetch a single result row to validate it exists before saving.
-  async fetchResultRow ({ id_user, id_application, id_test }) {
+  async fetchResultRow ({ _id_user, _id_application, _id_test }) {
     throw new Error('fetchResultRow() not implemented');
   }
 
   //Update an existing result row with score, interpretation, notes and status.
-  async saveResult ({ id_results, score, interpretation, notes }) {
+  async saveResult ({ _id_results, _score, _interpretation, _notes }) {
     throw new Error('saveResult() not implemented');
   }
 
   // Fetch schooling level for a user from their initial interview.
-  async fetchUserSchooling ({ id_user }) {
+  async fetchUserSchooling ({ _id_user }) {
     throw new Error('fetchUserSchooling() not implemented');
   }
 
   //Fetch age of user for REY test
-  async fetchUserAge ({ id_user }) {
+  async fetchUserAge ({ _id_user }) {
     throw new Error('fetchUserAge() not implemented');
   }
 

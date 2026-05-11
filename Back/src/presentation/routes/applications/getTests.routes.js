@@ -97,6 +97,7 @@ module.exports = (authUseCase) => {
       const { id_user } = req.params;
       testResultsRepo.fetchUserSchooling({ id_user })
         .then(schooling => {
+          // eslint-disable-next-line no-console
           console.log('[escolaridad endpoint] schooling:', schooling);
           const map = {
             'Sin escolaridad': 0,

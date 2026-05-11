@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 function escapeHTML (str) {
   if (str === null || str === undefined) return '';
   return String(str)
@@ -8,6 +9,7 @@ function escapeHTML (str) {
     .replace(/'/g, '&#039;');
 }
 
+// eslint-disable-next-line no-unused-vars
 function getVariant (status) {
   const map = {
     'Por comenzar': 'neutral',
@@ -19,6 +21,7 @@ function getVariant (status) {
   return map[status] || 'neutral';
 }
 
+// eslint-disable-next-line no-unused-vars
 function showToast (message) {
   const toast = document.createElement('div');
   toast.className = 'fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#002B7A] text-white px-5 py-3 rounded-xl shadow-lg text-sm';
@@ -34,11 +37,13 @@ function showToast (message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
+// eslint-disable-next-line no-unused-vars
 function removeSkeletons () {
   document.querySelectorAll('.test-card-skeleton').forEach(el => el.remove());
 }
 
 // Updates badge text and variant class on a card after a successful save
+// eslint-disable-next-line no-unused-vars
 function updateTestCardStatus (dto) {
   const card = document.querySelector(`[data-id-results="${dto.idResults}"]`);
   if (!card) return;

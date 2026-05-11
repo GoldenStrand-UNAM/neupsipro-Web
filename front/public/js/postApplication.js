@@ -1,3 +1,5 @@
+/* global createSessionCard */
+
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;
 
@@ -75,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createdAt: json.data.createdAt,
       }));
 
-    } catch (err) {
+    } catch (_err) {
       showModalError('Error de red, intenta de nuevo');
     } finally {
       const btnSave = document.getElementById('btnSaveApp');

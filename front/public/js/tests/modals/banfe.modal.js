@@ -1,3 +1,5 @@
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+
 function interpretBANFE (score) {
   const n = Number(score);
   if (isNaN(n))  return '';
@@ -7,6 +9,7 @@ function interpretBANFE (score) {
   return 'Promedio alto';
 }
 
+// eslint-disable-next-line no-unused-vars
 function openBANFEModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalBANFE');
   if (existing) existing.remove();
@@ -405,10 +408,11 @@ function openBANFEModal (idUser, idApplication, test, mode) {
         closeModal();
         showToast('Resultado guardado con éxito');
 
-      } catch (err) {
+      } catch (_err) {
         apiError.textContent = 'No se pudo conectar con el servidor';
         apiError.classList.remove('hidden');
-        console.error('[BANFE] post error:', err);
+        // eslint-disable-next-line no-console
+        console.error('[BANFE] post error:', _err);
       }
     });
   }

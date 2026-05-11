@@ -26,7 +26,7 @@ const validateImageMiddleware = async (req, res, next) => {
 
     next();
 
-  } catch (err) {
+  } catch (_err) {
     return reject(500, 'Error al validar la imagen');
   }
 };

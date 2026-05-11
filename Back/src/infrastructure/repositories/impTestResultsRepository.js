@@ -118,6 +118,7 @@ class impTestResultsRepository extends resultRepository {
      LIMIT 1`,
       [id_user]
     );
+    // eslint-disable-next-line no-console
     console.log('[fetchUserSchooling] id_user:', id_user, '| rows:', rows);
     return rows.length ? rows[0].schooling : null;
   }

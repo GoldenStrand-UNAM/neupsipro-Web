@@ -1,3 +1,5 @@
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+
 function interpretWAIS (score) {
   const n = Number(score);
   if (isNaN(n)) return '';
@@ -10,6 +12,7 @@ function interpretWAIS (score) {
   return 'Alta capacidad intelectual';
 }
 
+// eslint-disable-next-line no-unused-vars
 function openWAISModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalWAIS');
   if (existing) existing.remove();
@@ -408,10 +411,11 @@ function openWAISModal (idUser, idApplication, test, mode) {
         closeModal();
         showToast('Resultado guardado con éxito');
 
-      } catch (err) {
+      } catch (_err) {
         apiError.textContent = 'No se pudo conectar con el servidor';
         apiError.classList.remove('hidden');
-        console.error('[WAIS] post error:', err);
+        // eslint-disable-next-line no-console
+        console.error('[WAIS] post error:', _err);
       }
     });
   }
