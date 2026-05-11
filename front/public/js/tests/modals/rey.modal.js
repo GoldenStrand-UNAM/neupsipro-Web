@@ -95,3 +95,201 @@ function resolveNormativeScore(percentile, educationBlock, ageRange) {
   // Return the exact normative score stored in the matrix
   return column[closest];
 }
+
+async function openREYModal(idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalREY');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  const prefillScore = (isModify || isConsult) ? (test.score ?? '') : '';
+  const prefillNotes = (isModify || isConsult) ? (test.notes ?? '') : '';
+
+  const titles = { register: 'Registrar', modify: 'Modificar', consult: 'Consultar' };
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalREY';
+  modal.className = 'modal-overlay';
+
+  // ── Consult mode ──────────────────────────────────────────────────────────
+  modal.innerHTML = isConsult ? `
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">REY</h2>
+        <button id="btnCloseREY" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body flex flex-col">
+
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-2 sm:gap-x-6
+                    py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Fecha:</span>
+          <span class="text-base sm:text-lg text-gray-900">
+            ${test.dateApplied
+              ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
+                  day: 'numeric', month: 'long', year: 'numeric'
+                })
+              : '—'}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-2 sm:gap-x-6
+                    py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Percentil:</span>
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
+            ${test.score !== null ? escapeHTML(String(test.score)) : '—'}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-2 sm:gap-x-6
+                    py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Puntaje normativo:</span>
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
+            ${escapeHTML(test.interpretation ?? '—')}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-2 sm:gap-x-6
+                    py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Notas:</span>
+          <span class="text-base sm:text-lg text-gray-900 leading-relaxed break-words">
+            ${prefillNotes ? escapeHTML(prefillNotes) : '—'}
+          </span>
+        </div>
+
+        <div class="flex justify-end pt-4 border-t border-gray-200">
+          <button id="btnCancelREY"
+            class="flex items-center gap-3 px-6 py-3 border border-gray-300
+                   rounded-2xl text-base hover:bg-gray-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  ` :
+
+  // ── Register / Modify mode ────────────────────────────────────────────────
+  `
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">REY — ${titles[mode]}</h2>
+        <button id="btnCloseREY" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body flex flex-col gap-6">
+
+        <!-- Info banner: schooling + age -->
+        <div id="REYInfoBanner"
+             class="flex items-center gap-3 px-4 py-3 bg-gray-50
+                    border border-gray-200 rounded-xl text-sm text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke="currentColor"
+               class="w-5 h-5 shrink-0 text-[#3350A9]">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75
+                     0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/>
+          </svg>
+          <span id="REYInfoText">Cargando datos del paciente...</span>
+        </div>
+
+        <!-- Percentile input + normative score -->
+        <div class="flex flex-col md:flex-row gap-4">
+
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">
+              Percentil <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="inputREYScore"
+              type="number"
+              min="0"
+              max="95"
+              placeholder="0 – 95"
+              value="${escapeHTML(String(prefillScore))}"
+              class="w-full h-[52px] border border-gray-300 rounded-lg px-4
+                     text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition"/>
+            <p class="text-xs text-gray-400">Número entero entre 0 y 95</p>
+            <p id="REYScoreError" class="text-xs text-red-500 hidden"></p>
+          </div>
+
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Puntaje normativo</label>
+            <div class="w-full h-[52px] flex items-center border border-gray-300
+                        rounded-lg px-4 bg-gray-50">
+              <span id="REYNormativeScore" class="text-sm text-gray-800">—</span>
+            </div>
+            <p class="text-xs text-gray-400">Calculado de la tabla normativa</p>
+          </div>
+
+        </div>
+
+        <!-- Notes -->
+        <div class="flex flex-col gap-2">
+          <label class="text-2xl font-regular">Notas</label>
+          <textarea
+            id="inputREYNotes"
+            rows="4"
+            maxlength="200"
+            placeholder="Observaciones"
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition resize-none"
+          >${escapeHTML(prefillNotes)}</textarea>
+          <p id="REYNotesCount" class="text-lg text-gray-400 text-right">
+            ${String(prefillNotes).length} / 200
+          </p>
+        </div>
+
+        <p id="REYApiError" class="text-xs text-red-500 hidden"></p>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+          <button id="btnCancelREY"
+            class="flex-1 flex items-center justify-center gap-3 px-4 py-3
+                   border border-gray-300 rounded-2xl font-regular
+                   hover:bg-gray-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <span class="whitespace-nowrap">Cancelar</span>
+          </button>
+
+          <button id="btnSaveREY"
+            class="flex-1 flex items-center justify-center gap-3 px-4 py-3
+                   rounded-2xl bg-[#3350A9] text-white font-regular
+                   hover:bg-[#2a4190] transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+            </svg>
+            <span class="whitespace-nowrap">Guardar</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+            }
+        
