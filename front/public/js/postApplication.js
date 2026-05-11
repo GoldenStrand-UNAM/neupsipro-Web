@@ -1,4 +1,4 @@
-/* global createSessionCard */
+/* global createApplicationCard */
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;
@@ -70,12 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Prepend new card before the "Crear aplicación" button
       const addBtn = document.getElementById('btnCreateSession');
-      addBtn.insertAdjacentHTML('beforebegin', createSessionCard({
+      addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
         idApplication: json.data.idApplication,
         applicationName: json.data.applicationName,
         status: json.data.status,
         createdAt: json.data.createdAt,
-      }));
+      }, user.idUser));
 
     } catch (_err) {
       showModalError('Error de red, intenta de nuevo');

@@ -368,6 +368,17 @@
 
     <script>
 
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         const _statusStyles = {
             warning: {
                 tag: "bg-[#BA8700]",
@@ -426,7 +437,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                             ${colors.icon}
                         </svg>
-                        <p>${escapeHtml(application.status) || "N/A"}</p>
+                        <p>${escapeHTML(application.status) || "N/A"}</p>
                     </div>
 
                     <div class="flex flex-col gap-2 mt-4">
@@ -436,7 +447,7 @@
                             </svg>
                         </div>
                         <h3 class="text-lg font-bold text-gray-900">
-                            ${escapeHtml(application.applicationName)}
+                            ${escapeHTML(application.applicationName)}
                         </h3>
                         <p class="text-sm text-gray-700">
                             Creada el: ${dateFormatted}
