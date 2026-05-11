@@ -92,52 +92,41 @@ class postREYUseCase {
    * - find the exact percentile row if it exists
    * - if the percentile entered is above the highest available → use highest available score
    * - if the percentile entered is below 5 → use lowest available score
-   * - if between two rows → interpolate linearly
    */
   resolveNormativeScore(percentile, educationBlock, ageRange) {
-    const column = REY_TABLE[educationBlock]?.[ageRange];
-    if (!column) return null;
+  // Get the table column based on education block and age range
+  const column = REY_TABLE[educationBlock]?.[ageRange];
 
-    // Sort percentiles descending (95, 90, 85 ...)
-    const percentiles = Object.keys(column)
-      .map(Number)
-      .sort((a, b) => b - a);
+  // Return null if the table segment does not exist
+  if (!column) return null;
 
-    const maxPercentile = percentiles[0];
-    const minPercentile = percentiles[percentiles.length - 1];
+  // Convert percentile keys from strings to numbers
+  const percentiles = Object.keys(column).map(Number);
 
-    // Exact match
-    if (column[percentile] !== undefined) return column[percentile];
+  // Initialize with the first available percentile
+  let closest = percentiles[0];
+  let minDiff = Math.abs(percentile - closest);
 
-    // Above the highest available percentile
-    if (percentile > maxPercentile) return column[maxPercentile];
+  // Find the closest percentile available in the matrix
+  for (const p of percentiles) {
+    const diff = Math.abs(percentile - p);
 
-    // Below the lowest available percentile
-    if (percentile < minPercentile) return column[minPercentile];
-
-    // Linear interpolation between two surrounding percentiles
-    let upper = null;
-    let lower = null;
-
-    for (let i = 0; i < percentiles.length - 1; i++) {
-      if (percentiles[i] > percentile && percentiles[i + 1] < percentile) {
-        upper = percentiles[i];
-        lower = percentiles[i + 1];
-        break;
-      }
+    // Replace current closest if this percentile is nearer
+    if (diff < minDiff) {
+      closest = p;
+      minDiff = diff;
     }
 
-    if (upper === null || lower === null) return null;
-
-    const upperScore = column[upper];
-    const lowerScore = column[lower];
-
-    // Linear interpolation formula
-    const interpolated = lowerScore +
-      ((percentile - lower) / (upper - lower)) * (upperScore - lowerScore);
-
-    return Math.round(interpolated * 10) / 10; // round to 1 decimal
+    // If distances are equal, prefer the lower percentile
+    // This follows the clinical interpretation rule
+    else if (diff === minDiff && p < closest) {
+      closest = p;
+    }
   }
+
+  // Return the exact normative score stored in the matrix
+  return column[closest];
+}
 
   /**
    * Main execute method.
