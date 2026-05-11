@@ -1,6 +1,16 @@
-// MoCA-specific modal.
-// mode: 'register' | 'modify' | 'consult'
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+
+function resolveSchoolingYears (schooling) {
+  const map = {
+    'Sin escolaridad': 0,
+    'Primaria': 6,
+    'Secundaria': 9,
+    'Bachillerato': 12,
+    'Licenciatura': 16,
+    'Posgrado': 18,
+  };
+  return map[schooling] ?? null;
+}
 
 function resolveMOCAFinalScore (raw, schoolingYears) {
   let final = raw;
