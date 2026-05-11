@@ -9,11 +9,12 @@ class financialInterviewController {
   async getFinancialInterview (req, res) {
 
     try {
-      const { id_user } = req.params;
+      const { id_user, step, subStep } = req.params;
 
       const financialInterview = await this.financialInterviewUseCase.execute({
         id_user,
-        section: 'financial',
+        step,
+        subStep,
       });
 
       const response = FinancialInterviewDTO.fromEntity(financialInterview);
