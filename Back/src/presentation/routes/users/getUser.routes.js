@@ -16,6 +16,15 @@ const GetUserUseCase = require('../../../application/usecase/users/getUserUseCas
 const postApplicationUseCase   = require('../../../application/usecase/testApplications/postApplicationUseCase');
 const ApplicationsController   = require('../../controller/testApplications/postApplications.controller');
 
+//APOINTMENTS
+const ImpAppointmentRepository = require('../../../infrastructure/repositories/ImpAppointmentRepository');
+
+const createAppointmentUseCase = require('../../../application/usecase/appointments/createAppointmentUseCase');
+
+const CreateAppointmentController = require('../../controller/appointments/createAppointment.controller');
+
+
+
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
@@ -29,6 +38,12 @@ module.exports = (authUseCase) => {
   const testResultsRepository  = new impTestResultsRepository();
   const createAppUseCase       = new postApplicationUseCase(testAppRepository, testResultsRepository);
   const appController = new ApplicationsController(createAppUseCase);
+
+  const appointmentRepository = new ImpAppointmentRepository();
+
+  const createAppointmentUC = new createAppointmentUseCase(appointmentRepository);
+
+  const appointmentController = new CreateAppointmentController(createAppointmentUC);
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
@@ -45,6 +60,20 @@ module.exports = (authUseCase) => {
   //Create Application route
 
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
+
+    router.get(
+    '/clinics/list',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => clinicsController.listClinics(req, res)
+  );
+
+  router.post(
+    '/:id_user/appointments',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => appointmentController.createAppointment(req, res)
+  );
 
   return router;
 };
