@@ -60,6 +60,18 @@ class ImpAppointmentRepository extends appointmentRepository {
     );
     return idAppointment;
   }
+  // Deletes the upcoming appointment of a user, returns true if deleted
+    async deleteUpcomingByUser ({ id_user }) {
+    const [result] = await db.query(
+        `DELETE a FROM appointment a
+        JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        AND ur.type = 'appointment'
+        AND a.date_time >= NOW()`,
+        [id_user]
+    );
+    return result.affectedRows > 0;
+    }
 }
 
 module.exports = ImpAppointmentRepository;
