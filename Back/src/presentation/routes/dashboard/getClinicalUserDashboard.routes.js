@@ -29,7 +29,7 @@ module.exports = (authUseCase) => {
   const controller3 = new GetUserInfoController(useCase3);
 
   router.get(
-    '/',
+    '/api',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
     (req, res) => controller1.getMenuClinicalUsers(req, res)
@@ -37,14 +37,21 @@ module.exports = (authUseCase) => {
   );
 
   router.get(
-    '/:idClinicalUser',
+    '/view',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
+    (req, res) => controller2.getDashboardView(req, res)
+  );
+
+  router.get(
+    '/api/:idClinicalUser',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
     (req, res) => controller2.getClinicalDashboard(req, res)
   );
 
   router.get(
-    '/user/:idUser',
+    '/api/user/:idUser',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
     (req, res) => controller3.getClinicalDashboard(req, res)
