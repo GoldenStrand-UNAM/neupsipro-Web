@@ -16,14 +16,14 @@ const GetUserUseCase = require('../../../application/usecase/users/getUserUseCas
 const postApplicationUseCase   = require('../../../application/usecase/testApplications/postApplicationUseCase');
 const ApplicationsController   = require('../../controller/testApplications/postApplications.controller');
 
-//APOINTMENTS
+//APOINTMENTS create
 const ImpAppointmentRepository = require('../../../infrastructure/repositories/ImpAppointmentRepository');
-
 const createAppointmentUseCase = require('../../../application/usecase/appointments/createAppointmentUseCase');
+const createAppointmentController = require('../../controller/appointments/createAppointment.controller');
 
-const CreateAppointmentController = require('../../controller/appointments/createAppointment.controller');
-
-
+//apointment delete
+const deleteAppointmentUseCase    = require('../../../application/usecase/appointments/deleteAppointmentUseCase');
+const deleteAppointmentController = require('../../controller/appointments/deleteAppointment.controller');
 
 module.exports = (authUseCase) => {
 
@@ -40,10 +40,11 @@ module.exports = (authUseCase) => {
   const appController = new ApplicationsController(createAppUseCase);
 
   const appointmentRepository = new ImpAppointmentRepository();
+  const createAppointment = new createAppointmentUseCase(appointmentRepository);
+  const appointmentController = new createAppointmentController(createAppointment);
 
-  const createAppointmentUC = new createAppointmentUseCase(appointmentRepository);
-
-  const appointmentController = new CreateAppointmentController(createAppointmentUC);
+  const deleteAppointment   = new deleteAppointmentUseCase(appointmentRepository);
+  const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
@@ -75,5 +76,11 @@ module.exports = (authUseCase) => {
     (req, res) => appointmentController.createAppointment(req, res)
   );
 
+  router.delete(
+  '/:id_user/appointments',
+  authMiddleware.verifyToken,
+  permissionsMiddleware.requirePermission('user management', 'eliminate'),
+  (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
+  );
   return router;
 };
