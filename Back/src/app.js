@@ -100,6 +100,9 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase));
 
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+app.use('/', getAllClinicalsRoutes(authUseCase));
+
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });
