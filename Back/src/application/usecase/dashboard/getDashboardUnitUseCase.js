@@ -13,7 +13,6 @@ class GetDashboardSummaryUseCase {
       this.repo.fetchTestCounts(),
       this.repo.fetchStandByList(),
     ]);
-
     return new DashboardSummaryDTO({ counts, age, gender, tests, standByList });
   }
 }

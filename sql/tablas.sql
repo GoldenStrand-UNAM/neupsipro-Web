@@ -703,3 +703,7 @@ CREATE TABLE user_clinical (
     activity     VARCHAR(20) NULL ,
     CONSTRAINT fk_user_clinical_user FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
+
+ALTER TABLE users 
+ADD COLUMN gender enum('Man','Woman','other','not especified') 
+NULL AFTER birthdate;
