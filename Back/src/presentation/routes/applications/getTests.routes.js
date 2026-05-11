@@ -19,6 +19,11 @@ const postWAISController = require('../../controller/testApplications/postWAIS.c
 const postMOCAUseCase    = require('../../../application/usecase/testApplications/postMOCAUseCase');
 const postMOCAController = require('../../controller/testApplications/postMOCA.controller');
 
+//REY
+
+const postREYUseCase    = require('../../../application/usecase/testApplications/postREYUseCase');
+const postREYController = require('../../controller/testApplications/postREY.controller');
+
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -43,6 +48,10 @@ module.exports = (authUseCase) => {
   //MOCA
   const mocaUseCase    = new postMOCAUseCase(testResultsRepo);
   const mocaController = new postMOCAController(mocaUseCase);
+
+  //REY
+  const reyUseCase    = new postREYUseCase(testResultsRepo);
+  const reyController = new postREYController(reyUseCase);
 
   const jwtService            = new JwtService();
   const authMiddleware        = new AuthMiddleware(jwtService);
