@@ -50,5 +50,17 @@ class ImpClinicalRepository extends clinicalRepository {
     );
     return rows[0]?.total ?? 0;
   }
+  //get all clinical users
+  async fetchAll () {
+  const [rows] = await db.query(
+    `SELECT 
+        u.id_user AS id,
+        CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name
+     FROM users u
+     WHERE u.id_role = 3 AND u.eliminated = 0
+     ORDER BY u.first_name ASC`
+  );
+  return rows;
+}
 }
 module.exports = ImpClinicalRepository;
