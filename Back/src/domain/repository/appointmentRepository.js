@@ -8,5 +8,8 @@ class appointmentRepository {
   async findOrCreateUserRelation ({ _id_user, _id_clinic_user }) {
     throw new Error('findOrCreateUserRelation() must be implemented');
   }
+  async deleteUpcomingByUser ({ _id_user }) {
+  throw new Error('deleteUpcomingByUser() must be implemented');
+}
 }
 module.exports = appointmentRepository;
