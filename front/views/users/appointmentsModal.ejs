@@ -175,6 +175,7 @@
             if (!res.ok) throw new Error(data.error || 'Error al agendar');
 
             showToast('Cita agendada con éxito', 'success');
+            // close modal and refresh 
             setTimeout(() => window.location.reload(), 1200);
         } catch (err) {
             showError(err.message);
