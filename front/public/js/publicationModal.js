@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       year: 'numeric', month: '2-digit', day: 'numeric',
       hour: '2-digit', minute: '2-digit',
     });
+    // This was changed from ejs to js by AI
     return `
     <div class="flex items-center sm:flex-row gap-4 p-6">
     ${publication.pp
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="flex sm:flex-row gap-2 px-6 py-4">
         ${publication.content
-    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+    ? `<p class="break-words text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
     : ''
 }
     </div>
@@ -83,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${interaction.firstName}</p>
                 </div>
             </div>
-            <div class="flex sm:flex-row gap-2 px-7 py-2">
+            <div class=" flex sm:flex-row gap-2 px-7 py-2">
                 ${interaction.content
-    ? `<p class="text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
+    ? `<p class= "break-words w-full text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
     : ''
 }
             </div>
