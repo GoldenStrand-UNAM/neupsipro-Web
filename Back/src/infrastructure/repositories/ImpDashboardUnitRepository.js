@@ -10,12 +10,12 @@ const {
 
 /*
 *  NOTE : this repoImp is more complex than others because it has to do a lot of data processing
-*  and classification in SQL to minimize the amount of logic in the use case, the queries were 
+*  and classification in SQL to minimize the amount of logic in the use case, the queries were
 *  made with AI help
 */
- class ImpDashboardRepository extends DashboardRepository {
+class ImpDashboardRepository extends DashboardRepository {
 
-// Classifies each active patient into one mutually exclusive bucket & returns totals.
+  // Classifies each active patient into one mutually exclusive bucket & returns totals.
   async fetchCounts () {
     const [rows] = await db.query(`
       SELECT
@@ -45,7 +45,7 @@ const {
     return new DashboardCountsEntity(rows[0] || {});
   }
 
-    // Groups patients into 5 age ranges (0-17, 18-29, 30-44, 45-59, 60+) 
+  // Groups patients into 5 age ranges (0-17, 18-29, 30-44, 45-59, 60+)
   async fetchAgeDistribution () {
     const [rows] = await db.query(`
       SELECT
@@ -84,7 +84,7 @@ const {
     `);
     return rows.map(r => new GenderBucketEntity(r));
   }
-  // Counts how many results exist per psychological test 
+  // Counts how many results exist per psychological test
   async fetchTestCounts () {
     const [rows] = await db.query(`
       SELECT
@@ -112,7 +112,7 @@ const {
     return rows.map(r => r.reference_number);
   }
 
-   // Returns full detail of one standBy user 
+  // Returns full detail of one standBy user
   async fetchStandByDetail (referenceNumber) {
     const [rows] = await db.query(`
     SELECT
