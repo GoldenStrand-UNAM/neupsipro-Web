@@ -19,7 +19,6 @@ const ApplicationsController   = require('../../controller/testApplications/post
 const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
 const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
-
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
@@ -54,11 +53,11 @@ module.exports = (authUseCase) => {
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
 
   router.delete(
-  '/:id_user',
-  authMiddleware.verifyToken,
-  permissionsMiddleware.requirePermission('user management', 'eliminate'),
-  (req, res) => deleteController.deleteUser(req, res)
-);
+    '/:id_user',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => deleteController.deleteUser(req, res)
+  );
 
   return router;
 };
