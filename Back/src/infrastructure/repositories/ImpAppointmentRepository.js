@@ -50,7 +50,7 @@ class ImpAppointmentRepository extends appointmentRepository {
     );
     return idUserRelation;
   }
-
+// Creates an appointment and returns id
   async createAppointment ({ id_user_relation, issue, date_time }) {
     const idAppointment = uuidv4();
     await db.query(
@@ -62,15 +62,37 @@ class ImpAppointmentRepository extends appointmentRepository {
   }
   // Deletes the upcoming appointment of a user, returns true if deleted
     async deleteUpcomingByUser ({ id_user }) {
-    const [result] = await db.query(
-        `DELETE a FROM appointment a
+    //  Find the upcoming appointment id and its user_relation id
+    const [rows] = await db.query(
+        `SELECT a.id_appointment, a.id_user_relation
+        FROM appointment a
         JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
         WHERE ur.id_user = ?
         AND ur.type = 'appointment'
-        AND a.date_time >= NOW()`,
+        AND a.date_time >= NOW()
+        LIMIT 1`,
         [id_user]
     );
-    return result.affectedRows > 0;
+
+    if (rows.length === 0) {
+        return false;
+    }
+
+    const { id_appointment, id_user_relation } = rows[0];
+
+    // Delete the appointment
+    await db.query(
+        `DELETE FROM appointment WHERE id_appointment = ?`,
+        [id_appointment]
+    );
+
+    // Delete the user_relation
+    await db.query(
+        `DELETE FROM user_relation WHERE id_user_relation = ?`,
+        [id_user_relation]
+    );
+
+    return true;
     }
 }
 
