@@ -141,6 +141,29 @@
                         </div>
                     </div>
                 </div>
+                <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
+                    <div class="md:flex justify-between items-center">
+                        <h2 class="text-2xl pt-7 p-3 font-medium">Usuarios relacionados</h2>
+                    </div>
+                    <table class="w-full border-collapse text-sm md:text-base ">
+                        <thead>
+                            <tr class="border-b-2 border-gray-200 table-fixed">
+                                <th class="w-[10%] py-2.5 px-4 text-left font-semibold text-gray-700">Usuario</th>
+                                <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
+                                <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Fecha de asignación</th>
+                                <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Actividad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr>
+                                <td colspan="5" class="py-10 text-center text-gray-400">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="pagination" class="flex items-center justify-center gap-3 py-3"></div>
+
+                </div>
+
         </main>
     </div>
 
@@ -153,5 +176,96 @@
     <script src="/js/consultClinical.js"></script>
 
 
+<script>
+
+// ===== Utilitys =====
+let currentPage   = 1;
+const LIMIT       = 4;
+let debounceTimer;
+
+// ===== Fetch =====
+async function fetchUsers() {
+    const params = new URLSearchParams({ page: currentPage, limit: LIMIT, id_user: window.__USER_DATA__.idUser });
+    try {
+        const res  = await fetch(`/clinical/clinical-patient?${params}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Server error:", data.error);
+            showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
+            return;
+        }
+
+        renderTable(data.patients);
+        renderPagination(data.totalPages, data.page);
+
+    } catch (err) {
+        console.error("Network error:", err);
+        showMsg("No se pudo conectar al servidor. Verifica tu conexión.", "text-red-400");
+    }
+}
+
+// = ====  Render===========
+function renderTable(users) {
+    const tbody = document.getElementById("users-tbody");
+    if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
+
+    tbody.innerHTML = users.map(u => `
+        <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
+            <td class="py-3 px-4 text-gray-500">${escapeHtml(u.name)}</td>
+            <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
+            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(formatAppointmentDate(u.assigmentDate))}</td>
+            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>            
+        </tr>
+    `).join("");
+}
+
+function formatAppointmentDate (dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString('es-MX', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+function renderPagination(totalPages, page) {
+    const c = document.getElementById("pagination");
+    c.innerHTML = "";
+    if (totalPages <= 1) return;
+
+    const btn = (label, disabled, onClick) => {
+        const b = document.createElement("button");
+        b.textContent = label;
+        b.disabled = disabled;
+        b.onclick = onClick;
+        b.className = "btn-mini bg-[#002B7A] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none";
+        return b;
+    };
+
+    const info = document.createElement("span");
+    info.className = "text-sm text-gray-500";
+    info.textContent = `Página ${page} de ${totalPages}`;
+
+    c.append(
+        btn("Anterior", page <= 1, () => { currentPage--; fetchUsers(); }),
+        info,
+        btn("Siguiente ", page >= totalPages, () => { currentPage++; fetchUsers(); })
+    );
+}
+
+function showMsg(msg, colorClass) {
+    document.getElementById("users-tbody").innerHTML =
+   `<tr>
+    <td colspan="5" class="py-10">
+        <div class="flex justify-center items-center text-center ${escapeHtml(colorClass)}">
+            ${escapeHtml(msg)}
+        </div>
+    </td>
+    </tr>`;
+    document.getElementById("pagination").innerHTML = "";
+}
+fetchUsers();
+    </script>
   </body>
 </html>
