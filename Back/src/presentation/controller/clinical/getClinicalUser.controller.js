@@ -1,6 +1,7 @@
-class getClinicalUserController {
-  constructor (getClinicalUserUseCase) {
+class ClinicalUserController {
+  constructor (getClinicalUserUseCase, getClinicalPatientsUseCase) {
     this.getClinicalUserUseCase = getClinicalUserUseCase;
+    this.getClinicalPatientsUseCase = getClinicalPatientsUseCase;
   }
 
   async getClinicalUser (req, res) {
@@ -17,6 +18,23 @@ class getClinicalUserController {
       });
     }
   }
+
+  async getPatients (req, res) {
+    try {
+      const { id_user, page = 1, limit = 10 } = req.query;
+
+      const result = await this.getClinicalPatientsUseCase.execute({
+        id_user,
+        page,
+        limit,
+      });
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
 }
 
-module.exports = getClinicalUserController;
+module.exports = ClinicalUserController;

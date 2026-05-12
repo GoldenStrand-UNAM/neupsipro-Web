@@ -3,7 +3,9 @@ class User {
     this.idUser = data.id_user;
     this.photo = data.profile_photo;
     this.referenceNumber = data.reference_number;
-    this.name = `${data.first_name} ${data.lastname_p} ${data.lastname_m}`;
+    this.name = [data.first_name, data.lastname_p, data.lastname_m]
+      .filter(Boolean)
+      .join(' ');
     this.age = this.calculateAge(data.birthdate);
     this.registrationDate = data.registration_date;
     this.phase = data.neuro_status;
