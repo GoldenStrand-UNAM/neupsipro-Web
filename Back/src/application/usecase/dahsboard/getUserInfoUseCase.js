@@ -1,4 +1,5 @@
 const clinicalDashboardDTO = require('../../dto/clinicalDashboardDTO');
+const { getPresignedUrl }  = require('../../../infrastructure/external/s3.config');
 
 class GetUserInfoUseCase {
   constructor (dashboardRepository) {
@@ -6,7 +7,7 @@ class GetUserInfoUseCase {
   }
   async execute ({ idUser }) {
     const userInfo = await this.dashboardRepository.fetchInfoUser({ idUser });
-    const dto = new clinicalDashboardDTO.userInfoDTO(userInfo);
+    const dto = new clinicalDashboardDTO.userInfoDTO(userInfo[0]);
     console.log(dto);
     return dto;
   }

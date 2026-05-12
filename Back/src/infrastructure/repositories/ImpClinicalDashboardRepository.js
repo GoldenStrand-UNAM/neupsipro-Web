@@ -5,6 +5,7 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
   async fetchNumberUsers ({ idClinicalUser }) {
     const [numbers] = await db.query (
       `SELECT
+        COUNT(*) AS total_users,
         SUM(CASE WHEN bucket = 'discharged'      THEN 1 ELSE 0 END) AS discharged,
         SUM(CASE WHEN bucket = 'in_intervention' THEN 1 ELSE 0 END) AS in_intervention,
         SUM(CASE WHEN bucket = 'stand_by'        THEN 1 ELSE 0 END) AS stand_by,
@@ -34,7 +35,39 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
     );
     return numbers;
   }
-
+  async fetchHistoricalNumberUsers ({ idClinicalUser }) {
+    const [historicalNumbers] = await db.query (
+      `SELECT
+        COUNT(*) AS total_users,
+        SUM(CASE WHEN bucket = 'discharged'      THEN 1 ELSE 0 END) AS discharged,
+        SUM(CASE WHEN bucket = 'in_intervention' THEN 1 ELSE 0 END) AS in_intervention,
+        SUM(CASE WHEN bucket = 'stand_by'        THEN 1 ELSE 0 END) AS stand_by,
+        SUM(CASE WHEN bucket = 'clinical'        THEN 1 ELSE 0 END) AS clinical,
+        SUM(CASE WHEN bucket = 'research'        THEN 1 ELSE 0 END) AS research,
+        SUM(CASE WHEN bucket = 'no_protocol'     THEN 1 ELSE 0 END) AS no_protocol
+      FROM (
+        SELECT
+          CASE
+            WHEN ui.state = 'Discharged'                                      THEN 'discharged'
+            WHEN ui.state = ui.stage IN ('Initial', 'Following')              THEN 'in_intervention'
+            WHEN ui.state = 'Stand_by'                                        THEN 'stand_by'
+            WHEN ui.state = ui.protocol = 'Clinical'                          THEN 'clinical'
+            WHEN ui.state = ui.protocol = 'Research'                           THEN 'research'
+            WHEN ui.protocol = 'Pending'                                      THEN 'no_protocol'
+            ELSE 'excluded'
+          END AS bucket
+        FROM user_info ui
+        JOIN users u ON u.id_user = ui.id_user
+        JOIN user_relation ur ON u.id_user = ur.id_user
+        WHERE u.eliminated = 0
+          AND u.id_role = 2
+          AND ur.id_clinic_user = ?
+		  AND ur.type = 'assigned'
+      ) AS classified;`,
+      [idClinicalUser]
+    );
+    return historicalNumbers;
+  }
   async fetchAllWithClinical ({ idClinicalUser }) {
     const [users] = await db.query (
       `SELECT ui.id_user, u.first_name, u.lastname_p, u.lastname_m
