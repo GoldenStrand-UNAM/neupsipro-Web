@@ -372,72 +372,105 @@ function openBANFEModal (idUser, idApplication, test, mode) {
 
   // Live interpretation — only in register/modify modes
   if (!isConsult) {
-    scoreInput.addEventListener('input', () => {
-      scoreError.classList.add('hidden');
+
+  // References to the three input/interp/error elements
+  const fields = [
+    { input: 'inputOrbitFrontal',     interp: 'interpOrbitFrontal',     error: 'errorOrbitFrontal'     },
+    { input: 'inputPrefrontalBefore', interp: 'interpPrefrontalBefore', error: 'errorPrefrontalBefore' },
+    { input: 'inputDLateral',         interp: 'interpDLateral',         error: 'errorDLateral'         },
+  ];
+
+  // Live interpretation per area + running total
+  fields.forEach(({ input, interp, error }) => {
+    document.getElementById(input).addEventListener('input', () => {
+      const errorEl = document.getElementById(error);
+      errorEl.classList.add('hidden');
 
       // Strip non-digit characters
-      if (!/^\d*$/.test(scoreInput.value)) {
-        scoreInput.value = scoreInput.value.replace(/\D/g, '');
-      }
+      const el = document.getElementById(input);
+      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
 
-      const n = Number(scoreInput.value);
+      const n = Number(el.value);
+      document.getElementById(interp).textContent =
+        el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
 
-      if (scoreInput.value === '' || isNaN(n)) {
-        interpretLabel.textContent = '—';
-        return;
-      }
-
-      if (n > 200) {
-        interpretLabel.textContent = '—';
-        scoreError.textContent = 'El puntaje debe estar entre 0 y 200';
-        scoreError.classList.remove('hidden');
-        return;
-      }
-
-      interpretLabel.textContent = interpretBANFE(n);
+      // Recalculate running total
+      updateScoreTotal();
     });
+  });
 
-    // Save
-    document.getElementById('btnSaveBANFE').addEventListener('click', async () => {
-      apiError.classList.add('hidden');
-      scoreError.classList.add('hidden');
-
-      const score = Number(scoreInput.value);
-      const notes = document.getElementById('inputBANFENotes').value.trim() || null;
-
-      if (!scoreInput.value || isNaN(score) || score < 0 || score > 200) {
-        scoreError.textContent = 'Ingresa un puntaje válido entre 0 y 200';
-        scoreError.classList.remove('hidden');
-        return;
-      }
-
-      const config = TEST_REGISTRY[1];
-
-      try {
-        const res = await fetch(config.endpoint(idUser, idApplication), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ score, notes }),
-        });
-
-        const json = await res.json();
-
-        if (!res.ok) {
-          apiError.textContent = json.error || 'Error al guardar el resultado';
-          apiError.classList.remove('hidden');
-          return;
-        }
-
-        updateTestCardStatus(json.data);
-        closeModal();
-        showToast('Resultado guardado con éxito');
-
-      } catch (_err) {
-        apiError.textContent = 'No se pudo conectar con el servidor';
-        apiError.classList.remove('hidden');
-        // eslint-disable-next-line no-console
-        console.error('[BANFE] post error:', _err);
-      }
+  function updateScoreTotal () {
+    const vals = fields.map(({ input }) => {
+      const v = Number(document.getElementById(input).value);
+      return isNaN(v) ? null : v;
     });
+    const allFilled = vals.every(v => v !== null && document.getElementById(fields[vals.indexOf(v)?.toString()]?.input)?.value !== '');
+    // Sum only when all three have a value
+    const inputs = fields.map(({ input }) => document.getElementById(input).value);
+    const total  = inputs.every(v => v !== '') 
+      ? inputs.reduce((acc, v) => acc + Number(v), 0) 
+      : '—';
+    document.getElementById('banfeScoreTotal').textContent = total;
   }
+
+  // Save
+  document.getElementById('btnSaveBANFE').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+
+    // Validate all three fields
+    let valid = true;
+    const scores = {};
+
+    const fieldMap = [
+      { input: 'inputOrbitFrontal',     error: 'errorOrbitFrontal',     key: 'score_orbit_frontal'     },
+      { input: 'inputPrefrontalBefore', error: 'errorPrefrontalBefore', key: 'score_prefrontal_before' },
+      { input: 'inputDLateral',         error: 'errorDLateral',         key: 'score_d_lateral'         },
+    ];
+
+    fieldMap.forEach(({ input, error, key }) => {
+      const el  = document.getElementById(input);
+      const val = Number(el.value);
+      const errEl = document.getElementById(error);
+
+      if (el.value === '' || isNaN(val) || val < 0) {
+        errEl.textContent = 'Ingresa un puntaje válido';
+        errEl.classList.remove('hidden');
+        valid = false;
+      } else {
+        scores[key] = val;
+      }
+    });
+
+    if (!valid) return;
+
+    const notes = notesInput.value.trim() || null;
+    const config = TEST_REGISTRY[1];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...scores, notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[BANFE] post error:', _err);
+    }
+  });
+}
 }
