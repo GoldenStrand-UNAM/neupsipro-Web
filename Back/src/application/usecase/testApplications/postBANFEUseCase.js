@@ -39,7 +39,6 @@ class postBANFEUseCase {
  */
   async execute ({ id_user, id_application, score_orbit_frontal, score_prefrontal_before, score_d_lateral, notes }) {
 
-
     // 1. Validate and parse each area score
     const orbitFrontal     = this.#parseAreaScore(score_orbit_frontal,     'score_orbit_frontal');
     const prefrontalBefore = this.#parseAreaScore(score_prefrontal_before,  'score_prefrontal_before');
@@ -65,9 +64,51 @@ class postBANFEUseCase {
       throw err;
     }
 
+    // 4. Recalculate interpretations server-side — never trust the client
+    const interOrbitFrontal     = this.resolveInterpretation(orbitFrontal);
+    const interPrefrontalBefore = this.resolveInterpretation(prefrontalBefore);
+    const interDLateral         = this.resolveInterpretation(dLateral);
+
+    // 5. Compute total score — sum of all three areas, no interpretation
+    const scoreTotal = orbitFrontal + prefrontalBefore + dLateral;
+
+    // 6. Persist the result
+    const saved = await this.impTestResultsRepository.saveBANFEResult({
+      id_results:              row.idResults,
+      score_orbit_frontal:     orbitFrontal,
+      inter_orbit_frontal:     interOrbitFrontal,
+      score_prefrontal_before: prefrontalBefore,
+      inter_prefrontal_before: interPrefrontalBefore,
+      score_d_lateral:         dLateral,
+      inter_d_lateral:         interDLateral,
+      score_total:             scoreTotal,
+      notes:                   notes ?? null,
+    });
+
+    // 7. Return DTO — never expose raw entity across boundaries
+    return {
+      idResults: row.idResults,
+      idTest:    1,
+      status:    3,
+      areas: {
+        orbitFrontal: {
+          score:          saved.score_orbit_frontal,
+          interpretation: saved.inter_orbit_frontal,
+        },
+        prefrontalBefore: {
+          score:          saved.score_prefrontal_before,
+          interpretation: saved.inter_prefrontal_before,
+        },
+        dLateral: {
+          score:          saved.score_d_lateral,
+          interpretation: saved.inter_d_lateral,
+        },
+      },
+      scoreTotal: saved.score_total,
+      notes:      saved.notes,
+    };
+
   }
-
-
 
 }
 
