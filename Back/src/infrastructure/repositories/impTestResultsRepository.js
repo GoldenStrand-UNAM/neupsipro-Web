@@ -46,29 +46,6 @@ class impTestResultsRepository extends resultRepository {
     return rows.map(row => new Tests(row));
   }
 
-  //New method for insert one result row per test in the resolved protocol
-  async createResults (id_application, id_user, tests) {
-    if (!tests || tests.length === 0) return [];
-
-    // Build multi-row INSERT: one placeholder group per test
-    const placeholders = tests.map(() => '(?, ?, ?, ?, 1)').join(', ');
-    const values       = tests.flatMap(test => [
-      uuidv4(), 
-      id_user, 
-      id_application, 
-      test.id_test
-    ]);
-
-    const [result] = await db.query(
-      `INSERT INTO test_results (id_results, id_user, id_application, id_test, status)
-       VALUES ${placeholders}`,
-      values
-    );
-
-    return result;
-  }
-
-
 
   // Fetch the schooling level of a user from their initial interview.
 

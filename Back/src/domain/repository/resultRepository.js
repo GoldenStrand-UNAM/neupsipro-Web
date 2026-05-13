@@ -11,15 +11,6 @@ class resultRepository {
     throw new Error('fetchTestsByApplication() not implemented');
   }
 
-  //Fetch a single result row to validate it exists before saving.
-  async fetchResultRow ({ _id_user, _id_application, _id_test }) {
-    throw new Error('fetchResultRow() not implemented');
-  }
-
-  //Update an existing result row with score, interpretation, notes and status.
-  async saveResult ({ _id_results, _score, _interpretation, _notes }) {
-    throw new Error('saveResult() not implemented');
-  }
 
   // Fetch schooling level for a user from their initial interview.
   async fetchUserSchooling ({ _id_user }) {
