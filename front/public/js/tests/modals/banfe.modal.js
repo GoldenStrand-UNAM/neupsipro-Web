@@ -19,9 +19,16 @@ function openBANFEModal (idUser, idApplication, test, mode) {
   const isModify  = mode === 'modify';
 
   // Pre-fill values when modifying or consulting
-  const prefillScore = (isModify || isConsult) ? (test.score ?? '') : '';
   const prefillNotes = (isModify || isConsult) ? (test.notes ?? '') : '';
-  const prefillInterp = prefillScore !== '' ? interpretBANFE(prefillScore) : '—';
+
+  // Each area: score + interpretation pre-filled from test.areas (returned by the DTO)
+  const areas = (isModify || isConsult) ? (test.areas ?? {}) : {};
+
+  const prefill = {
+    orbitFrontal:     { score: areas.orbitFrontal?.score     ?? '', interp: areas.orbitFrontal?.interpretation     ?? '—' },
+    prefrontalBefore: { score: areas.prefrontalBefore?.score ?? '', interp: areas.prefrontalBefore?.interpretation ?? '—' },
+    dLateral:         { score: areas.dLateral?.score         ?? '', interp: areas.dLateral?.interpretation         ?? '—' },
+  };
 
   const titles = { register: 'Registrar', modify: 'Modificar', consult: 'Consultar' };
 
