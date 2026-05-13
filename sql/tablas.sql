@@ -705,11 +705,10 @@ CREATE TABLE user_clinical (
     CONSTRAINT fk_user_clinical_user FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
 
-<<<<<<< HEAD
 ALTER TABLE users 
 ADD COLUMN gender enum('Man','Woman','Other','not especified') 
 NULL AFTER birthdate;
-=======
+
 ALTER TABLE test_sessions RENAME TO test_applications;
 
 ALTER TABLE test_results 
@@ -741,4 +740,3 @@ ALTER TABLE user_clinical
     ADD COLUMN start_date DATE NOT NULL,
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
-
