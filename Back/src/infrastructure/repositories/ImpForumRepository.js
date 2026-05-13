@@ -31,56 +31,41 @@ class ImpForumRepository extends forumRepository {
     );
     return rows;
   }
-  // Inserts a new publication, return its generated id
-  async save ({ id_usuario, titulo, contenido, image }) {
+    // Inserts a new publication, return its generated id
+    async save({ id_usuario, titulo, contenido, image }) {
     const id = uuidv4();
 
     await db.query(
-      `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
+        `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
          VALUES (?, ?, ?, ?, ?, NOW())`,
-      [id, id_usuario, titulo, contenido, image]
+        [id, id_usuario, titulo, contenido, image] 
     );
 
     const [rows] = await db.query(
-      'SELECT * FROM publication WHERE id_publication = ?',
-      [id]
+        'SELECT * FROM publication WHERE id_publication = ?',
+        [id]
     );
 
     return rows[0];
   }
-  async fetchOne ({ idPublication }) {
-    const result = await db.query(
-      `SELECT 
-                p.id_user,
-                p.time_and_date,
-                p.title,
-                p.content,
-                p.image
-            FROM publication p
-            WHERE p.id_publication = ?`,
+  // find publication 
+  async findById ({ idPublication }) {
+    const [rows] = await db.query(
+      `SELECT id_publication, id_user, title, image
+       FROM publication
+       WHERE id_publication = ?
+       LIMIT 1`,
       [idPublication]
     );
-    return result;
+    return rows.length ? rows[0] : null;
   }
-
-  async fetchOneUser ({ idPublication }) {
-    const result = await db.query(
-      `SELECT 
-                p.id_user,
-                p.time_and_date,
-                p.title,
-                p.content,
-                p.image,
-                u.first_name,
-                u.lastname_p,
-                u.lastname_m,
-                u.profile_photo 
-            FROM publication p
-            JOIN users u ON u.id_user = p.id_user
-            WHERE p.id_publication = ?`,
+  // delete publication by id
+  async deletePublication ({ idPublication }) {
+    const [result] = await db.query(
+      `DELETE FROM publication WHERE id_publication = ?`,
       [idPublication]
     );
-    return result;
+    return result.affectedRows > 0;
   }
 }
 
