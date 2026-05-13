@@ -35,7 +35,7 @@ class ImpInterventionRepository extends interventionRepository {
   async createIntervention ({ id_user }) {
     const idIntervention = uuidv4();
     await db.query(
-      `INSERT INTO intervention (id_intervention, id_user) VALUES (?, ?)`,
+      'INSERT INTO intervention (id_intervention, id_user) VALUES (?, ?)',
       [idIntervention, id_user]
     );
     return idIntervention;
@@ -53,33 +53,33 @@ class ImpInterventionRepository extends interventionRepository {
   }
 
   // Returns all sessions of an intervention id
-    async findSessionsByIntervention ({ id_intervention }) {
-        const [rows] = await db.query(
-        `SELECT id_session, id_intervention, session_number, session_date,
+  async findSessionsByIntervention ({ id_intervention }) {
+    const [rows] = await db.query(
+      `SELECT id_session, id_intervention, session_number, session_date,
                 objectives, development, dqp_task
         FROM intervention_session
         WHERE id_intervention = ?
         ORDER BY session_date ASC, id_session ASC`,
-        [id_intervention]
-        );
-        return rows.map(r => new InterventionSession(r));
-    }
+      [id_intervention]
+    );
+    return rows.map(r => new InterventionSession(r));
+  }
 
-    // Returns last session of an intervention id 
-    async findLastSession ({ id_intervention }) {
-        const [rows] = await db.query(
-        `SELECT id_session, id_intervention, session_number, session_date,
+  // Returns last session of an intervention id
+  async findLastSession ({ id_intervention }) {
+    const [rows] = await db.query(
+      `SELECT id_session, id_intervention, session_number, session_date,
                 objectives, development, dqp_task
         FROM intervention_session
         WHERE id_intervention = ?
         ORDER BY session_date DESC, id_session DESC
         LIMIT 1`,
-        [id_intervention]
-        );
-        return rows.length ? new InterventionSession(rows[0]) : null;
-    }
+      [id_intervention]
+    );
+    return rows.length ? new InterventionSession(rows[0]) : null;
+  }
 
-    // New session
+  // New session
   async createSession ({ id_intervention, session_number, session_date, objectives, development, dqp_task }) {
     const idSession = uuidv4();
     await db.query(
@@ -90,10 +90,10 @@ class ImpInterventionRepository extends interventionRepository {
     );
     return idSession;
   }
- // delte session with their id
+  // delte session with their id
   async deleteSession ({ id_session }) {
     const [result] = await db.query(
-      `DELETE FROM intervention_session WHERE id_session = ?`,
+      'DELETE FROM intervention_session WHERE id_session = ?',
       [id_session]
     );
     return result.affectedRows > 0;

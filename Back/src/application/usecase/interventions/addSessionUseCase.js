@@ -12,7 +12,7 @@ class addSessionUseCase {
 
     const idSession = await this.interventionRepository.createSession({
       id_intervention: intervention.idIntervention,
-      session_number:  session_number || null,
+      session_number: session_number || null,
       session_date,
       objectives: objectives || null,
       development: development || null,

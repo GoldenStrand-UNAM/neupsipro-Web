@@ -3,7 +3,7 @@ class Intervention {
     this.idIntervention = data.id_intervention;
     this.idUser = data.id_user;
     this.contractLink = data.contract_link;
-    this.neuroProfile = data.neuro_profile; 
+    this.neuroProfile = data.neuro_profile;
     this.createdAt = data.created_at;
 
     this.userFullName = data.user_full_name || null;

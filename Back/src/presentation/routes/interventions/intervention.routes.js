@@ -39,7 +39,6 @@ module.exports = (authUseCase) => {
     (req, res) => controller.updateContract(req, res)
   );
 
-  
   router.post(
     '/users/:id_user/intervention/sessions',
     authMiddleware.verifyToken,
