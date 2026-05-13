@@ -6,7 +6,6 @@ class Tests {
     this.testName = data.test_name;
     this.resultTable    = data.result_table; 
     this.dateApplied = data.date_applied;
-    this.notes = data.notes;
     this.status = this.getStatus(data.status);
   }
 

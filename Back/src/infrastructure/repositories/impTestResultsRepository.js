@@ -33,7 +33,7 @@ class impTestResultsRepository extends resultRepository {
               tr.id_application,
               tr.id_test,
               pt.test_name,
-              pt.result_table
+              pt.result_table,
               tr.status,
               tr.date_applied,
               tr.notes
@@ -52,7 +52,12 @@ class impTestResultsRepository extends resultRepository {
 
     // Build multi-row INSERT: one placeholder group per test
     const placeholders = tests.map(() => '(?, ?, ?, ?, 1)').join(', ');
-    const values       = tests.flatMap(id_test => [uuidv4(), id_user, id_application, id_test]);
+    const values       = tests.flatMap(test => [
+      uuidv4(), 
+      id_user, 
+      id_application, 
+      test.id_test
+    ]);
 
     const [result] = await db.query(
       `INSERT INTO test_results (id_results, id_user, id_application, id_test, status)
@@ -63,46 +68,7 @@ class impTestResultsRepository extends resultRepository {
     return result;
   }
 
-  //Fetch a single result row to validate it exists before saving.
-  async fetchResultRow ({ id_user, id_application, id_test }) {
-    const [rows] = await db.query(
-      `SELECT id_results, status
-       FROM test_results
-       WHERE id_user        = ?
-         AND id_application = ?
-         AND id_test        = ?`,
-      [id_user, id_application, id_test]
-    );
-    if (rows.length === 0) return null;
-    return {
-      idResults: rows[0].id_results,
-      status: rows[0].status,
-    };
-  }
 
-  //Update an existing result row with score, interpretation, notes and status.
-  async saveResult ({ id_results, notes }) {
-    await db.query(
-      `UPDATE test_results
-       SET notes          = ?,
-           date_applied   = CURDATE(),
-           status         = 3
-       WHERE id_results = ?`,
-      [score, interpretation, notes ?? null, id_results]
-    );
-
-    // Return the updated row as a Tests entity
-    const [rows] = await db.query(
-      `SELECT tr.id_results, tr.id_application, tr.id_test,
-              pt.test_name, tr.status, tr.score,
-              tr.interpretation, tr.date_applied, tr.notes
-       FROM test_results tr
-       JOIN psych_tests pt ON tr.id_test = pt.id_test
-       WHERE tr.id_results = ?`,
-      [id_results]
-    );
-    return new Tests(rows[0]);
-  }
 
   // Fetch the schooling level of a user from their initial interview.
 

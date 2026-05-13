@@ -35,10 +35,7 @@ class getTestsByApplicationUseCase {
       testName: t.testName,
       resultTable: t.resultTable,
       status: t.status,
-      score: t.score,
-      interpretation: t.interpretation,
       dateApplied: t.dateApplied,
-      notes: t.notes,
     }));
   }
 }

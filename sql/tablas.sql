@@ -738,6 +738,9 @@ DROP COLUMN score;
  
 ALTER TABLE test_results
 DROP COLUMN interpretation;
+
+ALTER TABLE test_results
+DROP COLUMN notes;
  
 ALTER TABLE psych_tests
 ADD COLUMN result_table VARCHAR(50) NOT NULL;

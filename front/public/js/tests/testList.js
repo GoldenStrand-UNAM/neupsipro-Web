@@ -1,4 +1,4 @@
-/* global getVariant, TEST_REGISTRY, escapeHTML, removeSkeletons, showError, openOptionsModal */
+/* global getVariant, TEST_REGISTRY, escapeHTML, removeSkeletons, showToast, openOptionsModal */
 
 (function () {
 
@@ -57,7 +57,7 @@
       removeSkeletons();
 
       if (!res.ok) {
-        showError(json.error || 'Error al cargar las pruebas');
+        showToast(json.error || 'Error al cargar las pruebas');
         return;
       }
 
@@ -77,7 +77,7 @@
 
     } catch (err) {
       removeSkeletons();
-      showError('No se pudo conectar con el servidor');
+      showToast('No se pudo conectar con el servidor');
       console.error('[testList] fetch error:', err);
     }
   }
