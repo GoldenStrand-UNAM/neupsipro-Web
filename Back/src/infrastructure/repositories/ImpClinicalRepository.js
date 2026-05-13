@@ -52,8 +52,7 @@ class ImpClinicalRepository extends clinicalRepository {
   }
 
   async fetchClinicalUsers () {
-    const [rows] = await db.query (
-      `SELECT 
+    const [rows] = await db.query (`SELECT 
         id_user AS id,
           CONCAT_WS( ' ', first_name, lastname_p, lastname_m) AS full_name
         FROM users

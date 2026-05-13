@@ -8,7 +8,7 @@ class GetUserInfoUseCase {
   async execute ({ idUser }) {
     const userInfo = await this.dashboardRepository.fetchInfoUser({ idUser });
     const dto = new clinicalDashboardDTO.userInfoDTO(userInfo[0]);
-    console.log(dto);
+    dto.pp = await getPresignedUrl(dto.pp);
     return dto;
   }
 }
