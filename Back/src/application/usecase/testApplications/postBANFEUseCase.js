@@ -4,6 +4,36 @@ class postBANFEUseCase {
   }
 
   /**
+   * Parses and validates a single area score.
+   * Must be present, finite, and non-negative.
+   */
+  #parseAreaScore (value, fieldName) {
+    const parsed = Number(value);
+    if (value === undefined || value === null || value === '' || isNaN(parsed)) {
+      const err = new Error(`${fieldName} must be a valid number`);
+      err.status = 422;
+      throw err;
+    }
+    if (parsed < 0) {
+      const err = new Error(`${fieldName} must be a non-negative number`);
+      err.status = 422;
+      throw err;
+    }
+    return parsed;
+  }
+
+  /**
+   * BANFE interpretation ranges per area score.
+   * Total score has no interpretation — only the sum is stored.
+   */
+  resolveInterpretation (score) {
+    if (score >= 116)              return 'Normal alto';
+    if (score >= 85)               return 'Normal';
+    if (score >= 70)               return 'Alteración leve-moderada';
+    /* score <= 69 */              return 'Alteración severa';
+  }
+
+  /**
    * Saves BANFE score, recalculates interpretation server-side,
    * and updates the result row to status 3 (Calificada).
  */
@@ -36,6 +66,8 @@ class postBANFEUseCase {
     }
 
   }
+
+
 
 }
 
