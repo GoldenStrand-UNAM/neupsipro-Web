@@ -1,3 +1,5 @@
+const TestsDTO = require('../../dto/testsDTO');
+
 class getTestsByApplicationUseCase {
 
   // impTestResultsRepository owns everything related to test results and their session.

@@ -1,3 +1,6 @@
+const BanfeResultsDTO = require('../../dto/banfeResultsDTO');
+
+
 class postBANFEUseCase {
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
@@ -86,7 +89,7 @@ class postBANFEUseCase {
     });
 
     // 7. Return DTO — never expose raw entity across boundaries
-    return {
+    return new BanfeResultsDTO( {
       idResults: row.idResults,
       idTest:    1,
       status:    3,
@@ -106,7 +109,7 @@ class postBANFEUseCase {
       },
       scoreTotal: saved.score_total,
       notes:      saved.notes,
-    };
+    });
 
   }
 
