@@ -728,3 +728,97 @@ RENAME COLUMN id_session TO id_application;
 ALTER TABLE test_results 
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
+
+-- ===========================================================
+-- Test changes
+-- ===========================================================
+ 
+ALTER TABLE test_results
+DROP COLUMN score;
+ 
+ALTER TABLE test_results
+DROP COLUMN interpretation;
+ 
+ALTER TABLE psych_tests
+ADD COLUMN result_table VARCHAR(50) NOT NULL;
+ 
+-- -----------------------------------------------------------
+-- BANFE
+-- -----------------------------------------------------------
+CREATE TABLE banfe_results (
+    id_banfe                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                  VARCHAR(36)  NOT NULL,
+    score_orbit_frontal         DECIMAL(5,2) NULL,
+    inter_orbit_frontal         VARCHAR(36),
+    score_prefrontal_before     DECIMAL(5,2) NULL,
+    inter_prefrontal_before     VARCHAR(36),
+    score_d_lateral             DECIMAL(5,2) NULL,
+    inter_d_lateral             VARCHAR(36),
+    score_total                 DECIMAL(5,2) NULL,
+    CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+
+-- -----------------------------------------------------------
+-- WAIS
+-- -----------------------------------------------------------
+CREATE TABLE wais_results (
+    id_wais                  INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36)  NOT NULL,
+    score_com_verbal         DECIMAL(5,2) NULL,
+    inter_com_verbal         VARCHAR(36),
+    score_razon_perceptual   DECIMAL(5,2) NULL,
+    inter_razon_perceptual   VARCHAR(36),
+    score_mem_work           DECIMAL(5,2) NULL,
+    inter_mem_work           VARCHAR(36),
+    score_velo_proce         DECIMAL(5,2) NULL,
+    inter_velo_proce         VARCHAR(36),
+    score_total              DECIMAL(5,2) NULL,
+    CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- MOCA
+-- -----------------------------------------------------------
+CREATE TABLE moca_results (
+    id_moca                  INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36) NOT NULL,
+    score                    INT NOT NULL,
+    interpretation VARCHAR(36),
+    CONSTRAINT fk_moca_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- NIH 
+-- -----------------------------------------------------------
+CREATE TABLE nih_results (
+    id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36) NOT NULL,
+    interpretation            VARCHAR(36),
+    CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
+-- -----------------------------------------------------------
+-- REY
+-- -----------------------------------------------------------
+CREATE TABLE rey_results (
+    id_rey                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36)  NOT NULL,
+    score_rc                  DECIMAL(5,2) NULL,
+    pc_rc                     INT          NULL,
+    time_rc                   DECIMAL(5,2) NULL,
+    pc_time_rc                INT          NULL,
+    score_mcp                 DECIMAL(5,2) NULL,
+    pc_mcp                    INT          NULL,
+    time_mcp                  DECIMAL(5,2) NULL,
+    pc_time_mcp               INT          NULL,
+    score_mlp                 DECIMAL(5,2) NULL,
+    pc_mlp                    INT          NULL,
+    time_mlp                  DECIMAL(5,2) NULL,
+    pc_time_mlp               INT          NULL,
+    CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
+ 
+
+ 
