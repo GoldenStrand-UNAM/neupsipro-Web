@@ -11,4 +11,16 @@ class Intervention {
     this.ocupation        = data.ocupation || null;
   }
 }
-module.exports = Intervention;
+
+class InterventionSession {
+  constructor (data) {
+    this.idSession = data.id_session;
+    this.idIntervention  = data.id_intervention;
+    this.sessionNumber   = data.session_number;
+    this.sessionDate     = data.session_date;
+    this.objectives      = data.objectives;
+    this.development     = data.development;
+    this.dqpTask         = data.dqp_task;
+  }
+}
+module.exports = { Intervention, InterventionSession };
