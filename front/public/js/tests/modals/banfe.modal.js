@@ -341,17 +341,44 @@ function bindFormListeners (idUser, idApplication, closeModal) {
 // Decides which HTML to render and whether to bind form listeners.
 
 // eslint-disable-next-line no-unused-vars
-function openBANFEModal (idUser, idApplication, test, mode) {
+async function openBANFEModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalBANFE');
   if (existing) existing.remove();
 
   const isConsult = mode === 'consult';
   const isModify  = mode === 'modify';
 
-  // Build prefill object — empty on register, populated on modify/consult
-  const areas = (isModify || isConsult) ? (test.areas ?? {}) : {};
+  // ── Fetch existing result before opening modify/consult ──────────────────
+  let fetchedTest = test;
+
+  if (isModify || isConsult) {
+    try {
+      const res = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados/${test.idResults}`
+      );
+      const json = await res.json();
+
+      if (!res.ok) {
+        showToast(json.error || 'No se pudieron cargar los resultados');
+        return;
+      }
+
+      // Merge fetched data into test object — keeps idTest, testName, etc.
+      fetchedTest = { ...test, ...json.data };
+
+    } catch (_err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[BANFE] get error:', _err);
+      return;
+    }
+  }
+
+  // ── Build prefill from fetched data ──────────────────────────────────────
+
+  const areas = (isModify || isConsult) ? (fetchedTest.areas ?? {}) : {};
   const prefill = {
-    orbitFrontal:     {
+    orbitFrontal: {
       score:  areas.orbitFrontal?.score          ?? '',
       interp: areas.orbitFrontal?.interpretation ?? '—',
     },
@@ -359,19 +386,20 @@ function openBANFEModal (idUser, idApplication, test, mode) {
       score:  areas.prefrontalBefore?.score          ?? '',
       interp: areas.prefrontalBefore?.interpretation ?? '—',
     },
-    dLateral:         {
+    dLateral: {
       score:  areas.dLateral?.score          ?? '',
       interp: areas.dLateral?.interpretation ?? '—',
     },
-    notes: (isModify || isConsult) ? (test.notes ?? '') : '',
+    notes: (isModify || isConsult) ? (fetchedTest.notes ?? '') : '',
   };
 
-  // Render the correct HTML block
+  // ── Render ────────────────────────────────────────────────────────────────
+
   const modal = document.createElement('div');
   modal.id        = 'modalBANFE';
   modal.className = 'modal-overlay';
   modal.innerHTML = isConsult
-    ? buildConsultHTML(test)
+    ? buildConsultHTML(fetchedTest)
     : buildFormHTML(mode, prefill);
 
   document.body.appendChild(modal);
