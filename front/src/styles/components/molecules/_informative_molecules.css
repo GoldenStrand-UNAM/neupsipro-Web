@@ -21,6 +21,7 @@
     @apply flex-1 leading-snug line-clamp-2;
   }
 }
+
 @layer components {
   /* Cube molecule - big number + label tile */
   .cube {

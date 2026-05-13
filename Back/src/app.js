@@ -89,6 +89,10 @@ const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
 
+const userRoutes = require('./presentation/routes/users/getUser.Routes');
+
+app.use('/users', userRoutes(authUseCase));
+
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 
 app.use('/', clinicalRoutes(authUseCase));
@@ -96,6 +100,10 @@ app.use('/', clinicalRoutes(authUseCase));
 const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
 
 app.use('/', postPublicationRoutes(authUseCase));
+
+const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
+
+app.use('/', dashboardRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
@@ -107,6 +115,12 @@ app.use('/api/profile', profileRoutes(authUseCase));
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 
+});
+
+app.get('/consultUser', (req, res) => {
+  res.render('users/consultUser', {
+    activePage: 'usuario',
+  });
 });
 
 module.exports = app;
