@@ -33,6 +33,7 @@ class getTestsByApplicationUseCase {
       idResults: t.idResults,
       idTest: t.idTest,
       testName: t.testName,
+      resultTable: t.resultTable,
       status: t.status,
       score: t.score,
       interpretation: t.interpretation,
