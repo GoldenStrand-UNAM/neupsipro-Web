@@ -2,8 +2,11 @@ class interventionRepository {
   async findByUser ({ _id_user }) {
     throw new Error('findByUser() must be implemented');
   }
-  async createIntervention ({ _id_user, _contract_link }) {
+  async createIntervention ({ _id_user }) {
     throw new Error('createIntervention() must be implemented');
+  }
+  async updateContractLink ({ _id_user, _contract_link }) {
+    throw new Error('updateContractLink() must be implemented');
   }
   async findSessionsByIntervention ({ _id_intervention }) {
     throw new Error('findSessionsByIntervention() must be implemented');
