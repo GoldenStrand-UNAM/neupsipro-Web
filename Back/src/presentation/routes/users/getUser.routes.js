@@ -31,7 +31,8 @@ module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
   const testAppRepository  = new impTestApplicationsRepository();
-  const useCase            = new GetUserUseCase(usersRepository, testAppRepository);
+  const appointmentRepository = new ImpAppointmentRepository(); 
+  const useCase            = new GetUserUseCase(usersRepository, testAppRepository, appointmentRepository);
   const controller = new UserController(useCase);
   const jwtService = new JwtService();
   const authMiddleware = new AuthMiddleware(jwtService);
@@ -41,7 +42,6 @@ module.exports = (authUseCase) => {
   const createAppUseCase       = new postApplicationUseCase(testAppRepository, testResultsRepository);
   const appController = new ApplicationsController(createAppUseCase);
 
-  const appointmentRepository = new ImpAppointmentRepository();
   const createAppointment = new createAppointmentUseCase(appointmentRepository);
   const appointmentController = new createAppointmentController(createAppointment);
 
@@ -49,6 +49,7 @@ module.exports = (authUseCase) => {
   const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
+  
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
