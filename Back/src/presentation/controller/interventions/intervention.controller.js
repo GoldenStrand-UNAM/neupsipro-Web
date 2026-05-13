@@ -11,7 +11,7 @@ class interventionController {
       const { id_user } = req.params;
       const intervention = await this.usecase.execute({ id_user });
 
-      return res.render('users/intervention', {
+      return res.render('users/intervention/intervention', {
         activePage: 'usuario',
         idUser: id_user,
         intervention,
