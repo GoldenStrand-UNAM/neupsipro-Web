@@ -11,7 +11,7 @@ class updateContractUseCase {
 
     const updated = await this.interventionRepository.updateContract({
       id_user,
-      contract_link:contract_link || null,
+      contract_link: contract_link || null,
       neuro_profile: neuro_profile || null,
     });
 
