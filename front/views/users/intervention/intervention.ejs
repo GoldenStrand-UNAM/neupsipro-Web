@@ -86,7 +86,7 @@
 
                     <!-- Clinic Contract -->
                     <div class="flex items-center gap-3 pt-3 border-t border-gray-100">
-                        <svg class="w-5 h-5 text-gray-500 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg class="black-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                         </svg>
                         <span class="text-gray-600 text-sm shrink-0">Contrato clínico:</span>
@@ -106,7 +106,7 @@
                         </button>
                     </div>
 
-                    <!-- Perfil neuropsicológico -->
+                    <!-- neuro Profile -->
                     <div class="pt-3 border-t border-gray-100">
                         <div class="flex items-start gap-3">
                             <svg class="w-5 h-5 text-gray-500 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -193,7 +193,7 @@
     <script>
         window.__INTERVENTION_DATA__ = {
             idUser: '<%= idUser %>',
-            contractLink:      <%- JSON.stringify(intervention.contractLink || '') %>,
+            contractLink:  <%- JSON.stringify(intervention.contractLink || '') %>,
             neuro_profile : <%- JSON.stringify(intervention.neuro_profile || '') %>
         };
     </script>

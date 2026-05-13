@@ -51,7 +51,7 @@
 
             <p id="addSessionError" class="text-sm text-red-500 hidden"></p>
         </div>
-
+        <!--Buttons-->
         <div class="flex gap-3 justify-end mt-6">
             <button id="cancelAddSession" class="flex items-center gap-2 px-5 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 cursor-pointer">
                 Cancelar
@@ -111,7 +111,7 @@
 
     btnConfirm?.addEventListener('click', async () => {
         hideError();
-
+        // Data to be sent 
         const sessionDate = inputDate.value;
         const sessionNumber = inputNumber.value.trim();
         const objectives = inputObj.value.trim();
@@ -125,6 +125,7 @@
             btnConfirm.disabled = true;
             btnConfirm.innerHTML = '<span>Agregando...</span>';
 
+            // post to api json with fetch
             const res = await fetch(`/users/${idUser}/intervention/sessions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
