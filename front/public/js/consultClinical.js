@@ -1,5 +1,6 @@
 /* eslint-env browser */
 /* global getStatusStyle */
+/* global document, window */
 
 function getStatusBadge (val) {
   const statusMap = new Map([

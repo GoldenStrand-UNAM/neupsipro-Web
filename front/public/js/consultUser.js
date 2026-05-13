@@ -1,5 +1,6 @@
 /* eslint-env browser */
 /* global getStatusStyle, createApplicationCard, createAddSessionCard */
+/* global document, window */
 
 // 1. Separamos la lógica de la tarjeta en su propia función
 function toggleInterventionCard (canStartIntervention) {

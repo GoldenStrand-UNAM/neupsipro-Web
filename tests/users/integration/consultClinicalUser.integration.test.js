@@ -4,7 +4,7 @@ const request = require('supertest');
 
 let mockAuthBehavior = 'unauthenticated';
 
-// 1. Mock del Middleware 
+// 1. Middleware mock
 jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
   jest.fn(() => ({
     verifyToken: (req, res, next) => {
@@ -18,14 +18,14 @@ jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
   }))
 );
 
-// 2. Mock del PermissionsMiddleware (Para saltar el requirePermission)
+// 2. PermissionsMiddleware mock (To skip require permission)
 jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () =>
     jest.fn(() => ({
       requirePermission: () => (req, res, next) => next(), // Deja pasar cualquier módulo/acción
     }))
   );
 
-// 3. Mock del ClinicalUseCase (Para devolver los datos del DTO)
+// 3. ClinicalUseCase Mock (Retunr DTO data)
 const mockExecuteClinical = jest.fn();
 jest.mock('../../../Back/src/application/Usecase/clinical/getClinicalUserUseCase', () => {
     return jest.fn().mockImplementation(() => ({
@@ -53,7 +53,7 @@ describe('INTEGRATION — Consultar Usuario Clínico', () => {
         asUnauthenticated();
     });
 
-    // Flujo Alterno 4.1.1
+    //  Alternating flow 4.1.1
     test('Debe redirigir a /auth/ cuando no hay sesión', async () => {
         asUnauthenticated();
 
@@ -63,11 +63,11 @@ describe('INTEGRATION — Consultar Usuario Clínico', () => {
         expect(res.header.location).toBe('/auth/');
     });
 
-    // Flujo Básico 4
+    // Basic Flow 4
     test('Debe retornar 200 y renderizar datos cuando está autenticado', async () => {
         asAuthenticated();
         
-        // Configuramos lo que debe devolver el Caso de Uso (basado en tu DTO)
+        // Configure return from UseCase (Based in DTO)
         mockExecuteClinical.mockResolvedValue({
             idUser: 1,
             name: 'Dr. Gregory House',
