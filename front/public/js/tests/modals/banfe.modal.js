@@ -222,3 +222,117 @@ function buildFormHTML (mode, prefill) {
       </div>
     </div>`;
 }
+
+// ── Form Listeners ───────────────────────────────────────────────────────────
+// Wires up live interpretation, running total, notes counter,
+// validation, and the save fetch for register/modify modes.
+
+function bindFormListeners (idUser, idApplication, closeModal) {
+
+  const notesInput = document.getElementById('inputBANFENotes');
+  const notesCount = document.getElementById('banfeNotesCount');
+  const apiError   = document.getElementById('banfeApiError');
+
+  // Area fields — order matters for total calculation
+  const fields = [
+    { input: 'inputOrbitFrontal',     interp: 'interpOrbitFrontal',     error: 'errorOrbitFrontal',     key: 'score_orbit_frontal'     },
+    { input: 'inputPrefrontalBefore', interp: 'interpPrefrontalBefore', error: 'errorPrefrontalBefore', key: 'score_prefrontal_before' },
+    { input: 'inputDLateral',         interp: 'interpDLateral',         error: 'errorDLateral',         key: 'score_d_lateral'         },
+  ];
+
+  // ── Notes counter ──────────────────────────────────────────────────────────
+
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
+  });
+
+  // ── Live total ─────────────────────────────────────────────────────────────
+  // Recalculates score total whenever any area input changes.
+  // Shows '—' until all three fields have a value.
+
+  function updateTotal () {
+    const values = fields.map(({ input }) => document.getElementById(input).value.trim());
+    const allFilled = values.every(v => v !== '');
+    document.getElementById('banfeScoreTotal').textContent = allFilled
+      ? values.reduce((acc, v) => acc + Number(v), 0)
+      : '—';
+  }
+
+  // ── Live interpretation per area ───────────────────────────────────────────
+
+  fields.forEach(({ input, interp, error }) => {
+    document.getElementById(input).addEventListener('input', () => {
+      const el     = document.getElementById(input);
+      const errEl  = document.getElementById(error);
+
+      // Strip non-digit characters
+      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
+
+      errEl.classList.add('hidden');
+
+      const n = Number(el.value);
+      document.getElementById(interp).textContent =
+        el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
+
+      updateTotal();
+    });
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+
+  document.getElementById('btnSaveBANFE').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+
+    // Validate all three area scores
+    let valid  = true;
+    const scores = {};
+
+    fields.forEach(({ input, error, key }) => {
+      const el    = document.getElementById(input);
+      const errEl = document.getElementById(error);
+      const val   = Number(el.value);
+
+      if (el.value.trim() === '' || isNaN(val) || val < 0) {
+        errEl.textContent = 'Ingresa un puntaje válido';
+        errEl.classList.remove('hidden');
+        valid = false;
+      } else {
+        scores[key] = val;
+      }
+    });
+
+    if (!valid) return;
+
+    const notes  = notesInput.value.trim() || null;
+    const config = TEST_REGISTRY[1];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...scores, notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[BANFE] post error:', _err);
+    }
+  });
+}
