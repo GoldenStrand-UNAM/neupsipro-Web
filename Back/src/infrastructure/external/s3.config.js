@@ -102,4 +102,30 @@ async function getPresignedUrl (imageUrlOrKey, expiresIn = 3600) {
   });
 }
 
-module.exports = { s3, uploadToS3, getPresignedUrl };
+// Delete an object from S3 (by URL or key)
+async function deleteFromS3 (imageUrlOrKey) {
+  if (!imageUrlOrKey) return false;
+  if (!BUCKET_NAME) return false;
+
+  const key = extractObjectKey(imageUrlOrKey);
+  if (!key) return false;
+
+  try {
+    await s3.deleteObject({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }).promise();
+
+    // eslint-disable-next-line no-console
+    console.log(`S3 object deleted: ${key}`);
+    return true;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`Error deleting S3 object (${key}):`, err.message);
+    
+    return false;
+  }
+}
+
+module.exports = { s3, uploadToS3, getPresignedUrl, deleteFromS3 };
+
