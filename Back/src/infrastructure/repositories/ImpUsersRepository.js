@@ -1,6 +1,7 @@
 const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
+const { v4: uuidv4 } = require('uuid');
 
 class ImpUsersRepository extends usersRepository {
   async fetchActivePatients ({ search, page, limit }) {
@@ -45,30 +46,24 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
-  async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs }) {
-    const connection = await db.getConnection();
-
-    try {
-      await connection.beginTransaction();
-
-      await connection.query(
+  async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, amputationDate, amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, sex }) {
+    const idUser = uuidv4();
+        
+    try{
+      await db.query(
       `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUSer, idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash]
+      [idUser, idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash]
       );
 
-      await connection.query(
-      `INSERT INTO user_info (assigned, phase, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prothesist, neuro_entry_date, amputation_date, pairs)
-      VALUES (?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?)`,
-      [assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prothesist, neuroEntryDate, amputationDate, pairs] 
+      await db.query(
+      `INSERT INTO user_info (id_user, id_clinical, program_phase, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention, sex)
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [idUser, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex] 
       );
-
-      await connection.commit();
-    } catch (error) {
-      await connection.rollback();
+    } catch (error){
+      console.log("Error en base de datos: ", error.message);
       throw error;
-    } finally {
-      connection.release();
     }
   }
 }
