@@ -76,10 +76,20 @@ class ImpUsersRepository extends usersRepository {
             FROM users
             WHERE id_role = 2
               AND eliminated = 0
-              AND (? IS NULL OR CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)`,
+              AND (? IS NULL OR CONCAT(first_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)`,
       [searchParam, searchParam]
     );
     return rows[0]?.total ?? 0;
+  }
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
   }
 }
 module.exports = ImpUsersRepository;
