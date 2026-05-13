@@ -5,16 +5,16 @@ class GetClinicalUserDashboardUseCase {
     this.usersRepository = usersRepository;
     this.appointmentRepository = appointmentRepository;
   }
-  async execute ({idClinicalUser}) {
+  async execute ({ idClinicalUser }) {
     const [numberUsers, users, appointments, historicalNumberUsers] = await Promise.all([
       this.usersRepository.fetchNumberUsers({ idClinicalUser }),
       this.usersRepository.fetchAllWithClinical({ idClinicalUser }),
       this.appointmentRepository.fecthAppointmentWithClinical({ idClinicalUser }),
       this.usersRepository.fetchHistoricalNumberUsers({ idClinicalUser }),
     ]);
-    let today = [];
-    let tomorrow = [];
-    let other = [];
+    const today = [];
+    const tomorrow = [];
+    const other = [];
     appointments.forEach(appointment => {
       if (appointment.day_separation === 'today') {
         today.push(appointment);
@@ -32,7 +32,6 @@ class GetClinicalUserDashboardUseCase {
       other,
       historicalNumberUsers[0]
     );
-    console.log(dto);
     return dto;
   }
 }
