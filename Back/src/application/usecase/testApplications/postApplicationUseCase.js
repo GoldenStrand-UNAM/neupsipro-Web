@@ -1,12 +1,12 @@
 const testApplicationDTO = require('../../dto/testApplicationDTO');
 
 class postApplicationUseCase {
-  constructor(impTestApplicationsRepository, impTestResultsRepository) {
+  constructor (impTestApplicationsRepository, impTestResultsRepository) {
     this.impTestApplicationsRepository = impTestApplicationsRepository;
     this.impTestResultsRepository      = impTestResultsRepository;
   }
 
-  async execute({ id_user, application_name }) {
+  async execute ({ id_user, application_name }) {
     // 1. Verify user exists and retrieve their assigned protocol
     const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
 
