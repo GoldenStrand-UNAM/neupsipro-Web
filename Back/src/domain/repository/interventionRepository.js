@@ -5,8 +5,8 @@ class interventionRepository {
   async createIntervention ({ _id_user }) {
     throw new Error('createIntervention() must be implemented');
   }
-  async updateContractLink ({ _id_user, _contract_link }) {
-    throw new Error('updateContractLink() must be implemented');
+  async updateContract ({ _id_user, _contract_link, _neuropsych_profile }) {
+    throw new Error('updateContract() must be implemented');
   }
   async findSessionsByIntervention ({ _id_intervention }) {
     throw new Error('findSessionsByIntervention() must be implemented');
