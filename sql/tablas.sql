@@ -758,6 +758,7 @@ CREATE TABLE banfe_results (
     score_d_lateral             DECIMAL(5,2) NULL,
     inter_d_lateral             VARCHAR(36),
     score_total                 DECIMAL(5,2) NULL,
+    notes                       VARCHAR(200),
     CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
 
@@ -777,6 +778,7 @@ CREATE TABLE wais_results (
     score_velo_proce         DECIMAL(5,2) NULL,
     inter_velo_proce         VARCHAR(36),
     score_total              DECIMAL(5,2) NULL,
+    notes                       VARCHAR(200),
     CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
 
@@ -788,6 +790,7 @@ CREATE TABLE moca_results (
     id_results               VARCHAR(36) NOT NULL,
     score                    INT NOT NULL,
     interpretation VARCHAR(36),
+    notes                       VARCHAR(200),
     CONSTRAINT fk_moca_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
 
@@ -798,6 +801,7 @@ CREATE TABLE nih_results (
     id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_results                VARCHAR(36) NOT NULL,
     interpretation            VARCHAR(36),
+    notes                       VARCHAR(200),
     CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
  
@@ -819,6 +823,7 @@ CREATE TABLE rey_results (
     pc_mlp                    INT          NULL,
     time_mlp                  DECIMAL(5,2) NULL,
     pc_time_mlp               INT          NULL,
+    notes                       VARCHAR(200),
     CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
  
