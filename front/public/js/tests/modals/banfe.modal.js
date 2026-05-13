@@ -175,68 +175,73 @@ function openBANFEModal (idUser, idApplication, test, mode) {
 
         <div class="flex flex-col md:flex-row gap-4">
 
-        <!-- Score -->
-        <div class="flex-1 flex flex-col gap-1 min-w-0">
-
-          <label class="text-2xl font-regular">
-            Puntaje ${!isConsult ? '<span class="text-red-500">*</span>' : ''}
-          </label>
-
-          <input
-            id="inputBANFEScore"
-            type="number"
-            min="0"
-            max="200"
-            placeholder="0 – 200"
-            value="${escapeHTML(String(prefillScore))}"
-            ${isConsult ? 'disabled' : ''}
-            class="w-full h-[52px]
-                   border border-gray-300
-                   rounded-lg
-                   px-4
-                   text-sm
-                   focus:outline-none
-                   focus:ring-2
-                   focus:ring-[#3350A9]
-                   focus:border-transparent
-                   transition
-                   ${isConsult ? 'bg-gray-50 cursor-default' : ''}"/>
-
-          <p class="text-xs text-gray-400">
-            Número entero entre 0 y 200
-          </p>
-
-          <p
-            id="banfeScoreError"
-            class="text-xs text-red-500 hidden">
-          </p>
-        </div>
-
-        <!-- Interpretation -->
-        <div class="flex-1 flex flex-col gap-1 min-w-0">
-
-          <label class="text-2xl font-regular">
-            Interpretación
-          </label>
-
-          <div
-            class="w-full h-[52px]
-                   flex items-center
-                   border border-gray-300
-                   rounded-lg
-                   px-4
-                   bg-gray-50">
-
-            <span
-              id="banfeInterpretation"
-              class="text-sm text-gray-800 truncate">
-
-              ${escapeHTML(prefillInterp)}
-
-            </span>
+        <!-- Área: Orbito Frontal -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Orbito Frontal <span class="text-red-500">*</span></label>
+            <input id="inputOrbitFrontal" type="number" min="0" placeholder="Puntaje"
+              value="${escapeHTML(String(prefill.orbitFrontal.score))}"
+              class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+            <p id="errorOrbitFrontal" class="text-xs text-red-500 hidden"></p>
+          </div>
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Interpretación</label>
+            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+              <span id="interpOrbitFrontal" class="text-sm text-gray-800 truncate">
+                ${escapeHTML(prefill.orbitFrontal.interp)}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+
+        <!-- Área: Prefrontal Anterior -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Prefrontal Anterior <span class="text-red-500">*</span></label>
+            <input id="inputPrefrontalBefore" type="number" min="0" placeholder="Puntaje"
+              value="${escapeHTML(String(prefill.prefrontalBefore.score))}"
+              class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+            <p id="errorPrefrontalBefore" class="text-xs text-red-500 hidden"></p>
+          </div>
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Interpretación</label>
+            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+              <span id="interpPrefrontalBefore" class="text-sm text-gray-800 truncate">
+                ${escapeHTML(prefill.prefrontalBefore.interp)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área: Dorsolateral -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Dorsolateral <span class="text-red-500">*</span></label>
+            <input id="inputDLateral" type="number" min="0" placeholder="Puntaje"
+              value="${escapeHTML(String(prefill.dLateral.score))}"
+              class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+            <p id="errorDLateral" class="text-xs text-red-500 hidden"></p>
+          </div>
+          <div class="flex-1 flex flex-col gap-1 min-w-0">
+            <label class="text-2xl font-regular">Interpretación</label>
+            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+              <span id="interpDLateral" class="text-sm text-gray-800 truncate">
+                ${escapeHTML(prefill.dLateral.interp)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Score Total — solo lectura, se calcula en vivo -->
+        <div class="flex flex-col gap-1">
+          <label class="text-2xl font-regular">Score Total</label>
+          <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+            <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
+          </div>
+        </div>
 
         <!-- Notes -->
         <div class="flex flex-col gap-2">
