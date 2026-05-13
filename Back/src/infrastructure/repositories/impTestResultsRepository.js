@@ -76,37 +76,37 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
-  // ─── saveBANFEResult ─────────────────────────────────────────────────────────
-// Upserts into banfe_results (INSERT … ON DUPLICATE KEY UPDATE) so the method
-// works for both first-time registration and modify.
-// Also updates status from test_results
+  // ================= SAVE BANFE  ==================
 
-async saveBANFEResult({
-  id_results,
-  score_orbit_frontal,  inter_orbit_frontal,
-  score_prefrontal_before, inter_prefrontal_before,
-  score_d_lateral,      inter_d_lateral,
-  score_total,
-}) {
+  // Upserts into banfe_results
+  // works for both first-time registration and modify.
+  // Also updates status from test_results
+
+  async saveBANFEResult ({
+    id_results,
+    score_orbit_frontal,  inter_orbit_frontal,
+    score_prefrontal_before, inter_prefrontal_before,
+    score_d_lateral,      inter_d_lateral,
+    score_total, notes,
+  }) {
   // Update parent row status and application date
-  await this.db.query(
-    `UPDATE test_results
+    await this.db.query(
+      `UPDATE test_results
      SET status       = 3,
          date_applied = CURDATE()
      WHERE id_results = ?`,
-    [id_results]
-  );
+      [id_results]
+    );
 
-  // Upsert into banfe_results
-  // ON DUPLICATE KEY covers the case where a row already exists (modify flow)
-  await this.db.query(
-    `INSERT INTO banfe_results
+    // ON DUPLICATE KEY covers the case where a row already exists (modify flow)
+    await this.db.query(
+      `INSERT INTO banfe_results
        (id_results,
         score_orbit_frontal,    inter_orbit_frontal,
         score_prefrontal_before, inter_prefrontal_before,
         score_d_lateral,        inter_d_lateral,
-        score_total)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        score_total, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
         score_orbit_frontal     = VALUES(score_orbit_frontal),
         inter_orbit_frontal     = VALUES(inter_orbit_frontal),
@@ -114,23 +114,24 @@ async saveBANFEResult({
         inter_prefrontal_before = VALUES(inter_prefrontal_before),
         score_d_lateral         = VALUES(score_d_lateral),
         inter_d_lateral         = VALUES(inter_d_lateral),
-        score_total             = VALUES(score_total)`,
-    [
-      id_results,
-      score_orbit_frontal,    inter_orbit_frontal,
-      score_prefrontal_before, inter_prefrontal_before,
-      score_d_lateral,        inter_d_lateral,
-      score_total,
-    ]
-  );
+        score_total             = VALUES(score_total),
+        notes                   = VALUES(notes)`,
+      [
+        id_results,
+        score_orbit_frontal,    inter_orbit_frontal,
+        score_prefrontal_before, inter_prefrontal_before,
+        score_d_lateral,        inter_d_lateral,
+        score_total,            notes,
+      ]
+    );
 
-  // Return the saved row for DTO mapping
-  const [rows] = await this.db.query(
-    `SELECT * FROM banfe_results WHERE id_results = ?`,
-    [id_results]
-  );
-  return rows[0];
-}
+    // Return the saved row for DTO mapping
+    const [rows] = await this.db.query(
+      'SELECT * FROM banfe_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
 
   // Fetch the schooling level of a user from their initial interview.
   async fetchUserSchooling ({ id_user }) {

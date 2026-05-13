@@ -22,7 +22,7 @@ class resultRepository {
   }
 
   //========= BANFE ========================
-  async saveBANFEResult({
+  async saveBANFEResult ({
     _id_results,
     _score_orbit_frontal,    _inter_orbit_frontal,
     _score_prefrontal_before, _inter_prefrontal_before,
@@ -31,7 +31,6 @@ class resultRepository {
   }) {
     throw new Error('saveBANFEResult() not implemented');
   }
-
 
   // Fetch schooling level for a user from their initial interview.
   async fetchUserSchooling ({ _id_user }) {
