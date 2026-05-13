@@ -33,9 +33,8 @@ class impTestResultsRepository extends resultRepository {
               tr.id_application,
               tr.id_test,
               pt.test_name,
+              pt.result_table
               tr.status,
-              tr.score,
-              tr.interpretation,
               tr.date_applied,
               tr.notes
        FROM test_results tr
@@ -52,7 +51,7 @@ class impTestResultsRepository extends resultRepository {
     if (!tests || tests.length === 0) return [];
 
     // Build multi-row INSERT: one placeholder group per test
-    const placeholders = tests.map(() => '(?, ?, ?, ?, 6)').join(', ');
+    const placeholders = tests.map(() => '(?, ?, ?, ?, 1)').join(', ');
     const values       = tests.flatMap(id_test => [uuidv4(), id_user, id_application, id_test]);
 
     const [result] = await db.query(
@@ -82,12 +81,10 @@ class impTestResultsRepository extends resultRepository {
   }
 
   //Update an existing result row with score, interpretation, notes and status.
-  async saveResult ({ id_results, score, interpretation, notes }) {
+  async saveResult ({ id_results, notes }) {
     await db.query(
       `UPDATE test_results
-       SET score          = ?,
-           interpretation = ?,
-           notes          = ?,
+       SET notes          = ?,
            date_applied   = CURDATE(),
            status         = 3
        WHERE id_results = ?`,

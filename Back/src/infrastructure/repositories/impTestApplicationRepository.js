@@ -48,17 +48,16 @@ class impTestApplicationsRepository extends TestApplicationRepository {
     return rows.length ? rows[0] : null;
   }
 
-  /**
-   * Fetches all test IDs registered for a given protocol.
-   * @returns {string[]} Array of id_test values (empty if protocol has no tests).
-   */
-  async fetchProtocolTests ({ protocol }) {
+  // Fetch all test ids assigned to a protocol
+  async fetchProtocolTests({ protocol }) {
     const [rows] = await db.query(
-      'SELECT id_test FROM protocol_tests WHERE protocol = ?',
+      `SELECT pt.id_test, p.test_name, p.result_table
+       FROM protocol_tests pt
+       INNER JOIN psych_tests p ON pt.id_test = p.id_test
+       WHERE pt.protocol = ?`,
       [protocol]
     );
-
-    return rows.map(row => row.id_test);
+    return rows; // [{ id_test, test_name, result_table }]
   }
 }
 

@@ -41,9 +41,9 @@ class postApplicationUseCase {
     }
 
     // 4. Fetch the tests associated with the protocol
-    const testIds = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
+    const tests = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
 
-    if (!testIds.length) {
+    if (!tests.length) {
       const err  = new Error(`No tests found for protocol: ${protocol}`);
       err.status = 422;
       throw err;
@@ -59,7 +59,7 @@ class postApplicationUseCase {
     await this.impTestResultsRepository.createResults(
       savedEntity.idApplication,
       id_user,
-      testIds
+      tests
     );
 
     // 7. Return DTO — never expose the raw entity across boundaries
