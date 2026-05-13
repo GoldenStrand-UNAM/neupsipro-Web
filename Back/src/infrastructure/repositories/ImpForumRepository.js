@@ -21,7 +21,7 @@ class ImpForumRepository extends forumRepository {
                 p.image,
                 p.time_and_date,
                 CONCAT(u.first_name, ' ', u.lastname_p, ' ', u.lastname_m) AS full_name,
-                u.profile_photo
+                i.profile_photo
             FROM publication p
             INNER JOIN users u 
                 ON p.id_user = u.id_user

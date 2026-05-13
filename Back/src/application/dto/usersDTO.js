@@ -12,13 +12,14 @@ class UsersDTO {
         this.basePathology = user.basePathology;
         this.modality = user.modality;
         this.profilePhoto = user.profilePhoto;
-        this.registrationDate = user.registrationDate;
         this.referenceNumber = user.referenceNumber;
         this.laterality = user.laterality;
-        this.prothesist = user.prothesist;
+        this.prosthetist = user.prosthetist;
         this.neuroEntryDate = user.neuroEntryDate;
         this.amputationDate = user.amputationDate;
+        this.amputationLevel = user.amputationLevel;
         this.pairs = user.pairs;
+        this.sex = user.sex;
     }
 }
 module.exports = UsersDTO;

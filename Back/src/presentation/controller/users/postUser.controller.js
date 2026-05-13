@@ -1,28 +1,54 @@
 class PostUserController {
-    constructor (PostUserUseCase) {
-        this.PostUserUseCase = PostUserUseCase;
-    }
+  constructor (PostUserUseCase) {
+    this.PostUserUseCase = PostUserUseCase;
+  }
 
-    async postUser (req, res) {
-        try {
-            // Extract query params 
-            const { id_role = "2", user_name, first_name, lastname_p, lastname_m = null, birthdate, password_hash, assigned, phase, base_pathology, modality, profile_photo = null, reference_number, amputation_date, laterality, prothesist, neuro_entry_date, pairs } = req.body;
-            
-            //Successful response
-            res.status(200).json(result);
-        } catch (error) {
-            // Handle errors
-            res.status(500).json({ error: error.message });
-        }
-    }
+  async postUser (request, res) {
+    try {
+      // Extract query params 
+      const { idRole = "2", userName, firstName, lastnameP, lastnameM = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex } = request.body;
+      const profilePhoto = request.file ? request.file.s3Location : null;
 
-    async postUserPage (req, res) {
-        try {
-            res.locals.activePage = 'usuario';
-            res.render("users/postUser");
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
+      const user = await this.PostUserUseCase.execute({
+        idRole,
+        userName,
+        firstName,
+        lastnameP,
+        lastnameM,
+        birthdate,
+        password,
+        assigned,
+        phase,
+        basePathology,
+        otherPathology,
+        modality,
+        profilePhoto,
+        referenceNumber,
+        amputationDate,
+        amputationLevel,
+        otherLevel,
+        laterality,
+        prosthetist,
+        neuroEntryDate,
+        pairs,
+        sex
+      });
+      res.status(200).json(user);
+    } catch (error) {
+      if (error.message.includes('obligatorio') || error.message.includes('caracteres')) {
+        return res.status(422).json({ error: error.message });
+      }
+      res.status(500).json({ error: error.message });
     }
+  }
+
+  async postUserPage (req, res) {
+    try {
+      res.locals.activePage = 'usuario';
+      res.render("users/postUser");
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 module.exports =  PostUserController;
