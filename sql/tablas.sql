@@ -750,7 +750,6 @@ CREATE TABLE intervention_session (
     objectives         TEXT NULL,
     development        TEXT NULL,
     dqp_task           TEXT NULL,
-    created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_session_intervention
         FOREIGN KEY (id_intervention)
         REFERENCES intervention(id_intervention)
