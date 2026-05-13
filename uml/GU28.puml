@@ -1,0 +1,75 @@
+@startuml DeleteLastSessionSequence
+title Delete Last Session - Sequence Diagram
+
+actor User as U
+participant "intervention.ejs\n(Browser)" as View
+participant "deleteSessionModal.ejs\n(JS)" as Modal
+participant "Router" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "intervention\nController" as Ctrl
+participant "deleteLastSessionUseCase" as UseCase
+participant "ImpIntervention\nRepository" as Repo
+database "MySQL DB" as DB
+
+U -> View: Clicks trash icon (last row)
+activate View
+View -> Modal: Open confirmation modal
+activate Modal
+Modal --> U: Show "¿Eliminar última sesión?"
+deactivate View
+
+U -> Modal: Clicks "Eliminar"
+Modal -> Modal: Disable button, show "Eliminando..."
+
+Modal -> Router: DELETE /users/:id_user/intervention/sessions/:id_session
+activate Router
+
+Router -> Auth: verifyToken + requirePermission('eliminate')
+Auth --> Router: OK
+
+Router -> Ctrl: deleteLastSession(req, res)
+activate Ctrl
+Ctrl -> UseCase: execute({ id_user, id_session })
+activate UseCase
+
+UseCase -> Repo: findByUser({ id_user })
+activate Repo
+Repo -> DB: SELECT intervention
+DB --> Repo: row
+Repo --> UseCase: Intervention
+deactivate Repo
+
+UseCase -> Repo: findLastSession({ id_intervention })
+activate Repo
+Repo -> DB: SELECT session ORDER BY date DESC LIMIT 1
+DB --> Repo: row
+Repo --> UseCase: lastSession
+deactivate Repo
+
+alt id_session is NOT the last session
+    UseCase --> Ctrl: throw "Solo se puede eliminar la última"
+    Ctrl --> Router: 409 Conflict
+    Router --> Modal: 409 response
+    Modal --> U: Show error
+else id_session IS the last session
+    UseCase -> Repo: deleteSession({ id_session })
+    activate Repo
+    Repo -> DB: DELETE FROM intervention_session
+    DB --> Repo: affectedRows = 1
+    Repo --> UseCase: true
+    deactivate Repo
+
+    UseCase --> Ctrl: { success: true }
+    deactivate UseCase
+    Ctrl --> Router: 200 OK
+    deactivate Ctrl
+    Router --> Modal: 200 OK
+    deactivate Router
+
+    Modal -> Modal: showToast("Sesión eliminada")
+    Modal -> View: window.location.reload()
+    deactivate Modal
+    View --> U: Refresh page,\nsession removed from table
+end
+
+@enduml
