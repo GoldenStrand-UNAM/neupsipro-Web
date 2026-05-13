@@ -63,7 +63,7 @@ class impTestResultsRepository extends resultRepository {
 
   // Looks up the test_results row for a given user + application + test.
   async fetchResultRow ({ id_user, id_application, id_test }) {
-    const [rows] = await this.db.query(
+    const [rows] = await db.query(
       `SELECT id_results, status
         FROM test_results
         WHERE id_user       = ?
@@ -72,7 +72,14 @@ class impTestResultsRepository extends resultRepository {
         LIMIT 1`,
       [id_user, id_application, id_test]
     );
-    return rows[0] ?? null;
+
+    if (rows.length === 0) return null;
+
+    const row = rows[0];
+    return {
+      idResults: row.id_results,
+      status: row.status,
+    };
   }
 
   // ================= SAVE BANFE  ==================
@@ -89,7 +96,7 @@ class impTestResultsRepository extends resultRepository {
     score_total, notes,
   }) {
   // Update parent row status and application date
-    await this.db.query(
+    await db.query(
       `UPDATE test_results
      SET status       = 3,
          date_applied = CURDATE()
@@ -98,7 +105,7 @@ class impTestResultsRepository extends resultRepository {
     );
 
     // ON DUPLICATE KEY covers the case where a row already exists (modify flow)
-    await this.db.query(
+    await db.query(
       `INSERT INTO banfe_results
        (id_results,
         score_orbit_frontal,    inter_orbit_frontal,
@@ -125,7 +132,7 @@ class impTestResultsRepository extends resultRepository {
     );
 
     // Return the saved row for DTO mapping
-    const [rows] = await this.db.query(
+    const [rows] = await db.query(
       'SELECT * FROM banfe_results WHERE id_results = ?',
       [id_results]
     );
