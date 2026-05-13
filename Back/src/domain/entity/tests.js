@@ -2,11 +2,9 @@ class Tests {
   constructor (data) {
     this.idTest = data.id_test;
     this.idApplication = data.id_application;
-    this.testName = data.test_name;
-    this.description = data.description;
     this.idResults = data.id_results;
-    this.score = data.score;
-    this.interpretation = data.interpretation;
+    this.testName = data.test_name;
+    this.resultTable    = data.result_table; 
     this.dateApplied = data.date_applied;
     this.notes = data.notes;
     this.status = this.getStatus(data.status);
