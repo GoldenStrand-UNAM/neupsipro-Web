@@ -21,6 +21,18 @@ class resultRepository {
     throw new Error('fetchResultRow() not implemented');
   }
 
+  //========= BANFE ========================
+  async saveBANFEResult({
+    _id_results,
+    _score_orbit_frontal,    _inter_orbit_frontal,
+    _score_prefrontal_before, _inter_prefrontal_before,
+    _score_d_lateral,        _inter_d_lateral,
+    _score_total,
+  }) {
+    throw new Error('saveBANFEResult() not implemented');
+  }
+
+
   // Fetch schooling level for a user from their initial interview.
   async fetchUserSchooling ({ _id_user }) {
     throw new Error('fetchUserSchooling() not implemented');
