@@ -73,39 +73,50 @@ function openBANFEModal (idUser, idApplication, test, mode) {
 
         </div>
 
-        <!-- Row: Puntaje -->
-        <div class="flex flex-col sm:flex-row
-                    sm:items-start
-                    gap-2 sm:gap-6
-                    py-5
-                    border-b border-gray-200">
-
-          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
-            Puntaje:
-          </span>
-
-          <span class="text-base sm:text-lg text-gray-900 font-medium">
-            ${test.score !== null ? escapeHTML(String(test.score)) : '—'}
-          </span>
-
-        </div>
-        <!-- Row: Interpretación -->
+       <!-- Row: Área Orbito Frontal -->
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
-                    gap-y-2 sm:gap-x-6
-                    py-5
-                    border-b border-gray-200
-                    items-start">
-
-          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">
-            Interpretación:
-          </span>
-
-          <span class="text-base sm:text-lg text-gray-900 font-medium">
-            ${escapeHTML(prefillInterp)}
-          </span>
-
+                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Orbito Frontal:</span>
+          <div class="flex flex-col gap-1">
+            <span class="text-base sm:text-lg text-gray-900 font-medium">
+              ${areas.orbitFrontal?.score ?? '—'}
+            </span>
+            <span class="text-sm text-gray-500">${escapeHTML(prefill.orbitFrontal.interp)}</span>
+          </div>
         </div>
 
+        <!-- Row: Área Prefrontal Anterior -->
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Prefrontal Anterior:</span>
+          <div class="flex flex-col gap-1">
+            <span class="text-base sm:text-lg text-gray-900 font-medium">
+              ${areas.prefrontalBefore?.score ?? '—'}
+            </span>
+            <span class="text-sm text-gray-500">${escapeHTML(prefill.prefrontalBefore.interp)}</span>
+          </div>
+        </div>
+
+        <!-- Row: Área Dorsolateral -->
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Dorsolateral:</span>
+          <div class="flex flex-col gap-1">
+            <span class="text-base sm:text-lg text-gray-900 font-medium">
+              ${areas.dLateral?.score ?? '—'}
+            </span>
+            <span class="text-sm text-gray-500">${escapeHTML(prefill.dLateral.interp)}</span>
+          </div>
+        </div>
+
+        <!-- Row: Score Total — sin interpretación -->
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Score Total:</span>
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
+            ${test.scoreTotal ?? '—'}
+          </span>
+        </div>
         <!-- Row: Notas -->
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                     gap-y-2 sm:gap-x-6
