@@ -56,10 +56,12 @@ class postApplicationUseCase {
     });
 
     // 6. Bulk-create the result rows for each test in the protocol
+    // Extract only the id_test values from the test objects
+    const testIds = tests.map(test => test.id_test);
     await this.impTestResultsRepository.createResults(
       savedEntity.idApplication,
       id_user,
-      tests
+      testIds
     );
 
     // 7. Return DTO — never expose the raw entity across boundaries
