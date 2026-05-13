@@ -24,6 +24,8 @@ const createAppointmentController = require('../../controller/appointments/creat
 //apointment delete
 const deleteAppointmentUseCase    = require('../../../application/usecase/appointments/deleteAppointmentUseCase');
 const deleteAppointmentController = require('../../controller/appointments/deleteAppointment.controller');
+const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
+const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
 module.exports = (authUseCase) => {
 
@@ -45,6 +47,8 @@ module.exports = (authUseCase) => {
 
   const deleteAppointment   = new deleteAppointmentUseCase(appointmentRepository);
   const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
+  const deleteUseCase    = new DeleteUserUseCase(usersRepository);
+  const deleteController = new DeleteUserController(deleteUseCase);
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
@@ -82,5 +86,12 @@ module.exports = (authUseCase) => {
   permissionsMiddleware.requirePermission('user management', 'eliminate'),
   (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
   );
+  router.delete(
+    '/:id_user',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => deleteController.deleteUser(req, res)
+  );
+
   return router;
 };

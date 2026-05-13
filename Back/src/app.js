@@ -80,6 +80,10 @@ const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
 app.use('/forum', forumRoutes(authUseCase));
 
+const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
+
+app.use('/publication', publicationRoutes(authUseCase));
+
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
@@ -87,6 +91,10 @@ app.use('/', usersRoutes(authUseCase));
 const userRoutes = require('./presentation/routes/users/getUser.Routes');
 
 app.use('/users', userRoutes(authUseCase));
+
+const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
+
+app.use('/clinical', clinicalUserRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 
@@ -110,10 +118,6 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
-app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
-
-});
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
@@ -121,4 +125,8 @@ app.get('/consultUser', (req, res) => {
   });
 });
 
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+
+});
 module.exports = app;
