@@ -36,9 +36,6 @@
           </svg>
           <h3 class="application-card__title">${escapeHTML(test.testName)}</h3>
           <p class="application-card__date">Aplicada: ${dateFormatted}</p>
-          ${test.score !== null
-    ? `<p class="text-sm text-gray-600">Puntaje: ${escapeHTML(String(test.score))}</p>`
-    : ''}
         </div>
       </div>
     `;

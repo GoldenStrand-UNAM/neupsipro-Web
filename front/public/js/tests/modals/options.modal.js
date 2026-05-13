@@ -5,7 +5,7 @@ function openOptionsModal (idUser, idApplication, test) {
   const existing = document.getElementById('modalOptions');
   if (existing) existing.remove();
 
-  const hasScore = test.score !== null;
+  const hasScore = test.status === 3;
 
   const modal = document.createElement('div');
   modal.id        = 'modalOptions';
