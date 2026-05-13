@@ -3,7 +3,7 @@ class UserSummaryDTO {
         this.id = userSummary.id;
         this.reference_number = userSummary.referenceNumber ?? "Sin folio";
         this.fullName = userSummary.fullName;
-        this.neuroStatus = userSummary.neuroStatus ?? "Sin estatus";
+        this.state = userSummary.state ?? "Sin estatus";
         this.protocol = userSummary.protocol ?? "Pendiente";
     }
 }
