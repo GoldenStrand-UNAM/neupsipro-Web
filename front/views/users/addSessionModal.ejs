@@ -1,0 +1,152 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<div id="addSessionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl p-8 max-w-xl w-full mx-4 shadow-2xl">
+
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Nueva sesión</h2>
+            <button id="closeAddSession" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDateInput">Fecha</label>
+                    <div class="search-input">
+                        <input id="sessionDateInput" type="text" placeholder="Selecciona fecha" class="search-input_field"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionNumberInput">
+                        Sesión
+                    </label>
+                    <div class="search-input">
+                        <input id="sessionNumberInput" type="text" maxlength="20" placeholder="F101" class="search-input_field"/>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionObjectivesInput">Objetivos</label>
+                <textarea id="sessionObjectivesInput" rows="2" placeholder="Objetivos de la sesión..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDevelopmentInput">Desarrollo</label>
+                <textarea id="sessionDevelopmentInput" rows="3" placeholder="Desarrollo de la sesión..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDqpInput">DQP / Tarea terapéutica</label>
+                <textarea id="sessionDqpInput" rows="2" placeholder="Tarea terapéutica o DQP..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+            </div>
+
+            <p id="addSessionError" class="text-sm text-red-500 hidden"></p>
+        </div>
+
+        <div class="flex gap-3 justify-end mt-6">
+            <button id="cancelAddSession" class="flex items-center gap-2 px-5 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 cursor-pointer">
+                Cancelar
+            </button>
+            <button id="confirmAddSession" class="btn-mini bg-[#3350A9]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon-mini">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Agregar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+
+<script>
+(function () {
+    const btnOpen = document.getElementById('btnAddSession');
+    const modal = document.getElementById('addSessionModal');
+    const btnClose = document.getElementById('closeAddSession');
+    const btnCancel = document.getElementById('cancelAddSession');
+    const btnConfirm = document.getElementById('confirmAddSession');
+    const errorBox = document.getElementById('addSessionError');
+
+    const inputDate = document.getElementById('sessionDateInput');
+    const inputNumber = document.getElementById('sessionNumberInput');
+    const inputObj = document.getElementById('sessionObjectivesInput');
+    const inputDev = document.getElementById('sessionDevelopmentInput');
+    const inputDqp = document.getElementById('sessionDqpInput');
+
+    const idUser = (window.__INTERVENTION_DATA__ || {}).idUser;
+    let picker = null;
+
+    function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+    function hideError()    { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
+
+    function initPicker() {
+        if (picker) return;
+        picker = flatpickr(inputDate, {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            locale: "es",
+        });
+    }
+
+    btnOpen?.addEventListener('click', () => {
+        hideError();
+        initPicker();
+        modal.classList.remove('hidden');
+    });
+
+    const close = () => modal.classList.add('hidden');
+    btnClose?.addEventListener('click', close);
+    btnCancel?.addEventListener('click', close);
+
+    btnConfirm?.addEventListener('click', async () => {
+        hideError();
+
+        const sessionDate = inputDate.value;
+        const sessionNumber = inputNumber.value.trim();
+        const objectives = inputObj.value.trim();
+        const development = inputDev.value.trim();
+        const dqpTask = inputDqp.value.trim();
+
+        if (!sessionDate) return showError('Selecciona la fecha de la sesión');
+
+        const original = btnConfirm.innerHTML;
+        try {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<span>Agregando...</span>';
+
+            const res = await fetch(`/users/${idUser}/intervention/sessions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    session_number: sessionNumber || null,
+                    session_date: sessionDate,
+                    objectives: objectives || null,
+                    development: development || null,
+                    dqp_task: dqpTask || null,
+                }),
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || 'Error al agregar sesión');
+
+            showToast('Sesión agregada con éxito', 'success');
+            setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+            showError(err.message);
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = original;
+        }
+    });
+})();
+</script>
