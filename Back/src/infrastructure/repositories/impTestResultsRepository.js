@@ -139,31 +139,22 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-  // Fetch the schooling level of a user from their initial interview.
-  async fetchUserSchooling ({ id_user }) {
-    const [rows] = await db.query(
-      `SELECT ii.schooling
-     FROM initial_interview ii
-     INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
-     WHERE ur.id_user = ?
+// CONSULT BANFE
+async fetchBANFEResult ({ id_results }) {
+  const [rows] = await db.query(
+    `SELECT br.*,
+            tr.status,
+            tr.date_applied
+     FROM banfe_results br
+     JOIN test_results tr ON br.id_results = tr.id_results
+     WHERE br.id_results = ?
      LIMIT 1`,
-      [id_user]
-    );
-    // eslint-disable-next-line no-console
-    console.log('[fetchUserSchooling] id_user:', id_user, '| rows:', rows);
-    return rows.length ? rows[0].schooling : null;
-  }
+    [id_results]
+  );
+  return rows[0] ?? null;
+}
 
-  // Fetch age of user for REY test
-  async fetchUserAge ({ id_user }) {
-    const [rows] = await db.query(
-      `SELECT birthdate
-     FROM users
-     WHERE id_user = ?`,
-      [id_user]
-    );
-    return rows.length ? rows[0].birthdate : null;
-  }
+
 
 }
 

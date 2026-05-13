@@ -32,15 +32,10 @@ class resultRepository {
     throw new Error('saveBANFEResult() not implemented');
   }
 
-  // Fetch schooling level for a user from their initial interview.
-  async fetchUserSchooling ({ _id_user }) {
-    throw new Error('fetchUserSchooling() not implemented');
+  async fetchBANFEResult ({ _id_results }) {
+    throw new Error('fetchBANFEResult() not implemented');
   }
 
-  //Fetch age of user for REY test
-  async fetchUserAge ({ _id_user }) {
-    throw new Error('fetchUserAge() not implemented');
-  }
 
 }
 

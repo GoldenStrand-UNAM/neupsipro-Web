@@ -50,11 +50,21 @@ function updateTestCardStatus (dto) {
   const badge = card.querySelector('.application-card__badge');
   if (!badge) return;
 
-  // Update label
-  badge.querySelector('p').textContent = dto.status;
+  // DTO returns numeric status — normalize to display string
+  const STATUS_LABEL = {
+    1: 'Por comenzar',
+    2: 'En proceso',
+    3: 'Calificada',
+    4: 'Entregado',
+    5: 'Caducada',
+  };
+  const label = typeof dto.status === 'number'
+    ? (STATUS_LABEL[dto.status] ?? 'Por comenzar')
+    : dto.status;
 
-  // Swap variant class
+  badge.querySelector('p').textContent = label;
+
   const variants = ['neutral', 'warning', 'success', 'fatal'];
   variants.forEach(v => badge.classList.remove(`application-card__badge--${v}`));
-  badge.classList.add(`application-card__badge--${getVariant(dto.status)}`);
+  badge.classList.add(`application-card__badge--${getVariant(label)}`);
 }
