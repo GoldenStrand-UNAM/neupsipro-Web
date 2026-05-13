@@ -14,7 +14,7 @@ const REY_TABLE = {
     '63-67': { 80: 36.0, 70: 34.4, 60: 32.8, 50: 31.3, 40: 29.8, 30: 28.1, 20: 26.2, 15: 25.0, 10: 23.6, 5: 21.4 },
     '68-72': { 85: 36.0, 80: 35.9, 70: 34.0, 60: 32.4, 50: 30.9, 40: 29.4, 30: 27.7, 20: 25.8, 15: 24.6, 10: 23.2, 5: 21.0 },
     '73-77': { 85: 36.0, 80: 35.5, 70: 33.6, 60: 32.0, 50: 30.5, 40: 29.0, 30: 27.3, 20: 25.4, 15: 24.2, 10: 22.8, 5: 20.6 },
-    '>77':   { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
+    '>77': { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
   },
   '1-12': {
     '18-22': { 80: 36.0, 70: 35.8, 60: 34.2, 50: 32.7, 40: 31.2, 30: 29.6, 20: 27.7, 15: 26.5, 10: 25.0, 5: 22.9 },
@@ -29,17 +29,17 @@ const REY_TABLE = {
     '63-67': { 90: 36.0, 85: 35.3, 80: 34.1, 70: 32.2, 60: 30.6, 50: 29.1, 40: 27.6, 30: 26.0, 20: 24.0, 15: 22.8, 10: 21.4, 5: 19.2 },
     '68-72': { 90: 36.0, 85: 34.9, 80: 33.7, 70: 31.8, 60: 30.2, 50: 28.7, 40: 27.2, 30: 25.5, 20: 23.6, 15: 22.4, 10: 21.0, 5: 18.8 },
     '73-77': { 95: 36.0, 90: 35.9, 85: 34.5, 80: 33.3, 70: 31.4, 60: 29.8, 50: 28.3, 40: 26.8, 30: 25.1, 20: 23.2, 15: 22.0, 10: 20.6, 5: 18.4 },
-    '>77':   { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
+    '>77': { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
   },
 };
 
 class postREYUseCase {
-  constructor(impTestResultsRepository) {
+  constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
   // Calculate age in years from a birthdate
-  calculateAge(birthdate) {
+  calculateAge (birthdate) {
     if (!birthdate) return null;
     const today = new Date();
     const birth = new Date(birthdate);
@@ -50,7 +50,7 @@ class postREYUseCase {
   }
 
   // Map age in years to the table's age range key
-  resolveAgeRange(age) {
+  resolveAgeRange (age) {
     if (age >= 18 && age <= 22) return '18-22';
     if (age >= 23 && age <= 27) return '23-27';
     if (age >= 28 && age <= 32) return '28-32';
@@ -68,72 +68,72 @@ class postREYUseCase {
   }
 
   // Map schooling years to education block key
-  resolveEducationBlock(schoolingYears) {
+  resolveEducationBlock (schoolingYears) {
     if (schoolingYears === null) return null;
     return schoolingYears > 12 ? '>12' : '1-12';
   }
 
   // Map schooling label to years (mirrors MoCA logic)
-  resolveSchoolingYears(schooling) {
+  resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria':        6,
-      'Secundaria':      9,
-      'Bachillerato':    12,
-      'Licenciatura':    16,
-      'Posgrado':        18,
+      'Primaria': 6,
+      'Secundaria': 9,
+      'Bachillerato': 12,
+      'Licenciatura': 16,
+      'Posgrado': 18,
     };
     return map[schooling] ?? null;
   }
 
-    /**
+  /**
    * Logic:
    * - percentiles are sorted descending in the table (95 → 5)
    * - find the exact percentile row if it exists
    * - if the percentile entered is above the highest available → use highest available score
    * - if the percentile entered is below 5 → use lowest available score
    */
-  resolveNormativeScore(percentile, educationBlock, ageRange) {
+  resolveNormativeScore (percentile, educationBlock, ageRange) {
   // Get the table column based on education block and age range
-  const column = REY_TABLE[educationBlock]?.[ageRange];
+    const column = REY_TABLE[educationBlock]?.[ageRange];
 
-  // Return null if the table segment does not exist
-  if (!column) return null;
+    // Return null if the table segment does not exist
+    if (!column) return null;
 
-  // Convert percentile keys from strings to numbers
-  const percentiles = Object.keys(column).map(Number);
+    // Convert percentile keys from strings to numbers
+    const percentiles = Object.keys(column).map(Number);
 
-  // Initialize with the first available percentile
-  let closest = percentiles[0];
-  let minDiff = Math.abs(percentile - closest);
+    // Initialize with the first available percentile
+    let closest = percentiles[0];
+    let minDiff = Math.abs(percentile - closest);
 
-  // Find the closest percentile available in the matrix
-  for (const p of percentiles) {
-    const diff = Math.abs(percentile - p);
+    // Find the closest percentile available in the matrix
+    for (const p of percentiles) {
+      const diff = Math.abs(percentile - p);
 
-    // Replace current closest if this percentile is nearer
-    if (diff < minDiff) {
-      closest = p;
-      minDiff = diff;
+      // Replace current closest if this percentile is nearer
+      if (diff < minDiff) {
+        closest = p;
+        minDiff = diff;
+      }
+
+      // If distances are equal, prefer the lower percentile
+      // This follows the clinical interpretation rule
+      else if (diff === minDiff && p < closest) {
+        closest = p;
+      }
     }
 
-    // If distances are equal, prefer the lower percentile
-    // This follows the clinical interpretation rule
-    else if (diff === minDiff && p < closest) {
-      closest = p;
-    }
+    // Return the exact normative score stored in the matrix
+    return column[closest];
   }
-
-  // Return the exact normative score stored in the matrix
-  return column[closest];
-}
 
   /**
    * Main execute method.
    * score       = percentile entered by clinician (0–95)
    * interpretation = normative score looked up from table (0–36)
    */
-  async execute({ id_user, id_application, score, notes }) {
+  async execute ({ id_user, id_application, score, notes }) {
 
     // 1. Validate percentile (score field)
     const percentile = Number(score);
@@ -179,9 +179,7 @@ class postREYUseCase {
     const ageRange        = this.resolveAgeRange(ageYears);
 
     if (!educationBlock || !ageRange) {
-      const err = new Error(
-        'Cannot calculate REY score: missing age or schooling data for this user'
-      );
+      const err = new Error('Cannot calculate REY score: missing age or schooling data for this user');
       err.status = 422;
       throw err;
     }
@@ -199,21 +197,21 @@ class postREYUseCase {
     // score          = percentile entered by clinician
     // interpretation = normative score from table (string for VARCHAR column)
     const updated = await this.impTestResultsRepository.saveResult({
-      id_results:     row.idResults,
-      score:          percentile,
+      id_results: row.idResults,
+      score: percentile,
       interpretation: String(normativeScore),
-      notes:          notes ?? null,
+      notes: notes ?? null,
     });
 
     return {
-      idResults:      updated.idResults,
-      idTest:         updated.idTest,
-      testName:       updated.testName,
-      status:         updated.status,
-      score:          updated.score,
+      idResults: updated.idResults,
+      idTest: updated.idTest,
+      testName: updated.testName,
+      status: updated.status,
+      score: updated.score,
       interpretation: updated.interpretation,
-      dateApplied:    updated.dateApplied,
-      notes:          updated.notes,
+      dateApplied: updated.dateApplied,
+      notes: updated.notes,
     };
   }
 }

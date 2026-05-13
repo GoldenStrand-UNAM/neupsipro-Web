@@ -12,7 +12,7 @@ const REY_TABLE = {
     '63-67': { 80: 36.0, 70: 34.4, 60: 32.8, 50: 31.3, 40: 29.8, 30: 28.1, 20: 26.2, 15: 25.0, 10: 23.6, 5: 21.4 },
     '68-72': { 85: 36.0, 80: 35.9, 70: 34.0, 60: 32.4, 50: 30.9, 40: 29.4, 30: 27.7, 20: 25.8, 15: 24.6, 10: 23.2, 5: 21.0 },
     '73-77': { 85: 36.0, 80: 35.5, 70: 33.6, 60: 32.0, 50: 30.5, 40: 29.0, 30: 27.3, 20: 25.4, 15: 24.2, 10: 22.8, 5: 20.6 },
-    '>77':   { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
+    '>77': { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
   },
   '1-12': {
     '18-22': { 80: 36.0, 70: 35.8, 60: 34.2, 50: 32.7, 40: 31.2, 30: 29.6, 20: 27.7, 15: 26.5, 10: 25.0, 5: 22.9 },
@@ -27,11 +27,11 @@ const REY_TABLE = {
     '63-67': { 90: 36.0, 85: 35.3, 80: 34.1, 70: 32.2, 60: 30.6, 50: 29.1, 40: 27.6, 30: 26.0, 20: 24.0, 15: 22.8, 10: 21.4, 5: 19.2 },
     '68-72': { 90: 36.0, 85: 34.9, 80: 33.7, 70: 31.8, 60: 30.2, 50: 28.7, 40: 27.2, 30: 25.5, 20: 23.6, 15: 22.4, 10: 21.0, 5: 18.8 },
     '73-77': { 95: 36.0, 90: 35.9, 85: 34.5, 80: 33.3, 70: 31.4, 60: 29.8, 50: 28.3, 40: 26.8, 30: 25.1, 20: 23.2, 15: 22.0, 10: 20.6, 5: 18.4 },
-    '>77':   { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
+    '>77': { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
   },
 };
 
-function resolveAgeRange(age) {
+function resolveAgeRange (age) {
   if (age >= 18 && age <= 22) return '18-22';
   if (age >= 23 && age <= 27) return '23-27';
   if (age >= 28 && age <= 32) return '28-32';
@@ -48,12 +48,12 @@ function resolveAgeRange(age) {
   return null;
 }
 
-function resolveEducationBlock(schoolingYears) {
+function resolveEducationBlock (schoolingYears) {
   if (schoolingYears === null) return null;
   return schoolingYears > 12 ? '>12' : '1-12';
 }
 
-function resolveSchoolingYears(schooling) {
+function resolveSchoolingYears (schooling) {
   const map = {
     'Sin escolaridad': 0, 'Primaria': 6, 'Secundaria': 9,
     'Bachillerato': 12,   'Licenciatura': 16, 'Posgrado': 18,
@@ -61,7 +61,7 @@ function resolveSchoolingYears(schooling) {
   return map[schooling] ?? null;
 }
 
-function resolveNormativeScore(percentile, educationBlock, ageRange) {
+function resolveNormativeScore (percentile, educationBlock, ageRange) {
   // Get the matrix column using education block and age range
   const column = REY_TABLE[educationBlock]?.[ageRange];
 
@@ -96,7 +96,7 @@ function resolveNormativeScore(percentile, educationBlock, ageRange) {
   return column[closest];
 }
 
-async function openREYModal(idUser, idApplication, test, mode) {
+async function openREYModal (idUser, idApplication, test, mode) {
   const existing = document.getElementById('modalREY');
   if (existing) existing.remove();
 
@@ -131,10 +131,10 @@ async function openREYModal(idUser, idApplication, test, mode) {
           <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Fecha:</span>
           <span class="text-base sm:text-lg text-gray-900">
             ${test.dateApplied
-              ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
-                  day: 'numeric', month: 'long', year: 'numeric'
-                })
-              : '—'}
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    })
+    : '—'}
           </span>
         </div>
 
@@ -180,7 +180,7 @@ async function openREYModal(idUser, idApplication, test, mode) {
   ` :
 
   // ── Register / Modify mode ────────────────────────────────────────────────
-  `
+    `
     <div class="modal">
       <div class="modal__header">
         <h2 class="modal__title">REY — ${titles[mode]}</h2>
@@ -291,7 +291,7 @@ async function openREYModal(idUser, idApplication, test, mode) {
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(modal);
 
   const scoreInput      = document.getElementById('inputREYScore');
@@ -302,7 +302,7 @@ async function openREYModal(idUser, idApplication, test, mode) {
   const notesCount      = document.getElementById('REYNotesCount');
   const infoText        = document.getElementById('REYInfoText');
 
-  function closeModal() { modal.remove(); }
+  function closeModal () { modal.remove(); }
 
   document.getElementById('btnCloseREY').addEventListener('click', closeModal);
   document.getElementById('btnCancelREY').addEventListener('click', closeModal);
@@ -341,7 +341,7 @@ async function openREYModal(idUser, idApplication, test, mode) {
   }
 
   // ── Live normative score ──────────────────────────────────────────────────
-  function updateLiveScore() {
+  function updateLiveScore () {
     scoreError.classList.add('hidden');
 
     if (!/^\d*$/.test(scoreInput.value)) {
@@ -398,9 +398,9 @@ async function openREYModal(idUser, idApplication, test, mode) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ score, notes }),
+        body: JSON.stringify({ score, notes }),
       });
 
       const json = await res.json();
@@ -422,4 +422,3 @@ async function openREYModal(idUser, idApplication, test, mode) {
     }
   });
 }
-        

@@ -4,7 +4,7 @@ class Tests {
     this.idApplication = data.id_application;
     this.idResults = data.id_results;
     this.testName = data.test_name;
-    this.resultTable    = data.result_table; 
+    this.resultTable    = data.result_table;
     this.dateApplied = data.date_applied;
     this.status = this.getStatus(data.status);
   }

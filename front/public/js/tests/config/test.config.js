@@ -32,12 +32,12 @@ const TEST_REGISTRY = {
   },
 
   3: {
-    name:         'REY',
+    name: 'REY',
     openRegister: (idUser, idApplication, test) =>
       openREYModal(idUser, idApplication, test, 'register'),
-    openModify:   (idUser, idApplication, test) =>
+    openModify: (idUser, idApplication, test) =>
       openREYModal(idUser, idApplication, test, 'modify'),
-    openConsult:  (idUser, idApplication, test) =>
+    openConsult: (idUser, idApplication, test) =>
       openREYModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
       `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados`,

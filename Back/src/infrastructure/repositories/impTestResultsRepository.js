@@ -46,9 +46,37 @@ class impTestResultsRepository extends resultRepository {
     return rows.map(row => new Tests(row));
   }
 
+  // Insert one result row per test in the resolved protocol.
+  async createResults (id_application, id_user, tests) {
+    if (!tests || tests.length === 0) return [];
+
+    const placeholders = tests.map(() => '(?, ?, ?, ?, 1)').join(', ');
+    const values       = tests.flatMap(id_test => [uuidv4(), id_user, id_application, id_test]);
+
+    const [result] = await db.query(
+      `INSERT INTO test_results (id_results, id_user, id_application, id_test, status)
+      VALUES ${placeholders}`,
+      values
+    );
+
+    return result;
+  }
+
+  // Looks up the test_results row for a given user + application + test.
+  async fetchResultRow ({ id_user, id_application, id_test }) {
+    const [rows] = await this.db.query(
+      `SELECT id_results, status
+        FROM test_results
+        WHERE id_user       = ?
+          AND id_application = ?
+          AND id_test        = ?
+        LIMIT 1`,
+      [id_user, id_application, id_test]
+    );
+    return rows[0] ?? null;
+  }
 
   // Fetch the schooling level of a user from their initial interview.
-
   async fetchUserSchooling ({ id_user }) {
     const [rows] = await db.query(
       `SELECT ii.schooling

@@ -49,7 +49,7 @@ class impTestApplicationsRepository extends TestApplicationRepository {
   }
 
   // Fetch all test ids assigned to a protocol
-  async fetchProtocolTests({ protocol }) {
+  async fetchProtocolTests ({ protocol }) {
     const [rows] = await db.query(
       `SELECT pt.id_test, p.test_name, p.result_table
        FROM protocol_tests pt

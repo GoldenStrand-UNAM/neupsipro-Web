@@ -152,7 +152,5 @@ module.exports = (authUseCase) => {
     (req, res) => reyController.postResult(req, res)
   );
 
-
-
   return router;
 };

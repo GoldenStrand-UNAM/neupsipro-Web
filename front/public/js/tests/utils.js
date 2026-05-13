@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+
 function escapeHTML (str) {
   if (str === null || str === undefined) return '';
   return String(str)
@@ -9,7 +9,6 @@ function escapeHTML (str) {
     .replace(/'/g, '&#039;');
 }
 
-// eslint-disable-next-line no-unused-vars
 function getVariant (status) {
   const map = {
     'Por comenzar': 'neutral',
