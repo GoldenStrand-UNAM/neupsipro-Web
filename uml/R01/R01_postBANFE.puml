@@ -3,7 +3,7 @@
 actor "Clinic User" as USR
 participant "getTests.ejs" as VEJS
 participant "banfe.modal.js" as BMODAL
-participant "optionsModal.js" as OMODAL
+participant "options.modal.js" as OMODAL
 participant "testList.js" as TLIST
 participant "getTestsRoutes.js" as UROUTE
 participant "postBANFEController" as TCTRL
@@ -15,24 +15,18 @@ database "DB" as DB
 
 USR -> TLIST : Click [card BANFE]
 TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
-OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
 
 USR -> OMODAL : Click [Registrar resultados]
 OMODAL -> OMODAL : closeModal()
 OMODAL -> BMODAL : config.openRegister(idUser, idApplication, test)\n→ openBANFEModal(idUser, idApplication, test, 'register')
-BMODAL --> USR : Modal de registro visible\n(input score + notes + contador)
+BMODAL --> USR : Modal de registro visible\n(3 inputs de área + total en vivo + notas)
 
 == Interpretación en vivo ==
 
-USR -> BMODAL : Ingresa score (número)
-BMODAL -> BMODAL : validateInput(score)\n- solo dígitos\n- no negativo\n- no > 200
-
-alt Input inválido
-    BMODAL --> USR : showInputError(msg)\n"El puntaje debe estar entre 0 y 200"
-end
-
-BMODAL -> BMODAL : interpretBANFE(score)\n≤69 → "Discapacidad"\n70-84 → "Limítrofe"\n85-115 → "Promedio"\n116+ → "Promedio alto"
-BMODAL --> USR : Muestra interpretación en vivo\n(sin submit)
+USR -> BMODAL : Ingresa score en cualquier área
+BMODAL -> BMODAL : strip non-digits\ninterpretBANFE(score)\n≤69 → "Alteración severa"\n70-84 → "Alteración leve-moderada"\n85-115 → "Normal"\n116+ → "Normal alto"
+BMODAL --> USR : Interpretación en vivo por área\nPuntaje Total actualizado\n(suma de las 3 áreas)
 
 == Validación de notas ==
 
@@ -43,29 +37,23 @@ BMODAL --> USR : Contador visible en rojo\nsi len >= 200
 == Guardar resultados ==
 
 USR -> BMODAL : Click [Guardar]
-BMODAL -> BMODAL : validate client-side\n- score válido (0-200)\n- notas max 200 chars
+BMODAL -> BMODAL : validate client-side\n- 3 scores presentes y no negativos\n- notas max 200 chars
 
 alt Datos inválidos
-    BMODAL --> USR : showScoreError(msg)
+    BMODAL --> USR : showFieldError(msg) por área
 end
 
-BMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/1/resultados\n{ score, notes }
+BMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/1/resultados\n{ score_orbit_frontal, score_prefrontal_before,\n  score_d_lateral, notes }
 
-UROUTE -> TCTRL : controller.postResult(req, res)
-TCTRL -> UC_POST : execute({ id_user, id_application,\nid_test: 1, score, notes })
+UROUTE -> TCTRL : banfeController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application,\nscore_orbit_frontal, score_prefrontal_before,\nscore_d_lateral, notes })
 
 == Validaciones en Use Case ==
 
-UC_POST -> UC_POST : validate score\n- no vacío\n- es número\n- entre 0 y 200
+UC_POST -> UC_POST : #parseAreaScore()\npor cada área:\n- no vacío\n- es número\n- no negativo
 
-alt score inválido
-    UC_POST --> TCTRL : throw Error 422\n'score must be a valid number'
-    TCTRL --> BMODAL : HTTP 422 { error }
-    BMODAL --> USR : showApiError(json.error)
-end
-
-alt score fuera de rango
-    UC_POST --> TCTRL : throw Error 422\n'score must be between 0 and 200'
+alt score inválido por área
+    UC_POST --> TCTRL : throw Error 422\n'fieldName must be a valid number'
     TCTRL --> BMODAL : HTTP 422 { error }
     BMODAL --> USR : showApiError(json.error)
 end
@@ -79,7 +67,7 @@ end
 UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 1 })
 RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 1
 DB --> RREPO : { id_results, status } | []
-RREPO --> UC_POST : { id_results, status } | null
+RREPO --> UC_POST : { idResults, status } | null
 
 alt result row not found (null)
     UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
@@ -89,7 +77,7 @@ end
 
 == Interpretación en Use Case ==
 
-UC_POST -> UC_POST : resolveInterpretation(score)\n≤69 → "Discapacidad"\n70-84 → "Limítrofe"\n85-115 → "Promedio"\n116+ → "Promedio alto"
+UC_POST -> UC_POST : resolveInterpretation(score) por área\n≤69 → "Alteración severa"\n70-84 → "Alteración leve-moderada"\n85-115 → "Normal"\n116+ → "Normal alto"\nscoreTotal = suma de las 3 áreas\n(sin interpretación)
 
 note right
   El servidor recalcula la interpretación
@@ -98,21 +86,26 @@ end note
 
 == Persistencia ==
 
-UC_POST -> RREPO : saveResult({ id_results, score,\ninterpretation, notes })
-RREPO -> DB : UPDATE test_results\nSET score = ?,\n    interpretation = ?,\n    notes = ?,\n    date_applied = CURDATE(),\n    status = 3\nWHERE id_results = ?
-DB --> RREPO : OK
-RREPO -> DB : SELECT tr.*, pt.test_name\nFROM test_results tr\nJOIN psych_tests pt ON tr.id_test = pt.id_test\nWHERE tr.id_results = ?
-DB --> RREPO : { updated row }
-RREPO --> UC_POST : Tests entity
+UC_POST -> RREPO : saveBANFEResult({ id_results,\nscore_orbit_frontal, inter_orbit_frontal,\nscore_prefrontal_before, inter_prefrontal_before,\nscore_d_lateral, inter_d_lateral,\nscore_total, notes })
 
-UC_POST -> UC_POST : map entity → TestResultDTO
-UC_POST --> TCTRL : TestResultDTO
-TCTRL --> BMODAL : HTTP 200 { data: TestResultDTO }
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO banfe_results (...)\nVALUES (...)\nON DUPLICATE KEY UPDATE ...
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM banfe_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw banfe_results row
+
+UC_POST -> UC_POST : map row → BanfeResultsDTO\n{ idResults, idTest, status: 3,\n  areas: { orbitFrontal, prefrontalBefore, dLateral },\n  scoreTotal, notes }
+UC_POST --> TCTRL : BanfeResultsDTO
+TCTRL --> BMODAL : HTTP 200 { data: BanfeResultsDTO }
 
 == Actualizar UI ==
 
 BMODAL -> BMODAL : closeModal()
-BMODAL -> TLIST : updateTestCardStatus(dto)\nbadge → "Calificada"
+BMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
 BMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
 VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
 
