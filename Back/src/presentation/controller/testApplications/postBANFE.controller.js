@@ -9,7 +9,7 @@ class PostBANFEController {
       const { id_user, id_application } = req.params;
 
       // Destructure the three area scores from the request body
-      const { score_orbit_frontal, score_prefrontal_before, score_d_lateral } = req.body;
+      const { score_orbit_frontal, score_prefrontal_before, score_d_lateral, notes} = req.body;
 
       const dto = await this.useCase.execute({
         id_user,
@@ -17,6 +17,7 @@ class PostBANFEController {
         score_orbit_frontal,
         score_prefrontal_before,
         score_d_lateral,
+        notes,
       });
 
       return res.status(200).json({ data: dto });

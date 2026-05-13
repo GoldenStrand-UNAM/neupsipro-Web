@@ -1,12 +1,13 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
 
+// AHORA
 function interpretBANFE (score) {
   const n = Number(score);
   if (isNaN(n))  return '';
-  if (n <= 69)   return 'Discapacidad';
-  if (n <= 84)   return 'Limítrofe';
-  if (n <= 115)  return 'Promedio';
-  return 'Promedio alto';
+  if (n <= 69)   return 'Alteración severa';
+  if (n <= 84)   return 'Alteración leve-moderada';
+  if (n <= 115)  return 'Normal';
+  return 'Normal alto';
 }
 
 // eslint-disable-next-line no-unused-vars

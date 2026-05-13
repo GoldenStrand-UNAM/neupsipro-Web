@@ -5,7 +5,7 @@ participant "getTests.ejs" as VEJS
 participant "banfe.modal.js" as BMODAL
 participant "optionsModal.js" as OMODAL
 participant "testList.js" as TLIST
-participant "UserRoutes" as UROUTE
+participant "getTestsRoutes.js" as UROUTE
 participant "postBANFEController" as TCTRL
 participant "postBANFEUseCase" as UC_POST
 participant "impTestResultsRepository" as RREPO
