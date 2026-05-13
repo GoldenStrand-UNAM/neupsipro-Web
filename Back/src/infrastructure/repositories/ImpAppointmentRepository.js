@@ -3,8 +3,7 @@ const appointmentRepository = require('../../domain/repository/appointmentReposi
 
 class ImpAppointmentRepository extends appointmentRepository {
   async fecthAppointmentWithClinical ({ idClinicalUser }) {
-    const [users] = await db.query (
-      `SELECT a.id_appointment, a.date_time, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+    const [users] = await db.query (`SELECT a.id_appointment, a.date_time, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
 	CASE
     	WHEN DATE(a.date_time) = CURDATE() THEN 'today'
 		WHEN DATE(a.date_time) = DATE_ADD(CURDATE(), INTERVAL 1 DAY) THEN 'tomorrow'

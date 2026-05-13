@@ -5,7 +5,7 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
   async fetchNumberUsers ({ idClinicalUser }) {
     const [numbers] = await db.query (
       `SELECT
-        COUNT(*) AS total_users,
+        SUM(CASE WHEN bucket != 'excluded' THEN 1 ELSE 0 END) AS total_users,
         SUM(CASE WHEN bucket = 'discharged'      THEN 1 ELSE 0 END) AS discharged,
         SUM(CASE WHEN bucket = 'in_intervention' THEN 1 ELSE 0 END) AS in_intervention,
         SUM(CASE WHEN bucket = 'stand_by'        THEN 1 ELSE 0 END) AS stand_by,
@@ -49,10 +49,10 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
         SELECT
           CASE
             WHEN ui.state = 'Discharged'                                      THEN 'discharged'
-            WHEN ui.state = ui.stage IN ('Initial', 'Following')              THEN 'in_intervention'
+            WHEN ui.stage IN ('Initial', 'Following')                         THEN 'in_intervention'
             WHEN ui.state = 'Stand_by'                                        THEN 'stand_by'
-            WHEN ui.state = ui.protocol = 'Clinical'                          THEN 'clinical'
-            WHEN ui.state = ui.protocol = 'Research'                           THEN 'research'
+            WHEN ui.protocol = 'Clinical'                                     THEN 'clinical'
+            WHEN ui.protocol = 'Research'                                     THEN 'research'
             WHEN ui.protocol = 'Pending'                                      THEN 'no_protocol'
             ELSE 'excluded'
           END AS bucket
