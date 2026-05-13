@@ -336,3 +336,57 @@ function bindFormListeners (idUser, idApplication, closeModal) {
     }
   });
 }
+
+
+// Decides which HTML to render and whether to bind form listeners.
+
+// eslint-disable-next-line no-unused-vars
+function openBANFEModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalBANFE');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  // Build prefill object — empty on register, populated on modify/consult
+  const areas = (isModify || isConsult) ? (test.areas ?? {}) : {};
+  const prefill = {
+    orbitFrontal:     {
+      score:  areas.orbitFrontal?.score          ?? '',
+      interp: areas.orbitFrontal?.interpretation ?? '—',
+    },
+    prefrontalBefore: {
+      score:  areas.prefrontalBefore?.score          ?? '',
+      interp: areas.prefrontalBefore?.interpretation ?? '—',
+    },
+    dLateral:         {
+      score:  areas.dLateral?.score          ?? '',
+      interp: areas.dLateral?.interpretation ?? '—',
+    },
+    notes: (isModify || isConsult) ? (test.notes ?? '') : '',
+  };
+
+  // Render the correct HTML block
+  const modal = document.createElement('div');
+  modal.id        = 'modalBANFE';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = isConsult
+    ? buildConsultHTML(test)
+    : buildFormHTML(mode, prefill);
+
+  document.body.appendChild(modal);
+
+  // ── Shared close logic ────────────────────────────────────────────────────
+
+  function closeModal () { modal.remove(); }
+
+  document.getElementById('btnCloseBANFE').addEventListener('click', closeModal);
+  document.getElementById('btnCancelBANFE').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // ── Form listeners only on register / modify ──────────────────────────────
+
+  if (!isConsult) {
+    bindFormListeners(idUser, idApplication, closeModal);
+  }
+}
