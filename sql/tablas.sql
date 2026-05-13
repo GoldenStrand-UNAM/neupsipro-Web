@@ -24,7 +24,7 @@ CREATE TABLE privilege_role (
 CREATE TABLE acl (
     id_acl         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     consultation   BOOL         NOT NULL,
-    writting       BOOL         NOT NULL,
+    writing       BOOL         NOT NULL,
     edit           BOOL         NOT NULL,
     eliminate      BOOL         NOT NULL
 );
@@ -696,7 +696,7 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
 
-ALTER TABLE acl CHANGE writting writing BOOL NOT NULL;
+ALTER TABLE acl CHANGE writing writing BOOL NOT NULL;
 
 CREATE TABLE user_clinical (
     id_user      VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -704,6 +704,10 @@ CREATE TABLE user_clinical (
     activity     VARCHAR(20) NULL ,
     CONSTRAINT fk_user_clinical_user FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
+
+ALTER TABLE users 
+ADD COLUMN gender enum('Man','Woman','Other','not especified') 
+NULL AFTER birthdate;
 
 ALTER TABLE test_sessions RENAME TO test_applications;
 
@@ -729,9 +733,6 @@ ALTER TABLE test_results
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
 
-ALTER TABLE users 
-ADD COLUMN gender ENUM('Man','Woman','Other','Not specified') 
-NULL AFTER birthdate;
 
 CREATE TABLE intervention (
     id_intervention      VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -756,3 +757,10 @@ CREATE TABLE intervention_session (
         REFERENCES intervention(id_intervention)
         ON DELETE CASCADE
 );
+ALTER TABLE user_clinical
+    ADD COLUMN emergency_contact_name varchar(50) NOT NULL,
+    ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL,
+    ADD COLUMN emergency_contact_relation VARCHAR(25) NOT NULL,
+    ADD COLUMN start_date DATE NOT NULL,
+    ADD COLUMN finish_date DATE NOT NULL, 
+    ADD COLUMN hours INT NOT NULL;
