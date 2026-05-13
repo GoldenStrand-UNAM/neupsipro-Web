@@ -80,6 +80,10 @@ const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
 app.use('/forum', forumRoutes(authUseCase));
 
+const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
+
+app.use('/publication', publicationRoutes(authUseCase));
+
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
