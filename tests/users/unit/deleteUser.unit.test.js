@@ -12,17 +12,17 @@ describe('DeleteUserUseCase Unit Tests', () => {
         useCase = new DeleteUserUseCase(mockUserRepository);
     });
 
-    test('Debe lanzar error si no se proporciona id_user', async () => {
+    test('must throw error if no id_user', async () => {
         await expect(useCase.execute({})).rejects.toThrow('id_user is required');
     });
 
-    test('Debe lanzar error si el usuario no existe', async () => {
+    test('must throw error if user doesnt exist', async () => {
         mockUserRepository.fetchOne.mockResolvedValue([]);
         await expect(useCase.execute({ id_user: 1 })).rejects.toThrow('User not found');
         expect(mockUserRepository.fetchOne).toHaveBeenCalledWith({ id_user: 1 });
     });
 
-    test('Debe realizar el borrado lógico exitosamente', async () => {
+    test('must do the delete logic correctly', async () => {
         mockUserRepository.fetchOne.mockResolvedValue([{ id_user: 1 }]);
         mockUserRepository.softDeleteUser.mockResolvedValue(true);
         const result = await useCase.execute({ id_user: 1 });
@@ -33,7 +33,7 @@ describe('DeleteUserUseCase Unit Tests', () => {
         expect(mockUserRepository.softDeleteUser).toHaveBeenCalledWith({ id_user: 1 });
     });
 
-    test('Debe lanzar error si el repositorio falla al borrar', async () => {
+    test('must throw error if the repository fails to delete', async () => {
         mockUserRepository.fetchOne.mockResolvedValue([{ id_user: 1 }]);
         mockUserRepository.softDeleteUser.mockResolvedValue(false);
         await expect(useCase.execute({ id_user: 1 })).rejects.toThrow('Failed to delete user');

@@ -6,7 +6,6 @@ const db = require('../../../Back/src/infrastructure/database/database'); // Aju
 let mockAuthBehavior = 'unauthenticated';
 let mockAuthUserId   = null;
 
-// Mock del Middleware de Auth (Copiado de tu ejemplo funcional)
 jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
   jest.fn(() => ({
     verifyToken: (req, res, next) => {
@@ -27,7 +26,6 @@ jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () => 
     });
 });
 
-// Mock de la Base de Datos
 jest.mock('../../../Back/src/infrastructure/database/database', () => ({
   query: jest.fn()
 }));
@@ -50,17 +48,14 @@ describe('INTEGRATION — DELETE /users/:id_user', () => {
     mockAuthBehavior = 'unauthenticated';
   });
 
-  test('Debe retornar 200 si el usuario es eliminado correctamente', async () => {
+  test('must return 200 if the user is deleted succesfully', async () => {
     asAuthenticated(1);
 
-    // Mock de fetchOne: El repositorio hace userData.map, así que necesitamos una estructura de filas
-    // userData[0] es el resultado del query
     db.query.mockResolvedValueOnce([
       [{ id_user: '123', first_name: 'Test' }],
       [] // userData[0]
     ]);
 
-    // Mock de softDeleteUser: result.affectedRows > 0
     db.query.mockResolvedValueOnce([
       { affectedRows: 1 },
       []
@@ -73,10 +68,9 @@ describe('INTEGRATION — DELETE /users/:id_user', () => {
     expect(res.body.success).toBe(true);
   });
 
-  test('Debe retornar 404 si el usuario no existe en DB', async () => {
+  test('must return 404 if the user doesnt exist in the DB', async () => {
     asAuthenticated(1);
 
-    // Mock de fetchOne devolviendo array de datos vacío
     db.query.mockResolvedValueOnce([[], []]);
 
     const res = await request(app).delete('/users/999');
@@ -85,17 +79,15 @@ describe('INTEGRATION — DELETE /users/:id_user', () => {
     expect(res.body.error).toBe('User not found');
   });
 
-  test('Debe retornar 400 si el id_user no es válido o falta', async () => {
+  test('must return 400 if the id_user is not valid or misses', async () => {
     asAuthenticated(1);
     
-    // Si tu useCase lanza error por falta de id_user
     const res = await request(app).delete('/users/%20');
 
     expect(res.status).toBe(400);
   });
 
-  test('Debe retornar 401 si no está autenticado', async () => {
-    // mockAuthBehavior es 'unauthenticated' por defecto en beforeEach
+  test('must return 401 if not authenticated', async () => {
     const res = await request(app).delete('/users/123');
 
     expect(res.status).toBe(401);
