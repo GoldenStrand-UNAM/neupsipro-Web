@@ -1,17 +1,18 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database/database');
 const interventionRepository = require('../../domain/repository/interventionRepository');
-const {Intervention, InterventionSession} = require('../../domain/entity/intervention');
+const { Intervention, InterventionSession } = require('../../domain/entity/Intervention');
 
 class ImpInterventionRepository extends interventionRepository {
 
-  // Returns active intervention with user info
+  // Returns active intervention with user info (or null)
   async findByUser ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
           i.id_intervention,
           i.id_user,
           i.contract_link,
+          i.neuro_profile,
           i.created_at,
           CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS user_full_name,
           u.profile_photo,
@@ -30,7 +31,7 @@ class ImpInterventionRepository extends interventionRepository {
     return rows.length ? new Intervention(rows[0]) : null;
   }
 
-  // Creates a new intervention
+  // Creates a new empty intervention
   async createIntervention ({ id_user }) {
     const idIntervention = uuidv4();
     await db.query(
@@ -40,43 +41,45 @@ class ImpInterventionRepository extends interventionRepository {
     return idIntervention;
   }
 
-  // Updates/Create the contract link 
-  async updateContractLink ({ id_user, contract_link }) {
+  // Updates contract link and/or neuro profile
+  async updateContract ({ id_user, contract_link, neuro_profile }) {
     const [result] = await db.query(
-      `UPDATE intervention SET contract_link = ? WHERE id_user = ?`,
-      [contract_link, id_user]
+      `UPDATE intervention 
+       SET contract_link = ?, neuro_profile = ? 
+       WHERE id_user = ?`,
+      [contract_link, neuro_profile, id_user]
     );
     return result.affectedRows > 0;
   }
 
-  // Get all sessions ordered by date
-  async findSessionsByIntervention ({ id_intervention }) {
-    const [rows] = await db.query(
-      `SELECT id_session, id_intervention, session_number, session_date,
-              objectives, development, dqp_task
-       FROM intervention_session
-       WHERE id_intervention = ?
-       ORDER BY session_date ASC`,
-      [id_intervention]
-    );
-    return rows.map(r => new InterventionSession(r));
-  }
+  // Returns all sessions of an intervention id
+    async findSessionsByIntervention ({ id_intervention }) {
+        const [rows] = await db.query(
+        `SELECT id_session, id_intervention, session_number, session_date,
+                objectives, development, dqp_task
+        FROM intervention_session
+        WHERE id_intervention = ?
+        ORDER BY session_date ASC, id_session ASC`,
+        [id_intervention]
+        );
+        return rows.map(r => new InterventionSession(r));
+    }
 
-  // Get the most recent session
-  async findLastSession ({ id_intervention }) {
-    const [rows] = await db.query(
-      `SELECT id_session, id_intervention, session_number, session_date,
-              objectives, development, dqp_task
-       FROM intervention_session
-       WHERE id_intervention = ?
-       ORDER BY session_date DESC
-       LIMIT 1`,
-      [id_intervention]
-    );
-    return rows.length ? new InterventionSession(rows[0]) : null;
-  }
+    // Returns last session of an intervention id 
+    async findLastSession ({ id_intervention }) {
+        const [rows] = await db.query(
+        `SELECT id_session, id_intervention, session_number, session_date,
+                objectives, development, dqp_task
+        FROM intervention_session
+        WHERE id_intervention = ?
+        ORDER BY session_date DESC, id_session DESC
+        LIMIT 1`,
+        [id_intervention]
+        );
+        return rows.length ? new InterventionSession(rows[0]) : null;
+    }
 
-  // Create a new session
+    // New session
   async createSession ({ id_intervention, session_number, session_date, objectives, development, dqp_task }) {
     const idSession = uuidv4();
     await db.query(
@@ -87,8 +90,7 @@ class ImpInterventionRepository extends interventionRepository {
     );
     return idSession;
   }
-
-  // Delete a specific session
+ // delte session with their id
   async deleteSession ({ id_session }) {
     const [result] = await db.query(
       `DELETE FROM intervention_session WHERE id_session = ?`,
