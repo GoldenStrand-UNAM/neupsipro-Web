@@ -736,22 +736,23 @@ NULL AFTER birthdate;
 CREATE TABLE intervention (
     id_intervention      VARCHAR(36) NOT NULL PRIMARY KEY,
     id_user              VARCHAR(36) NOT NULL UNIQUE,
-    neuropsych_profile   VARCHAR(3000) NULL,
     contract_link        VARCHAR(255) NULL,
+    created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_intervention_user
         FOREIGN KEY (id_user) REFERENCES users(id_user)
 );
 
 CREATE TABLE intervention_session (
-    id_session         VARCHAR(36) NOT NULL PRIMARY KEY,    
+    id_session         VARCHAR(36) NOT NULL PRIMARY KEY,
     id_intervention    VARCHAR(36) NOT NULL,
-    session_number     VARCHAR(20) NULL,                
+    session_number     VARCHAR(20) NULL,
     session_date       DATE NOT NULL,
-    objectives         VARCHAR(800) NULL,
-    development        VARCHAR(1000) NULL,
-    dqp_task           VARCHAR(800) NULL,
+    objectives         TEXT NULL,
+    development        TEXT NULL,
+    dqp_task           TEXT NULL,
+    created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_session_intervention
         FOREIGN KEY (id_intervention)
         REFERENCES intervention(id_intervention)
         ON DELETE CASCADE
-)
+);
