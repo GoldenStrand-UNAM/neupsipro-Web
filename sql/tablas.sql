@@ -733,4 +733,12 @@ RENAME COLUMN id_session TO id_application;
 ALTER TABLE test_results 
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
->>>>>>> cd1d71012800a2f86cb22d0daa6d1ee16d41b9d9
+
+ALTER TABLE user_clinical
+    ADD COLUMN emergency_contact_name varchar(50) NOT NULL,
+    ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL,
+    ADD COLUMN emergency_contact_relation VARCHAR(25) NOT NULL,
+    ADD COLUMN start_date DATE NOT NULL,
+    ADD COLUMN finish_date DATE NOT NULL, 
+    ADD COLUMN hours INT NOT NULL;
+
