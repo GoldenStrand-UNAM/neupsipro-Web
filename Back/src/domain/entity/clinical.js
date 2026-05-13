@@ -1,7 +1,9 @@
 class Clinical {
   constructor (data) {
     this.idUser = data.id_user;
-    this.name = `${data.first_name} ${data.lastname_p} ${data.lastname_m}`;
+    this.name = [data.first_name, data.lastname_p, data.lastname_m]
+      .filter(Boolean)
+      .join(' ');
     this.activity = data.activity;
     this.affiliation = data.affiliation;
     this.emergencyName = data.emergency_contact_name;

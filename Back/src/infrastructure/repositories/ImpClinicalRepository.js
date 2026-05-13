@@ -79,18 +79,20 @@ class ImpClinicalRepository extends clinicalRepository {
     const offset = (page - 1) * limit;
 
     const [patientsData] = await db.query (`SELECT 
-        p.id_user,
-        p.first_name, 
-        p.lastname_p, 
-        p.lastname_m,
-        ui.state,
-        ui.reference_number,
-        ur.assignment_date,
-        ur.type
-    FROM user_relation ur
-    INNER JOIN users p ON ur.id_user = p.id_user
-    LEFT JOIN user_info ui ON p.id_user = ui.id_user
-    WHERE ur.id_clinic_user = ? LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
+    p.id_user,
+    p.first_name, 
+    p.lastname_p, 
+    p.lastname_m,
+    ui.state,
+    ui.reference_number,
+    ur.assignment_date,
+    ur.type
+FROM user_relation ur
+INNER JOIN users p ON ur.id_user = p.id_user
+LEFT JOIN user_info ui ON p.id_user = ui.id_user
+WHERE ur.id_clinic_user = ? 
+  AND p.eliminated = 0 
+LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
     FROM user_relation ur
