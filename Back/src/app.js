@@ -92,6 +92,10 @@ const userRoutes = require('./presentation/routes/users/getUser.Routes');
 
 app.use('/users', userRoutes(authUseCase));
 
+const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
+
+app.use('/clinical', clinicalUserRoutes(authUseCase));
+
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
 
 app.use('/', clinicalRoutes(authUseCase));
@@ -111,10 +115,6 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
-app.use((req, res) => {
-  res.status(404).json({ error: 'Ruta no encontrada' });
-
-});
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
@@ -122,4 +122,8 @@ app.get('/consultUser', (req, res) => {
   });
 });
 
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+
+});
 module.exports = app;
