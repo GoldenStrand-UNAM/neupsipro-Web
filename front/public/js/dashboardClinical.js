@@ -164,6 +164,7 @@ async function loadUserInfoPanel (user) {
   try {
     const res  = await fetch(ENDPOINTS.userDetail(user));
     const data = await res.json();
+    console.log(data);
     //Error handling
     if (!res.ok) {
       target.innerHTML = `<p class="text-red-500 text-sm">${escapeHtml(data.error || 'Error')}</p>`;
@@ -176,11 +177,11 @@ async function loadUserInfoPanel (user) {
     const protocolMap  = { Clinical: 'Clínico', Research: 'Investigación', Pending: 'Pendiente' };
     const protocolText = protocolMap[data.protocol] || '—';
 
-    const avatarHtml = data.photo
+    const avatarHtml = data.pp
       ? `
         <img 
         class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
-        src="${escapeHtml(data.photo)}" 
+        src="${escapeHtml(data.pp)}" 
         alt="${escapeHtml(data.fullName)}"
         >
                 `
@@ -250,7 +251,6 @@ function loadAppointments (listToday, listTomorrow, listOther) {
   const todayContainer = document.getElementById('todayAppointments');
   const tomorrowContainer = document.getElementById('tomorrowAppointments');
   const otherContainer = document.getElementById('otherAppointments');
-  console.log(listToday);
   if (!listToday || !listToday[0]) {
     todayContainer.innerHTML = '<h2 class="text-sm font-bold text-gray-700 mb-3">Hoy:</h2> <p class="text-gray-500 italic">No tienes citas asignadas.</p>';
   } else {
@@ -295,18 +295,17 @@ async function loadDashboard (user) {
     const data = await res.json();
     containerIntroText.innerHTML = ` 
       <div class= "mt-4">
-        <p class="text-lg font-bold text-gray-700 mb-1"> Bienvenido ${escapeHtml(user)}</p>
+        <p class="text-lg font-bold text-gray-700 mb-1"> Bienvenido! </p>
         <p class="text-lg font-bold text-gray-700 mb-1"> Asi lucen tus usuarios el día de hoy:</p>
-        <p class="text-base font-regular text-gray-700 mb-4"> Tienes a ${escapeHtml(data.numbers.total)} usuarios, de los cuales:</p>
+        <p class="text-base font-regular text-gray-700 my-4 mx-1"> Tienes a ${escapeHtml(data.numbers.total)} usuarios, de los cuales:</p>
       </div>
     `;
     containerHistoricalText.innerHTML = ` 
-        <p class="text-base font-regular text-gray-700 mx-3"> Haz trabajado con ${escapeHtml(data.historicalNumbers.total)} usuarios, de los cuales:</p>
+        <p class="text-base font-regular text-gray-700 mx-1"> Haz trabajado con ${escapeHtml(data.historicalNumbers.total)} usuarios, de los cuales:</p>
     `;
     renderTopCubes(data.numbers);
     renderFlowChart(data.numbers);
     initUserInfoPanel(data.users.usersList);
-    console.log()
     loadAppointments(
       data.appointmentsToday.appointmentsList,
       data.appointmentsTomorrow.appointmentsList,
