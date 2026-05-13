@@ -257,7 +257,7 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     todayContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Hoy:</h2>
       ${listToday.map (ref => `
-        <p class="text-gray-500 italic"> ${ref.date}  ${ref.name} </p>
+        <p class="text-gray-500 italic"> ${ref.date} - ${ref.name} </p>
         `).join('')}
     `;
   };
@@ -267,7 +267,7 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     tomorrowContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Mañana:</h2>
       ${listTomorrow.map (ref => `
-        <p class="text-regular text-gray-500"> ${ref.date}  ${ref.name} </p>
+        <p class="text-regular text-gray-500"> ${ref.date} - ${ref.name} </p>
         `).join('')}
     `;
   };
@@ -277,7 +277,7 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     otherContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Próximas:</h2>
       ${listOther.map (ref => `
-        <p class="text-gray-500 italic"> ${ref.date}  ${ref.name} </p>
+        <p class="text-gray-500 italic"> ${ref.date} - ${ref.name} </p>
         `).join('')}
     `;
   };
