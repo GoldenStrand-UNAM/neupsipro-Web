@@ -35,9 +35,8 @@ class impTestResultsRepository extends resultRepository {
               pt.test_name,
               pt.result_table,
               tr.status,
-              tr.date_applied,
-              tr.notes
-       FROM test_results tr
+              tr.date_applied
+              FROM test_results tr
        JOIN psych_tests pt ON tr.id_test = pt.id_test
        WHERE tr.id_user        = ?
          AND tr.id_application = ?`,

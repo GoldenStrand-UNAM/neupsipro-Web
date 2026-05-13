@@ -173,91 +173,174 @@ function openBANFEModal (idUser, idApplication, test, mode) {
 
       <div class="modal__body flex flex-col gap-6">
 
-        <div class="flex flex-col md:flex-row gap-4">
-
         <!-- Área: Orbito Frontal -->
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Orbito Frontal <span class="text-red-500">*</span></label>
-            <input id="inputOrbitFrontal" type="number" min="0" placeholder="Puntaje"
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Orbito Frontal <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              id="inputOrbitFrontal"
+              type="number"
+              min="0"
+              placeholder="Puntaje"
               value="${escapeHTML(String(prefill.orbitFrontal.score))}"
               class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                    focus:border-transparent transition"
+            />
+
             <p id="errorOrbitFrontal" class="text-xs text-red-500 hidden"></p>
           </div>
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Interpretación</label>
-            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-              <span id="interpOrbitFrontal" class="text-sm text-gray-800 truncate">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Interpretación
+            </label>
+
+            <div class="w-full h-[52px]
+                        flex items-center
+                        border border-gray-300
+                        rounded-lg px-4 bg-gray-50">
+
+              <span id="interpOrbitFrontal"
+                    class="text-sm text-gray-800">
                 ${escapeHTML(prefill.orbitFrontal.interp)}
               </span>
+
             </div>
           </div>
+
         </div>
 
-        <!-- Área: Prefrontal Anterior -->
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Prefrontal Anterior <span class="text-red-500">*</span></label>
-            <input id="inputPrefrontalBefore" type="number" min="0" placeholder="Puntaje"
+        <!-- Área: Prefrontal -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Prefrontal Anterior <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              id="inputPrefrontalBefore"
+              type="number"
+              min="0"
+              placeholder="Puntaje"
               value="${escapeHTML(String(prefill.prefrontalBefore.score))}"
               class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                    focus:border-transparent transition"
+            />
+
             <p id="errorPrefrontalBefore" class="text-xs text-red-500 hidden"></p>
           </div>
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Interpretación</label>
-            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-              <span id="interpPrefrontalBefore" class="text-sm text-gray-800 truncate">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Interpretación
+            </label>
+
+            <div class="w-full h-[52px]
+                        flex items-center
+                        border border-gray-300
+                        rounded-lg px-4 bg-gray-50">
+
+              <span id="interpPrefrontalBefore"
+                    class="text-sm text-gray-800">
                 ${escapeHTML(prefill.prefrontalBefore.interp)}
               </span>
+
             </div>
           </div>
+
         </div>
 
         <!-- Área: Dorsolateral -->
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Dorsolateral <span class="text-red-500">*</span></label>
-            <input id="inputDLateral" type="number" min="0" placeholder="Puntaje"
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Dorsolateral <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              id="inputDLateral"
+              type="number"
+              min="0"
+              placeholder="Puntaje"
               value="${escapeHTML(String(prefill.dLateral.score))}"
               class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
-                    focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                    focus:border-transparent transition"
+            />
+
             <p id="errorDLateral" class="text-xs text-red-500 hidden"></p>
           </div>
-          <div class="flex-1 flex flex-col gap-1 min-w-0">
-            <label class="text-2xl font-regular">Interpretación</label>
-            <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-              <span id="interpDLateral" class="text-sm text-gray-800 truncate">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-2xl font-regular">
+              Interpretación
+            </label>
+
+            <div class="w-full h-[52px]
+                        flex items-center
+                        border border-gray-300
+                        rounded-lg px-4 bg-gray-50">
+
+              <span id="interpDLateral"
+                    class="text-sm text-gray-800">
                 ${escapeHTML(prefill.dLateral.interp)}
               </span>
+
             </div>
           </div>
+
         </div>
 
-        <!-- Score Total — solo lectura, se calcula en vivo -->
+        <!-- Score Total -->
         <div class="flex flex-col gap-1">
-          <label class="text-2xl font-regular">Score Total</label>
-          <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-            <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
+
+          <label class="text-2xl font-regular">
+            Puntaje Total
+          </label>
+
+          <div class="w-full h-[52px]
+                      flex items-center
+                      border border-gray-300
+                      rounded-lg px-4 bg-gray-50">
+
+            <span id="banfeScoreTotal"
+                  class="text-sm text-gray-800">
+              —
+            </span>
+
           </div>
+
         </div>
 
         <!-- Notes -->
         <div class="flex flex-col gap-2">
-          <label class="text-2xl font-regular">Notas</label>
+
+          <label class="text-2xl font-regular">
+            Notas
+          </label>
+
           <textarea
             id="inputBANFENotes"
             rows="4"
             maxlength="200"
-            placeholder="Observaciones "
-            ${isConsult ? 'disabled' : ''}
+            placeholder="Observaciones"
             class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition resize-none
-                   ${isConsult ? 'bg-gray-50 cursor-default' : ''}"
+                  focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                  focus:border-transparent transition resize-none"
           >${escapeHTML(prefillNotes)}</textarea>
-          <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">0 / 200</p>
+
+          <p id="banfeNotesCount"
+            class="text-lg text-gray-400 text-right">
+            0 / 200
+          </p>
 
         </div>
 
@@ -347,12 +430,9 @@ function openBANFEModal (idUser, idApplication, test, mode) {
 
   document.body.appendChild(modal);
 
-  const scoreInput     = document.getElementById('inputBANFEScore');
 
   const notesInput     = document.getElementById('inputBANFENotes');
   const notesCount     = document.getElementById('banfeNotesCount');
-  const interpretLabel = document.getElementById('banfeInterpretation');
-  const scoreError     = document.getElementById('banfeScoreError');
   const apiError       = document.getElementById('banfeApiError');
 
   function closeModal () { modal.remove(); }
@@ -400,19 +480,19 @@ function openBANFEModal (idUser, idApplication, test, mode) {
   });
 
   function updateScoreTotal () {
-    const vals = fields.map(({ input }) => {
-      const v = Number(document.getElementById(input).value);
-      return isNaN(v) ? null : v;
-    });
-    const allFilled = vals.every(v => v !== null && document.getElementById(fields[vals.indexOf(v)?.toString()]?.input)?.value !== '');
-    // Sum only when all three have a value
-    const inputs = fields.map(({ input }) => document.getElementById(input).value);
-    const total  = inputs.every(v => v !== '') 
-      ? inputs.reduce((acc, v) => acc + Number(v), 0) 
-      : '—';
-    document.getElementById('banfeScoreTotal').textContent = total;
-  }
 
+    const inputs = fields.map(({ input }) =>
+      document.getElementById(input).value
+    );
+
+    const allFilled = inputs.every(v => v !== '');
+
+    const total = allFilled
+      ? inputs.reduce((acc, v) => acc + Number(v), 0)
+      : '—';
+
+    document.getElementById('banfeScoreTotal').textContent = total;
+}
   // Save
   document.getElementById('btnSaveBANFE').addEventListener('click', async () => {
     apiError.classList.add('hidden');
