@@ -736,6 +736,7 @@ NULL AFTER birthdate;
 CREATE TABLE intervention (
     id_intervention      VARCHAR(36) NOT NULL PRIMARY KEY,
     id_user              VARCHAR(36) NOT NULL UNIQUE,
+    neuro_profile   TEXT NULL,
     contract_link        VARCHAR(255) NULL,
     created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_intervention_user
