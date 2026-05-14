@@ -117,7 +117,7 @@
                                 <div class="flex items-center justify-between gap-2 mb-1">
                                     <p class="text-gray-600 text-sm">Perfil neuropsicológico:</p>
                                     <button id="btnEditProfile" class="text-gray-400 hover:text-[#3350A9] cursor-pointer shrink-0" title="Editar perfil neuropsicológico">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="black-icon-mini">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
                                         </svg>
                                     </button>
@@ -180,9 +180,14 @@
                 </div>
 
                 <!-- add session -->
-                <div class="flex justify-center mt-4">
-                    <button id="btnAddSession" class="bg-[#C89B3C] hover:bg-[#a37e2f] text-white px-12 py-2 rounded-lg text-2xl cursor-pointer">
-                        +
+                <div class="flex justify-center mt-6 mb-2">
+                    <button id="btnAddSession"
+                            class="group flex items-center gap-3 bg-gradient-to-r from-[#C89B3C] to-[#a37e2f] hover:from-[#a37e2f] hover:to-[#8a6925] text-white px-7 py-3 rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                            class="w-5 h-5 transition-transform duration-300 group-hover:rotate-90">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Agregar sesión</span>
                     </button>
                 </div>
 
