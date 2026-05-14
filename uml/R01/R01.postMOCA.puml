@@ -2,10 +2,10 @@
 
 actor "Clinic User" as USR
 participant "getTests.ejs" as VEJS
-participant "optionsModal.js" as OMODAL
 participant "moca.modal.js" as MMODAL
+participant "options.modal.js" as OMODAL
 participant "testList.js" as TLIST
-participant "UserRoutes" as UROUTE
+participant "getTestsRoutes.js" as UROUTE
 participant "postMOCAController" as TCTRL
 participant "postMOCAUseCase" as UC_POST
 participant "impTestResultsRepository" as RREPO
@@ -15,7 +15,7 @@ database "DB" as DB
 
 USR -> TLIST : Click [card MOCA]
 TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
-OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
 
 USR -> OMODAL : Click [Registrar resultados]
 OMODAL -> OMODAL : closeModal()
@@ -30,25 +30,24 @@ DB --> RREPO : { schooling } | []
 RREPO --> UROUTE : schooling | null
 UROUTE --> MMODAL : HTTP 200 { schooling, years }
 
-alt sin entrevista inicial registrada
+alt sin escolaridad registrada
     MMODAL --> USR : Banner: "Sin datos de\nescolaridad registrados"
 end
 
-MMODAL -> MMODAL : resolveSchoolingYears(schooling)\n'Sin escolaridad' → 0\n'Primaria'        → 6\n'Secundaria'      → 9\n'Bachillerato'    → 12\n'Licenciatura'    → 16\n'Posgrado'        → 18
 MMODAL --> USR : Modal de registro visible\nBanner: escolaridad + años\n+ aplica bono / no aplica bono
 
 == Interpretación en vivo ==
 
 USR -> MMODAL : Ingresa puntaje bruto (número)
-MMODAL -> MMODAL : validateInput(score)\n- solo dígitos\n- no negativo\n- no > 30
+MMODAL -> MMODAL : strip non-digits\n- no negativo\n- no > 30
 
 alt Input inválido
     MMODAL --> USR : showScoreError(msg)\n"El puntaje debe estar entre 0 y 30"
 end
 
-MMODAL -> MMODAL : resolveMOCAFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
-MMODAL -> MMODAL : interpretMOCA(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10 → "Deterioro cognitivo grave"
-MMODAL --> USR : Muestra puntaje final + interpretación\nen vivo (sin submit)
+MMODAL -> MMODAL : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+MMODAL -> MMODAL : interpretMOCA(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
+MMODAL --> USR : Puntaje final + interpretación\nen vivo (sin submit)
 
 == Validación de notas ==
 
@@ -65,10 +64,10 @@ alt Datos inválidos
     MMODAL --> USR : showScoreError(msg)
 end
 
-MMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/2/resultados\n{ score, notes }
+MMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/4/resultados\n{ score, notes }
 
-UROUTE -> TCTRL : controller.postResult(req, res)
-TCTRL -> UC_POST : execute({ id_user, id_application,\nscore, notes })
+UROUTE -> TCTRL : mocaController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application, score, notes })
 
 == Validaciones en Use Case ==
 
@@ -92,10 +91,10 @@ alt notes > 200 caracteres
     MMODAL --> USR : showApiError(json.error)
 end
 
-UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 2 })
-RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 2
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 4 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 4
 DB --> RREPO : { id_results, status } | []
-RREPO --> UC_POST : { id_results, status } | null
+RREPO --> UC_POST : { idResults, status } | null
 
 alt result row not found (null)
     UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
@@ -110,8 +109,11 @@ RREPO -> DB : SELECT ii.schooling\nFROM initial_interview ii\nINNER JOIN user_re
 DB --> RREPO : { schooling } | []
 RREPO --> UC_POST : schooling | null
 
-UC_POST -> UC_POST : resolveSchoolingYears(schooling)
-UC_POST -> UC_POST : resolveScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+UC_POST -> UC_POST : resolveSchoolingYears(schooling)\n'Sin escolaridad' → 0\n'Primaria'        → 6\n'Secundaria'      → 9\n'Bachillerato'    → 12\n'Licenciatura'    → 16\n'Posgrado'        → 18
+
+UC_POST -> UC_POST : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+
+UC_POST -> UC_POST : resolveInterpretation(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
 
 note right
   El servidor recalcula el puntaje final
@@ -119,25 +121,28 @@ note right
   para no confiar en el cliente
 end note
 
-UC_POST -> UC_POST : resolveInterpretation(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10 → "Deterioro cognitivo grave"
-
 == Persistencia ==
 
-UC_POST -> RREPO : saveResult({ id_results, score: finalScore,\ninterpretation, notes })
-RREPO -> DB : UPDATE test_results\nSET score          = ?,\n    interpretation = ?,\n    notes          = ?,\n    date_applied   = CURDATE(),\n    status         = 3\nWHERE id_results = ?
-DB --> RREPO : OK
-RREPO -> DB : SELECT tr.*, pt.test_name\nFROM test_results tr\nJOIN psych_tests pt ON tr.id_test = pt.id_test\nWHERE tr.id_results = ?
-DB --> RREPO : { updated row }
-RREPO --> UC_POST : Tests entity
+UC_POST -> RREPO : saveMOCAResult({ id_results,\nscore: finalScore, interpretation, notes })
 
-UC_POST -> UC_POST : map entity → TestResultDTO
-UC_POST --> TCTRL : TestResultDTO
-TCTRL --> MMODAL : HTTP 200 { data: TestResultDTO }
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO moca_results\n(id_results, score, interpretation, notes)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE\n  score = VALUES(score),\n  interpretation = VALUES(interpretation),\n  notes = VALUES(notes)
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM moca_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw moca_results row
+
+UC_POST -> UC_POST : map row → MocaResultsDTO\n{ idResults, idTest, status: 3,\n  score, interpretation, notes }
+UC_POST --> TCTRL : MocaResultsDTO
+TCTRL --> MMODAL : HTTP 200 { data: MocaResultsDTO }
 
 == Actualizar UI ==
 
 MMODAL -> MMODAL : closeModal()
-MMODAL -> TLIST : updateTestCardStatus(dto)\nbadge → "Calificada"
+MMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
 MMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
 VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
 
