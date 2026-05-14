@@ -74,45 +74,45 @@ class postWAISUseCase {
       throw err;
     }
 
-    // 5. Recalculate interpretation server-side — never trust the client
-    const interpretation = this.resolveInterpretation(parsed);
+
+    // 5. Recalculate interpretations server-side — never trust the client
+    const interComVerbal      = this.resolveInterpretation(comVerbal);
+    const interRazonPerceptual = this.resolveInterpretation(razonPerceptual);
+    const interMemWork        = this.resolveInterpretation(memWork);
+    const interVeloProce      = this.resolveInterpretation(veloProce);
 
     // 6. Persist the result
-    const updated = await this.impTestResultsRepository.saveResult({
-      id_results: row.idResults,
-      score: parsed,
-      interpretation,
-      notes: notes ?? null,
+    const saved = await this.impTestResultsRepository.saveWAISResult({
+      id_results:             row.idResults,
+      score_com_verbal:       comVerbal,
+      inter_com_verbal:       interComVerbal,
+      score_razon_perceptual: razonPerceptual,
+      inter_razon_perceptual: interRazonPerceptual,
+      score_mem_work:         memWork,
+      inter_mem_work:         interMemWork,
+      score_velo_proce:       veloProce,
+      inter_velo_proce:       interVeloProce,
+      score_total:            total,
+      notes:                  notes ?? null,
     });
 
-    // 7. Return DTO — never expose raw entity across boundaries
-    return {
-      idResults: updated.idResults,
-      idTest: updated.idTest,
-      testName: updated.testName,
-      status: updated.status,
-      score: updated.score,
-      interpretation: updated.interpretation,
-      dateApplied: updated.dateApplied,
-      notes: updated.notes,
-    };
+    // 7. Map to DTO — never expose raw DB row across boundaries
+    return new WaisResultsDTO({
+      idResults:   row.idResults,
+      idTest:      2,
+      status:      3,
+      dateApplied: saved.date_applied ?? null,
+      areas: {
+        comVerbal:       { score: saved.score_com_verbal,       interpretation: saved.inter_com_verbal       },
+        razonPerceptual: { score: saved.score_razon_perceptual, interpretation: saved.inter_razon_perceptual },
+        memWork:         { score: saved.score_mem_work,         interpretation: saved.inter_mem_work         },
+        veloProce:       { score: saved.score_velo_proce,       interpretation: saved.inter_velo_proce       },
+      },
+      scoreTotal: saved.score_total,
+      notes:      saved.notes ?? null,
+    });
   }
 
-  /**
-   * WAIS interpretation ranges.
-   * Score is an integer between 0 and 200.
-   */
-  resolveInterpretation (score) {
-    if (score <= 69)                   return 'Discapacidad';
-    if (score >= 70 && score <= 79)    return 'Limítrofe';
-    if (score >= 80 && score <= 89)   return 'Promedio Bajo';
-    if (score >= 90 && score <= 109)   return 'Promedio';
-    if (score >= 110 && score <= 119)  return 'Promedio Alto';
-    if (score >= 120 && score <= 129)   return 'Superior';
-    if (score >= 130)                   return 'Alta capacidad intelectual';
-
-    return 'Promedio alto'; // score >= 116
-  }
 }
 
 module.exports = postWAISUseCase;
