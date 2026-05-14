@@ -104,8 +104,7 @@ function buildMOCAConsultHTML (test) {
     </div>`;
 }
 
-// ── Form HTML ────────────────────────────────────────────────────────────────
-// Shared HTML for register and modify modes.
+// --- consult + register/modify view ───────────────────────────────────────────────────────────
 // schoolingYears is used to show the bonus banner.
 // prefill comes pre-built from openMOCAModal — empty on register,
 // existing values on modify.
@@ -268,4 +267,105 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
         </div>
       </div>
     </div>`;
+}
+
+// ── Form Listeners ───────────────────────────────────────────────────────────
+// validation, and the save fetch for register/modify modes.
+
+function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModal) {
+
+  const scoreInput  = document.getElementById('inputMOCAScore');
+  const finalScore  = document.getElementById('mocaFinalScore');
+  const interp      = document.getElementById('mocaInterpretation');
+  const scoreError  = document.getElementById('errorMOCAScore');
+  const notesInput  = document.getElementById('inputMOCANotes');
+  const notesCount  = document.getElementById('mocaNotesCount');
+  const apiError    = document.getElementById('mocaApiError');
+
+  // ── Notes counter ──────────────────────────────────────────────────────────
+
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
+  });
+
+  // ── Live final score + interpretation ─────────────────────────────────────
+  // Mirrors server-side logic — display only, never sent to server.
+
+  scoreInput.addEventListener('input', () => {
+    scoreError.classList.add('hidden');
+
+    // Strip non-digit characters
+    if (!/^\d*$/.test(scoreInput.value)) {
+      scoreInput.value = scoreInput.value.replace(/\D/g, '');
+    }
+
+    const raw = Number(scoreInput.value);
+
+    if (scoreInput.value === '' || isNaN(raw)) {
+      finalScore.textContent = '—';
+      interp.textContent     = '—';
+      return;
+    }
+
+    if (raw > 30) {
+      scoreError.textContent = 'El puntaje debe estar entre 0 y 30';
+      scoreError.classList.remove('hidden');
+      finalScore.textContent = '—';
+      interp.textContent     = '—';
+      return;
+    }
+
+    const computed = resolveMOCAFinalScore(raw, schoolingYears);
+    finalScore.textContent = computed;
+    interp.textContent     = interpretMOCA(computed);
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+
+  document.getElementById('btnSaveMOCA').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+    scoreError.classList.add('hidden');
+
+    const raw = Number(scoreInput.value);
+
+    // Client-side validation — server recalculates everything independently
+    if (scoreInput.value.trim() === '' || isNaN(raw) || raw < 0 || raw > 30) {
+      scoreError.textContent = 'Ingresa un puntaje válido entre 0 y 30';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+
+    const notes  = notesInput.value.trim() || null;
+    const config = TEST_REGISTRY[4];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Send raw score — server applies bonus and interpretation
+        body:    JSON.stringify({ score: raw, notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[MOCA] post error:', _err);
+    }
+  });
 }
