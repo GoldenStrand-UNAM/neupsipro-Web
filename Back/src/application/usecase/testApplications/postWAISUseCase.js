@@ -61,7 +61,7 @@ class postWAISUseCase {
       throw err;
     }
 
-    // 4. Verify the result row exists for this user, session and test
+    // 3. Verify the result row exists for this user, session and test
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
@@ -75,13 +75,13 @@ class postWAISUseCase {
     }
 
 
-    // 5. Recalculate interpretations server-side — never trust the client
+    // 4. Recalculate interpretations server-side — never trust the client
     const interComVerbal      = this.resolveInterpretation(comVerbal);
     const interRazonPerceptual = this.resolveInterpretation(razonPerceptual);
     const interMemWork        = this.resolveInterpretation(memWork);
     const interVeloProce      = this.resolveInterpretation(veloProce);
 
-    // 6. Persist the result
+    // 5. Persist the result
     const saved = await this.impTestResultsRepository.saveWAISResult({
       id_results:             row.idResults,
       score_com_verbal:       comVerbal,
@@ -96,7 +96,7 @@ class postWAISUseCase {
       notes:                  notes ?? null,
     });
 
-    // 7. Map to DTO — never expose raw DB row across boundaries
+    // 6. Map to DTO — never expose raw DB row across boundaries
     return new WaisResultsDTO({
       idResults:   row.idResults,
       idTest:      2,
