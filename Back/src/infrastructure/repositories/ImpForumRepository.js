@@ -31,26 +31,26 @@ class ImpForumRepository extends forumRepository {
     );
     return rows;
   }
-    // Inserts a new publication, return its generated id
-    async save({ id_usuario, titulo, contenido, image }) {
+  // Inserts a new publication, return its generated id
+  async save ({ id_usuario, titulo, contenido, image }) {
     const id = uuidv4();
 
     await db.query(
-        `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
+      `INSERT INTO publication (id_publication, id_user, title, content, image, time_and_date)
          VALUES (?, ?, ?, ?, ?, NOW())`,
-        [id, id_usuario, titulo, contenido, image] 
+      [id, id_usuario, titulo, contenido, image]
     );
 
     const [rows] = await db.query(
-        'SELECT * FROM publication WHERE id_publication = ?',
-        [id]
+      'SELECT * FROM publication WHERE id_publication = ?',
+      [id]
     );
 
     return rows[0];
   }
 
   async fetchOneUser ({ idPublication }) {
-  const result = await db.query(
+    const result = await db.query(
       `SELECT 
                 p.id_user,
                 p.time_and_date,
@@ -69,8 +69,7 @@ class ImpForumRepository extends forumRepository {
     return result;
   }
 
-
-  // find publication 
+  // find publication
   async findById ({ idPublication }) {
     const [rows] = await db.query(
       `SELECT id_publication, id_user, title, image
@@ -84,7 +83,7 @@ class ImpForumRepository extends forumRepository {
   // delete publication by id
   async deletePublication ({ idPublication }) {
     const [result] = await db.query(
-      `DELETE FROM publication WHERE id_publication = ?`,
+      'DELETE FROM publication WHERE id_publication = ?',
       [idPublication]
     );
     return result.affectedRows > 0;
