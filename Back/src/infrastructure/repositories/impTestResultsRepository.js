@@ -278,6 +278,33 @@ async saveMOCAResult ({ id_results, score, interpretation, notes }) {
   return rows[0];
 }
 
+// ================= MOCA & REY ==================
+
+  // Fetch schooling level for a user from their initial interview.
+  // Used by MOCA use case to determine if +2 bonus applies.
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling
+       FROM initial_interview ii
+       INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
+       WHERE ur.id_user = ?
+       LIMIT 1`,
+      [id_user]
+    );
+    return rows.length ? rows[0].schooling : null;
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT birthdate
+       FROM users
+       WHERE id_user = ?`,
+      [id_user]
+    );
+    return rows.length ? rows[0].birthdate : null;
+  }
+
 
 
 }

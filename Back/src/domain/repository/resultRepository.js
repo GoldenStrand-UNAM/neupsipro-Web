@@ -69,6 +69,18 @@ class resultRepository {
       throw new Error('saveMOCAResult() not implemented');
     }
 
+  // ========= MOCA & REY ========================
+
+  // Fetch schooling level for a user from their initial interview.
+  async fetchUserSchooling ({ _id_user }) {
+    throw new Error('fetchUserSchooling() not implemented');
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ _id_user }) {
+    throw new Error('fetchUserAge() not implemented');
+  }
+
 
 }
 
