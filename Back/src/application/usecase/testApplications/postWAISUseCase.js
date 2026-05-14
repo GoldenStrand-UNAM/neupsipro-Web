@@ -1,7 +1,40 @@
+const WaisResultsDTO = require('../../dto/waisResultsDTO');
+
+
 class postWAISUseCase {
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
+
+  // Parses and validates a single area score.
+  // Must be present, finite, and non-negative.
+  #parseAreaScore (value, fieldName) {
+    const parsed = Number(value);
+    if (value === undefined || value === null || value === '' || isNaN(parsed)) {
+      const err = new Error(`${fieldName} must be a valid number`);
+      err.status = 422;
+      throw err;
+    }
+    if (parsed < 0) {
+      const err = new Error(`${fieldName} must be a non-negative number`);
+      err.status = 422;
+      throw err;
+    }
+    return parsed;
+  }
+
+  // WAIS interpretation ranges per area score.
+  // CI Total has no interpretation — persisted as-is from the clinician.
+  resolveInterpretation (score) {
+    if (score >= 130) return 'Alta capacidad intelectual';
+    if (score >= 120) return 'Superior';
+    if (score >= 110) return 'Promedio alto';
+    if (score >= 90)  return 'Promedio';
+    if (score >= 80)  return 'Promedio bajo';
+    if (score >= 70)  return 'Limítrofe';
+    return 'Discapacidad';
+  }
+
 
   /**
    * Saves WAIS score, recalculates interpretation server-side,
