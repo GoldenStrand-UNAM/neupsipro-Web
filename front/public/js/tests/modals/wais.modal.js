@@ -241,3 +241,115 @@ function buildWAISFormHTML (mode, prefill) {
       </div>
     </div>`;
 }
+
+// Live interpretation
+
+function bindWAISFormListeners (idUser, idApplication, closeModal) {
+
+  const notesInput = document.getElementById('inputWAISNotes');
+  const notesCount = document.getElementById('waisNotesCount');
+  const apiError   = document.getElementById('waisApiError');
+
+  // Area fields — each has live interpretation
+  const fields = [
+    { input: 'inputComVerbal',       interp: 'interpComVerbal',       error: 'errorComVerbal',       key: 'score_com_verbal'       },
+    { input: 'inputRazonPerceptual', interp: 'interpRazonPerceptual', error: 'errorRazonPerceptual', key: 'score_razon_perceptual' },
+    { input: 'inputMemWork',         interp: 'interpMemWork',         error: 'errorMemWork',         key: 'score_mem_work'         },
+    { input: 'inputVeloProce',       interp: 'interpVeloProce',       error: 'errorVeloProce',       key: 'score_velo_proce'       },
+  ];
+
+  // ── Notes counter ──────────────────────────────────────────────────────────
+
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
+  });
+
+  // ── Live interpretation per area ───────────────────────────────────────────
+
+  fields.forEach(({ input, interp, error }) => {
+    document.getElementById(input).addEventListener('input', () => {
+      const el    = document.getElementById(input);
+      const errEl = document.getElementById(error);
+
+      // Strip non-digit characters
+      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
+
+      errEl.classList.add('hidden');
+
+      const n = Number(el.value);
+      document.getElementById(interp).textContent =
+        el.value === '' || isNaN(n) ? '—' : interpretWAIS(n);
+    });
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+
+  document.getElementById('btnSaveWAIS').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+
+    let valid  = true;
+    const scores = {};
+
+    // Validate 4 area fields
+    fields.forEach(({ input, error, key }) => {
+      const el    = document.getElementById(input);
+      const errEl = document.getElementById(error);
+      const val   = Number(el.value);
+
+      if (el.value.trim() === '' || isNaN(val) || val < 0) {
+        errEl.textContent = 'Ingresa un puntaje válido';
+        errEl.classList.remove('hidden');
+        valid = false;
+      } else {
+        scores[key] = val;
+      }
+    });
+
+    // Validate CI Total — clinician-provided, no interpretation
+    const totalEl    = document.getElementById('inputWAISTotal');
+    const totalErrEl = document.getElementById('errorWAISTotal');
+    const totalVal   = Number(totalEl.value);
+
+    if (totalEl.value.trim() === '' || isNaN(totalVal) || totalVal < 0) {
+      totalErrEl.textContent = 'Ingresa un valor válido para CI Total';
+      totalErrEl.classList.remove('hidden');
+      valid = false;
+    } else {
+      scores.score_total = totalVal;
+    }
+
+    if (!valid) return;
+
+    const notes  = notesInput.value.trim() || null;
+    const config = TEST_REGISTRY[2];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ ...scores, notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[WAIS] post error:', _err);
+    }
+  });
+}
