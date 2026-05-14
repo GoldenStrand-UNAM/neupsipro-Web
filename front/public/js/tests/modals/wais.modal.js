@@ -1,34 +1,22 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+// Interpretation 
 
-// ── Interpretation ───────────────────────────────────────────────────────────
-
-function interpretMOCA (finalScore) {
-  const n = Number(finalScore);
+function interpretWAIS (score) {
+  const n = Number(score);
   if (isNaN(n))  return '';
-  if (n >= 26)   return 'Rendimiento cognitivo normal';
-  if (n >= 18)   return 'Deterioro cognitivo leve';
-  if (n >= 10)   return 'Deterioro cognitivo moderado';
-  return 'Deterioro cognitivo grave';
+  if (n >= 130)  return 'Alta capacidad intelectual';
+  if (n >= 120)  return 'Superior';
+  if (n >= 110)  return 'Promedio alto';
+  if (n >= 90)   return 'Promedio';
+  if (n >= 80)   return 'Promedio bajo';
+  if (n >= 70)   return 'Limítrofe';
+  return 'Discapacidad';
 }
 
-// ── Final score resolution ───────────────────────────────────────────────────
-// Applies +2 bonus if schooling <= 12 years and raw score <= 28.
-// Mirrors server-side logic — used only for live display, never trusted.
+// Render WAIS consult modal with test data
 
-function resolveMOCAFinalScore (raw, schoolingYears) {
-  const n = Number(raw);
-  if (isNaN(n)) return null;
-  if (schoolingYears !== null && schoolingYears <= 12 && n <= 28) {
-    return Math.min(n + 2, 30);
-  }
-  return Math.min(n, 30);
-}
-
-// ── Consult HTML ─────────────────────────────────────────────────────────────
-// Read-only view of a graded MOCA result.
-// MOCA has a single score + interpretation — no areas structure.
-
-function buildMOCAConsultHTML (test) {
+function buildWAISConsultHTML (test) {
+  const areas = test.areas ?? {};
   const notes = test.notes ?? '';
 
   const dateLabel = test.dateApplied
@@ -37,11 +25,28 @@ function buildMOCAConsultHTML (test) {
     })
     : '—';
 
+  // Reusable row for each area — score on top, interpretation below
+  function areaRow (label, area) {
+    return `
+      <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
+                  gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
+        <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">${label}:</span>
+        <div class="flex flex-col gap-1">
+          <span class="text-base sm:text-lg text-gray-900 font-medium">
+            ${area?.score ?? '—'}
+          </span>
+          <span class="text-sm text-gray-500">
+            ${escapeHTML(area?.interpretation ?? '—')}
+          </span>
+        </div>
+      </div>`;
+  }
+
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">MoCA</h2>
-        <button id="btnCloseMOCA" class="modal__close" aria-label="Cerrar modal">
+        <h2 class="modal__title">WAIS</h2>
+        <button id="btnCloseWAIS" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
@@ -58,21 +63,17 @@ function buildMOCAConsultHTML (test) {
           <span class="text-base sm:text-lg text-gray-900">${dateLabel}</span>
         </div>
 
-        <!-- Puntaje final -->
-        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
-                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
-          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Puntaje:</span>
-          <span class="text-base sm:text-lg text-gray-900 font-medium">
-            ${test.score ?? '—'}
-          </span>
-        </div>
+        ${areaRow('Comprensión Verbal',        areas.comVerbal)}
+        ${areaRow('Razonamiento Perceptual',   areas.razonPerceptual)}
+        ${areaRow('Memoria de Trabajo',        areas.memWork)}
+        ${areaRow('Velocidad de Procesamiento', areas.veloProce)}
 
-        <!-- Interpretación -->
+        <!-- CI Total — no interpretation, clinician-provided -->
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                     gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
-          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Interpretación:</span>
+          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">CI Total:</span>
           <span class="text-base sm:text-lg text-gray-900 font-medium">
-            ${escapeHTML(test.interpretation ?? '—')}
+            ${test.scoreTotal ?? '—'}
           </span>
         </div>
 
@@ -87,7 +88,7 @@ function buildMOCAConsultHTML (test) {
 
         <!-- Actions -->
         <div class="flex justify-end pt-4 border-t border-gray-200">
-          <button id="btnCancelMOCA"
+          <button id="btnCancelWAIS"
             class="flex items-center gap-3 px-6 py-3
                    border border-gray-300 rounded-2xl
                    text-base hover:bg-gray-50 transition-colors cursor-pointer">
@@ -104,66 +105,50 @@ function buildMOCAConsultHTML (test) {
     </div>`;
 }
 
-// --- consult + register/modify view ───────────────────────────────────────────────────────────
-// schoolingYears is used to show the bonus banner.
-// prefill comes pre-built from openMOCAModal — empty on register,
-// existing values on modify.
+// ── register / modify form modal
 
-function buildMOCAFormHTML (mode, prefill, schoolingData) {
-  const title        = mode === 'register' ? 'Registrar' : 'Modificar';
-  const hasSchooling = schoolingData !== null;
 
-  // Bonus applies when schooling <= 12 years
-  const bonusApplies = hasSchooling && schoolingData.years <= 12;
+function buildWAISFormHTML (mode, prefill) {
+  const title = mode === 'register' ? 'Registrar' : 'Modificar';
 
-  // Schooling banner — shows education level and whether bonus applies
-  const schoolingBanner = hasSchooling ? `
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
-                ${bonusApplies ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-gray-200'}">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke-width="1.5" stroke="currentColor"
-           class="w-5 h-5 shrink-0 ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12
-                 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347
-                 m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12
-                 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814
-                 m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1
-                 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0
-                 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981
-                 0 0 0 6.75 15.75v-1.5"/>
-      </svg>
-      <div class="flex flex-col">
-        <span class="text-sm font-medium ${bonusApplies ? 'text-blue-700' : 'text-gray-700'}">
-          Escolaridad: ${escapeHTML(schoolingData.schooling)}
-          (${schoolingData.years} años)
-        </span>
-        <span class="text-xs ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
-          ${bonusApplies
-            ? 'Aplica bono +2 puntos si puntaje bruto ≤ 28'
-            : 'No aplica bono de escolaridad'}
-        </span>
-      </div>
-    </div>` : `
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
-                bg-yellow-50 border border-yellow-200">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 text-yellow-500">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948
-                 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949
-                 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
-      </svg>
-      <span class="text-sm text-yellow-700">
-        Sin datos de escolaridad registrados — no se puede calcular bono
-      </span>
-    </div>`;
+  function areaRow (label, inputId, interpId, errorId, prefillArea) {
+    return `
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">
+            ${label} <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="${inputId}"
+            type="number"
+            min="0"
+            placeholder="Puntaje"
+            value="${escapeHTML(String(prefillArea.score))}"
+            class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition"/>
+          <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Interpretación</label>
+          <div class="w-full h-[40px] flex items-center
+                      border border-gray-300 rounded-lg px-3 bg-gray-50">
+            <span id="${interpId}" class="text-sm text-gray-800">
+              ${escapeHTML(prefillArea.interp)}
+            </span>
+          </div>
+        </div>
+
+      </div>`;
+  }
 
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">MoCA — ${title}</h2>
-        <button id="btnCloseMOCA" class="modal__close" aria-label="Cerrar modal">
+        <h2 class="modal__title">WAIS — ${title}</h2>
+        <button id="btnCloseWAIS" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
@@ -171,56 +156,47 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
         </button>
       </div>
 
-      <div class="modal__body flex flex-col gap-4">
+      <div class="modal__body flex flex-col gap-3">
 
-        ${schoolingBanner}
+        ${areaRow('Comprensión Verbal',         'inputComVerbal',       'interpComVerbal',       'errorComVerbal',       prefill.comVerbal)}
+        ${areaRow('Razonamiento Perceptual',     'inputRazonPerceptual', 'interpRazonPerceptual', 'errorRazonPerceptual', prefill.razonPerceptual)}
+        ${areaRow('Memoria de Trabajo',          'inputMemWork',         'interpMemWork',         'errorMemWork',         prefill.memWork)}
+        ${areaRow('Velocidad de Procesamiento',  'inputVeloProce',       'interpVeloProce',       'errorVeloProce',       prefill.veloProce)}
 
-        <!-- Score bruto + puntaje final en vivo -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- CI Total — clinician-provided, no interpretation -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">
-              Puntaje bruto <span class="text-red-500">*</span>
+              CI Total <span class="text-red-500">*</span>
             </label>
             <input
-              id="inputMOCAScore"
+              id="inputWAISTotal"
               type="number"
               min="0"
-              max="30"
-              placeholder="0 – 30"
-              value="${escapeHTML(String(prefill.score))}"
+              placeholder="Valor"
+              value="${escapeHTML(String(prefill.scoreTotal))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
-            <p class="text-xs text-gray-400">Número entero entre 0 y 30</p>
-            <p id="errorMOCAScore" class="text-xs text-red-500 hidden"></p>
+            <p id="errorWAISTotal" class="text-xs text-red-500 hidden"></p>
           </div>
 
-          <!-- Puntaje final — computed live from raw + bonus -->
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Puntaje final</label>
+            <label class="text-sm font-medium text-gray-400">Interpretación</label>
             <div class="w-full h-[40px] flex items-center
-                        border border-gray-300 rounded-lg px-3 bg-gray-50">
-              <span id="mocaFinalScore" class="text-sm text-gray-800">—</span>
+                        border border-gray-200 rounded-lg px-3 bg-gray-50">
+              <span class="text-sm text-gray-400 italic">No aplica</span>
             </div>
           </div>
 
-        </div>
-
-        <!-- Interpretación en vivo -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Interpretación</label>
-          <div class="w-full h-[40px] flex items-center
-                      border border-gray-300 rounded-lg px-3 bg-gray-50">
-            <span id="mocaInterpretation" class="text-sm text-gray-800">—</span>
-          </div>
         </div>
 
         <!-- Notes -->
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Notas</label>
           <textarea
-            id="inputMOCANotes"
+            id="inputWAISNotes"
             rows="2"
             maxlength="200"
             placeholder="Observaciones"
@@ -228,17 +204,17 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                    focus:border-transparent transition resize-none"
           >${escapeHTML(prefill.notes)}</textarea>
-          <p id="mocaNotesCount" class="text-xs text-gray-400 text-right">
+          <p id="waisNotesCount" class="text-xs text-gray-400 text-right">
             ${prefill.notes.length} / 200
           </p>
         </div>
 
-        <p id="mocaApiError" class="text-xs text-red-500 hidden"></p>
+        <p id="waisApiError" class="text-xs text-red-500 hidden"></p>
 
         <!-- Actions -->
-        <div class="flex gap-3">
+        <div class="flex justify-end gap-3">
 
-          <button id="btnCancelMOCA"
+          <button id="btnCancelWAIS"
             class="flex-1 flex items-center justify-center gap-3
                    px-4 py-3 border border-gray-300 rounded-2xl
                    font-regular hover:bg-gray-50 transition-colors cursor-pointer">
@@ -250,7 +226,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
             <span class="whitespace-nowrap">Cancelar</span>
           </button>
 
-          <button id="btnSaveMOCA"
+          <button id="btnSaveWAIS"
             class="flex-1 flex items-center justify-center gap-3
                    px-4 py-3 rounded-2xl bg-[#3350A9] text-white
                    font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
@@ -269,18 +245,21 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
     </div>`;
 }
 
-// ── Form Listeners ───────────────────────────────────────────────────────────
-// validation, and the save fetch for register/modify modes.
+// Live interpretation
 
-function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModal) {
+function bindWAISFormListeners (idUser, idApplication, closeModal) {
 
-  const scoreInput  = document.getElementById('inputMOCAScore');
-  const finalScore  = document.getElementById('mocaFinalScore');
-  const interp      = document.getElementById('mocaInterpretation');
-  const scoreError  = document.getElementById('errorMOCAScore');
-  const notesInput  = document.getElementById('inputMOCANotes');
-  const notesCount  = document.getElementById('mocaNotesCount');
-  const apiError    = document.getElementById('mocaApiError');
+  const notesInput = document.getElementById('inputWAISNotes');
+  const notesCount = document.getElementById('waisNotesCount');
+  const apiError   = document.getElementById('waisApiError');
+
+  // Area fields — each has live interpretation
+  const fields = [
+    { input: 'inputComVerbal',       interp: 'interpComVerbal',       error: 'errorComVerbal',       key: 'score_com_verbal'       },
+    { input: 'inputRazonPerceptual', interp: 'interpRazonPerceptual', error: 'errorRazonPerceptual', key: 'score_razon_perceptual' },
+    { input: 'inputMemWork',         interp: 'interpMemWork',         error: 'errorMemWork',         key: 'score_mem_work'         },
+    { input: 'inputVeloProce',       interp: 'interpVeloProce',       error: 'errorVeloProce',       key: 'score_velo_proce'       },
+  ];
 
   // ── Notes counter ──────────────────────────────────────────────────────────
 
@@ -291,62 +270,70 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
     notesCount.classList.toggle('text-gray-400', len < 200);
   });
 
-  // ── Live final score + interpretation ─────────────────────────────────────
-  // Mirrors server-side logic — display only, never sent to server.
+  // ── Live interpretation per area ───────────────────────────────────────────
 
-  scoreInput.addEventListener('input', () => {
-    scoreError.classList.add('hidden');
+  fields.forEach(({ input, interp, error }) => {
+    document.getElementById(input).addEventListener('input', () => {
+      const el    = document.getElementById(input);
+      const errEl = document.getElementById(error);
 
-    // Strip non-digit characters
-    if (!/^\d*$/.test(scoreInput.value)) {
-      scoreInput.value = scoreInput.value.replace(/\D/g, '');
-    }
+      // Strip non-digit characters
+      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
 
-    const raw = Number(scoreInput.value);
+      errEl.classList.add('hidden');
 
-    if (scoreInput.value === '' || isNaN(raw)) {
-      finalScore.textContent = '—';
-      interp.textContent     = '—';
-      return;
-    }
-
-    if (raw > 30) {
-      scoreError.textContent = 'El puntaje debe estar entre 0 y 30';
-      scoreError.classList.remove('hidden');
-      finalScore.textContent = '—';
-      interp.textContent     = '—';
-      return;
-    }
-
-    const computed = resolveMOCAFinalScore(raw, schoolingYears);
-    finalScore.textContent = computed;
-    interp.textContent     = interpretMOCA(computed);
+      const n = Number(el.value);
+      document.getElementById(interp).textContent =
+        el.value === '' || isNaN(n) ? '—' : interpretWAIS(n);
+    });
   });
 
   // ── Save ───────────────────────────────────────────────────────────────────
 
-  document.getElementById('btnSaveMOCA').addEventListener('click', async () => {
+  document.getElementById('btnSaveWAIS').addEventListener('click', async () => {
     apiError.classList.add('hidden');
-    scoreError.classList.add('hidden');
 
-    const raw = Number(scoreInput.value);
+    let valid  = true;
+    const scores = {};
 
-    // Client-side validation — server recalculates everything independently
-    if (scoreInput.value.trim() === '' || isNaN(raw) || raw < 0 || raw > 30) {
-      scoreError.textContent = 'Ingresa un puntaje válido entre 0 y 30';
-      scoreError.classList.remove('hidden');
-      return;
+    // Validate 4 area fields
+    fields.forEach(({ input, error, key }) => {
+      const el    = document.getElementById(input);
+      const errEl = document.getElementById(error);
+      const val   = Number(el.value);
+
+      if (el.value.trim() === '' || isNaN(val) || val < 0) {
+        errEl.textContent = 'Ingresa un puntaje válido';
+        errEl.classList.remove('hidden');
+        valid = false;
+      } else {
+        scores[key] = val;
+      }
+    });
+
+    // Validate CI Total — clinician-provided, no interpretation
+    const totalEl    = document.getElementById('inputWAISTotal');
+    const totalErrEl = document.getElementById('errorWAISTotal');
+    const totalVal   = Number(totalEl.value);
+
+    if (totalEl.value.trim() === '' || isNaN(totalVal) || totalVal < 0) {
+      totalErrEl.textContent = 'Ingresa un valor válido para CI Total';
+      totalErrEl.classList.remove('hidden');
+      valid = false;
+    } else {
+      scores.score_total = totalVal;
     }
 
+    if (!valid) return;
+
     const notes  = notesInput.value.trim() || null;
-    const config = TEST_REGISTRY[4];
+    const config = TEST_REGISTRY[2];
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Send raw score — server applies bonus and interpretation
-        body:    JSON.stringify({ score: raw, notes }),
+        body:    JSON.stringify({ ...scores, notes }),
       });
 
       const json = await res.json();
@@ -365,47 +352,30 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
       apiError.textContent = 'No se pudo conectar con el servidor';
       apiError.classList.remove('hidden');
       // eslint-disable-next-line no-console
-      console.error('[MOCA] post error:', _err);
+      console.error('[WAIS] post error:', _err);
     }
   });
+
 }
 
-// ── OPEN AND CLOSE MODAL  ──────────────────────────────────────────────────────────────
-// Fetches schooling before opening any mode — needed for bonus display.
-// In modify/consult also fetches existing result first.
-// Register mode skips result fetch — prefill is empty.
+// Fetches existing result before opening modify/consult.
 
 // eslint-disable-next-line no-unused-vars
-async function openMOCAModal (idUser, idApplication, test, mode) {
-  const existing = document.getElementById('modalMOCA');
+async function openWAISModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalWAIS');
   if (existing) existing.remove();
 
   const isConsult = mode === 'consult';
   const isModify  = mode === 'modify';
 
-  // ── Fetch schooling — needed in all modes for banner and bonus ────────────
-
-  let schoolingData = null;
-
-  try {
-    const res  = await fetch(`/api/usuarios/${idUser}/escolaridad`);
-    const json = await res.json();
-    if (res.ok) schoolingData = json;
-  } catch (_err) {
-    // eslint-disable-next-line no-console
-    console.error('[MOCA] schooling fetch error:', _err);
-  }
-
-  const schoolingYears = schoolingData?.years ?? null;
-
-  // ── Fetch existing result before opening modify/consult ───────────────────
+  // ── Fetch existing result before opening modify/consult ──────────────────
 
   let fetchedTest = test;
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(
-        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados/${test.idResults}`
+      const res = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados/${test.idResults}`
       );
       const json = await res.json();
 
@@ -420,26 +390,43 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
     } catch (_err) {
       showToast('No se pudo conectar con el servidor');
       // eslint-disable-next-line no-console
-      console.error('[MOCA] get error:', _err);
+      console.error('[WAIS] get error:', _err);
       return;
     }
   }
 
   // ── Build prefill from fetched data ──────────────────────────────────────
 
+  const areas = (isModify || isConsult) ? (fetchedTest.areas ?? {}) : {};
   const prefill = {
-    score: (isModify || isConsult) ? (fetchedTest.score ?? '') : '',
-    notes: (isModify || isConsult) ? (fetchedTest.notes ?? '') : '',
+    comVerbal: {
+      score:  areas.comVerbal?.score          ?? '',
+      interp: areas.comVerbal?.interpretation ?? '—',
+    },
+    razonPerceptual: {
+      score:  areas.razonPerceptual?.score          ?? '',
+      interp: areas.razonPerceptual?.interpretation ?? '—',
+    },
+    memWork: {
+      score:  areas.memWork?.score          ?? '',
+      interp: areas.memWork?.interpretation ?? '—',
+    },
+    veloProce: {
+      score:  areas.veloProce?.score          ?? '',
+      interp: areas.veloProce?.interpretation ?? '—',
+    },
+    scoreTotal: (isModify || isConsult) ? (fetchedTest.scoreTotal ?? '') : '',
+    notes:      (isModify || isConsult) ? (fetchedTest.notes      ?? '') : '',
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
 
   const modal = document.createElement('div');
-  modal.id        = 'modalMOCA';
+  modal.id        = 'modalWAIS';
   modal.className = 'modal-overlay';
   modal.innerHTML = isConsult
-    ? buildMOCAConsultHTML(fetchedTest)
-    : buildMOCAFormHTML(mode, prefill, schoolingData);
+    ? buildWAISConsultHTML(fetchedTest)
+    : buildWAISFormHTML(mode, prefill);
 
   document.body.appendChild(modal);
 
@@ -447,13 +434,13 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
 
   function closeModal () { modal.remove(); }
 
-  document.getElementById('btnCloseMOCA').addEventListener('click', closeModal);
-  document.getElementById('btnCancelMOCA').addEventListener('click', closeModal);
+  document.getElementById('btnCloseWAIS').addEventListener('click', closeModal);
+  document.getElementById('btnCancelWAIS').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
   // ── Form listeners only on register / modify ──────────────────────────────
 
   if (!isConsult) {
-    bindMOCAFormListeners(idUser, idApplication, schoolingYears, closeModal);
+    bindWAISFormListeners(idUser, idApplication, closeModal);
   }
 }

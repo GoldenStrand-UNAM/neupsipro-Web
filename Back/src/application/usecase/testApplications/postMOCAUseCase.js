@@ -1,4 +1,4 @@
-const MocaResultsDTO = require('../../dto/mocaResultsDTO');
+const MocaResultsDTO = require('../../dto/mocaResultDTO');
 
 class postMOCAUseCase {
 

@@ -118,7 +118,7 @@ module.exports = (authUseCase) => {
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
-    (req, res) => getWAISResultController.getResult(req, res)
+    (req, res) => getWAISController.getResult(req, res)
   );
 
   //MOCA
