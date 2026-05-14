@@ -1,3 +1,5 @@
+const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
+
 class getInterventionUseCase {
   constructor (interventionRepository) {
     this.interventionRepository = interventionRepository;
@@ -17,6 +19,10 @@ class getInterventionUseCase {
     const sessions = await this.interventionRepository.findSessionsByIntervention({
       id_intervention: intervention.idIntervention,
     });
+
+    if (intervention.photo) {
+      intervention.photo = await getPresignedUrl(intervention.photo);
+    }
 
     intervention.sessions = sessions;
     return intervention;
