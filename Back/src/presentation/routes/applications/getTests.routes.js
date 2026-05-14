@@ -25,6 +25,9 @@ const getWAISResultController     = require('../../controller/testApplications/g
 const postMOCAUseCase    = require('../../../application/usecase/testApplications/postMOCAUseCase');
 const postMOCAController = require('../../controller/testApplications/postMOCA.controller');
 
+const getMOCAResultUseCase        = require('../../../application/usecase/testApplications/getMOCAUseCase');
+const getMOCAResultController     = require('../../controller/testApplications/getMOCA.controller');
+
 //REY
 
 const postREYUseCase    = require('../../../application/usecase/testApplications/postREYUseCase');
@@ -59,6 +62,9 @@ module.exports = (authUseCase) => {
   //MOCA
   const mocaUseCase    = new postMOCAUseCase(testResultsRepo);
   const mocaController = new postMOCAController(mocaUseCase);
+
+  const getMOCAUseCase    = new getMOCAResultUseCase(testResultsRepo);
+  const getMOCAController = new getMOCAResultController(getMOCAUseCase);
 
   //REY
   const reyUseCase    = new postREYUseCase(testResultsRepo);
@@ -121,6 +127,13 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => mocaController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getMOCAController.getResult(req, res)
   );
 
   // GET schooling for a user — used by MoCA modal to display education years
