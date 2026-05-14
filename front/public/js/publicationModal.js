@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const publicationModal = document.getElementById('publicationContent');
   const publicationBox = document.getElementById('publicationBox');
   const closeIcon = document.getElementById('closeIconModal');
-  
+
   const deleteModal = document.getElementById('deletePostModal');
   const cancelDeleteBtn = document.getElementById('cancelDeletePost');
   const confirmDeleteBtn = document.getElementById('confirmDeletePost');
@@ -119,49 +119,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('click', (e) => {
     if (e.target.closest('#btnOpenDeletePost')) {
-        deleteModal.classList.remove('hidden');
+      deleteModal.classList.remove('hidden');
     }
-    });
+  });
 
   cancelDeleteBtn?.addEventListener('click', () => {
     deleteModal.classList.add('hidden');
   });
 
-confirmDeleteBtn?.addEventListener('click', async () => {
+  confirmDeleteBtn?.addEventListener('click', async () => {
     if (!currentPostId) return;
 
     const original = confirmDeleteBtn.innerHTML;
 
     try {
-        confirmDeleteBtn.disabled = true;
-        confirmDeleteBtn.innerHTML = '<span class="whitespace-nowrap">Eliminando...</span>';
+      confirmDeleteBtn.disabled = true;
+      confirmDeleteBtn.innerHTML = '<span class="whitespace-nowrap">Eliminando...</span>';
 
-        const res = await fetch(`/publication/${currentPostId}`, {
+      const res = await fetch(`/publication/${currentPostId}`, {
         method: 'DELETE',
         credentials: 'include',
-        });
+      });
 
-        const json = await res.json();
+      const json = await res.json();
 
-        if (!res.ok) {
+      if (!res.ok) {
         throw new Error(json.error || 'Error al eliminar');
-        }
+      }
 
-        showToast('Publicación eliminada con éxito', 'success');
+      showToast('Publicación eliminada con éxito', 'success');
 
-        // Close both modals
-        deleteModal.classList.add('hidden');
-        closeModal();
+      // Close both modals
+      deleteModal.classList.add('hidden');
+      closeModal();
 
-        currentPostId = null;
+      currentPostId = null;
 
     } catch (err) {
-        showToast(err.message, 'error');
+      showToast(err.message, 'error');
     } finally {
-        confirmDeleteBtn.disabled = false;
-        confirmDeleteBtn.innerHTML = original;
+      confirmDeleteBtn.disabled = false;
+      confirmDeleteBtn.innerHTML = original;
     }
-    });
+  });
 
   publications.forEach (publication => {
     publication.addEventListener('click', async (e) =>{
