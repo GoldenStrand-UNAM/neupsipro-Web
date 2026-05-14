@@ -750,7 +750,7 @@ ADD COLUMN result_table VARCHAR(50) NOT NULL;
 -- -----------------------------------------------------------
 CREATE TABLE banfe_results (
     id_banfe                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_results                  VARCHAR(36)  NOT NULL,
+    id_results                  VARCHAR(36)  NOT NULL UNIQUE,
     score_orbit_frontal         DECIMAL(5,2) NULL,
     inter_orbit_frontal         VARCHAR(36),
     score_prefrontal_before     DECIMAL(5,2) NULL,
@@ -768,7 +768,7 @@ CREATE TABLE banfe_results (
 -- -----------------------------------------------------------
 CREATE TABLE wais_results (
     id_wais                  INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_results               VARCHAR(36)  NOT NULL,
+    id_results               VARCHAR(36)  NOT NULL UNIQUE,
     score_com_verbal         DECIMAL(5,2) NULL,
     inter_com_verbal         VARCHAR(36),
     score_razon_perceptual   DECIMAL(5,2) NULL,
@@ -787,7 +787,7 @@ CREATE TABLE wais_results (
 -- -----------------------------------------------------------
 CREATE TABLE moca_results (
     id_moca                  INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_results               VARCHAR(36) NOT NULL,
+    id_results               VARCHAR(36) NOT NULL UNIQUE,
     score                    INT NOT NULL,
     interpretation VARCHAR(36),
     notes                       VARCHAR(200),
@@ -799,7 +799,7 @@ CREATE TABLE moca_results (
 -- -----------------------------------------------------------
 CREATE TABLE nih_results (
     id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_results                VARCHAR(36) NOT NULL,
+    id_results                VARCHAR(36) NOT NULL UNIQUE,
     interpretation            VARCHAR(36),
     notes                       VARCHAR(200),
     CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
@@ -810,7 +810,7 @@ CREATE TABLE nih_results (
 -- -----------------------------------------------------------
 CREATE TABLE rey_results (
     id_rey                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_results                VARCHAR(36)  NOT NULL,
+    id_results                VARCHAR(36)  NOT NULL UNIQUE,
     score_rc                  DECIMAL(5,2) NULL,
     pc_rc                     INT          NULL,
     time_rc                   DECIMAL(5,2) NULL,
