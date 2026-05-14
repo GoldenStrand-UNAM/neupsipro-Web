@@ -1,31 +1,27 @@
+const MocaResultsDTO = require('../../dto/mocaResultsDTO');
+
 class postMOCAUseCase {
 
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
-  /**
-   * Maps schooling label to years of education.
-   * Used to determine if the +2 bonus applies.
-   */
+  // Maps schooling label to years of education.
+  // Used to determine if the +2 bonus applies.
   resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria': 6,
-      'Secundaria': 9,
-      'Bachillerato': 12,
-      'Licenciatura': 16,
-      'Posgrado': 18,
+      'Primaria':        6,
+      'Secundaria':      9,
+      'Bachillerato':    12,
+      'Licenciatura':    16,
+      'Posgrado':        18,
     };
     return map[schooling] ?? null;
   }
 
-  /**
-   * Applies MoCA scoring rules:
-   * - Base score capped at 30
-   * - +2 bonus if schooling <= 12 years AND base score <= 28
-   * - Final score capped at 30
-   */
+  // Applies +2 bonus if schooling <= 12 years and raw score <= 28.
+  // Final score is capped at 30.
   resolveScore (rawScore, schoolingYears) {
     let final = rawScore;
     if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 28) {
@@ -34,9 +30,7 @@ class postMOCAUseCase {
     return Math.min(final, 30);
   }
 
-  /**
-   * MoCA interpretation ranges based on final score.
-   */
+  // MOCA interpretation ranges applied to the final score.
   resolveInterpretation (finalScore) {
     if (finalScore >= 26) return 'Rendimiento cognitivo normal';
     if (finalScore >= 18) return 'Deterioro cognitivo leve';
@@ -44,7 +38,8 @@ class postMOCAUseCase {
     return 'Deterioro cognitivo grave';
   }
 
-  // Process MOCA results: validate input, apply scoring rules, and persist final score and interpretation.
+  // Saves MOCA result, recalculates final score and interpretation
+  // server-side, and updates status to 3 (Calificada).
   async execute ({ id_user, id_application, score, notes }) {
 
     // 1. Validate score is present and numeric
@@ -69,7 +64,7 @@ class postMOCAUseCase {
       throw err;
     }
 
-    // 4. Verify result row exists for this session and test
+    // 4. Verify result row exists for this application and test
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
@@ -82,33 +77,32 @@ class postMOCAUseCase {
       throw err;
     }
 
-    // 5. Fetch schooling to determine bonus eligibility
+    // 5. Fetch schooling server-side — never trust the client
     const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
     const schoolingYears = this.resolveSchoolingYears(schooling);
 
-    // 6. Calculate final score and interpretation server-side
+    // 6. Compute final score and interpretation server-side
     const finalScore     = this.resolveScore(raw, schoolingYears);
     const interpretation = this.resolveInterpretation(finalScore);
 
-    // 7. Persist — save the final score (after bonus), not the raw score
-    const updated = await this.impTestResultsRepository.saveResult({
-      id_results: row.idResults,
-      score: finalScore,
+    // 7. Persist into moca_results — save final score, not raw
+    const saved = await this.impTestResultsRepository.saveMOCAResult({
+      id_results:     row.idResults,
+      score:          finalScore,
       interpretation,
-      notes: notes ?? null,
+      notes:          notes ?? null,
     });
 
-    // 8. Return DTO with all fields the client needs
-    return {
-      idResults: updated.idResults,
-      idTest: updated.idTest,
-      testName: updated.testName,
-      status: updated.status,
-      score: updated.score,
-      interpretation: updated.interpretation,
-      dateApplied: updated.dateApplied,
-      notes: updated.notes,
-    };
+    // 8. Map to DTO — never expose raw DB row across boundaries
+    return new MocaResultsDTO({
+      idResults:      row.idResults,
+      idTest:         4,
+      status:         3,
+      dateApplied:    saved.date_applied ?? null,
+      score:          saved.score,
+      interpretation: saved.interpretation,
+      notes:          saved.notes ?? null,
+    });
   }
 }
 
