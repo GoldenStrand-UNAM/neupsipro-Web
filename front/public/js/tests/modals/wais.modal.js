@@ -1,5 +1,4 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
-
 // Interpretation 
 
 function interpretWAIS (score) {
@@ -352,4 +351,92 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
       console.error('[WAIS] post error:', _err);
     }
   });
+
+}
+
+// Fetches existing result before opening modify/consult.
+
+// eslint-disable-next-line no-unused-vars
+async function openWAISModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalWAIS');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  // ── Fetch existing result before opening modify/consult ──────────────────
+
+  let fetchedTest = test;
+
+  if (isModify || isConsult) {
+    try {
+      const res = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados/${test.idResults}`
+      );
+      const json = await res.json();
+
+      if (!res.ok) {
+        showToast(json.error || 'No se pudieron cargar los resultados');
+        return;
+      }
+
+      // Merge fetched data into test object — keeps idTest, testName, etc.
+      fetchedTest = { ...test, ...json.data };
+
+    } catch (_err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[WAIS] get error:', _err);
+      return;
+    }
+  }
+
+  // ── Build prefill from fetched data ──────────────────────────────────────
+
+  const areas = (isModify || isConsult) ? (fetchedTest.areas ?? {}) : {};
+  const prefill = {
+    comVerbal: {
+      score:  areas.comVerbal?.score          ?? '',
+      interp: areas.comVerbal?.interpretation ?? '—',
+    },
+    razonPerceptual: {
+      score:  areas.razonPerceptual?.score          ?? '',
+      interp: areas.razonPerceptual?.interpretation ?? '—',
+    },
+    memWork: {
+      score:  areas.memWork?.score          ?? '',
+      interp: areas.memWork?.interpretation ?? '—',
+    },
+    veloProce: {
+      score:  areas.veloProce?.score          ?? '',
+      interp: areas.veloProce?.interpretation ?? '—',
+    },
+    scoreTotal: (isModify || isConsult) ? (fetchedTest.scoreTotal ?? '') : '',
+    notes:      (isModify || isConsult) ? (fetchedTest.notes      ?? '') : '',
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalWAIS';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = isConsult
+    ? buildWAISConsultHTML(fetchedTest)
+    : buildWAISFormHTML(mode, prefill);
+
+  document.body.appendChild(modal);
+
+  // ── Shared close logic ────────────────────────────────────────────────────
+
+  function closeModal () { modal.remove(); }
+
+  document.getElementById('btnCloseWAIS').addEventListener('click', closeModal);
+  document.getElementById('btnCancelWAIS').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // ── Form listeners only on register / modify ──────────────────────────────
+
+  if (!isConsult) {
+    bindWAISFormListeners(idUser, idApplication, closeModal);
+  }
 }
