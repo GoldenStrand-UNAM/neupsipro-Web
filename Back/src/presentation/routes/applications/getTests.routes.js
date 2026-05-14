@@ -11,10 +11,14 @@ const postBANFEController = require('../../controller/testApplications/postBANFE
 const getBANFEResultUseCase    = require('../../../application/usecase/testApplications/getBANFEUseCase');
 const getBANFEResultController = require('../../controller/testApplications/getBANFE.controller');
 
+
 //WAIS
 
 const postWAISUseCase    = require('../../../application/usecase/testApplications/postWAISUseCase');
 const postWAISController = require('../../controller/testApplications/postWAIS.controller');
+
+const getWAISResultUseCase        = require('../../../application/usecase/testApplications/getWAISUseCase');
+const getWAISResultController     = require('../../controller/testApplications/getWAIS.controller');
 
 //MOCA
 
@@ -48,6 +52,9 @@ module.exports = (authUseCase) => {
 
   const waisUseCase    = new postWAISUseCase(testResultsRepo);
   const waisController = new postWAISController(waisUseCase);
+
+  const getWAISUseCase    = new getWAISResultUseCase(testResultsRepo);
+  const getWAISController = new getWAISResultController(getWAISUseCase);
 
   //MOCA
   const mocaUseCase    = new postMOCAUseCase(testResultsRepo);
@@ -98,6 +105,14 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => waisController.postResult(req, res)
+  );
+
+
+  router.get(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getWAISResultController.getResult(req, res)
   );
 
   //MOCA
