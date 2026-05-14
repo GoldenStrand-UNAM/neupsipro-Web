@@ -9,6 +9,14 @@ class forumRepository {
   async save ({ _id_usuario, _titulo, _contenido, _imagenes }) {
     throw new Error('save() must be implemented');
   }
+
+  async fetchOne () {
+    throw new Error('fetchOne() publication in not working.');
+  }
+
+  async fetchOneUser () {
+    throw new Error('fetchOneUser() publication in not working.');
+  }
 }
 
 module.exports = forumRepository;
