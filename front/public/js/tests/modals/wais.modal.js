@@ -369,3 +369,91 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
     }
   });
 }
+
+// ── OPEN AND CLOSE MODAL  ──────────────────────────────────────────────────────────────
+// Fetches schooling before opening any mode — needed for bonus display.
+// In modify/consult also fetches existing result first.
+// Register mode skips result fetch — prefill is empty.
+
+// eslint-disable-next-line no-unused-vars
+async function openMOCAModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalMOCA');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  // ── Fetch schooling — needed in all modes for banner and bonus ────────────
+
+  let schoolingData = null;
+
+  try {
+    const res  = await fetch(`/api/usuarios/${idUser}/escolaridad`);
+    const json = await res.json();
+    if (res.ok) schoolingData = json;
+  } catch (_err) {
+    // eslint-disable-next-line no-console
+    console.error('[MOCA] schooling fetch error:', _err);
+  }
+
+  const schoolingYears = schoolingData?.years ?? null;
+
+  // ── Fetch existing result before opening modify/consult ───────────────────
+
+  let fetchedTest = test;
+
+  if (isModify || isConsult) {
+    try {
+      const res  = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados/${test.idResults}`
+      );
+      const json = await res.json();
+
+      if (!res.ok) {
+        showToast(json.error || 'No se pudieron cargar los resultados');
+        return;
+      }
+
+      // Merge fetched data into test object — keeps idTest, testName, etc.
+      fetchedTest = { ...test, ...json.data };
+
+    } catch (_err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[MOCA] get error:', _err);
+      return;
+    }
+  }
+
+  // ── Build prefill from fetched data ──────────────────────────────────────
+
+  const prefill = {
+    score: (isModify || isConsult) ? (fetchedTest.score ?? '') : '',
+    notes: (isModify || isConsult) ? (fetchedTest.notes ?? '') : '',
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalMOCA';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = isConsult
+    ? buildMOCAConsultHTML(fetchedTest)
+    : buildMOCAFormHTML(mode, prefill, schoolingData);
+
+  document.body.appendChild(modal);
+
+  // ── Shared close logic ────────────────────────────────────────────────────
+
+  function closeModal () { modal.remove(); }
+
+  document.getElementById('btnCloseMOCA').addEventListener('click', closeModal);
+  document.getElementById('btnCancelMOCA').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // ── Form listeners only on register / modify ──────────────────────────────
+
+  if (!isConsult) {
+    bindMOCAFormListeners(idUser, idApplication, schoolingYears, closeModal);
+  }
+}
