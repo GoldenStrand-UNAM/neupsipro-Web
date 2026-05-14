@@ -216,6 +216,21 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
+  // get WAIS
+  async fetchWAISResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT wr.*,
+              tr.status,
+              tr.date_applied
+      FROM wais_results wr
+      JOIN test_results tr ON wr.id_results = tr.id_results
+      WHERE wr.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
 
 
 }
