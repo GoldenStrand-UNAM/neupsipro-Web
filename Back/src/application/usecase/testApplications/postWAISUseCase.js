@@ -24,7 +24,6 @@ class postWAISUseCase {
   }
 
   // WAIS interpretation ranges per area score.
-  // CI Total has no interpretation — persisted as-is from the clinician.
   resolveInterpretation (score) {
     if (score >= 130) return 'Alta capacidad intelectual';
     if (score >= 120) return 'Superior';
@@ -40,24 +39,22 @@ class postWAISUseCase {
    * Saves WAIS score, recalculates interpretation server-side,
    * and updates the result row to status 3 (Calificada).
  */
-  async execute ({ id_user, id_application, score, notes }) {
+    async execute ({
+    id_user, id_application,
+    score_com_verbal, score_razon_perceptual,
+    score_mem_work, score_velo_proce,
+    score_total, notes,
+  }){
 
-    // 1. Validate score is present and is a number
-    const parsed = Number(score);
-    if (score === undefined || score === null || score === '' || isNaN(parsed)) {
-      const err = new Error('score must be a valid number');
-      err.status = 422;
-      throw err;
-    }
+    // 1. Validate and parse each area score
+    const comVerbal      = this.#parseAreaScore(score_com_verbal,       'score_com_verbal');
+    const razonPerceptual = this.#parseAreaScore(score_razon_perceptual, 'score_razon_perceptual');
+    const memWork        = this.#parseAreaScore(score_mem_work,          'score_mem_work');
+    const veloProce      = this.#parseAreaScore(score_velo_proce,        'score_velo_proce');
 
-    // 2. Validate score range
-    if (parsed < 0 || parsed > 200) {
-      const err = new Error('score must be between 0 and 200');
-      err.status = 422;
-      throw err;
-    }
+    const total = this.#parseAreaScore(score_total, 'score_total');
 
-    // 3. Validate notes length if provided
+    // 2. Validate notes length if provided
     if (notes && String(notes).length > 200) {
       const err = new Error('notes must be 200 characters or less');
       err.status = 422;
