@@ -54,6 +54,21 @@ class resultRepository {
       throw new Error('saveWAISResult() not implemented');
     }
 
+  //========= MOCA ========================
+
+    async fetchMOCAResult ({ _id_results }) {
+      throw new Error('fetchMOCAResult() not implemented');
+    }
+
+    async saveMOCAResult ({
+      _id_results,
+      _score,
+      _interpretation,
+      _notes,
+    }) {
+      throw new Error('saveMOCAResult() not implemented');
+    }
+
 
 }
 
