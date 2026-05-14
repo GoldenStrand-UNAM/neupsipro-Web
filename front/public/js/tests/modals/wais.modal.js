@@ -111,13 +111,12 @@ function buildWAISConsultHTML (test) {
 function buildWAISFormHTML (mode, prefill) {
   const title = mode === 'register' ? 'Registrar' : 'Modificar';
 
-  // Reusable area row — score input + live interpretation display
   function areaRow (label, inputId, interpId, errorId, prefillArea) {
     return `
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
         <div class="flex flex-col gap-1">
-          <label class="text-2xl font-regular">
+          <label class="text-sm font-medium text-gray-700">
             ${label} <span class="text-red-500">*</span>
           </label>
           <input
@@ -126,16 +125,16 @@ function buildWAISFormHTML (mode, prefill) {
             min="0"
             placeholder="Puntaje"
             value="${escapeHTML(String(prefillArea.score))}"
-            class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
+            class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                    focus:border-transparent transition"/>
           <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-2xl font-regular">Interpretación</label>
-          <div class="w-full h-[52px] flex items-center
-                      border border-gray-300 rounded-lg px-4 bg-gray-50">
+          <label class="text-sm font-medium text-gray-700">Interpretación</label>
+          <div class="w-full h-[40px] flex items-center
+                      border border-gray-300 rounded-lg px-3 bg-gray-50">
             <span id="${interpId}" class="text-sm text-gray-800">
               ${escapeHTML(prefillArea.interp)}
             </span>
@@ -157,18 +156,18 @@ function buildWAISFormHTML (mode, prefill) {
         </button>
       </div>
 
-      <div class="modal__body flex flex-col gap-6">
+      <div class="modal__body flex flex-col gap-3">
 
-        ${areaRow('Comprensión Verbal',         'inputComVerbal',      'interpComVerbal',      'errorComVerbal',      prefill.comVerbal)}
-        ${areaRow('Razonamiento Perceptual',     'inputRazonPerceptual','interpRazonPerceptual','errorRazonPerceptual', prefill.razonPerceptual)}
-        ${areaRow('Memoria de Trabajo',          'inputMemWork',        'interpMemWork',        'errorMemWork',        prefill.memWork)}
-        ${areaRow('Velocidad de Procesamiento',  'inputVeloProce',      'interpVeloProce',      'errorVeloProce',      prefill.veloProce)}
+        ${areaRow('Comprensión Verbal',         'inputComVerbal',       'interpComVerbal',       'errorComVerbal',       prefill.comVerbal)}
+        ${areaRow('Razonamiento Perceptual',     'inputRazonPerceptual', 'interpRazonPerceptual', 'errorRazonPerceptual', prefill.razonPerceptual)}
+        ${areaRow('Memoria de Trabajo',          'inputMemWork',         'interpMemWork',         'errorMemWork',         prefill.memWork)}
+        ${areaRow('Velocidad de Procesamiento',  'inputVeloProce',       'interpVeloProce',       'errorVeloProce',       prefill.veloProce)}
 
-        <!-- CI Total — manually entered by clinician, no interpretation -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- CI Total — clinician-provided, no interpretation -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
           <div class="flex flex-col gap-1">
-            <label class="text-2xl font-regular">
+            <label class="text-sm font-medium text-gray-700">
               CI Total <span class="text-red-500">*</span>
             </label>
             <input
@@ -177,30 +176,35 @@ function buildWAISFormHTML (mode, prefill) {
               min="0"
               placeholder="Valor"
               value="${escapeHTML(String(prefill.scoreTotal))}"
-              class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm
+              class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
             <p id="errorWAISTotal" class="text-xs text-red-500 hidden"></p>
           </div>
 
-          <!-- Empty col to keep grid alignment -->
-          <div></div>
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-400">Interpretación</label>
+            <div class="w-full h-[40px] flex items-center
+                        border border-gray-200 rounded-lg px-3 bg-gray-50">
+              <span class="text-sm text-gray-400 italic">No aplica</span>
+            </div>
+          </div>
 
         </div>
 
         <!-- Notes -->
-        <div class="flex flex-col gap-2">
-          <label class="text-2xl font-regular">Notas</label>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Notas</label>
           <textarea
             id="inputWAISNotes"
-            rows="4"
+            rows="2"
             maxlength="200"
             placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
                    focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                    focus:border-transparent transition resize-none"
           >${escapeHTML(prefill.notes)}</textarea>
-          <p id="waisNotesCount" class="text-lg text-gray-400 text-right">
+          <p id="waisNotesCount" class="text-xs text-gray-400 text-right">
             ${prefill.notes.length} / 200
           </p>
         </div>

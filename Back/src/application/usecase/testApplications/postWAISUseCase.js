@@ -1,4 +1,4 @@
-const WaisResultsDTO = require('../../dto/waisResultsDTO');
+const WaisResultsDTO = require('../../dto/waisResultDTO');
 
 
 class postWAISUseCase {
