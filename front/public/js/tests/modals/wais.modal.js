@@ -103,3 +103,169 @@ function buildMOCAConsultHTML (test) {
       </div>
     </div>`;
 }
+
+// ── Form HTML ────────────────────────────────────────────────────────────────
+// Shared HTML for register and modify modes.
+// schoolingYears is used to show the bonus banner.
+// prefill comes pre-built from openMOCAModal — empty on register,
+// existing values on modify.
+
+function buildMOCAFormHTML (mode, prefill, schoolingData) {
+  const title        = mode === 'register' ? 'Registrar' : 'Modificar';
+  const hasSchooling = schoolingData !== null;
+
+  // Bonus applies when schooling <= 12 years
+  const bonusApplies = hasSchooling && schoolingData.years <= 12;
+
+  // Schooling banner — shows education level and whether bonus applies
+  const schoolingBanner = hasSchooling ? `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
+                ${bonusApplies ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-gray-200'}">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor"
+           class="w-5 h-5 shrink-0 ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12
+                 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347
+                 m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12
+                 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814
+                 m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1
+                 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0
+                 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981
+                 0 0 0 6.75 15.75v-1.5"/>
+      </svg>
+      <div class="flex flex-col">
+        <span class="text-sm font-medium ${bonusApplies ? 'text-blue-700' : 'text-gray-700'}">
+          Escolaridad: ${escapeHTML(schoolingData.schooling)}
+          (${schoolingData.years} años)
+        </span>
+        <span class="text-xs ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
+          ${bonusApplies
+            ? 'Aplica bono +2 puntos si puntaje bruto ≤ 28'
+            : 'No aplica bono de escolaridad'}
+        </span>
+      </div>
+    </div>` : `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
+                bg-yellow-50 border border-yellow-200">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 text-yellow-500">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948
+                 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949
+                 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+      </svg>
+      <span class="text-sm text-yellow-700">
+        Sin datos de escolaridad registrados — no se puede calcular bono
+      </span>
+    </div>`;
+
+  return `
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">MoCA — ${title}</h2>
+        <button id="btnCloseMOCA" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body flex flex-col gap-4">
+
+        ${schoolingBanner}
+
+        <!-- Score bruto + puntaje final en vivo -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">
+              Puntaje bruto <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="inputMOCAScore"
+              type="number"
+              min="0"
+              max="30"
+              placeholder="0 – 30"
+              value="${escapeHTML(String(prefill.score))}"
+              class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition"/>
+            <p class="text-xs text-gray-400">Número entero entre 0 y 30</p>
+            <p id="errorMOCAScore" class="text-xs text-red-500 hidden"></p>
+          </div>
+
+          <!-- Puntaje final — computed live from raw + bonus -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Puntaje final</label>
+            <div class="w-full h-[40px] flex items-center
+                        border border-gray-300 rounded-lg px-3 bg-gray-50">
+              <span id="mocaFinalScore" class="text-sm text-gray-800">—</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Interpretación en vivo -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Interpretación</label>
+          <div class="w-full h-[40px] flex items-center
+                      border border-gray-300 rounded-lg px-3 bg-gray-50">
+            <span id="mocaInterpretation" class="text-sm text-gray-800">—</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Notas</label>
+          <textarea
+            id="inputMOCANotes"
+            rows="2"
+            maxlength="200"
+            placeholder="Observaciones"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition resize-none"
+          >${escapeHTML(prefill.notes)}</textarea>
+          <p id="mocaNotesCount" class="text-xs text-gray-400 text-right">
+            ${prefill.notes.length} / 200
+          </p>
+        </div>
+
+        <p id="mocaApiError" class="text-xs text-red-500 hidden"></p>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+
+          <button id="btnCancelMOCA"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 border border-gray-300 rounded-2xl
+                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <span class="whitespace-nowrap">Cancelar</span>
+          </button>
+
+          <button id="btnSaveMOCA"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 rounded-2xl bg-[#3350A9] text-white
+                   font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+            </svg>
+            <span class="whitespace-nowrap">Guardar</span>
+          </button>
+
+        </div>
+      </div>
+    </div>`;
+}
