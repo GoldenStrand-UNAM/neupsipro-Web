@@ -282,6 +282,7 @@ async saveMOCAResult ({ id_results, score, interpretation, notes }) {
 
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
+  // Use by REY to determine the percentil
   async fetchUserSchooling ({ id_user }) {
     const [rows] = await db.query(
       `SELECT ii.schooling

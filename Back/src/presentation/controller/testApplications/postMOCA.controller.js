@@ -1,19 +1,29 @@
 class postMOCAController {
-  constructor (useCase) {
-    this.useCase = useCase;
+
+  constructor (postMOCAUseCase) {
+    this.useCase = postMOCAUseCase;
   }
 
   async postResult (req, res) {
-    const { id_user, id_application } = req.params;
-    const { score, notes }            = req.body;
-
     try {
-      const data = await this.useCase.execute({ id_user, id_application, score, notes });
-      return res.status(200).json({ data });
+      const { id_user, id_application } = req.params;
+      const { score, notes }            = req.body;
+
+      const dto = await this.useCase.execute({
+        id_user,
+        id_application,
+        score,
+        notes,
+      });
+
+      return res.status(200).json({ data: dto });
 
     } catch (err) {
-      const httpStatus = err.status || 500;
-      return res.status(httpStatus).json({ error: err.message });
+      if (err.status && err.message) {
+        return res.status(err.status).json({ error: err.message });
+      }
+      console.error('[postMOCAController]', err);
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 }
