@@ -36,6 +36,24 @@ class resultRepository {
     throw new Error('fetchBANFEResult() not implemented');
   }
 
+  //========= WAIS ========================
+
+    async fetchWAISResult ({ _id_results }) {
+      throw new Error('fetchWAISResult() not implemented');
+    }
+
+    async saveWAISResult ({
+      _id_results,
+      _score_com_verbal,       _inter_com_verbal,
+      _score_razon_perceptual, _inter_razon_perceptual,
+      _score_mem_work,         _inter_mem_work,
+      _score_velo_proce,       _inter_velo_proce,
+      _score_total,
+      _notes,
+    }) {
+      throw new Error('saveWAISResult() not implemented');
+    }
+
 
 }
 

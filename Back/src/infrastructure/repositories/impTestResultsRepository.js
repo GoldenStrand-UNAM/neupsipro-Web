@@ -82,12 +82,14 @@ class impTestResultsRepository extends resultRepository {
     };
   }
 
-  // ================= SAVE BANFE  ==================
+  // ================= BANFE  ==================
 
   // Upserts into banfe_results
   // works for both first-time registration and modify.
   // Also updates status from test_results
 
+
+  // Post BANFE
   async saveBANFEResult ({
     id_results,
     score_orbit_frontal,  inter_orbit_frontal,
@@ -139,20 +141,80 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-// CONSULT BANFE
-async fetchBANFEResult ({ id_results }) {
-  const [rows] = await db.query(
-    `SELECT br.*,
-            tr.status,
-            tr.date_applied
-     FROM banfe_results br
-     JOIN test_results tr ON br.id_results = tr.id_results
-     WHERE br.id_results = ?
-     LIMIT 1`,
-    [id_results]
-  );
-  return rows[0] ?? null;
-}
+  // CONSULT BANFE
+  async fetchBANFEResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT br.*,
+              tr.status,
+              tr.date_applied
+      FROM banfe_results br
+      JOIN test_results tr ON br.id_results = tr.id_results
+      WHERE br.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // ================= WAIS ==================
+
+  // post WAIS
+  async saveWAISResult ({
+    id_results,
+    score_com_verbal,       inter_com_verbal,
+    score_razon_perceptual, inter_razon_perceptual,
+    score_mem_work,         inter_mem_work,
+    score_velo_proce,       inter_velo_proce,
+    score_total,
+    notes,
+  }) {
+
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+      SET status       = 3,
+          date_applied = CURDATE()
+      WHERE id_results = ?`,
+      [id_results]
+    );
+
+    await db.query(
+      `INSERT INTO wais_results
+        (id_results,
+          score_com_verbal,       inter_com_verbal,
+          score_razon_perceptual, inter_razon_perceptual,
+          score_mem_work,         inter_mem_work,
+          score_velo_proce,       inter_velo_proce,
+          score_total,            notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          score_com_verbal       = VALUES(score_com_verbal),
+          inter_com_verbal       = VALUES(inter_com_verbal),
+          score_razon_perceptual = VALUES(score_razon_perceptual),
+          inter_razon_perceptual = VALUES(inter_razon_perceptual),
+          score_mem_work         = VALUES(score_mem_work),
+          inter_mem_work         = VALUES(inter_mem_work),
+          score_velo_proce       = VALUES(score_velo_proce),
+          inter_velo_proce       = VALUES(inter_velo_proce),
+          score_total            = VALUES(score_total),
+          notes                  = VALUES(notes)`,
+      [
+        id_results,
+        score_com_verbal,       inter_com_verbal,
+        score_razon_perceptual, inter_razon_perceptual,
+        score_mem_work,         inter_mem_work,
+        score_velo_proce,       inter_velo_proce,
+        score_total,            notes,
+      ]
+    );
+
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM wais_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
 
 
 
