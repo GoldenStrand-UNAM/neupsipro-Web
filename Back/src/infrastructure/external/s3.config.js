@@ -122,10 +122,9 @@ async function deleteFromS3 (imageUrlOrKey) {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error(`Error deleting S3 object (${key}):`, err.message);
-    
+
     return false;
   }
 }
 
 module.exports = { s3, uploadToS3, getPresignedUrl, deleteFromS3 };
-
