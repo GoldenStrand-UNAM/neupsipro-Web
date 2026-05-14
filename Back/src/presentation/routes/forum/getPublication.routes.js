@@ -11,7 +11,6 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 const DeletePublicationUseCase    = require('../../../application/usecase/forum/deletePublicationUseCase');
 const DeletePublicationController = require('../../controller/forum/deletePublication.controller');
 
-
 module.exports = (authUseCase) => {
   const router = express.Router();
 

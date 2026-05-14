@@ -13,7 +13,7 @@ class deletePublicationUseCase {
     const publication = await this.forumRepository.findById({ idPublication });
     if (!publication) throw new Error('Publicación no encontrada');
 
-    // delte interactions
+    // delete interactions
     await this.interactionRepository.deleteAllFromPublication({ idPublication });
 
     // delete publication
