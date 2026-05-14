@@ -800,8 +800,7 @@ CREATE TABLE moca_results (
 CREATE TABLE nih_results (
     id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_results                VARCHAR(36) NOT NULL UNIQUE,
-    interpretation            VARCHAR(36),
-    notes                       VARCHAR(200),
+    notes                       VARCHAR(500),
     CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
  
