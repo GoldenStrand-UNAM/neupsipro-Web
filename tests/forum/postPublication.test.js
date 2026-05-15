@@ -177,7 +177,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
 
-        const longText = 'a'.repeat(100000000)
+        const longText = 'a'.repeat(10000000)
 
         const res = await request(app)
         .post('/forum/post')
