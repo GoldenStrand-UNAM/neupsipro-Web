@@ -6,7 +6,7 @@ class DashboardController {
 
   getDashboardPage (req, res) {
     try {
-      res.locals.activePage = 'panel';
+      res.locals.activePage = 'home';
       res.render('dashboard/dashboardUnit');
     } catch (error) {
       res.status(500).json({ error: error.message });
