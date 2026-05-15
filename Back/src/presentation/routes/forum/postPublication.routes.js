@@ -25,7 +25,7 @@ module.exports = (authUseCase) => {
     '/forum/post',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Forum', 'writing'),
-    (req, res) => res.render('forum/postPublication', { activePage: 'foro' })
+    (req, res) => res.render('forum/postPublication', { activePage: 'forum' })
   );
 
   router.post(
