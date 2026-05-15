@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+  const savedToast = sessionStorage.getItem('pendingToast');
+  if (savedToast) {
+    const { message, type } = JSON.parse(savedToast);
+    sessionStorage.removeItem('pendingToast');
+    showToast(message, type);
+  }
   const publications = document.querySelectorAll('[id^="p-"]');
   const publicationModal = document.getElementById('publicationContent');
   const publicationBox = document.getElementById('publicationBox');
@@ -147,13 +154,19 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(json.error || 'Error al eliminar');
       }
 
-      showToast('Publicación eliminada con éxito', 'success');
 
       // Close both modals
       deleteModal.classList.add('hidden');
       closeModal();
 
-      currentPostId = null;
+      sessionStorage.setItem('pendingToast', JSON.stringify({ 
+        message: 'Publicación eliminada con éxito', 
+        type: 'success' 
+      }));
+
+      window.location.href = '/forum';
+      currentPostId = null
+
 
     } catch (err) {
       showToast(err.message, 'error');
