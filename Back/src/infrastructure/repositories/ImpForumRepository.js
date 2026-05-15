@@ -21,12 +21,10 @@ class ImpForumRepository extends forumRepository {
                 p.image,
                 p.time_and_date,
                 CONCAT(u.first_name, ' ', u.lastname_p, ' ', u.lastname_m) AS full_name,
-                i.profile_photo
+                u.profile_photo
             FROM publication p
             INNER JOIN users u 
                 ON p.id_user = u.id_user
-            INNER JOIN user_info i
-                ON p.id_user = i.id_user
             ORDER BY p.time_and_date DESC
             LIMIT ?, ?`,
       [Number(offset), Number(limit)]

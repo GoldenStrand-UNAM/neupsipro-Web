@@ -310,12 +310,12 @@
 
           <div id="pathologyDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
             <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
-            <div class="inputs w-full relative flex items-center">
+            <div class="inputs w-full relative flex items-center mb-4">
               <input type="text" id="otherPathology" name="otherPathology" 
-                placeholder="Escribe la etiología"
-                maxlength = "50"
-                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
-                <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                    placeholder="Escribe la etiología de amputación"
+                    maxlength="50"
+                    class="input w-full border py-1 px-3 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+              <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/50 
               </span>
             </div>
@@ -346,13 +346,13 @@
 
           <div id="levelDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
             <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
-            <div class="inputs w-full relative flex items-center">
+            <div class="inputs w-full relative flex items-center mb-4">
               <input type="text" id="otherLevel" name="otherLevel" 
-                placeholder="Escribe el nivel"
-                maxlength = "20"
-                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
+                placeholder="Escribe el nivel de amputación"
+                maxlength = "50"
+                class="input w-full border py-1 px-3 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
                 <span id="charactersOtherLevel" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
+                0/50 
               </span>
             </div>
           </div>
@@ -553,8 +553,6 @@
         body: formData,
       });
 
-      console.log(formData);
-
       const data = await res.json();
 
       if (res.ok) {
@@ -716,6 +714,7 @@
     setupCounter('userName', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('otherPathology', 'charactersOtherPathology');
+    setupCounter('otherLevel', 'charactersOtherLevel');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');
