@@ -52,7 +52,7 @@ class FinancialInterviewUseCase {
     });
   }
 
-  async execute ({ id_user, step, subStep }) {
+  async execute ({ id_user, step }) {
 
     // fetch  relation
     const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
@@ -62,11 +62,13 @@ class FinancialInterviewUseCase {
     const inicialResult = await this.financialInterviewRepository.fetchInterviewProgress({ id_user_relation });
     const inicialProgress = inicialResult[0];
 
+    const financialResult = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
+
     // Get data by step
     if (step === 'financial') {
       return await this.getSecondStepData({
         id_user,
-        subStep: Number(subStep),
+        subStep: financialResult[0][0].current_section,
         id_user_relation,
         inicialProgress,
       });
