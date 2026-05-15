@@ -211,14 +211,15 @@
       const data = await res.json();
 
       if (res.ok) {
-        showToast('Publicación creada correctamente ');
-
-        // clean form
-        resetForm();
-      } else {
-        showToast('Error al publicar ', 'error');
-      }
-
+        sessionStorage.setItem('pendingToast', JSON.stringify({ 
+          message: 'Publicación creada correctamente', 
+          type: 'success' 
+        }));
+        window.location.href = '/forum';
+      } 
+      else {
+        showToast('Error al publicar', 'error');
+      }  
     } catch (err) {
       showToast('Error de conexión ', 'error');
     }
