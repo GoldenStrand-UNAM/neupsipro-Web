@@ -1,19 +1,25 @@
-const AWS = require('aws-sdk');
+const {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const fs = require('fs').promises;
 require('dotenv').config();
 
+const REGION = process.env.AWS_REGION;
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME || process.env.AWS_BUCKET;
 
-AWS.config.update({
-  signatureVersion: 'v4',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+
+const s3 = new S3Client({
+  region: REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });
 
-const s3 = new AWS.S3({
-  signatureVersion: 'v4',
-});
 
 const uploadToS3 = async (filePath, fileName) => {
   // Read the temp file into a Buffer
@@ -23,29 +29,25 @@ const uploadToS3 = async (filePath, fileName) => {
 
   //const base64data = Buffer.from(data, 'binary');
 
-  const params = {
+  const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
-
-    //The key is the file name
     Key: `forum/${fileName}`,
-
-    //our buffer in base64
     Body: data,
-  };
+  });
 
-  //upload to the bucket S3 and we will do this with the SDK call
-  /* The SDK call uses the upload method where the params package is received,
-      and if everything is configured correctly, it should work automatically.*/
-  const result = await s3.upload(params).promise();
+  await s3.send(command);
+
+  const location = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/forum/${fileName}`;
+
 
   //eslint-disable-next-line no-console
-  console.log(`File uploaded successfully at ${result.Location}`);
+  console.log(`File uploaded successfully at ${location}`);
 
   //  Delete the local temp file
   await fs.unlink(filePath);
 
   // Return the public S3 URL
-  return result.Location;
+  return location;
 };
 
 // Extract images from S3 URLs
@@ -84,22 +86,12 @@ async function getPresignedUrl (imageUrlOrKey, expiresIn = 3600) {
   const key = extractObjectKey(imageUrlOrKey);
   if (!key) return null;
 
-  const params = {
+  const command = new GetObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
-    Expires: Number(expiresIn),
-  };
-
-  if (typeof s3.getSignedUrlPromise === 'function') {
-    return s3.getSignedUrlPromise('getObject', params);
-  }
-
-  return new Promise((resolve, reject) => {
-    s3.getSignedUrl('getObject', params, (error, signedUrl) => {
-      if (error) return reject(error);
-      return resolve(signedUrl);
-    });
   });
+
+  return getSignedUrl(s3, command, { expiresIn: Number(expiresIn) });
 }
 
 // Delete an object from S3 (by URL or key)
@@ -111,10 +103,11 @@ async function deleteFromS3 (imageUrlOrKey) {
   if (!key) return false;
 
   try {
-    await s3.deleteObject({
+    const command = new DeleteObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
-    }).promise();
+    });
+    await s3.send(command);
 
     // eslint-disable-next-line no-console
     console.log(`S3 object deleted: ${key}`);
