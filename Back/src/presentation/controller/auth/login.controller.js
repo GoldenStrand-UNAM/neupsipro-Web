@@ -51,7 +51,7 @@ class LoginController {
       if (wantsJson) return res.status(200).json({ token });
 
       res.cookie('jwt_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 2 * 60 * 60 * 1000 });
-      return res.redirect('/forum');
+      return res.redirect('/dashboard');
     } catch (error) {
       if (wantsJson) {
         const m = error.message;
