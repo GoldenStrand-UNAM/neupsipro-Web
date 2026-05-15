@@ -17,7 +17,23 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+
+      'style-src': ["'self'", "'unsafe-inline'"],
+      'font-src': ["'self'", 'data:'],
+      'script-src-attr': ["'unsafe-inline'"],
+
+      'script-src': [
+        "'self'",
+        'https://cdn.jsdelivr.net',
+        "'unsafe-inline'",
+      ],
+    },
+  },
+}));
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   next();
