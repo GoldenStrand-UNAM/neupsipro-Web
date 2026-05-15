@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const { loginLimiter, generalLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
-const { doubleCsrf } = require('csrf-csrf');
+//const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
 const app = express();
@@ -57,7 +57,7 @@ app.use (session({
   saveUninitialized: true,
 }));
 
-const {
+/*const {
   generateCsrfToken,
   doubleCsrfProtection,
 } = doubleCsrf({
@@ -72,7 +72,7 @@ app.use(doubleCsrfProtection);
 app.use((req, res, next) => {
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
-});
+});*/
 
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
