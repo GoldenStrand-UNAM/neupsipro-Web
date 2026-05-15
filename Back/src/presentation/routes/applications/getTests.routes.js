@@ -39,7 +39,7 @@ const postNIHController    = require('../../controller/testApplications/postNIH.
 
 
 const getNIHResultUseCase  = require('../../../application/usecase/testApplications/getNIHUseCase');
-const getNIHController     = require('../../controller/testApplications/getNIH.controller');
+const getNIHResultController     = require('../../controller/testApplications/getNIH.controller');
 
 
 //AUTH & PERMISSIONS
@@ -76,16 +76,18 @@ module.exports = (authUseCase) => {
   const getMOCAUseCase    = new getMOCAResultUseCase(testResultsRepo);
   const getMOCAController = new getMOCAResultController(getMOCAUseCase);
 
-  //REY
-  const reyUseCase    = new postREYUseCase(testResultsRepo);
-  const reyController = new postREYController(reyUseCase);
-
   //NIH
   const nihUseCase    = new postNIHUseCase(testResultsRepo);
   const nihController = new postNIHController(nihUseCase);
 
   const getNIHUseCase = new getNIHResultUseCase(testResultsRepo);
-  const getNIHController    = new getNIHController(getNIHUseCase);
+  const getNIHController    = new getNIHResultController(getNIHUseCase);
+
+  //REY
+  const reyUseCase    = new postREYUseCase(testResultsRepo);
+  const reyController = new postREYController(reyUseCase);
+
+
 
   //AUTH & PERMISSIONS MIDDLEWARE
 
@@ -176,7 +178,7 @@ module.exports = (authUseCase) => {
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/5/resultados/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
-    (req, res) => getNIHCtrl.getResult(req, res)
+    (req, res) => getNIHController.getResult(req, res)
   );
 
 

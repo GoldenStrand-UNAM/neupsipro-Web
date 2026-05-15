@@ -38,8 +38,8 @@ function buildNIHConsultHTML (test) {
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                     gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
           <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Notas:</span>
-          <span class="text-base sm:text-lg text-gray-900 leading-relaxed break-words">
-            ${notes ? escapeHTML(notes) : '—'}
+          <span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all whitespace-pre-wrap">
+          ${notes ? escapeHTML(notes) : '—'}
           </span>
         </div>
 
