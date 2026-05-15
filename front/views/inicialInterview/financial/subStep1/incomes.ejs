@@ -12,7 +12,7 @@
         <!--Schoolarship type-->
         <div>
             <label class="input_label">Describa el tipo de financiamiento</label>
-            <input type="text" class="input" placeholder="Crédito educativo, beca, etc">
+            <input type="text" id="financialType" class="input" placeholder="Crédito educativo, beca, etc">
         </div>
 
         <!--Salary before-->
@@ -106,9 +106,15 @@
     <!-- Total Incomes-->
     <div class="grid grid-cols-3">
         <div></div>
-        <div class="total">
-            <span class="font-bold">Total de Ingresos:</span>
-            <span id="totalIncomes"></span>
+
+        <div class="total flex items-center gap-2">
+            <span class="font-bold">Total de Ingresos: $</span>
+
+            <input
+                type="number"
+                id="totalIncomes"
+                readonly
+            >
         </div>
     </div>
 
@@ -160,8 +166,7 @@
         // TOTAL
         const total = section1 + section2;
 
-        document.getElementById('totalIncomes').textContent =
-            `$${total.toFixed(2)}`;
+        document.getElementById('totalIncomes').value = total;
     }
 
     // Add contributor

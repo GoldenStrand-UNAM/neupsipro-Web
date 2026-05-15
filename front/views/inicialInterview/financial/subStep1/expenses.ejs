@@ -95,9 +95,13 @@
     <!-- Total Expenses-->
     <div class="grid grid-cols-3">
         <div></div>
-        <div class="total">
-            <span class="font-bold">Total de Egresos:</span>
-            <span id="totalExpenses"></span>
+        <div class="total flex items-center gap-2">
+            <span class="font-bold">Total de Egresos: $</span>
+            <input
+                type="number"
+                id="totalExpenses"
+                readonly
+            >
         </div>
     </div>
 
@@ -134,8 +138,7 @@
                 total += getValue(input);
             });
 
-            document.getElementById('totalExpenses').textContent =
-                `$${total.toFixed(2)}`;
+            document.getElementById('totalExpenses').value = total;
             
         }
 

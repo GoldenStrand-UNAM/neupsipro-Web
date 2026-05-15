@@ -1,8 +1,11 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-lines-per-function */
 const db = require ('../database/database');
 const ImpFinancialInterviewRepository = require('../../domain/repository/ImpFinancialInterviewRepository');
 
 class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
+  // ----- Auxiliar functions -------------------------------------------------
   // Fetch relation by id
   async fetchRelation ({ id_user }) {
     return await db.query(
@@ -33,6 +36,10 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     );
   }
 
+  // --------------------------------------------------------------------------
+  // ----------------------------- GET Functions ------------------------------
+
+  // ----- Financial substep --------------------------------------------------
   // Fetch financial situation by relation
   async fetchFinancialSituationInfo ({ id_user_relation }) {
     const [rows] = await db.query(
@@ -70,6 +77,9 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     };
   }
 
+  // ----- ESC substep --------------------------------------------------------
+
+  // Data for autocomplete inputs
   async fetchExtraEscGov ({ id_user_relation }) {
 
     const [rows] = await db.query(
@@ -104,6 +114,8 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     };
   }
 
+  // ----- AMAI substep -------------------------------------------------------
+
   // Fetch AMAI Wuestionary by relation
   async fetchAmaiQ ({ id_user_relation }) {
     const [rows] =  await db.query(
@@ -116,6 +128,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     return rows;
   }
 
+  // ----- Results substep -----------------------------------------------------
   // Fetch results by relation
   async fetchResults ({ id_user_relation }) {
     const [rows] = await db.query(
@@ -136,6 +149,337 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     );
 
     return rows;
+  }
+
+  // --------------------------------------------------------------------------
+  // ----------------------------- PATCH Functions ----------------------------
+
+  // -----  SAVE Financial Data -----------------------------------------------
+
+  // Save financial situation info
+  async saveFinancialSituationInfo ({ connection, id_user_relation, data }) {
+
+    await connection.query(
+      `UPDATE financial_situation
+      SET has_financing_schoolarship = ?,
+          financial_type = ?,
+          salary_before_sickness = ?,
+          salary_after_sickness = ?,
+          food_expenses = ?,
+          rent_expenses = ?,
+          services_expenses = ?,
+          gas_expenses = ?,
+          education_expenses = ?,
+          wardrobe_expenses = ?,
+          medical_expenses = ?,
+          transport_expenses = ?,
+          creditcard_payment_expenses = ?,
+          phone_expenses = ?,
+          others_expenses = ?,
+          economic_situation = ?,
+          num_economic_dependents = ?,
+          total_income = ?,
+          total_expenses = ?
+      WHERE id_user_relation = ?`,
+      [
+        data.incomes.incomeExtra,
+        data.incomes.financialType,
+        data.incomes.salaryBefore,
+        data.incomes.salaryAfter,
+
+        data.expenses.foodExpenses,
+        data.expenses.rentExpenses,
+        data.expenses.servicesExpenses,
+        data.expenses.gasExpenses,
+        data.expenses.educationExpenses,
+        data.expenses.wardrobeExpenses,
+        data.expenses.medicalExpenses,
+        data.expenses.transportExpenses,
+        data.expenses.creditcardExpenses,
+        data.expenses.phoneExpenses,
+        data.expenses.othersExpenses,
+        data.expenses.economicSituation,
+        data.expenses.numEconomicDependents,
+
+        data.incomes.totalIncomes,
+        data.expenses.totalExpenses,
+
+        id_user_relation,
+      ]
+    );
+  }
+
+  // Save contributors
+  async saveContributors ({ connection, id_user_relation, contributors }) {
+    // Delete old contributors
+    await connection.query(
+      `DELETE FROM contributing_people
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    // Insert new contributors
+    for (const contributor of contributors) {
+
+      // eslint-disable-next-line no-await-in-loop
+      await connection.query(
+        `INSERT INTO contributing_people
+          (
+            id_user_relation,
+            contributor,
+            relation,
+            income
+          )
+          VALUES (?, ?, ?, ?)`,
+        [
+          id_user_relation,
+          contributor.name,
+          contributor.relation,
+          contributor.income,
+        ]
+      );
+    }
+  }
+
+  // Save financial substep info for a user relation
+  async saveFinancialSituation ({ connection, id_user_relation, data }) {
+
+    await this.saveFinancialSituationInfo({
+      connection,
+      id_user_relation,
+      data,
+    });
+
+    await this.saveContributors({
+      connection,
+      id_user_relation,
+      contributors: data.contributors,
+    });
+  }
+
+  // Save ESC Government substep
+  async saveEscGov ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `UPDATE esc_government
+      SET min_income = ?,
+          ocupation = ?,
+          family_expenses = ?,
+          real_right = ?,
+          housing_type = ?,
+          public_services = ?,
+          inhome_services = ?,
+          construction_material = ?,
+          num_bedrooms = ?,
+          persons_per_bedroom = ?,
+          treatment_time = ?,
+          other_problems = ?,
+          family_health = ?,
+          total = ?,
+          socioeconomic_level = ?
+      WHERE id_user_relation = ?`,
+      [
+        data.minIncome,
+        data.ocupation,
+        data.familyExpenses,
+
+        data.housing.realRight,
+        data.housing.housingType,
+        data.housing.publicServices,
+        data.housing.inhomeServices,
+        data.housing.constructionMaterial,
+        data.housing.numBedrooms,
+        data.housing.personsPerBedroom,
+
+        data.familyConditions.treatmentTime,
+        data.familyConditions.otherProblems,
+        data.familyConditions.familyHealth,
+
+        data.total,
+        data.socioeconomicLevel,
+
+        id_user_relation,
+      ]
+    );
+  }
+
+  // Save AMAI questtionarie substep
+  async saveAmai ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `UPDATE amai_questionnaire
+      SET last_studies = ?,
+          num_bathrooms = ?,
+          num_car = ?,
+          has_internet = ?,
+          has_worked = ?,
+          has_bedroom = ?,
+          total = ?,
+          socioeconomic_level = ?
+      WHERE id_user_relation = ?`,
+      [
+        data.lastStudies,
+        data.numBathrooms,
+        data.numCar,
+        data.hasInternet,
+        data.hasWorked,
+        data.hasBedroom,
+
+        data.total,
+        data.socioeconomicLevel,
+
+        id_user_relation,
+      ]
+    );
+  }
+
+  // ----- Save Substeps Progress ---------------------------------------------
+
+  // Update incomes and expenses progress
+  async updateIANDEProgress ({ connection, id_user_relation, completed }) {
+
+    await connection.query(
+      `UPDATE financial_progress
+      SET income_expenses_completed = ?
+      WHERE id_user_relation = ?`,
+      [
+        completed,
+        id_user_relation,
+      ]
+    );
+  }
+
+  // Update amai progress
+  async updateESCProgress ({ connection, id_user_relation, completed }) {
+
+    await connection.query(
+      `UPDATE financial_progress
+      SET esc_completed = ?
+      WHERE id_user_relation = ?`,
+      [
+        completed,
+        id_user_relation,
+      ]
+    );
+  }
+
+  // Update financial step 3 progress
+  async updateAMAIProgress ({ connection, id_user_relation, completed }) {
+
+    await connection.query(
+      `UPDATE financial_progress
+      SET amai_completed = ?
+      WHERE id_user_relation = ?`,
+      [
+        completed,
+        id_user_relation,
+      ]
+    );
+  }
+
+  // ----- Update Financial Progress ------------------------------------------
+  async updateFinancialProgress ({ id_user_relation }) {
+
+    await db.query(
+      `UPDATE financial_progress
+        SET status = 'completed'
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    await db.query(
+      `UPDATE initial_interview_progress
+        SET financial_completed = 1
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+  }
+
+  async updateInterviewProgress ({ id_user_relation, status }) {
+    return await db.query(
+      `UPDATE initial_interview_progress
+      SET status = ?
+      WHERE id_user_relation = ?`,
+      [status, id_user_relation]
+    );
+  }
+
+  // ---- MAIN PATCH Function -------------------------------------------------
+  async saveFinancialSection ({ subStep, id_user_relation, data, completed }) {
+
+    // Connection for secure async queries
+    const connection = await db.getConnection();
+
+    try {
+
+      await connection.beginTransaction();
+
+      switch (subStep) {
+
+        case 1:
+
+          await this.saveFinancialSituation({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateIANDEProgress({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 2:
+
+          await this.saveEscGov({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateESCProgress({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 3:
+
+          await this.saveAmai({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateAMAIProgress({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+      }
+
+      await connection.commit();
+
+      return {
+        saved: true,
+      };
+
+    } catch (err) {
+
+      await connection.rollback();
+
+      throw err;
+
+    } finally {
+
+      connection.release();
+    }
   }
 }
 

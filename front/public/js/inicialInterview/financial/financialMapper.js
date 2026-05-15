@@ -6,6 +6,9 @@ function renderIncomesData (info) {
   document.getElementById('incomeExtra').value =
     info.income?.salary?.hasFinancingSchoolarship || '';
 
+  document.getElementById('financialType').value =
+    info.income?.salary?.financialType || '';
+
   document.getElementById('salaryBefore').value =
     info.income?.salary?.salaryBeforeSickness || '';
 
@@ -136,9 +139,9 @@ function renderESCData (info) {
   setSelectValue('personsPerBedroom', info.housing?.personsPerBedroom);
 
   // Family conditions
-  setSelectValue('treatmentTime', info.family_conditions?.treatmentTime);
-  setSelectValue('otherProblems', info.family_conditions?.otherProblems);
-  setSelectValue('familyHealth', info.family_conditions?.familyHealth);
+  setSelectValue('treatmentTime', info.familyConditions?.treatmentTime);
+  setSelectValue('otherProblems', info.familyConditions?.otherProblems);
+  setSelectValue('familyHealth', info.familyConditions?.familyHealth);
 
   // Results
   document.getElementById('totalPuntuation').textContent =

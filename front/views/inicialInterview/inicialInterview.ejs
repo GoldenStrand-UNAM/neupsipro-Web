@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/output.css">
 </head>
 
-<body class="bg-[#002B7A] flex h-screen lg:flex-row transition-transform duration-300">
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -162,9 +162,11 @@
     <script src="/js/sidebar.js"></script>
     <script src="/js/inicialInterview/sectionsStepper.js"></script>
     <script src="/js/inicialInterview/sidebarTimeline.js"></script>
-    
+    <script src="/js/inicialinterview/financial/financialBuilder.js"></script>
+
+    <!------------------------ Load Content Functions ------------------------>
     <script>
-        // Functions that set titles ---------------------------------------
+        // ----- Functions that set titles ------------------------------------
 
         // Set by step
         function setStepTitle(data) {
@@ -213,7 +215,7 @@
             }
         }
 
-        // Get content by substep
+        // Get content by substep ---------------------------------------------
         async function loadSection(section) {
 
             try {
@@ -223,6 +225,7 @@
                 );
 
                 const data = await res.json();
+                console.log('DATA: ', data);
 
                 if (!res.ok) {
                     console.error(data.error);
@@ -259,9 +262,9 @@
             }
         }
 
-        // Functions that set content ---------------------------------------
+        // ----- Functions that set content -----------------------------------
 
-        // Financial Substep1 Content
+        // Financial step Content
         function setFinancialContent(data) {
 
             // Hidde all
@@ -290,8 +293,7 @@
             } 
         }
 
-        const id_user = "<%= id_user %>";
-
+        // Load financial step content 
         async function loadFinancial() {
             try {
 
@@ -320,7 +322,10 @@
             }
         }
 
+        const id_user = "<%= id_user %>";
         loadFinancial();
+
+        // ---------------------------- LISTENERS ----------------------------
 
         // Listener for change substep
         document.querySelectorAll('.timeline-step').forEach(step => {
@@ -356,6 +361,8 @@
                 // max section = 4
                 if (current < 4) {
 
+                    await saveSection(current);
+
                     current++;
 
                     await loadSection(current);
@@ -372,7 +379,6 @@
             });
         });
 
-
         // PREVIOUS buttons
         document.querySelectorAll('.prevBtn').forEach(button => {
 
@@ -382,6 +388,8 @@
 
                 // min section = 1
                 if (current > 1) {
+
+                    await saveSection(current);
 
                     current--;
 
@@ -409,6 +417,47 @@
                 }
             });
         });
+    </script>
+
+    <!------------------------ Save Content Functions ------------------------>
+    <script>
+
+        // PATCH Section Content
+        async function saveSection (section) {
+
+            console.log("Estoy en save section")
+
+            try {
+
+                const body = buildSection(section);
+
+                const res = await fetch(
+                `/users/${id_user}/inicialInterview/api/${id_user}/financial/${section}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                console.error(data.error);
+                return false;
+                }
+
+                return true;
+
+            } catch (err) {
+
+                console.error(err);
+
+                return false;
+            }
+        }
     </script>
 
 </body>

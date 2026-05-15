@@ -5,8 +5,15 @@ class FinancialInterviewUseCase {
     this.financialInterviewRepository = financialInterviewRepository;
   }
 
+  // ----------------------------- GET Functions -----------------------------
+
   // Function that gets financial substeps info
-  async getSecondStepData ({ id_user, subStep, id_user_relation, inicialProgress }) {
+  async getSecondStepData ({
+    id_user,
+    subStep,
+    id_user_relation,
+    inicialProgress,
+  }) {
     // fetch financial progress
     const sectionResult = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
 
