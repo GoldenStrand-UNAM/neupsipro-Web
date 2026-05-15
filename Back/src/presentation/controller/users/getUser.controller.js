@@ -8,7 +8,7 @@ class getUserController {
       const { id_user } = req.params;
       const user = await this.getUserUseCase.execute({ id_user });
       return res.render('users/consultUser', {
-        activePage: 'usuario',
+        activePage: 'users',
         usuario: user,
       });
     } catch (error) {
