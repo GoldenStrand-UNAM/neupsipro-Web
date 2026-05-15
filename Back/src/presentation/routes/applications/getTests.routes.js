@@ -33,6 +33,16 @@ const getMOCAResultController     = require('../../controller/testApplications/g
 const postREYUseCase    = require('../../../application/usecase/testApplications/postREYUseCase');
 const postREYController = require('../../controller/testApplications/postREY.controller');
 
+//NIH
+const postNIHUseCase       = require('../../../application/usecase/testApplications/postNIHUseCase');
+const postNIHController    = require('../../controller/testApplications/postNIH.controller');
+
+
+const getNIHResultUseCase  = require('../../../application/usecase/testApplications/getNIHUseCase');
+const getNIHController     = require('../../controller/testApplications/getNIH.controller');
+
+
+//AUTH & PERMISSIONS
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -70,6 +80,15 @@ module.exports = (authUseCase) => {
   const reyUseCase    = new postREYUseCase(testResultsRepo);
   const reyController = new postREYController(reyUseCase);
 
+  //NIH
+  const nihUseCase    = new postNIHUseCase(testResultsRepo);
+  const nihController = new postNIHController(nihUseCase);
+
+  const getNIHUseCase = new getNIHResultUseCase(testResultsRepo);
+  const getNIHController    = new getNIHController(getNIHUseCase);
+
+  //AUTH & PERMISSIONS MIDDLEWARE
+
   const jwtService            = new JwtService();
   const authMiddleware        = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
@@ -90,7 +109,7 @@ module.exports = (authUseCase) => {
     (req, res) => controller.getTests(req, res)
   );
 
-  //BANFE
+  //========================= REY ===============================
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/1/resultados',
     authMiddleware.verifyToken,
@@ -105,7 +124,7 @@ module.exports = (authUseCase) => {
     (req, res) => getBANFEController.getResult(req, res)
   );
 
-  //WAIS
+  // ======================== WAIS ===============================
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados',
     authMiddleware.verifyToken,
@@ -121,7 +140,7 @@ module.exports = (authUseCase) => {
     (req, res) => getWAISController.getResult(req, res)
   );
 
-  //MOCA
+  // ======================== MOCA ===============================
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados',
     authMiddleware.verifyToken,
@@ -136,7 +155,33 @@ module.exports = (authUseCase) => {
     (req, res) => getMOCAController.getResult(req, res)
   );
 
-  // GET schooling for a user — used by MoCA modal to display education years
+
+  // ======================== REY ===============================
+  router.post(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('tests', 'consultation'),
+    (req, res) => reyController.postResult(req, res)
+  );
+
+  // ======================== NIH ===============================
+  router.post(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/5/resultados',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => nihController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/5/resultados/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getNIHCtrl.getResult(req, res)
+  );
+
+
+  // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
+
   router.get(
     '/api/usuarios/:id_user/escolaridad',
     authMiddleware.verifyToken,
@@ -183,13 +228,6 @@ module.exports = (authUseCase) => {
     }
   );
 
-  //POST REY Results
-  router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados',
-    authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('tests', 'consultation'),
-    (req, res) => reyController.postResult(req, res)
-  );
 
   return router;
 };
