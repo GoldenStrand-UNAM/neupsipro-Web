@@ -189,3 +189,75 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
     }
   });
 }
+
+// ── CLOSE AND OPEN MODAL ──────────────────────────────────────────────────────────────
+// Fetches existing result before opening modify/consult.
+// Register mode skips fetch — prefill is empty.
+// NIH has no score or interpretation — only notes.
+
+// eslint-disable-next-line no-unused-vars
+async function openNIHModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalNIH');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  // ── Fetch existing result before opening modify/consult ──────────────────
+
+  let fetchedTest = test;
+
+  if (isModify || isConsult) {
+    try {
+      const res  = await fetch(
+        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/5/resultados/${test.idResults}`
+      );
+      const json = await res.json();
+
+      if (!res.ok) {
+        showToast(json.error || 'No se pudieron cargar los resultados');
+        return;
+      }
+
+      // Merge fetched data into test object — keeps idTest, testName, etc.
+      fetchedTest = { ...test, ...json.data };
+
+    } catch (_err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[NIH] get error:', _err);
+      return;
+    }
+  }
+
+  // ── Build prefill from fetched data ──────────────────────────────────────
+
+  const prefill = {
+    notes: (isModify || isConsult) ? (fetchedTest.notes ?? '') : '',
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalNIH';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = isConsult
+    ? buildNIHConsultHTML(fetchedTest)
+    : buildNIHFormHTML(mode, prefill);
+
+  document.body.appendChild(modal);
+
+  // ── Shared close logic ────────────────────────────────────────────────────
+
+  function closeModal () { modal.remove(); }
+
+  document.getElementById('btnCloseNIH').addEventListener('click', closeModal);
+  document.getElementById('btnCancelNIH').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // ── Form listeners only on register / modify ──────────────────────────────
+
+  if (!isConsult) {
+    bindNIHFormListeners(idUser, idApplication, closeModal);
+  }
+}
