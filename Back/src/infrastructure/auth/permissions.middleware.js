@@ -9,7 +9,7 @@ class PermissionsMiddleware {
       const isAllowed = await this.authUseCase.checkPermission(userId, moduleName, action);
 
       if (!isAllowed) {
-        return res.status(403).json({ error: 'No tienes permisos para realizar esta acción en este módulo.' });
+        return res.status(404).render('errors/404');
       }
 
       next();
