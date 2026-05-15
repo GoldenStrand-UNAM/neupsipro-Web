@@ -10,7 +10,6 @@ Before beginning first run the following commands if you're migrating from npm t
 
 If you already had a package-lock.json and node_modules folder, erase it either with commands, or manually <b>AFTER</b> running the commands from above.
 
----
 ## Install and Configuration:
 To begin the installation run the following commands <b>AFTER</b> cloning the repository:
 - _`pnpm install`_
