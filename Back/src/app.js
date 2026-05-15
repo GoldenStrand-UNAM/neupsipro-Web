@@ -4,6 +4,8 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const { loginLimiter, generalLimiter } = require('../../Back/src/Infrastructure/external/rateLimiting');
+const { doubleCsrf } = require('csrf-csrf');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   next();
@@ -35,8 +38,25 @@ const authRoutes = require('./presentation/routes/auth/auth.routes');
 app.use (session({
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
 }));
+
+const {
+  generateCsrfToken,
+  doubleCsrfProtection,
+} = doubleCsrf({
+  getSecret: () => process.env.CSRF_SECRET || 'cambia-esto-en-desarrollo',
+  getSessionIdentifier: (req) => req.session.id,
+  cookieName: 'x-csrf-token',
+  cookieOptions: { httpOnly: true, sameSite: 'lax', secure: false },
+  getCsrfTokenFromRequest: (req) => req.body['x-csrf-token'] || req.headers['x-csrf-token'],
+});
+
+app.use(doubleCsrfProtection);
+app.use((req, res, next) => {
+  res.locals.csrfToken = generateCsrfToken(req, res);
+  next();
+});
 
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
