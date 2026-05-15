@@ -20,6 +20,29 @@ class UsersDTO {
         this.amputationLevel = user.amputationLevel;
         this.pairs = user.pairs;
         this.sex = user.sex;
+    } static fromEntity (entity) {
+      return new UsersDTO ({
+        idRole: entity.idRole,
+        userName: entity.userName,
+        firstName: entity.firstName,
+        lastnameP: entity.lastnameP,
+        lastnameM: entity.lastnameM,
+        birthdate: entity.birthdate,
+        passwordHash: entity.passwordHash,
+        assigned: entity.assigned,
+        phase: entity.phase,
+        basePathology: entity.basePathology,
+        modality: entity.modality,
+        profilePhoto: entity.profilePhoto,
+        referenceNumber: entity.referenceNumber,
+        laterality: entity.laterality,
+        prosthetist: entity.prosthetist,
+        neuroEntryDate: entity.neuroEntryDate,
+        amputationDate: entity.amputationDate,
+        amputationLevel: entity.amputationLevel,
+        pairs: entity.pairs,
+        sex: entity.sex
+      });
     }
 }
 module.exports = UsersDTO;

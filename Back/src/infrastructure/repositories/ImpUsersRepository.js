@@ -48,19 +48,34 @@ class ImpUsersRepository extends usersRepository {
 
   async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, amputationDate, amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, sex }) {
     const idUser = uuidv4();
-        
+    const idRelation = uuidv4();
+    
     try{
       await db.query(
-      `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash]
+      `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash]
       );
 
       await db.query(
-      `INSERT INTO user_info (id_user, id_clinical, program_phase, base_pathology, modality, profile_photo, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention, sex)
-      VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex] 
+      `INSERT INTO user_info (id_user, program_phase, base_patology, modality, profile_photo, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention, sex)
+      VALUES (?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [idUser, phase, basePathology, modality, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex] 
       );
+
+      await db.query(
+        `INSERT INTO user_relation (id_user_relation, id_user, id_clinical, assignment_date., type)
+        VALUES(?, ?, ?, ?, CURRENT_DATE, 'assigned')`,
+        [idRelation, idUser, assigned]
+      );
+
+      const [rows] = await db.query(
+            `SELECT * FROM users u, user_info ui
+            WHERE id_user = ?`,
+            [idUser]
+          );
+      
+          return rows[0];
     } catch (error){
       console.log("Error en base de datos: ", error.message);
       throw error;
