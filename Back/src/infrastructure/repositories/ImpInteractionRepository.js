@@ -46,5 +46,13 @@ class ImpInteractionRepository extends InteractionRepository {
             `, [idPublication]);
     return result[0];
   }
+  // Deletes all interactions of a publication
+  async deleteAllFromPublication ({ idPublication }) {
+    const [result] = await db.query(
+      'DELETE FROM interaction WHERE id_publication = ?',
+      [idPublication]
+    );
+    return result.affectedRows;
+  }
 }
 module.exports = ImpInteractionRepository;
