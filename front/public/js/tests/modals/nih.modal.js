@@ -1,6 +1,6 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
 
-// ── Consult HTML ─────────────────────────────────────────────────────────────
+// ── CONSULT MODAL ─────────────────────────────────────────────────────────────
 // Read-only view of a graded NIH result.
 // NIH has no score or interpretation — only date and notes.
 
@@ -58,6 +58,80 @@ function buildNIHConsultHTML (test) {
           </button>
         </div>
 
+      </div>
+    </div>`;
+}
+
+// ── REGISTER AND MODIFY MODAL ────────────────────────────────────────────────────────────────
+// Shared HTML for register and modify modes.
+// NIH has no score or interpretation — only a notes textarea.
+
+function buildNIHFormHTML (mode, prefill) {
+  const title = mode === 'register' ? 'Registrar' : 'Modificar';
+
+  return `
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">NIH — ${title}</h2>
+        <button id="btnCloseNIH" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body flex flex-col gap-4">
+
+        <!-- Notes — only field for NIH -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Notas</label>
+          <textarea
+            id="inputNIHNotes"
+            rows="6"
+            maxlength="500"
+            placeholder="Observaciones"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition resize-none"
+          >${escapeHTML(prefill.notes)}</textarea>
+          <p id="nihNotesCount" class="text-xs text-gray-400 text-right">
+            ${prefill.notes.length} / 500
+          </p>
+        </div>
+
+        <p id="nihApiError" class="text-xs text-red-500 hidden"></p>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+
+          <button id="btnCancelNIH"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 border border-gray-300 rounded-2xl
+                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <span class="whitespace-nowrap">Cancelar</span>
+          </button>
+
+          <button id="btnSaveNIH"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 rounded-2xl bg-[#3350A9] text-white
+                   font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+            </svg>
+            <span class="whitespace-nowrap">Guardar</span>
+          </button>
+
+        </div>
       </div>
     </div>`;
 }
