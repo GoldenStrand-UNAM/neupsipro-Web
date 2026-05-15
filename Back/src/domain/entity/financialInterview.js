@@ -1,6 +1,7 @@
+/* eslint-disable max-lines */
 class FinancialInterview {
   constructor ({ id_user, current_step, current_section, inicialProgress, financialProgress, data }) {
-    this.id_user = id_user,
+    this.id_user = id_user;
     this.current_step = current_step;
     this.current_section = current_section;
     this.financialProgress = financialProgress;
@@ -27,26 +28,53 @@ class FinancialInterview {
     }
   }
 
+  // ----- Auxiliary functions ------------------------------------------------
+
+  // Get number or null if the value isn't registered
+  static numberOrNull (value) {
+    return value === null ||
+    value === undefined ||
+    value === ''
+      ? null
+      : Number(value);
+  }
+
+  // Get text or null if the value isn't registered
+  static textOrNull (value) {
+    return value === null ||
+    value === undefined ||
+    value === ''
+      ? null
+      : String(value);
+  }
+
   // =============================== Funtions ===============================
 
   // --------- Financial Situation Functions ---------
 
   // Salary after + schoolarship = Total Salary
   calculateTotalSalary (data) {
-    const salaryAfter = Number(data.salary_after_sickness) || 0;
-    const scholarship = Number(data.has_financing_schoolarship) || 0;
+    const salaryAfter =
+      FinancialInterview.numberOrNull(data.salary_after_sickness);
+    const scholarship =
+      FinancialInterview.numberOrNull(data.has_financing_schoolarship);
 
-    return salaryAfter + scholarship;
+    return (salaryAfter ?? 0) + (scholarship ?? 0);
   }
 
-  // Build Salary section especification
+  // Build Salary section specification
   buildSalary (base) {
     return {
-      hasFinancingSchoolarship: Number(base.has_financing_schoolarship) || 0,
-      financialType: Number(base.financial_type) || 0,
-      salaryBeforeSickness: Number(base.salary_before_sickness) || 0,
-      salaryAfterSickness: Number(base.salary_after_sickness) || 0,
-      total: this.calculateTotalSalary(base) || 0,
+      hasFinancingSchoolarship:
+        FinancialInterview.numberOrNull(base.has_financing_schoolarship),
+      financialType:
+        FinancialInterview.textOrNull(base.financial_type),
+      salaryBeforeSickness:
+        FinancialInterview.numberOrNull(base.salary_before_sickness),
+      salaryAfterSickness:
+        FinancialInterview.numberOrNull(base.salary_after_sickness),
+
+      total: this.calculateTotalSalary(base),
     };
   }
 
@@ -58,7 +86,7 @@ class FinancialInterview {
         list: contributors,
         total: totalContributors,
       },
-      totalIncome: Number(base.total_income) || 0,
+      totalIncome: FinancialInterview.numberOrNull(base.total_income),
     };
   }
 
@@ -66,21 +94,37 @@ class FinancialInterview {
   buildExpenses (base) {
     return {
       expenseBreakdown: {
-        foodExpenses: Number(base.food_expenses) || 0,
-        rentExpenses: Number(base.rent_expenses) || 0,
-        servicesExpenses: Number(base.services_expenses) || 0,
-        gasExpenses: Number(base.gas_expenses) || 0,
-        educationExpenses: Number(base.education_expenses) || 0,
-        wardrobeExpenses: Number(base.wardrobe_expenses) || 0,
-        medicalExpenses: Number(base.medical_expenses) || 0,
-        transportExpenses: Number(base.transport_expenses) || 0,
-        creditcardExpenses: Number(base.creditcard_expenses) || 0,
-        phoneExpenses: Number(base.phone_expenses) || 0,
-        othersExpenses: Number(base.others_expenses) || 0,
-        totalExpenses: Number(base.total_expenses) || 0,
+        foodExpenses:
+          FinancialInterview.numberOrNull(base.food_expenses),
+        rentExpenses:
+          FinancialInterview.numberOrNull(base.rent_expenses),
+        servicesExpenses:
+          FinancialInterview.numberOrNull(base.services_expenses),
+        gasExpenses:
+          FinancialInterview.numberOrNull(base.gas_expenses),
+        educationExpenses:
+          FinancialInterview.numberOrNull(base.education_expenses),
+        wardrobeExpenses:
+          FinancialInterview.numberOrNull(base.wardrobe_expenses),
+        medicalExpenses:
+          FinancialInterview.numberOrNull(base.medical_expenses),
+        transportExpenses:
+          FinancialInterview.numberOrNull(base.transport_expenses),
+        creditcardExpenses:
+          FinancialInterview.numberOrNull(base.creditcard_expenses),
+        phoneExpenses:
+          FinancialInterview.numberOrNull(base.phone_expenses),
+        othersExpenses:
+          FinancialInterview.numberOrNull(base.others_expenses),
+
+        totalExpenses:
+          FinancialInterview.numberOrNull(base.total_expenses),
       },
-      economicSituation: base.economic_situation ?? null,
-      numEconomicDependents: Number(base.num_economic_dependents) || 0,
+
+      economicSituation:
+        FinancialInterview.textOrNull(base.economic_situation),
+      numEconomicDependents:
+        FinancialInterview.numberOrNull(base.num_economic_dependents),
     };
   }
 
@@ -94,11 +138,11 @@ class FinancialInterview {
     const formattedContributors = contributors.map(c => ({
       name: c.contributor ?? null,
       relation: c.relation ?? null,
-      income: Number(c.income) || 0,
+      income: FinancialInterview.numberOrNull(c.income),
     }));
 
     const totalContributors = formattedContributors
-      .reduce((sum, c) => sum + c.income, 0);
+      .reduce((sum, c) => sum + (c.income ?? 0), 0);
 
     return {
       income: this.buildIncome(base, formattedContributors, totalContributors),
@@ -111,61 +155,65 @@ class FinancialInterview {
 
   // ESC Goverment
   mapEscGovernment (inicialProgress, financialProgress, datas) {
+
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
-      minIncome: Number(data.min_income) || 0,
-      ocupation: Number(data.ocupation ?? 100),
-      familyExpenses: Number(data.family_expenses) || 0,
+
+      minIncome: FinancialInterview.numberOrNull(data.min_income),
+      ocupation: FinancialInterview.numberOrNull(data.ocupation),
+      familyExpenses: FinancialInterview.numberOrNull(data.family_expenses),
 
       housing: {
-        realRight: Number(data.real_right ?? 100),
-        housingType: Number(data.housing_type ?? 100),
-        publicServices: Number(data.public_services ?? 100),
-        inhomeServices: Number(data.inhome_services ?? 100),
-        constructionMaterial: Number(data.construction_material ?? 100),
-        numBedrooms: Number(data.num_bedrooms ?? 100),
-        personsPerBedroom: Number(data.persons_per_bedroom ?? 100),
+        realRight: FinancialInterview.numberOrNull(data.real_right),
+        housingType: FinancialInterview.numberOrNull(data.housing_type),
+        publicServices: FinancialInterview.numberOrNull(data.public_services),
+        inhomeServices: FinancialInterview.numberOrNull(data.inhome_services),
+        constructionMaterial: FinancialInterview.numberOrNull(data.construction_material),
+        numBedrooms: FinancialInterview.numberOrNull(data.num_bedrooms),
+        personsPerBedroom: FinancialInterview.numberOrNull(data.persons_per_bedroom),
       },
 
-      family_conditions: {
-        treatmentTime: Number(data.treatment_time ?? 100),
-        otherProblems: Number(data.other_problems ?? 100),
-        familyHealth: Number(data.family_health ?? 100),
+      familyConditions: {
+        treatmentTime: FinancialInterview.numberOrNull(data.treatment_time),
+        otherProblems: FinancialInterview.numberOrNull(data.other_problems),
+        familyHealth: FinancialInterview.numberOrNull(data.family_health),
       },
 
       extra: {
-        totalIncome: Number(data.extra.total_income) || 0,
-        totalExpenses: Number(data.extra.total_expenses) || 0,
-        economicDependents: Number(data.extra.num_economic_dependents) || 0,
+        totalIncome: FinancialInterview.numberOrNull(data.extra?.total_income),
+        totalExpenses: FinancialInterview.numberOrNull(data.extra?.total_expenses),
+        economicDependents: FinancialInterview.numberOrNull(data.extra?.num_economic_dependents),
       },
 
-      socioeconomicLevel: data.socioeconomic_level ?? null,
-      total: Number(data.total) || 0,
+      socioeconomicLevel: FinancialInterview.textOrNull(data.socioeconomic_level),
+      total: FinancialInterview.numberOrNull(data.total),
 
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+
       id_user: this.id_user,
     };
   }
 
-  // AMAI Questionary
+  // AMAI Questionnaire
   mapAmai (inicialProgress, financialProgress, datas) {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
-      lastStudies: Number(data.last_studies ?? 100),
-      numBathrooms: Number(data.num_bathrooms ?? 100),
-      numCar: Number(data.num_car ?? 100),
-      hasInternet: Number(data.has_internet ?? 100),
-      hasWorked: Number(data.has_worked ?? 100),
-      hasBedroom: Number(data.has_bedroom ?? 100),
+      lastStudies: FinancialInterview.numberOrNull(data.last_studies),
+      numBathrooms: FinancialInterview.numberOrNull(data.num_bathrooms),
+      numCar: FinancialInterview.numberOrNull(data.num_car),
+      hasInternet: FinancialInterview.numberOrNull(data.has_internet),
+      hasWorked: FinancialInterview.numberOrNull(data.has_worked),
+      hasBedroom: FinancialInterview.numberOrNull(data.has_bedroom),
 
-      socioeconomicLevel: data.socioeconomic_level ?? null,
-      total: Number(data.total) || 0,
+      socioeconomicLevel: FinancialInterview.textOrNull(data.socioeconomic_level),
+      total: FinancialInterview.numberOrNull(data.total),
 
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
+
       id_user: this.id_user,
     };
   }
@@ -175,17 +223,17 @@ class FinancialInterview {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
-      totalIncome: Number(data.total_income) || 0,
-      totalExpenses: Number(data.total_expenses) || 0,
+      totalIncome: FinancialInterview.numberOrNull(data.total_income),
+      totalExpenses: FinancialInterview.numberOrNull(data.total_expenses),
 
       government: {
-        level: data.socio_level_gov ?? null,
-        score: Number(data.total_gov) || 0,
+        level: FinancialInterview.textOrNull(data.socio_level_gov),
+        score: FinancialInterview.numberOrNull(data.total_gov),
       },
 
       amai: {
-        level: data.socio_level_amai,
-        score: Number(data.total_amai) || 0,
+        level: FinancialInterview.textOrNull(data.socio_level_amai),
+        score: FinancialInterview.numberOrNull(data.total_amai),
       },
 
       completedSteps: this.mapInicialProgress(inicialProgress),
@@ -213,11 +261,108 @@ class FinancialInterview {
 
     const completedSubSteps = [];
 
-    if (data.income_completed && data.expenses_completed) completedSubSteps.push(1);
+    if (data.income_expenses_completed) completedSubSteps.push(1);
     if (data.esc_completed) completedSubSteps.push(2);
     if (data.amai_completed) completedSubSteps.push(3);
 
     return completedSubSteps;
+  }
+
+  // ============================= VALIDATIONS =============================
+
+  // Validate incomes
+  static validateIncomes (data) {
+    console.log(data.incomes);
+    return {
+      incomeExtra: this.numberOrNull(data.incomes?.incomeExtra),
+      financialType: this.textOrNull(data.incomes?.financialType),
+      salaryBefore: this.numberOrNull(data.incomes?.salaryBefore),
+      salaryAfter: this.numberOrNull(data.incomes?.salaryAfter),
+
+      totalIncomes: this.numberOrNull(data.incomes?.totalIncomes),
+    };
+  }
+
+  // Validate expenses
+  static validateExpenses (data) {
+    return {
+      foodExpenses: this.numberOrNull(data.expenses?.foodExpenses),
+      rentExpenses: this.numberOrNull(data.expenses?.rentExpenses),
+      servicesExpenses: this.numberOrNull(data.expenses?.servicesExpenses),
+      gasExpenses: this.numberOrNull(data.expenses?.gasExpenses),
+      educationExpenses: this.numberOrNull(data.expenses?.educationExpenses),
+      wardrobeExpenses: this.numberOrNull(data.expenses?.wardrobeExpenses),
+      medicalExpenses: this.numberOrNull(data.expenses?.medicalExpenses),
+      transportExpenses: this.numberOrNull(data.expenses?.transportExpenses),
+      creditcardExpenses: this.numberOrNull(data.expenses?.creditcardExpenses),
+      phoneExpenses: this.numberOrNull(data.expenses?.phoneExpenses),
+      othersExpenses: this.numberOrNull(data.expenses?.othersExpenses),
+
+      economicSituation: this.textOrNull(data.expenses?.economicSituation),
+      numEconomicDependents: this.numberOrNull(data.expenses?.numEconomicDependents),
+
+      totalExpenses: this.numberOrNull(data.expenses?.totalExpenses),
+    };
+  }
+
+  // Validate financial situation
+  static validateFinancialSituation (data) {
+    return {
+      incomes: this.validateIncomes(data),
+      expenses: this.validateExpenses(data),
+
+      contributors:
+      Array.isArray(data.contributors)
+        ? data.contributors.map(c => ({
+          name: c.name ?? null,
+          relation: c.relation ?? null,
+          income: this.numberOrNull(c.income),
+        }))
+        : [],
+    };
+  }
+
+  // Validate ESC Government
+  static validateEscGov (data) {
+    return {
+      minIncome: this.numberOrNull(data.minIncome),
+      ocupation: this.numberOrNull(data.ocupation),
+      familyExpenses: this.numberOrNull(data.familyExpenses),
+
+      housing: {
+        realRight: this.numberOrNull(data.housing?.realRight),
+        housingType: this.numberOrNull(data.housing?.housingType),
+        publicServices: this.numberOrNull(data.housing?.publicServices),
+        inhomeServices: this.numberOrNull(data.housing?.inhomeServices),
+        constructionMaterial: this.numberOrNull(data.housing?.constructionMaterial),
+        numBedrooms: this.numberOrNull(data.housing?.numBedrooms),
+        personsPerBedroom: this.numberOrNull(data.housing?.personsPerBedroom),
+      },
+
+      familyConditions: {
+        treatmentTime: this.numberOrNull(data.familyConditions?.treatmentTime),
+        otherProblems: this.numberOrNull(data.familyConditions?.otherProblems),
+        familyHealth: this.numberOrNull(data.familyConditions?.familyHealth),
+      },
+
+      total: this.numberOrNull(data.total),
+      socioeconomicLevel: this.textOrNull(data.level),
+    };
+  }
+
+  // Validate AMAI Questionnaire
+  static validateAmai (data) {
+    return {
+      lastStudies: this.numberOrNull(data.lastStudies),
+      numBathrooms: this.numberOrNull(data.numBathrooms),
+      numCar: this.numberOrNull(data.numCar),
+      hasInternet: this.numberOrNull(data.hasInternet),
+      hasWorked: this.numberOrNull(data.hasWorked),
+      hasBedroom: this.numberOrNull(data.hasBedroom),
+
+      total: this.numberOrNull(data.total),
+      socioeconomicLevel: this.textOrNull(data.level),
+    };
   }
 }
 
