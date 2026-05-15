@@ -11,6 +11,8 @@ class interactionRepository {
   async fetchComments () {
     throw new Error('fetchComments() interacrion is not working.');
   }
-
+  async deleteAllFromPublication ({ _idPublication }) {
+    throw new Error('deleteAllFromPublication() must be implemented');
+  }
 }
 module.exports = interactionRepository;
