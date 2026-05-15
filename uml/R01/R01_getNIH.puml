@@ -1,0 +1,66 @@
+@startuml Get_NIH
+
+actor "Clinic User" as USR
+participant "nih.modal.js" as NMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getNIHController" as TCTRL
+participant "getNIHResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card NIH]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nRegistrar deshabilitado\nModificar y Consultar habilitados
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> NMODAL : config.openModify() o config.openConsult()\n→ openNIHModal(idUser, idApplication, test, mode)
+
+NMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/\naplicaciones/:id_application/\npruebas/5/resultados/:id_results
+UROUTE -> TCTRL : getNIHController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchNIHResult({ id_results })
+RREPO -> DB : SELECT nr.*,\n       tr.status,\n       tr.date_applied\nFROM nih_results nr\nJOIN test_results tr ON nr.id_results = tr.id_results\nWHERE nr.id_results = ?
+DB --> RREPO : { nih row } | null
+
+alt result not found (null)
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'NIH result not found'
+    TCTRL --> NMODAL : HTTP 404 { error }
+    NMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw nih_results row
+UC_GET -> UC_GET : map row → NihResultsDTO\n{ idResults, idTest, status,\n  dateApplied, notes }
+UC_GET --> TCTRL : NihResultsDTO
+TCTRL --> NMODAL : HTTP 200 { data: NihResultsDTO }
+
+== Renderizar modal ==
+
+NMODAL -> NMODAL : merge fetchedTest = { ...test, ...json.data }
+
+alt mode === 'consult'
+    NMODAL -> NMODAL : buildNIHConsultHTML(fetchedTest)\ncampo solo lectura\nfecha y notas
+    NMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    NMODAL -> NMODAL : buildNIHFormHTML('modify', prefill)\ntextarea con notas precargadas
+    NMODAL --> USR : Modal modificar visible\ntextarea editable\n[Cancelar] [Guardar]
+end
+
+note right of NMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_NIH desde
+  "Guardar resultados"
+end note
+
+@enduml
