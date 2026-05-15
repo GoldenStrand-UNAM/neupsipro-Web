@@ -78,3 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Creation of the Pull Request template (18/03/2026).
 - Update Pull Request template (26/03/2026).
 - Creation of the Changelog (26/03/2026).
+
+## [0.2.0] - 15/05/2026
+
+- Add 'In construction' view
