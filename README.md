@@ -4,7 +4,11 @@ Thanks to the new migration to pnpm to npm, the installation for the dependencie
 ---
 ## Precondition:
 
-If you already had a package-lock.json and node_modules folder, erase it either with commands, or manually.
+Before beginning first run the following commands if you're migrating from npm to pnpm:
+- _`npm install -g pnpm`_
+- _`pnpm import`_
+
+If you already had a package-lock.json and node_modules folder, erase it either with commands, or manually <b>AFTER</b> running the commands from above.
 
 ---
 ## Install and Configuration:
