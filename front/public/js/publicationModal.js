@@ -154,19 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(json.error || 'Error al eliminar');
       }
 
-
       // Close both modals
       deleteModal.classList.add('hidden');
       closeModal();
 
-      sessionStorage.setItem('pendingToast', JSON.stringify({ 
-        message: 'Publicación eliminada con éxito', 
-        type: 'success' 
+      sessionStorage.setItem('pendingToast', JSON.stringify({
+        message: 'Publicación eliminada con éxito',
+        type: 'success',
       }));
 
       window.location.href = '/forum';
-      currentPostId = null
-
+      currentPostId = null;
 
     } catch (err) {
       showToast(err.message, 'error');
