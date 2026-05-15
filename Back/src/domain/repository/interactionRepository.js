@@ -9,7 +9,7 @@ class interactionRepository {
   }
   // Method to retrive the number of comments.
   async fetchComments () {
-    throw new Error('fetchComments() interacrion is not working.');
+    throw new Error('fetchComments() interaction is not working.');
   }
   async deleteAllFromPublication ({ _idPublication }) {
     throw new Error('deleteAllFromPublication() must be implemented');

@@ -48,7 +48,7 @@ class ImpForumRepository extends forumRepository {
 
     return rows[0];
   }
-    async fetchOne ({ idPublication }) {
+  async fetchOne ({ idPublication }) {
     const result = await db.query(
       `SELECT 
                 p.id_user,
