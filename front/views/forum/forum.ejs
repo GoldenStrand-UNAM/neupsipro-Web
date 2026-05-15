@@ -78,8 +78,9 @@
                             </div>
 
                             <!-- Content-->
-                            <h2 class="font-['Roboto'] text-lg sm:text-2xl text-black font-medium py-4 sm:py-8"><%= post.title %></h2>
-                            <p class="font-['Roboto'] text-sm sm:text-xl text-black font-regular leading-relaxed"><%= post.content %></p>
+                            <h2 class="font-['Roboto'] text-lg sm:text-2xl text-black font-medium py-4 sm:py-8 wrap-break-word"><%= post.title %></h2>
+                            <p class="font-['Roboto'] text-sm sm:text-xl text-black font-regular leading-relaxed wrap-break-word"><%= post.content %></p>
+
                             <% if (post.image) { %>
                                 <div class="w-full mt-4 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
                                     <img 
