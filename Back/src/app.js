@@ -10,8 +10,8 @@ const helmet = require('helmet');
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.resolve(__dirname, '../../front/Views'));
-app.use(express.static(path.join(__dirname, '..', '..', 'front', 'Public')));
+app.set('views', path.resolve(__dirname, '../../front/views'));
+app.use(express.static(path.join(__dirname, '..', '..', 'front', 'public')));
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
