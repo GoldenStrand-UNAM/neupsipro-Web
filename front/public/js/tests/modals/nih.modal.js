@@ -135,3 +135,57 @@ function buildNIHFormHTML (mode, prefill) {
       </div>
     </div>`;
 }
+
+// ── Form Listeners ───────────────────────────────────────────────────────────
+// Wires up notes counter, validation, and save fetch.
+
+function bindNIHFormListeners (idUser, idApplication, closeModal) {
+
+  const notesInput = document.getElementById('inputNIHNotes');
+  const notesCount = document.getElementById('nihNotesCount');
+  const apiError   = document.getElementById('nihApiError');
+
+  // ── Notes counter ──────────────────────────────────────────────────────────
+
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 500`;
+    notesCount.classList.toggle('text-red-500', len >= 500);
+    notesCount.classList.toggle('text-gray-400', len < 500);
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+
+  document.getElementById('btnSaveNIH').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+
+    const notes  = notesInput.value.trim() || null;
+    const config = TEST_REGISTRY[5];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ notes }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[NIH] post error:', _err);
+    }
+  });
+}
