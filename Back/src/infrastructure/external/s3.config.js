@@ -11,7 +11,6 @@ require('dotenv').config();
 const REGION = process.env.AWS_REGION;
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME || process.env.AWS_BUCKET;
 
-
 const s3 = new S3Client({
   region: REGION,
   credentials: {
@@ -19,7 +18,6 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
-
 
 const uploadToS3 = async (filePath, fileName) => {
   // Read the temp file into a Buffer
@@ -38,7 +36,6 @@ const uploadToS3 = async (filePath, fileName) => {
   await s3.send(command);
 
   const location = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/forum/${fileName}`;
-
 
   //eslint-disable-next-line no-console
   console.log(`File uploaded successfully at ${location}`);
