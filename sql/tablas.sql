@@ -740,26 +740,3 @@ ALTER TABLE user_clinical
     ADD COLUMN start_date DATE NOT NULL,
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
-
-
-DELIMITER $$
-
-CREATE TRIGGER trg_delete_expired_appointment
-AFTER UPDATE ON appointment
-FOR EACH ROW
-BEGIN
-
-    IF NEW.date_time <= NOW() THEN
-
-        DELETE FROM appointment
-        WHERE id_appointment = NEW.id_appointment;
-
-        DELETE FROM user_relation
-        WHERE id_user_relation = NEW.id_user_relation
-          AND type = 'appointment';
-
-    END IF;
-
-END$$
-
-DELIMITER ;
