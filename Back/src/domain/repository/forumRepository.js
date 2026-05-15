@@ -17,6 +17,13 @@ class forumRepository {
   async fetchOneUser () {
     throw new Error('fetchOneUser() publication in not working.');
   }
+
+  async findById ({ _idPublication }) {
+    throw new Error('findById() must be implemented');
+  }
+  async deletePublication ({ _idPublication }) {
+    throw new Error('deletePublication() must be implemented');
+  }
 }
 
 module.exports = forumRepository;
