@@ -24,7 +24,7 @@ class GetUsersListClinicalController {
   }
   getUsersPage (req, res) {
     try {
-      res.locals.activePage = 'usuarios-clinicos';
+      res.locals.activePage = 'clinical';
       res.render('clinical/consultUsersClinicalList');
     } catch (error) {
       res.status(500).json({ error: error.message });
