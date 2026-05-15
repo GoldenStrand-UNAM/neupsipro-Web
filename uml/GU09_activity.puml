@@ -1,0 +1,54 @@
+@startuml
+skinparam ConditionEndStyle hline
+
+|Clinical or Admin User|
+start
+:Access "Consult User" Screen;
+
+|System|
+:Verify Actor Role;
+
+if (Role is Clinical User?) then (yes)
+    :Filter and Display **Patient** Users only;
+else (no / Role is Admin)
+    :Filter and Display **Clinical** and **Patient** Users;
+endif
+
+|Clinical or Admin User|
+partition "Modification Loop" {
+    repeat
+        :Select User and Edit Fields;
+        
+        |System|
+        if (Were changes made?) then (no)
+            |Clinical or Admin User|
+            :Exit System;
+            stop
+        else (yes)
+            |Clinical or Admin User|
+            :Attempt to Exit or Save;
+            
+            if (Action?) then (Save)
+                |System|
+                :Commit changes to Database;
+                :Update View with new data;
+                stop
+            else (Exit without saving)
+                |System|
+                :Show "Unsaved Changes" Warning;
+                |Clinical or Admin User|
+                if (Continue without saving?) then (yes)
+                    |System|
+                    :Reset View to original state;
+                    |Clinical or Admin User|
+                    :Exit System;
+                    stop
+                else (no)
+                    |Clinical or Admin User|
+                    :Return to Editor;
+                endif
+            endif
+        endif
+    repeat while (Force Loop) is (Return to Editor)
+}
+@enduml

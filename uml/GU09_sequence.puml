@@ -1,0 +1,111 @@
+@startuml
+title Sequence Diagram: Modify User (MVC + Clean Architecture)
+
+actor "Clinical / Admin User" as Actor
+boundary "UserView" as View
+control "UserController" as Ctrl
+participant "AuthService" as Auth
+participant "ModifyUserUseCase" as UC
+participant "UserValidator" as Valid
+participant "UserRepository" as Repo
+database "Database" as DB
+
+== Initialization & Role Check ==
+
+Actor -> View : Selects User to Modify
+activate View
+
+View -> Ctrl : getEditView(targetUserId)
+activate Ctrl
+
+Ctrl -> Auth : getCurrentUserRole()
+activate Auth
+Auth --> Ctrl : Role (Clinical/Admin)
+deactivate Auth
+
+alt #LightBlue Role: Clinical
+    Ctrl -> UC : getTargetUserData(targetUserId)
+    activate UC
+    UC -> Repo : findPatientById(targetUserId)
+    activate Repo
+    Repo -> DB : SELECT * FROM users WHERE id=? AND role='Patient'
+    DB --> Repo : Result
+    deactivate Repo
+    UC --> Ctrl : PatientData
+    deactivate UC
+else #LightCyan Role: Admin
+    Ctrl -> UC : getTargetUserData(targetUserId)
+    activate UC
+    UC -> Repo : findUserById(targetUserId)
+    activate Repo
+    Repo -> DB : SELECT * FROM users WHERE id=?
+    DB --> Repo : Result
+    deactivate Repo
+    UC --> Ctrl : UserData
+    deactivate UC
+end
+
+Ctrl --> View : Display Edit Form (with data)
+deactivate Ctrl
+
+== Modification Process ==
+
+Actor -> View : Input new data & Click Save
+View -> Ctrl : postUpdateUser(formData)
+activate Ctrl
+
+note right of Ctrl
+  **Security Layer**:
+  1. Sanitize XSS (HTML stripping)
+  2. Prepare statements for SQLi
+end note
+
+Ctrl -> Valid : validate(formData)
+activate Valid
+
+alt #Pink Invalid Input (XSS/Empty Fields)
+    Valid --> Ctrl : ValidationError
+    Ctrl --> View : Show error message
+else #LightGreen Valid Input
+    Valid --> Ctrl : CleanData
+    deactivate Valid
+
+    Ctrl -> UC : executeUpdate(CleanData)
+    activate UC
+    
+    UC -> Repo : update(UserEntity)
+    activate Repo
+    
+    Repo -> DB : UPDATE users SET ... (Parameterized)
+    
+    alt #PaleGreen DB Success
+        DB --> Repo : Success
+        Repo --> UC : Success
+        UC --> Ctrl : Success
+        Ctrl --> View : Update View (Success Alert)
+    else #Tomato DB Failure (Constraint/Connection)
+        DB --> Repo : DB Error
+        Repo --> UC : RepositoryException
+        deactivate Repo
+        UC --> Ctrl : FailureResult
+        deactivate UC
+        Ctrl --> View : Show System Error
+    end
+end
+
+== Unsaved Changes Flow ==
+
+Actor -> View : Try to Navigate Away (Dirty State)
+View -> View : Check for unsaved changes
+
+alt #Lavender Changes Detected
+    View -> Actor : Show "Unsaved Changes" Warning
+    Actor -> View : "Discard Changes"
+    View -> View : Reset View State
+    View -> Actor : Redirect to Consult Screen
+else No Changes
+    View -> Actor : Redirect to Consult Screen
+end
+
+deactivate View
+@enduml
