@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 }
     </div>
 
-    <div class="flex sm:flex-row gap-2 px-6 py-4">
+    <div class="flex sm:flex-row gap-2 px-6 py-4 min-w-0">
         ${publication.content
-    ? `<p class="break-words text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+    ? `<p class="wrap-break-word min-w-0 w-full overflow-hidden text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
     : ''
 }
     </div>
