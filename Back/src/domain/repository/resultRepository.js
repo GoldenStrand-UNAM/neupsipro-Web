@@ -81,6 +81,19 @@ class resultRepository {
     throw new Error('fetchUserAge() not implemented');
   }
 
+  //========= NIH ========================
+
+// Fetch existing NIH result for modify/consult prefill
+async fetchNIHResult ({ _id_results }) {
+  throw new Error('fetchNIHResult() not implemented');
+}
+
+// Upsert NIH notes into nih_results.
+// Also updates test_results.status and date_applied.
+async saveNIHResult ({ _id_results, _notes }) {
+  throw new Error('saveNIHResult() not implemented');
+}
+
 
 }
 
