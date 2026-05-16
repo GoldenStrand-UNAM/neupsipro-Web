@@ -49,10 +49,10 @@ app.use((req, res, next) => {
 if (loginLimiter) app.post('/auth/login', loginLimiter);
 if (generalLimiter) app.use(generalLimiter);
 
-const AuthService = require('./infrastructure/auth/AuthService');
-const LoginUseCase = require('./application/Usecase/auth/loginUseCase');
-const LogoutUseCase = require('./application/Usecase/auth/logoutUseCase');
-const AuthorizationUseCase = require('./application/Usecase/auth/authorizationUseCase');
+const AuthService = require('./infrastructure/auth/authService');
+const LoginUseCase = require('./application/usecase/auth/loginUseCase');
+const LogoutUseCase = require('./application/usecase/auth/logoutUseCase');
+const AuthorizationUseCase = require('./application/usecase/auth/authorizationUseCase');
 const LoginController = require('./presentation/controller/auth/login.controller');
 const LogoutController = require('./presentation/controller/auth/logout.controller');
 const authRoutes = require('./presentation/routes/auth/auth.routes');
@@ -130,7 +130,7 @@ const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
 
-const userRoutes = require('./presentation/routes/users/getUser.Routes');
+const userRoutes = require('./presentation/routes/users/getUser.routes');
 
 app.use('/users', userRoutes(authUseCase));
 
@@ -138,11 +138,11 @@ const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUs
 
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
-const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
+const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
 
 app.use('/', clinicalRoutes(authUseCase));
 
-const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
 
 app.use('/', postPublicationRoutes(authUseCase));
 
