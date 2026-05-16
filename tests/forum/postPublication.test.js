@@ -43,6 +43,19 @@ const { escape } = require('../../Back/src/infrastructure/database/database');
 const fs = require('fs');
 const path = require('path');
 
+const uploadsDir = path.join(__dirname, '../../front/public/uploads');
+
+const clearUploads = () => {
+    if (fs.existsSync(uploadsDir)) {
+        const files = fs.readdirSync(uploadsDir);
+        for (const file of files) {
+            if (file !== '.gitkeep') {
+                fs.unlinkSync(path.join(uploadsDir, file));
+            }
+        }
+    }
+};
+
 const mockedS3Upload = s3Service.uploadToS3;
 
 describe('POST /upload (with mocked s3 service) SUCCESS', () => {
@@ -164,7 +177,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
 
-        const longText = 'a'.repeat(100000000)
+        const longText = 'a'.repeat(10000000)
 
         const res = await request(app)
         .post('/forum/post')
@@ -197,4 +210,6 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
 
 
 
-
+afterEach(() => {
+    clearUploads();
+});
