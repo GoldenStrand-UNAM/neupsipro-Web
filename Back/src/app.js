@@ -22,15 +22,21 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
 
-      'style-src': ["'self'", "'unsafe-inline'"],
-      'font-src': ["'self'", 'data:'],
-      'script-src-attr': ["'unsafe-inline'"],
+      'default-src': ["'self'"],
+
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+
+      'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+
+      'img-src': ["'self'", 'data:', 'blob:', 'https://s3-neupsi-golden-unam-preprod-1.s3.us-east-1.amazonaws.com'],
 
       'script-src': [
         "'self'",
         'https://cdn.jsdelivr.net',
         "'unsafe-inline'",
       ],
+      'script-src-attr': ["'unsafe-inline'"],
     },
   },
 }));
