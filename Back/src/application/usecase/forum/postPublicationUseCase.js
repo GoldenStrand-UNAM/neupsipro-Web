@@ -1,6 +1,6 @@
 // Forum usecase  validates and registers a new publication
-const Publication = require('../../../domain/entity/Publication');
-const PublicationDTO = require('../../dto/PublicationDTO');
+const Publication = require('../../../domain/entity/publication');
+const PublicationDTO = require('../../dto/publicationDTO');
 
 class RegPublicationUseCase {
   constructor (ForumRepository) {
