@@ -14,18 +14,20 @@ class ImpProfileRepository extends profileRepository {
                 ui.unit_entry_date, ui.neuro_entry_date, ui.neuro_status, ui.protocol, ui.state, ui.stage, ui.prosthetist,
                 ur.id_user_relation,
                 uc.first_name AS assigned_clinic_name,
-                DATE(a.date_time) AS next_appointment_date,
-                TIME(a.date_time) AS next_appointment_time
+                (SELECT DATE(date_time)
+                FROM appointment
+                WHERE id_user_relation = ur.id_user_relation
+                AND date_time >= NOW()
+                ORDER BY date_time ASC LIMIT 1) AS next_appointment_date,
+                (SELECT TIME(date_time)
+                FROM appointment
+                WHERE id_user_relation = ur.id_user_relation
+                AND date_time >= NOW()
+                ORDER BY date_time ASC LIMIT 1) AS next_appointment_time
             FROM users u
             LEFT JOIN user_info ui ON u.id_user = ui.id_user
             LEFT JOIN user_relation ur ON u.id_user = ur.id_user
             LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
-            LEFT JOIN (
-                SELECT id_user_relation, date_time
-                FROM appointment
-                ORDER BY date_time ASC
-                LIMIT 1
-            ) a ON ur.id_user_relation = a.id_user_relation
             WHERE u.id_user = ?    
         `;
     const [rows] = await db.query(query, [userId]);

@@ -21,7 +21,7 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-  router.get('/clinico',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
+  router.get('/clinical',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
   router.get('/api/usuarios-clinicos', authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getUsers(req, res));
 
   return router;

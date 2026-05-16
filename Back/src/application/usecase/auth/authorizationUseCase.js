@@ -9,13 +9,10 @@ class AuthorizationUseCase {
   async checkPermission (userId, moduleName, requestedAction) {
     // Mapping permissions from privileges into modules for verification
     const moduleToEntities = {
-      'gaming': ['Game'],
       'forum': ['Publication', 'Interaction'],
-      'user management': ['User', 'Initial interview'],
-      'routine': ['Activity', 'Emotion'],
-      'occasion': ['Ocassion'],
-      'logbook': ['Logbook'],
+      'user management': ['User', 'Initial interview', 'Appointment'],
       'clinical': ['Clinical'],
+      'psychological tests': ['Results', 'Tests'],
     };
 
     const [rawRolePrivileges, rawUserExceptions] = await Promise.all([
@@ -50,8 +47,8 @@ class AuthorizationUseCase {
 
     //If exceptions is null, check for privileges per role
     const hasRolePrivilege = rolePrivileges.some(p =>
-      p.permited_action === requestedAction &&
-            entitiesNeeded.includes(p.permissions));
+      p.permittedAction === requestedAction &&
+      entitiesNeeded.some(entity => entity.toLowerCase() === p.permissions.toLowerCase()));
 
     return hasRolePrivilege;
   }
