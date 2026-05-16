@@ -87,7 +87,6 @@ const HashingService = require('./infrastructure/external/hashing.service');
 const JwtService = require('./infrastructure/external/jwt.service');
 const CacheService = require('./infrastructure/external/memoryCache.service');
 
-const homeRoutes = require('./presentation/routes/home/home.routes');
 const AuthMiddleware = require('./infrastructure/auth/auth.middleware');
 
 const jwtService = new JwtService();
@@ -107,15 +106,12 @@ const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
 app.use('/auth', authRoutes(logoutController, loginController));
-app.use('/', homeRoutes(authUseCase));
 
 //================ Routes =======================
 app.use((req, res, next) => {
   res.locals.activePage = '';
   next();
 });
-
-app.use('/', homeRoutes(authMiddleware));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
