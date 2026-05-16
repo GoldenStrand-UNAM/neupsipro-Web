@@ -1,0 +1,24 @@
+@startuml EI01_GET_Activity
+title Base Level Interview GET- Activity Diagram (Golondrina)
+
+
+|User|
+start
+:Click on 'Entrevista inicial' for a specific user;
+
+|System|
+:Validates session;
+
+if (Valid session?) then (yes)
+    #D6EAF8:Get base interview data;
+    #D6EAF8:Render view;
+
+else (no)
+    |System|
+    :Show message 'please login again';
+    stop
+
+endif
+stop
+
+@enduml
