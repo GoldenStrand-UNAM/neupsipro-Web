@@ -165,7 +165,7 @@ app.get('/consultUser', (req, res) => {
 });
 
 app.get('/construction', (req, res) => {
-  res.render('construction'); 
+  res.render('construction');
 });
 
 app.use((req, res) => {
