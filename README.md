@@ -1,60 +1,28 @@
-# neupsipro-Web
-Se deben de instalar las siguientes extensiones para el funcionamiento de la aplicación:
+# golondrina-WEB
+Thanks to the new migration to pnpm to npm, the installation for the dependencies has changed.
 
-_npm install express._
+---
+## Precondition:
 
-_npm install --save-dev eslint_
+Before beginning first run the following commands if you're migrating from npm to pnpm:
+- _`npm install -g pnpm`_
+- _`pnpm import`_
 
-_npm install --save-dev eslint-plugin-security_
+If you already had a package-lock.json and node_modules folder, erase it either with commands, or manually <b>AFTER</b> running the commands from above.
 
-_npm install tailwindcss @tailwindcss/cli_
+## Install and Configuration:
+To begin the installation run the following commands <b>AFTER</b> cloning the repository:
+- _`pnpm install`_
+- _`pnpm approve-builds`_ (Make sure the files are actual dependencies!)
 
-_npm run dev:css_
+To run the project:
+- _`pnpm start`_
 
-_npm install jsonwebtoken cookie-parser_
+To compile tailwind css:
+- _`pnpm dev:css`_
 
-_npm install bcrypt_
+To run tests:
+- _`pnpm test`_
 
-_npm i express-session_
-
-_npm install --save-dev husky_
-
-_npx husky init_
-
-_npm install --save-dev lint-staged_
-
-_npm install --save-dev @commitlint/config-conventional @commitlint/cli_
-
-_npm install aws-sdk_
-
-_npm install ejs_
-
-_npm install cors_
-
-_npm install dotenv_
-
-_npm install multer_
-
-_npm install mysql2_
-
-_npm install nodemon_
-
-_npm install --save-dev cross-env_
-
-_npm install jest supertest_
-
-_npm install @aws-sdk/client-s3_
-
-_npm install @aws-sdk/s3-request-presigner_
-
-_npm i express-rate-limit_
-
-_npm --save-dev eslint-plugin-import-x_
-
-_npm i csrf-csrf_
-
-_npm i helmet_
-
-
-
-
+To run the ESLint:
+- _`pnpm lint`_
