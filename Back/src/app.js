@@ -158,8 +158,11 @@ app.get('/consultUser', (req, res) => {
   });
 });
 
+app.get('/construction', (req, res) => {
+  res.render('construction'); 
+});
+
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
-
 });
 module.exports = app;
