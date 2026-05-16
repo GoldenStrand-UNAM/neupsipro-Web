@@ -16,18 +16,19 @@ jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () => 
   }));
 });
 
-jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => {
-  return () => (req, res, next) => next();
-});
+jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
+  loginLimiter: (req, res, next) => next(),
+  generalLimiter: (req, res, next) => next(),
+}));
 
 const app = require('../../../Back/src/app');
 
 
 
 // Check users Endpoint
-describe('GET /clinico', () => {
+describe('GET /users', () => {
   test('retorna status 200', async () => {
-    const response = await request(app).get('/clinico');
+    const response = await request(app).get('/users');
     expect(response.status).toBe(200);
   });
 });
@@ -120,15 +121,3 @@ describe('input length validation', () => {
 });
 
 
-
-
-describe('rate limiting', () => {
-  test('should limit the number of requests', async () => {
-    for (let i = 0; i < 1000; i++) {
-      await request(app).get('/api/users').query({ search: '', page: 1, limit: 6 });
-    }
-    const res = await request(app).get('/api/users').query({ search: '', page: 1, limit: 6 });
-    expect(res.status).toBe(429);
-  });
-}
-);

@@ -1,49 +1,74 @@
-@startuml Consultar_Usuarios
+@startuml DeleteUserSequenceDiagram
+title Delete User - Sequence Diagram
 
-actor "Clinician" as GC
-participant "usuarios.ejs" as V
-participant "main.js" as MAIN
-participant "getUsersList.Routes" as ROUTE
-participant "authMiddleware" as AUTH
-participant "getUsersList.Controller" as CTRL
-participant "GetUsersListUseCase" as UC
-participant "UserSummaryDTO" as DTO
-participant "userSummaryEntity" as ENT
-participant "UsersRepository" as REPO
-participant "ImpUsersRepository" as IREPO
-database "DB" as DB
+actor User as U
+participant "consultUser.ejs\n(Browser)" as View
+participant "deleteUserModal.ejs\n(JS)" as Modal
+participant "Express Router\n(getUser.Routes)" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "deleteUser\nController" as Controller
+participant "deleteUserUseCase" as UseCase
+participant "ImpUsersRepository" as Repo
+database "MySQL\n(users table)" as DB
 
-GC -> V : Accesses "Users" module
-V -> MAIN : fetchUsers()
-MAIN -> ROUTE : GET /api/usuarios?search=&page=1&limit=6\n[Authorization: Bearer JWT]
-ROUTE -> AUTH : authMiddleware(req, res, next)
-AUTH -> AUTH : Verifies and decodes JWT\n(role, valid session)
-AUTH --> ROUTE : next()
-ROUTE -> CTRL : controller.getUsers(req, res)
-CTRL -> CTRL : page = Number(page)\nlimit = Number(limit)
-CTRL -> UC : GetUsersListUseCase.execute\n({ search, page, limit })
+U -> View: Clicks options button
+activate View
+View -> View: Toggle dropdown menu
+View --> U: Show "Edit / Delete" options
+deactivate View
 
-UC -> IREPO : fetchActivePatients({search, page, limit})
-IREPO -> REPO :Extend
-REPO -> DB : SELECT folio,\nCONCAT(user_name,' ',lastname_p,' ',lastname_m) AS full_name\nFROM users\nWHERE id_role=2 AND eliminated=0\nAND (? IS NULL OR CONCAT(...) LIKE ?)\nORDER BY user_name ASC\nLIMIT ? OFFSET ?
-DB --> REPO : List<RowDataPacket>
-REPO -> ENT : new userSummary(row) for each row
-REPO --> UC : List<userSummaryEntity>
+U -> View: Clicks "Delete"
+activate View
+View -> Modal: Open confirmation modal
+activate Modal
+Modal --> U: Display modal with warning
+deactivate View
 
-UC -> IREPO : countActivePatients({search})
-IREPO -> REPO : Extend
-REPO -> DB : SELECT COUNT(*) AS total\nFROM users\nWHERE id_role=2 AND eliminated=0\nAND (? IS NULL OR CONCAT(...) LIKE ?)
-DB --> REPO : { total: N }
-REPO --> UC : rows[0].total
+U -> Modal: Clicks "Confirm Delete"
+Modal -> Router: DELETE /users/:id_user
+activate Router
 
-UC -> UC : totalPages = Math.ceil(total / limit)
-UC -> DTO : new UserSummaryDTO(u) for each entity
-UC --> CTRL : { users: List<DTO>, total,\npage, limit, totalPages }
-CTRL --> ROUTE : HTTP 200 OK\n{ users, total, page, limit, totalPages }
-ROUTE --> MAIN : JSON response
-MAIN -> MAIN : renderTable(users)
-MAIN -> MAIN : renderPagination(totalPages, page)
-MAIN -> V : Updates DOM
-V --> GC : Table: Folio | Name | Consult Button
+Router -> Auth: verifyToken()
+activate Auth
+Auth --> Router: Token valid
+Router -> Auth: requirePermission('user management', 'eliminate')
+Auth --> Router: Permission granted
+deactivate Auth
+
+Router -> Controller: deleteUser(req, res)
+activate Controller
+Controller -> UseCase: execute({ id_user })
+activate UseCase
+
+UseCase -> Repo: fetchOne({ id_user })
+activate Repo
+Repo -> DB: SELECT user info
+DB --> Repo: User row
+Repo --> UseCase: User entity
+deactivate Repo
+
+alt User not found
+    UseCase --> Controller: throw "Usuario no encontrado"
+    Controller --> Router: 404 { error }
+    Router --> Modal: 404 response
+    Modal --> U: Show error in modal
+else User found
+    UseCase -> Repo: softDeleteUser({ id_user })
+    activate Repo
+    Repo -> DB: UPDATE users SET eliminated = 1
+    DB --> Repo: affectedRows > 0
+    Repo --> UseCase: true
+    deactivate Repo
+
+    UseCase --> Controller: { success: true }
+    deactivate UseCase
+    Controller --> Router: 200 { success, message }
+    deactivate Controller
+    Router --> Modal: 200 OK
+    deactivate Router
+    Modal -> View: window.location = '/users'
+    deactivate Modal
+    View --> U: Redirect to users list\n(deleted user no longer visible)
+end
 
 @enduml
