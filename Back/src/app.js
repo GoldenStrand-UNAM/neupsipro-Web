@@ -113,8 +113,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', homeRoutes(authMiddleware));
-
 // Dasboards
 const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
 
