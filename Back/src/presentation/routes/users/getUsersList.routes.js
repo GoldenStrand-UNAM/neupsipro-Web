@@ -1,6 +1,6 @@
 const express = require('express');
 
-const UserRepository = require('../../../infrastructure/repositories/usersRepository');
+const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const GetUsersListUseCase = require('../../../application/usecase/users/getUserListUseCase');
 const getUsersListController = require('../../controller/users/getUsersList.controller');
 const JwtService = require('../../../infrastructure/external/jwt.service');
@@ -11,7 +11,7 @@ module.exports = (authUseCase) => {
 
   const router = express.Router();
 
-  const repository = new UserRepository();
+  const repository = new ImpUserRepository();
   const useCase = new GetUsersListUseCase(repository);
   const controller = new getUsersListController(useCase);
 

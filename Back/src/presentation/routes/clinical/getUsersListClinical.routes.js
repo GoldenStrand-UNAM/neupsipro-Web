@@ -1,6 +1,6 @@
 const express = require('express');
 
-const ClinicalRepository = require('../../../infrastructure/repositories/clinicalRepository');
+const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
 const getUsersClinicalListController = require('../../controller/clinical/getUsersListClinical.controller');
 
@@ -11,7 +11,7 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 module.exports = (authUseCase) => {
   const router = express.Router();
 
-  const repository = new ClinicalRepository();
+  const repository = new ImpClinicalRepository();
   const useCase = new getClinicalListUseCase(repository);
   const controller = new getUsersClinicalListController(useCase);
 
@@ -19,7 +19,7 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-  router.get('/clinico',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
+  router.get('/clinical',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
   router.get('/api/usuarios-clinicos', authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getUsers(req, res));
 
   return router;

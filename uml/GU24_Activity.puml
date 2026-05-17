@@ -1,0 +1,51 @@
+@startuml dashboard_activity
+title Neuropsychology Unit Dashboard - Activity Diagram
+
+start
+
+:User clicks "Inicio";
+
+:Load dashboard page (HTML shell);
+:Show "Loading..." state;
+
+:Request dashboard summary;
+
+if (Auth & permissions OK?) then (yes)
+    fork
+        :Fetch counts;
+    fork again
+        :Fetch age distribution;
+    fork again
+        :Fetch gender distribution;
+    fork again
+        :Fetch test counts;
+    fork again
+        :Fetch stand-by list;
+    end fork
+
+    :Build summary DTO;
+    :Render charts and cubes;
+    :Load first stand-by patient detail;
+
+    if (Patient has profile photo?) then (yes)
+        :Generate signed S3 URL;
+    else (no)
+    endif
+
+    :Build patient detail DTO;
+    :Render patient info panel;
+
+    repeat
+        :User selects another patient;
+        :Load selected patient detail;
+    repeat while (User keeps browsing?) is (yes)
+    -> no;
+
+    stop
+
+else (no)
+    :Reject request (401/403);
+    stop
+endif
+
+@enduml

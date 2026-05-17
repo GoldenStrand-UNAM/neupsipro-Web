@@ -1,7 +1,7 @@
 const express = require('express');
 
-const ForumRepository = require('../../../infrastructure/repositories/forumRepository');
-const ForumController = require('../../controller/forum/GetForum.Controller');
+const ImpForumRepository = require('../../../infrastructure/repositories/ImpForumRepository');
+const ForumController = require('../../controller/forum/getForum.controller');
 const GetForumUseCase = require('../../../application/usecase/forum/getForumUseCase');
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
@@ -10,7 +10,7 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 module.exports = (authUseCase) => {
   const router = express.Router();
 
-  const repository = new ForumRepository();
+  const repository = new ImpForumRepository();
   const useCase = new GetForumUseCase(repository);
   const controller = new ForumController(useCase);
 
