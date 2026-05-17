@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 15/05/2026
+- Add 404 view
+
+## [0.2.0] - 12/05/2026
+- Add consult clinical user (12/05/2026).
+
+## [0.2.0] - 11/05/2026
+- Add dashboard unit (11/05/2026).
+
 ## [0.2.0] - 09/05/2026
 - Add consult user (09/05/2026).
 
@@ -72,3 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Creation of the Pull Request template (18/03/2026).
 - Update Pull Request template (26/03/2026).
 - Creation of the Changelog (26/03/2026).
+
+## [0.2.0] - 15/05/2026
+
+- Add 'In construction' view

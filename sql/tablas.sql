@@ -705,6 +705,10 @@ CREATE TABLE user_clinical (
     CONSTRAINT fk_user_clinical_user FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
 
+ALTER TABLE users 
+ADD COLUMN gender enum('Man','Woman','Other','not especified') 
+NULL AFTER birthdate;
+
 ALTER TABLE test_sessions RENAME TO test_applications;
 
 ALTER TABLE test_results 
@@ -728,6 +732,14 @@ RENAME COLUMN id_session TO id_application;
 ALTER TABLE test_results 
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
+ 
+ALTER TABLE user_clinical
+    ADD COLUMN emergency_contact_name varchar(50) NOT NULL,
+    ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL,
+    ADD COLUMN emergency_contact_relation VARCHAR(25) NOT NULL,
+    ADD COLUMN start_date DATE NOT NULL,
+    ADD COLUMN finish_date DATE NOT NULL, 
+    ADD COLUMN hours INT NOT NULL;
 
 -- ===========================================================
 -- Test changes
@@ -829,4 +841,4 @@ CREATE TABLE rey_results (
  
  
 
- 
+

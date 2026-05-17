@@ -48,6 +48,60 @@ class ImpForumRepository extends forumRepository {
 
     return rows[0];
   }
+  async fetchOne ({ idPublication }) {
+    const result = await db.query(
+      `SELECT 
+                p.id_user,
+                p.time_and_date,
+                p.title,
+                p.content,
+                p.image
+            FROM publication p
+            WHERE p.id_publication = ?`,
+      [idPublication]
+    );
+    return result;
+  }
+
+  async fetchOneUser ({ idPublication }) {
+    const result = await db.query(
+      `SELECT 
+                p.id_user,
+                p.time_and_date,
+                p.title,
+                p.content,
+                p.image,
+                u.first_name,
+                u.lastname_p,
+                u.lastname_m,
+                u.profile_photo 
+            FROM publication p
+            JOIN users u ON u.id_user = p.id_user
+            WHERE p.id_publication = ?`,
+      [idPublication]
+    );
+    return result;
+  }
+
+  // find publication
+  async findById ({ idPublication }) {
+    const [rows] = await db.query(
+      `SELECT id_publication, id_user, title, image
+       FROM publication
+       WHERE id_publication = ?
+       LIMIT 1`,
+      [idPublication]
+    );
+    return rows.length ? rows[0] : null;
+  }
+  // delete publication by id
+  async deletePublication ({ idPublication }) {
+    const [result] = await db.query(
+      'DELETE FROM publication WHERE id_publication = ?',
+      [idPublication]
+    );
+    return result.affectedRows > 0;
+  }
 }
 
 module.exports = ImpForumRepository;
