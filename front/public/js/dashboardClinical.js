@@ -51,8 +51,9 @@ function clinicalMenu (list) {
     return;
   }
   containerClinical.innerHTML = `
+    <p class="text-lg font-bold text-gray-700 mb-1 whitespace-pre"> Bienvenido:   </p>
     <select id="standBySelect"
-      class="w-3/4 border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white shadow-sm
+      class="w-48 border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white shadow-sm
       focus:outline-none focus:ring-2 focus:ring-[#3350A9]/30 focus:border-[#3350A9]
       transition-all cursor-pointer">
         ${list.map(ref => `<option value="${escapeHtml(ref.id)}">${escapeHtml(ref.fullName)}</option>`).join('')}
@@ -295,7 +296,6 @@ async function loadDashboard (user) {
     const data = await res.json();
     containerIntroText.innerHTML = ` 
       <div class= "mt-4">
-        <p class="text-lg font-bold text-gray-700 mb-1"> Bienvenido! </p>
         <p class="text-lg font-bold text-gray-700 mb-1"> Asi lucen tus usuarios el día de hoy:</p>
         <p class="text-base font-regular text-gray-700 my-4 mx-1"> Tienes a ${escapeHtml(data.numbers.total)} usuarios, de los cuales:</p>
       </div>
