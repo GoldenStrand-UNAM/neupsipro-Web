@@ -10,14 +10,27 @@ start
 :Validates session;
 
 if (Valid session?) then (yes)
-    #D6EAF8:Render view with empty fields;
+    #D6EAF8:Render information card view with empty fields;
 
     |User|
     :Writes down info;
-    :Clicks submit;
+    :Clicks on 'Siguiente';
 
     |System|
-    :Saves info;
+    #D6EAF8:Saves info;
+    #D6EAF8:Render family situation view with empty fields;
+
+    |User|
+    :Writes down info;
+    :Clicks on 'Siguiente';
+
+    |System| 
+    #D6EAF8: Saves info;
+    #D6EAF8:Render work situation view with empty fields;
+
+    |User|
+    :Writes down info;
+    :Clicks on 'Siguiente';
 
 else (no)
     |System|

@@ -10,7 +10,17 @@ start
 :Validates session;
 
 if (Valid session?) then (yes)
-    #D6EAF8:Get base interview data;
+    #D6EAF8:Get identification card data;
+    #D6EAF8:Render view;
+    |User|
+    :Click on 'Siguiente';
+    |System|
+    #D6EAF8:Get family situation data;
+    #D6EAF8:Render view;
+    |User|
+    :Click on 'Siguiente';
+    |System|
+    #D6EAF8:Get work situation data;
     #D6EAF8:Render view;
 
 else (no)
