@@ -82,12 +82,14 @@ class impTestResultsRepository extends resultRepository {
     };
   }
 
-  // ================= SAVE BANFE  ==================
+  // ================= BANFE  ==================
 
   // Upserts into banfe_results
   // works for both first-time registration and modify.
   // Also updates status from test_results
 
+
+  // Post BANFE
   async saveBANFEResult ({
     id_results,
     score_orbit_frontal,  inter_orbit_frontal,
@@ -139,19 +141,217 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-// CONSULT BANFE
-async fetchBANFEResult ({ id_results }) {
+  // CONSULT BANFE
+  async fetchBANFEResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT br.*,
+              tr.status,
+              tr.date_applied
+      FROM banfe_results br
+      JOIN test_results tr ON br.id_results = tr.id_results
+      WHERE br.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // ================= WAIS ==================
+
+  // post WAIS
+  async saveWAISResult ({
+    id_results,
+    score_com_verbal,       inter_com_verbal,
+    score_razon_perceptual, inter_razon_perceptual,
+    score_mem_work,         inter_mem_work,
+    score_velo_proce,       inter_velo_proce,
+    score_total,
+    notes,
+  }) {
+
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+      SET status       = 3,
+          date_applied = CURDATE()
+      WHERE id_results = ?`,
+      [id_results]
+    );
+
+    await db.query(
+      `INSERT INTO wais_results
+        (id_results,
+          score_com_verbal,       inter_com_verbal,
+          score_razon_perceptual, inter_razon_perceptual,
+          score_mem_work,         inter_mem_work,
+          score_velo_proce,       inter_velo_proce,
+          score_total,            notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          score_com_verbal       = VALUES(score_com_verbal),
+          inter_com_verbal       = VALUES(inter_com_verbal),
+          score_razon_perceptual = VALUES(score_razon_perceptual),
+          inter_razon_perceptual = VALUES(inter_razon_perceptual),
+          score_mem_work         = VALUES(score_mem_work),
+          inter_mem_work         = VALUES(inter_mem_work),
+          score_velo_proce       = VALUES(score_velo_proce),
+          inter_velo_proce       = VALUES(inter_velo_proce),
+          score_total            = VALUES(score_total),
+          notes                  = VALUES(notes)`,
+      [
+        id_results,
+        score_com_verbal,       inter_com_verbal,
+        score_razon_perceptual, inter_razon_perceptual,
+        score_mem_work,         inter_mem_work,
+        score_velo_proce,       inter_velo_proce,
+        score_total,            notes,
+      ]
+    );
+
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM wais_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
+
+  // get WAIS
+  async fetchWAISResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT wr.*,
+              tr.status,
+              tr.date_applied
+      FROM wais_results wr
+      JOIN test_results tr ON wr.id_results = tr.id_results
+      WHERE wr.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+// ================= MOCA ==================
+
+// Fetch existing MOCA result by id_results for modify/consult prefill
+async fetchMOCAResult ({ id_results }) {
   const [rows] = await db.query(
-    `SELECT br.*,
+    `SELECT mr.*,
             tr.status,
             tr.date_applied
-     FROM banfe_results br
-     JOIN test_results tr ON br.id_results = tr.id_results
-     WHERE br.id_results = ?
+     FROM moca_results mr
+     JOIN test_results tr ON mr.id_results = tr.id_results
+     WHERE mr.id_results = ?
      LIMIT 1`,
     [id_results]
   );
   return rows[0] ?? null;
+}
+
+// Upserts into moca_results — works for register and modify.
+async saveMOCAResult ({ id_results, score, interpretation, notes }) {
+
+  // Update parent row status and application date
+  await db.query(
+    `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+    [id_results]
+  );
+
+  await db.query(
+    `INSERT INTO moca_results
+       (id_results, score, interpretation, notes)
+     VALUES (?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       score          = VALUES(score),
+       interpretation = VALUES(interpretation),
+       notes          = VALUES(notes)`,
+    [id_results, score, interpretation, notes]
+  );
+
+  const [rows] = await db.query(
+    'SELECT * FROM moca_results WHERE id_results = ?',
+    [id_results]
+  );
+  return rows[0];
+}
+
+// ================= MOCA & REY ==================
+
+  // Fetch schooling level for a user from their initial interview.
+  // Used by MOCA use case to determine if +2 bonus applies.
+  // Use by REY to determine the percentil
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling
+       FROM initial_interview ii
+       INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
+       WHERE ur.id_user = ?
+       LIMIT 1`,
+      [id_user]
+    );
+    return rows.length ? rows[0].schooling : null;
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT birthdate
+       FROM users
+       WHERE id_user = ?`,
+      [id_user]
+    );
+    return rows.length ? rows[0].birthdate : null;
+  }
+
+  // ================= GET NIH ==================
+
+// Fetch existing NIH result by id_results for modify/consult prefill
+async fetchNIHResult ({ id_results }) {
+  const [rows] = await db.query(
+    `SELECT nr.*,
+            tr.status,
+            tr.date_applied
+     FROM nih_results nr
+     JOIN test_results tr ON nr.id_results = tr.id_results
+     WHERE nr.id_results = ?
+     LIMIT 1`,
+    [id_results]
+  );
+  return rows[0] ?? null;
+}
+
+// ================= SAVE NIH ==================
+
+// Upserts into nih_results — works for register and modify.
+async saveNIHResult ({ id_results, notes }) {
+
+  // Update parent row status and application date
+  await db.query(
+    `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+    [id_results]
+  );
+
+  // ON DUPLICATE KEY covers the modify flow (row already exists)
+  await db.query(
+    `INSERT INTO nih_results (id_results, notes)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE
+       notes = VALUES(notes)`,
+    [id_results, notes]
+  );
+
+  // Return the saved row for DTO mapping
+  const [rows] = await db.query(
+    'SELECT * FROM nih_results WHERE id_results = ?',
+    [id_results]
+  );
+  return rows[0];
 }
 
 

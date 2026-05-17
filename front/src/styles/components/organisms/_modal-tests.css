@@ -30,7 +30,7 @@
     .modal {
         @apply bg-white
                w-full
-               max-w-[657px]
+               max-w-[900px]
                rounded-[24px]
                md:rounded-[44px]
                border border-[#575757]/40

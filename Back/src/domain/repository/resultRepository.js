@@ -36,6 +36,64 @@ class resultRepository {
     throw new Error('fetchBANFEResult() not implemented');
   }
 
+  //========= WAIS ========================
+
+    async fetchWAISResult ({ _id_results }) {
+      throw new Error('fetchWAISResult() not implemented');
+    }
+
+    async saveWAISResult ({
+      _id_results,
+      _score_com_verbal,       _inter_com_verbal,
+      _score_razon_perceptual, _inter_razon_perceptual,
+      _score_mem_work,         _inter_mem_work,
+      _score_velo_proce,       _inter_velo_proce,
+      _score_total,
+      _notes,
+    }) {
+      throw new Error('saveWAISResult() not implemented');
+    }
+
+  //========= MOCA ========================
+
+    async fetchMOCAResult ({ _id_results }) {
+      throw new Error('fetchMOCAResult() not implemented');
+    }
+
+    async saveMOCAResult ({
+      _id_results,
+      _score,
+      _interpretation,
+      _notes,
+    }) {
+      throw new Error('saveMOCAResult() not implemented');
+    }
+
+  // ========= MOCA & REY ========================
+
+  // Fetch schooling level for a user from their initial interview.
+  async fetchUserSchooling ({ _id_user }) {
+    throw new Error('fetchUserSchooling() not implemented');
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ _id_user }) {
+    throw new Error('fetchUserAge() not implemented');
+  }
+
+  //========= NIH ========================
+
+// Fetch existing NIH result for modify/consult prefill
+async fetchNIHResult ({ _id_results }) {
+  throw new Error('fetchNIHResult() not implemented');
+}
+
+// Upsert NIH notes into nih_results.
+// Also updates test_results.status and date_applied.
+async saveNIHResult ({ _id_results, _notes }) {
+  throw new Error('saveNIHResult() not implemented');
+}
+
 
 }
 

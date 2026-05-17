@@ -1,20 +1,42 @@
-
 class postWAISController {
-  constructor (useCase) {
-    this.useCase = useCase;
+
+  constructor (postWAISUseCase) {
+    this.useCase = postWAISUseCase;
   }
 
   async postResult (req, res) {
-    const { id_user, id_application } = req.params;
-    const { score, notes }            = req.body;
-
     try {
-      const data = await this.useCase.execute({ id_user, id_application, score, notes });
-      return res.status(200).json({ data });
+      const { id_user, id_application } = req.params;
+
+      const {
+        score_com_verbal,
+        score_razon_perceptual,
+        score_mem_work,
+        score_velo_proce,
+        score_total,
+        notes,
+      } = req.body;
+
+      const dto = await this.useCase.execute({
+        id_user,
+        id_application,
+        score_com_vocal: score_com_verbal,
+        score_com_verbal,
+        score_razon_perceptual,
+        score_mem_work,
+        score_velo_proce,
+        score_total,
+        notes,
+      });
+
+      return res.status(200).json({ data: dto });
 
     } catch (err) {
-      const httpStatus = err.status || 500;
-      return res.status(httpStatus).json({ error: err.message });
+      if (err.status && err.message) {
+        return res.status(err.status).json({ error: err.message });
+      }
+      console.error('[postWAISController]', err);
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
 }

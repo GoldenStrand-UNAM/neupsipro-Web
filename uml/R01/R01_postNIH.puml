@@ -1,0 +1,89 @@
+@startuml Post_NIH
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "nih.modal.js" as NMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "postNIHController" as TCTRL
+participant "postNIHUseCase" as UC_POST
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card NIH]
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nRegistrar habilitado solo si status !== 'Calificada'\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
+
+USR -> OMODAL : Click [Registrar resultados]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> NMODAL : config.openRegister(idUser, idApplication, test)\n→ openNIHModal(idUser, idApplication, test, 'register')
+NMODAL --> USR : Modal de registro visible\n(solo textarea de notas + contador)
+
+== Validación de notas ==
+
+USR -> NMODAL : Ingresa notas
+NMODAL -> NMODAL : contador actualiza\ntextContent = len / 500
+NMODAL --> USR : Contador en rojo si len >= 500
+
+== Guardar resultados ==
+
+USR -> NMODAL : Click [Guardar]
+NMODAL -> NMODAL : validate client-side\n- notas max 500 chars
+
+alt Datos inválidos
+    NMODAL --> USR : showNotesError(msg)
+end
+
+NMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/5/resultados\n{ notes }
+
+UROUTE -> TCTRL : nihController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application, notes })
+
+== Validaciones en Use Case ==
+
+alt notes > 500 caracteres
+    UC_POST --> TCTRL : throw Error 422\n'notes must be 500 characters or less'
+    TCTRL --> NMODAL : HTTP 422 { error }
+    NMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 5 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 5
+DB --> RREPO : { id_results, status } | []
+RREPO --> UC_POST : { idResults, status } | null
+
+alt result row not found (null)
+    UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
+    TCTRL --> NMODAL : HTTP 404 { error }
+    NMODAL --> USR : showApiError(json.error)
+end
+
+== Persistencia ==
+
+UC_POST -> RREPO : saveNIHResult({ id_results, notes })
+
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO nih_results\n(id_results, notes)\nVALUES (?, ?)\nON DUPLICATE KEY UPDATE\n  notes = VALUES(notes)
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM nih_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw nih_results row
+
+UC_POST -> UC_POST : map row → NihResultsDTO\n{ idResults, idTest, status: 3,\n  dateApplied, notes }
+UC_POST --> TCTRL : NihResultsDTO
+TCTRL --> NMODAL : HTTP 200 { data: NihResultsDTO }
+
+== Actualizar UI ==
+
+NMODAL -> NMODAL : closeModal()
+NMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
+NMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
+
+@enduml

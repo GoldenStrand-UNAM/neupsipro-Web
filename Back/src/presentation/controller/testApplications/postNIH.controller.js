@@ -1,18 +1,17 @@
-class postMOCAController {
+class postNIHController {
 
-  constructor (postMOCAUseCase) {
-    this.useCase = postMOCAUseCase;
+  constructor (postNIHUseCase) {
+    this.useCase = postNIHUseCase;
   }
 
   async postResult (req, res) {
     try {
       const { id_user, id_application } = req.params;
-      const { score, notes }            = req.body;
+      const { notes }                   = req.body;
 
       const dto = await this.useCase.execute({
         id_user,
         id_application,
-        score,
         notes,
       });
 
@@ -22,10 +21,10 @@ class postMOCAController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
-      console.error('[postMOCAController]', err);
+      console.error('[postNIHController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 }
 
-module.exports = postMOCAController;
+module.exports = postNIHController;
