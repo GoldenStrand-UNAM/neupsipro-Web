@@ -2,8 +2,45 @@ const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
 const { v4: uuidv4 } = require('uuid');
+const User = require('../../domain/entity/User');
 
 class ImpUsersRepository extends usersRepository {
+
+  // Consult one User by id_user
+  async fetchOne ({ id_user }) {
+    const [userData] = await db.query(
+      `SELECT 
+      l.*,
+      u.first_name,
+      u.lastname_p,
+      u.lastname_m,
+      u.profile_photo,
+      u.birthdate,
+      ur.id_clinic_user, 
+      uc.first_name AS assigned_clinic,
+                
+      -- Subquery to get next appointment
+      (
+        SELECT a.date_time 
+        FROM appointment a
+        -- Join w/user relation to know whose appointment this is
+        JOIN user_relation ur_app ON a.id_user_relation = ur_app.id_user_relation
+        WHERE ur_app.id_user = l.id_user 
+        AND a.date_time >= NOW() 
+        ORDER BY a.date_time ASC 
+        LIMIT 1
+      ) AS next_appointment
+
+      FROM user_info l
+      JOIN users u ON l.id_user = u.id_user
+      LEFT JOIN user_relation ur ON u.id_user = ur.id_user AND ur.type = 'assigned'
+      LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
+      WHERE l.id_user = ?;`,
+      [id_user]
+    );
+    return userData.map(row => new User(row));
+  }
+
   async fetchActivePatients ({ search, page, limit }) {
     // Calculate offset for pagination
     const offset = (page - 1) * limit;
@@ -17,7 +54,7 @@ class ImpUsersRepository extends usersRepository {
                 u.id_user AS id,
                 CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
                 l.reference_number,
-                l.neuro_status,
+                l.state,
                 l.protocol
             FROM users u
             LEFT JOIN user_info l ON l.id_user = u.id_user
@@ -40,7 +77,7 @@ class ImpUsersRepository extends usersRepository {
             FROM users
             WHERE id_role = 2
               AND eliminated = 0
-              AND (? IS NULL OR CONCAT(user_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)`,
+              AND (? IS NULL OR CONCAT(first_name, ' ', lastname_p, ' ', lastname_m) LIKE ?)`,
       [searchParam, searchParam]
     );
     return rows[0]?.total ?? 0;
@@ -80,6 +117,17 @@ class ImpUsersRepository extends usersRepository {
       console.log("Error en base de datos: ", error.message);
       throw error;
     }
+  }
+  
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
   }
 }
 module.exports = ImpUsersRepository;

@@ -1,5 +1,5 @@
 const User = require('../../../domain/entity/user')
-const UsersDTO = require('../../dto/usersDTO');
+const UsersDTO = require('../../dto/postUsersDTO');
 
 class PostUserUseCase {
   constructor (userRepository, hashingService) {

@@ -21,7 +21,7 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
     "prepare": "husky",
-    "dev:css": "tailwindcss -i ./Front/src/styles/input.css -o ./Front/public/css/output.css --watch"
+    "dev:css": "tailwindcss -i ./front/src/styles/input.css -o ./front/public/css/output.css --watch"
   },
   "lint-staged": {
     "*": "node scripts/check-names.js"
@@ -33,6 +33,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "csrf-csrf": "^4.0.3",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",

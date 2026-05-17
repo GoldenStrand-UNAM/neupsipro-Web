@@ -1,3 +1,13 @@
+  @media (min-width: 768px) {
+    .btn-badge {
+      @apply inline-flex items-center justify-center text-center;
+      @apply px-2 py-2; 
+      @apply rounded-lg border;
+      @apply text-base font-semibold whitespace-nowrap; 
+      @apply cursor-default select-none;
+      min-width: 9rem; 
+    }
+  }
 @layer components {
   /* Boton grande (icono + texto)*/
   .btn-big {
@@ -38,6 +48,7 @@
     @apply flex items-center justify-start; 
     @apply w-full h-[48px] pl-4 pr-0 gap-3 md:gap-4;
     @apply rounded-l-[10px] cursor-pointer transition-all duration-200;
+    @apply mb-2;
   
     /* Estado inicial*/
     @apply bg-transparent text-white;
@@ -65,4 +76,5 @@
   @apply cursor-default select-none;
   width: 9rem;
   }
+
 }

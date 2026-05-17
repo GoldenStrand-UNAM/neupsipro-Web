@@ -111,7 +111,7 @@
                 id="birthdate" 
                 name="birthdate"
                 placeholder="DD/MM/AAAA"
-                class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                class="datetime-local input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
               <div class="absolute right-3 pointer-events-none text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -310,12 +310,12 @@
 
           <div id="pathologyDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
             <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
-            <div class="inputs w-full relative flex items-center mb-4">
+            <div class="inputs w-full relative flex items-center">
               <input type="text" id="otherPathology" name="otherPathology" 
-                    placeholder="Escribe la etiología de amputación"
-                    maxlength="50"
-                    class="input w-full border py-1 px-3 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
-              <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                placeholder="Escribe la etiología"
+                maxlength = "50"
+                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
+                <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/50 
               </span>
             </div>
@@ -346,13 +346,13 @@
 
           <div id="levelDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
             <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
-            <div class="inputs w-full relative flex items-center mb-4">
+            <div class="inputs w-full relative flex items-center">
               <input type="text" id="otherLevel" name="otherLevel" 
-                placeholder="Escribe el nivel de amputación"
-                maxlength = "50"
-                class="input w-full border py-1 px-3 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
+                placeholder="Escribe el nivel"
+                maxlength = "20"
+                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
                 <span id="charactersOtherLevel" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/50 
+                0/20 
               </span>
             </div>
           </div>
@@ -553,6 +553,8 @@
         body: formData,
       });
 
+      console.log(formData);
+
       const data = await res.json();
 
       if (res.ok) {
@@ -560,7 +562,7 @@
         resetForm();
       } else
         showToast('Error al guardar usuario ', 'error');
-      } catch (err) {
+      } catch (error) {
       showToast('Error de conexión ', error);
       }
     });
@@ -631,7 +633,7 @@
       const inputFecha = document.getElementById(id);
       const today = new Date();
 
-      const fp = flatpickr(inputFecha, {
+      const fp = flatpickr(document.getElementById('birthdate'), {
         dateFormat: "d/m/Y",
         allowInput: true,
         maxDate: "today",
@@ -674,12 +676,11 @@
       } else {
         document.getElementById('validation').textContent = "Las contraseñas no coinciden";
         confirmInput.setCustomValidity("Las contraseñas no coinciden");
-        return;
       }
     }
-
-    passInput.addEventListener('input', validateMatch());
-    confirmInput.addEventListener('input', validateMatch());
+    
+    passInput.addEventListener('input', validateMatch);
+    confirmInput.addEventListener('input', validateMatch);
 
     const showBtn = document.getElementById('showPw');
     if (showBtn) {
@@ -714,7 +715,6 @@
     setupCounter('userName', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('otherPathology', 'charactersOtherPathology');
-    setupCounter('otherLevel', 'charactersOtherLevel');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');

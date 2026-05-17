@@ -8,5 +8,11 @@ class usersRepository {
   async postUser({ _idRole, _userName, _firstName, _lastnameP, _lastnameM, _birthdate, _passwordHash, _assigned, _phase, _basePathology, _modality, _profilePhoto, _referenceNumber, _amputationDate, _amputationLevel, _laterality, _prosthetist, _neuroEntryDate, _pairs, _sex }) {
     throw new Error("postUser() must be implemented");
   }
+  async fetchOne ({ _id_user }) {
+    throw new Error('fetchOne() must be implemented');
+  }
+  async softDeleteUser ({ _id_user }) {
+    throw new Error('softDeleteUser() must be implemented');
+  }
 }
 module.exports = usersRepository;

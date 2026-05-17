@@ -1,0 +1,26 @@
+class User {
+  constructor ({ idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex }) {
+    this.idRole = idRole,
+    this.userName = userName,
+    this.firstName = firstName,
+    this.lastnameP = lastnameP,
+    this.lastnameM = lastnameM || null,
+    this.birthdate = birthdate,
+    this.passwordHash = passwordHash,
+    this.assigned = assigned,
+    this.phase = phase,
+    this.basePathology = basePathology,
+    this.modality = modality,
+    this.profilePhoto = profilePhoto || null,
+    this.referenceNumber = referenceNumber,
+    this.amputationDate = amputationDate,
+    this.amputationLevel = amputationLevel,
+    this.laterality = laterality,
+    this.prosthetist = prosthetist,
+    this.neuroEntryDate = neuroEntryDate,
+    this.pairs = pairs,
+    this.sex = sex
+  }
+}
+
+module.exports = User;
