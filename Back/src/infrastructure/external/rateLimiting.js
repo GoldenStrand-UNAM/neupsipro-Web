@@ -19,7 +19,10 @@ const loginLimiter = rateLimit({
 
 // Publication limiter: 5 requests per hour
 const publicationLimiter = rateLimit({
-
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
 });
 
 module.exports = { generalLimiter, loginLimiter, publicationLimiter };

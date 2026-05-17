@@ -1,0 +1,101 @@
+@layer components {
+  .toast {
+    @apply fixed z-50 flex items-center gap-3;
+    @apply px-4 py-3 rounded-xl shadow-lg;
+    @apply text-white text-sm font-medium;
+    @apply transition-all duration-300 ease-in-out;
+    @apply max-w-[320px] w-[90%];
+    @apply bottom-6;
+    /* Mobile: centered */
+    @apply left-1/2 -translate-x-1/2;
+    /* Desktop: bottom right */
+    @apply sm:left-auto sm:right-6 sm:translate-x-0;
+    background-color: #002B79;
+  }
+
+  .toast-icon {
+    @apply inline-block w-[18px] h-[18px] md:w-[22px] md:h-[22px] text-white flex-shrink-0;
+  }
+
+  .toast-msg {
+    @apply flex-1 leading-snug line-clamp-2;
+  }
+}
+
+@layer components {
+  /* Cube molecule - big number + label tile */
+  .cube {
+    @apply flex flex-col items-center justify-center text-center;
+    @apply rounded-xl px-3 py-4 min-h-[88px];
+    @apply bg-[#E5E8FA];
+    @apply transition-all duration-200 ease-out;
+    @apply select-none cursor-default;
+    @apply hover:-translate-y-0.5 hover:shadow-md hover:brightness-[1.02];
+  }
+
+  .cube__value {
+    @apply text-2xl md:text-3xl font-bold leading-none tracking-tight;
+    @apply text-[#1E1E1E];
+  }
+
+  .cube__label {
+    @apply mt-2 text-xs md:text-[13px] font-medium leading-tight;
+    @apply text-gray-600;
+  }
+
+  .cube--muted {
+    @apply bg-gray-50;
+  }
+  .cube--muted .cube__value {
+    @apply text-gray-300;
+  }
+  .cube--muted .cube__label {
+    @apply text-gray-400;
+  }
+
+  .cube--accent {
+    @apply bg-[#3350A9];
+  }
+  .cube--accent .cube__value {
+    @apply text-white;
+  }
+  .cube--accent .cube__label {
+    @apply text-white/80;
+  }
+}
+
+@layer components {
+  /*  Pill / badge for assigned clinics  */
+  .pill {
+    @apply inline-flex items-center gap-1.5;
+    @apply px-3 py-1 rounded-full;
+    @apply bg-white border border-gray-300;
+    @apply text-xs font-medium text-gray-700;
+    @apply shadow-sm transition-all duration-150;
+    @apply hover:border-[#3350A9] hover:text-[#3350A9] hover:shadow;
+  }
+
+  /*  Avatar circle with initials  */
+  .avatar-initials {
+    @apply flex items-center justify-center flex-shrink-0;
+    @apply w-12 h-12 rounded-full;
+    @apply bg-gradient-to-br from-[#3350A9] to-[#5C7CFA];
+    @apply text-white font-bold text-lg;
+    @apply shadow-md select-none;
+  }
+
+  .info-row {
+    @apply flex items-baseline justify-between gap-3;
+    @apply py-1.5 border-b border-gray-200/60 last:border-0;
+  }
+  .info-row__label {
+    @apply text-xs text-gray-500 font-medium uppercase tracking-wide;
+  }
+  .info-row__value {
+    @apply text-sm font-semibold text-gray-800 text-right;
+  }
+  .avatar-img {
+    @apply flex-shrink-0 w-12 h-12 rounded-full object-cover;
+    @apply shadow-md select-none ring-2 ring-white;
+  }
+}
