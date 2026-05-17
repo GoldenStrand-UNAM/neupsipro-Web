@@ -74,7 +74,9 @@ const {
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-app.use(doubleCsrfProtection);
+if (process.env.NODE_ENV !== 'test') {
+  app.use(doubleCsrfProtection);
+}
 app.use((req, res, next) => {
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();

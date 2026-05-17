@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const res = await fetch(`/publication/${currentPostId}`, {
         method: 'DELETE',
+        headers: { 'x-csrf-token': _csrfToken },
         credentials: 'include',
       });
 
