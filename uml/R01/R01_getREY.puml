@@ -1,0 +1,53 @@
+@startuml Get_REY
+
+actor "Clinic User" as USR
+participant "rey.modal.js" as RMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getREYController" as TCTRL
+participant "getREYResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card REY]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nRegistrar deshabilitado\nModificar y Consultar habilitados
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> RMODAL : config.openModify() o config.openConsult()\n→ openREYModal(idUser, idApplication, test, mode)
+
+RMODAL -> UROUTE : Promise.all([\n  GET /api/usuarios/:id_user/escolaridad,\n  GET /api/usuarios/:id_user/edad,\n  GET /api/.../pruebas/3/resultados/:id_results\n])
+UROUTE --> RMODAL : { schooling, years } +\n{ age } +\n{ data: ReyResultsDTO }
+
+alt result not found
+    RMODAL --> USR : showToast('No se pudieron cargar los resultados')\nmodal no se abre
+end
+
+RMODAL -> RMODAL : resolveEducationBlock(years)
+RMODAL -> RMODAL : resolveAgeRange(age)
+RMODAL -> RMODAL : merge fetchedTest = { ...test, ...json.data }\nconstruye prefill desde fetchedTest.rc,\nfetchedTest.mcp, fetchedTest.mlp
+
+alt mode === 'consult'
+    RMODAL -> RMODAL : buildREYConsultHTML(fetchedTest)\n3 secciones: RC, MCp, MLp\ncada una con score, pc, tiempo, pc_time\ntodo solo lectura + fecha + notas
+    RMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    RMODAL -> RMODAL : buildREYFormHTML('modify', prefill,\nschoolingData, ageData)\n6 inputs editables con valores precargados\npercentiles en vivo recalculados
+    RMODAL --> USR : Modal modificar visible\n[Cancelar] [Guardar]
+end
+
+note right of RMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_REY desde
+  "Guardar resultados"
+end note
+
+@enduml
