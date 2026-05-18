@@ -114,6 +114,18 @@ async saveREYResult ({
   throw new Error('saveREYResult() not implemented');
 }
 
+//=================== STATUS =============================
+
+// Fetch all test statuses for an application
+async fetchTestStatusByApplication ({ _id_application }) {
+  throw new Error('fetchTestStatusByApplication() not implemented');
+}
+
+// Expire all incomplete tests within an application
+async expireIncompleteTests ({ _id_application }) {
+  throw new Error('expireIncompleteTests() not implemented');
+}
+
 }
 
 module.exports = resultRepository;

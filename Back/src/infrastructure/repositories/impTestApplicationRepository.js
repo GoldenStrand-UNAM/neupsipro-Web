@@ -59,6 +59,29 @@ class impTestApplicationsRepository extends TestApplicationRepository {
     );
     return rows; // [{ id_test, test_name, result_table }]
   }
+
+  // Fetch applications that are neither completed (3) nor already expired (5).
+  // Only these need expiry evaluation.
+  async fetchActiveApplicationsByUser ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT id_application, status, created_at
+      FROM test_applications
+      WHERE id_user  = ?
+        AND status NOT IN (3, 5)`,
+      [id_user]
+    );
+    return rows;
+  }
+
+  // Update the status of a single application.
+  async updateApplicationStatus ({ id_application, status }) {
+    await db.query(
+      `UPDATE test_applications
+      SET status = ?
+      WHERE id_application = ?`,
+      [status, id_application]
+    );
+  }
 }
 
 module.exports = impTestApplicationsRepository;

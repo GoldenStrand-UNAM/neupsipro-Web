@@ -432,6 +432,31 @@ async saveREYResult ({
   return rows[0];
 }
 
+//============ STATUS =================================
+
+  // Fetch all test statuses for an application — used to check if all are graded.
+  async fetchTestStatusByApplication ({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT status
+      FROM test_results
+      WHERE id_application = ?`,
+      [id_application]
+    );
+    return rows.map(r => r.status);
+  }
+
+  // Set status 5 (Caducada) on all incomplete tests within an application.
+  // Tests already graded (status 3) are preserved.
+  async expireIncompleteTests ({ id_application }) {
+    await db.query(
+      `UPDATE test_results
+      SET status = 5
+      WHERE id_application = ?
+        AND status != 3`,
+      [id_application]
+    );
+  }
+
 
 
 }
