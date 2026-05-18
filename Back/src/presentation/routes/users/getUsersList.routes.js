@@ -23,7 +23,7 @@ module.exports = (authUseCase) => {
   router.get('/api/users',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsers(req, res));
 
   const inicialInterviewRoutes = require('../initialInterview/financialInterview.routes');
-  router.use('/users/:id_user/inicialInterview', inicialInterviewRoutes(authUseCase));
+  router.use('/users/:id_user/inicial-interview', inicialInterviewRoutes(authUseCase));
   return router;
 
 };
