@@ -497,7 +497,7 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
     </div>`;
 }
 
-// ── Form Listeners ───────────────────────────────────────────────────────────
+// ── Modal Listeners ───────────────────────────────────────────────────────────
 // Wires up live percentile calculation per area, notes counter,
 // validation, and the save fetch for register/modify modes.
 // educationBlock and age are passed in to mirror server-side logic.
@@ -659,4 +659,111 @@ function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, 
       console.error('[REY] post error:', _err);
     }
   });
+}
+
+
+// ── CLOSE AND OPEN MODAL LOGIC ──────────────────────────────────────────────────────────────
+// Fetches schooling, age, and existing result (modify/consult) before rendering.
+// All three fetches run in parallel via Promise.all for performance.
+
+// eslint-disable-next-line no-unused-vars
+async function openREYModal (idUser, idApplication, test, mode) {
+  const existing = document.getElementById('modalREY');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  // ── Fetch schooling, age, and existing result in parallel ─────────────────
+
+  let schoolingData = null;
+  let ageData       = null;
+  let fetchedTest   = test;
+
+  const fetches = [
+    // Schooling
+    fetch(`/api/usuarios/${idUser}/escolaridad`)
+      .then(r => r.json())
+      .then(json => { schoolingData = json; })
+      .catch(() => { schoolingData = null; }),
+
+    // Age
+    fetch(`/api/usuarios/${idUser}/edad`)
+      .then(r => r.json())
+      .then(json => { ageData = json; })
+      .catch(() => { ageData = null; }),
+  ];
+
+  // Existing result — only needed for modify/consult
+  if (isModify || isConsult) {
+    fetches.push(
+      fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados/${test.idResults}`)
+        .then(r => r.json())
+        .then(json => {
+          if (json.data) fetchedTest = { ...test, ...json.data };
+        })
+        .catch(() => {
+          showToast('No se pudo conectar con el servidor');
+        })
+    );
+  }
+
+  await Promise.all(fetches);
+
+  // ── Resolve education block and age range for live display ────────────────
+
+  const educationBlock = reyResolveEducationBlock(schoolingData?.years ?? null);
+  const ageRange       = reyResolveAgeRange(ageData?.age ?? null);
+  const age            = ageData?.age ?? null;
+
+  // ── Build prefill from fetched data ──────────────────────────────────────
+
+  const isReadable = isModify || isConsult;
+  const prefill = {
+    rc: {
+      score:  isReadable ? (fetchedTest.rc?.score  ?? '') : '',
+      pc:     isReadable ? (fetchedTest.rc?.pc     ?? '—') : '—',
+      time:   isReadable ? (fetchedTest.rc?.time   ?? '') : '',
+      pcTime: isReadable ? (fetchedTest.rc?.pcTime ?? '—') : '—',
+    },
+    mcp: {
+      score:  isReadable ? (fetchedTest.mcp?.score  ?? '') : '',
+      pc:     isReadable ? (fetchedTest.mcp?.pc     ?? '—') : '—',
+      time:   isReadable ? (fetchedTest.mcp?.time   ?? '') : '',
+      pcTime: isReadable ? (fetchedTest.mcp?.pcTime ?? '—') : '—',
+    },
+    mlp: {
+      score:  isReadable ? (fetchedTest.mlp?.score  ?? '') : '',
+      pc:     isReadable ? (fetchedTest.mlp?.pc     ?? '—') : '—',
+      time:   isReadable ? (fetchedTest.mlp?.time   ?? '') : '',
+      pcTime: isReadable ? (fetchedTest.mlp?.pcTime ?? '—') : '—',
+    },
+    notes:    isReadable ? (fetchedTest.notes ?? '') : '',
+    ageRange: ageRange ?? '—',
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const modal = document.createElement('div');
+  modal.id        = 'modalREY';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = isConsult
+    ? buildREYConsultHTML(fetchedTest)
+    : buildREYFormHTML(mode, prefill, schoolingData, ageData);
+
+  document.body.appendChild(modal);
+
+  // ── Shared close logic ────────────────────────────────────────────────────
+
+  function closeModal () { modal.remove(); }
+
+  document.getElementById('btnCloseREY').addEventListener('click', closeModal);
+  document.getElementById('btnCancelREY').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // ── Form listeners only on register / modify ──────────────────────────────
+
+  if (!isConsult) {
+    bindREYFormListeners(idUser, idApplication, educationBlock, ageRange, age, closeModal);
+  }
 }
