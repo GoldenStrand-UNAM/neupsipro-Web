@@ -1,5 +1,5 @@
 const request = require('supertest');
-const db = require('../../../Back/src/infrastructure/database/database'); // Ajusta la ruta a tu db
+const db = require('../../../Back/src/infrastructure/database/database');
 
 // ================ MOCKS ==================================
 

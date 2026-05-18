@@ -1,7 +1,7 @@
 const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
-const User = require('../../domain/entity/User');
+const User = require('../../domain/entity/user');
 
 class ImpUsersRepository extends usersRepository {
 
