@@ -1,155 +1,195 @@
-// Normative table ROCF Mexico (Table A8)
-// Keys: education block → age range → { percentile: scoreValue }
-const REY_TABLE = {
-  '>12': {
-    '18-22': { 60: 36.0, 50: 34.9, 40: 33.4, 30: 31.8, 20: 29.9, 15: 28.7, 10: 27.2, 5: 25.1 },
-    '23-27': { 60: 36.0, 50: 34.5, 40: 33.0, 30: 31.4, 20: 29.5, 15: 28.3, 10: 26.8, 5: 24.7 },
-    '28-32': { 70: 36.0, 60: 35.6, 50: 34.1, 40: 32.6, 30: 31.0, 20: 29.1, 15: 27.9, 10: 26.4, 5: 24.3 },
-    '33-37': { 70: 36.0, 60: 35.2, 50: 33.7, 40: 32.2, 30: 30.6, 20: 28.7, 15: 27.5, 10: 26.0, 5: 23.9 },
-    '38-42': { 70: 36.0, 60: 34.8, 50: 33.3, 40: 31.8, 30: 30.2, 20: 28.3, 15: 27.1, 10: 25.6, 5: 23.5 },
-    '43-47': { 70: 36.0, 60: 34.4, 50: 32.9, 40: 31.4, 30: 29.8, 20: 27.8, 15: 26.6, 10: 25.2, 5: 23.1 },
-    '48-52': { 80: 36.0, 70: 35.6, 60: 34.0, 50: 32.5, 40: 31.0, 30: 29.4, 20: 27.4, 15: 26.2, 10: 24.8, 5: 22.6 },
-    '53-57': { 80: 36.0, 70: 35.2, 60: 33.6, 50: 32.1, 40: 30.6, 30: 29.0, 20: 27.0, 15: 25.8, 10: 24.4, 5: 22.2 },
-    '58-62': { 80: 36.0, 70: 34.8, 60: 33.2, 50: 31.7, 40: 30.2, 30: 28.6, 20: 26.6, 15: 25.4, 10: 24.0, 5: 21.8 },
-    '63-67': { 80: 36.0, 70: 34.4, 60: 32.8, 50: 31.3, 40: 29.8, 30: 28.1, 20: 26.2, 15: 25.0, 10: 23.6, 5: 21.4 },
-    '68-72': { 85: 36.0, 80: 35.9, 70: 34.0, 60: 32.4, 50: 30.9, 40: 29.4, 30: 27.7, 20: 25.8, 15: 24.6, 10: 23.2, 5: 21.0 },
-    '73-77': { 85: 36.0, 80: 35.5, 70: 33.6, 60: 32.0, 50: 30.5, 40: 29.0, 30: 27.3, 20: 25.4, 15: 24.2, 10: 22.8, 5: 20.6 },
-    '>77': { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
-  },
-  '1-12': {
-    '18-22': { 80: 36.0, 70: 35.8, 60: 34.2, 50: 32.7, 40: 31.2, 30: 29.6, 20: 27.7, 15: 26.5, 10: 25.0, 5: 22.9 },
-    '23-27': { 80: 36.0, 70: 35.4, 60: 33.8, 50: 32.3, 40: 30.8, 30: 29.2, 20: 27.3, 15: 26.1, 10: 24.6, 5: 22.5 },
-    '28-32': { 80: 36.0, 70: 35.0, 60: 33.4, 50: 31.9, 40: 30.4, 30: 28.8, 20: 26.9, 15: 25.7, 10: 24.2, 5: 22.1 },
-    '33-37': { 80: 36.0, 70: 34.6, 60: 33.0, 50: 31.5, 40: 30.0, 30: 28.4, 20: 26.5, 15: 25.3, 10: 23.8, 5: 21.7 },
-    '38-42': { 80: 36.0, 70: 34.2, 60: 32.6, 50: 31.1, 40: 29.6, 30: 28.0, 20: 26.1, 15: 24.9, 10: 23.4, 5: 21.3 },
-    '43-47': { 85: 36.0, 80: 35.7, 70: 33.8, 60: 32.2, 50: 30.7, 40: 29.2, 30: 27.6, 20: 25.7, 15: 24.5, 10: 23.0, 5: 20.9 },
-    '48-52': { 85: 36.0, 80: 35.3, 70: 33.4, 60: 31.8, 50: 30.3, 40: 28.8, 30: 27.2, 20: 25.2, 15: 24.1, 10: 22.6, 5: 20.5 },
-    '53-57': { 85: 36.0, 80: 34.9, 70: 33.0, 60: 31.4, 50: 29.9, 40: 28.4, 30: 26.8, 20: 24.8, 15: 23.6, 10: 22.2, 5: 20.0 },
-    '58-62': { 90: 36.0, 85: 35.7, 80: 34.5, 70: 32.6, 60: 31.0, 50: 29.5, 40: 28.0, 30: 26.4, 20: 24.4, 15: 23.2, 10: 21.8, 5: 19.6 },
-    '63-67': { 90: 36.0, 85: 35.3, 80: 34.1, 70: 32.2, 60: 30.6, 50: 29.1, 40: 27.6, 30: 26.0, 20: 24.0, 15: 22.8, 10: 21.4, 5: 19.2 },
-    '68-72': { 90: 36.0, 85: 34.9, 80: 33.7, 70: 31.8, 60: 30.2, 50: 28.7, 40: 27.2, 30: 25.5, 20: 23.6, 15: 22.4, 10: 21.0, 5: 18.8 },
-    '73-77': { 95: 36.0, 90: 35.9, 85: 34.5, 80: 33.3, 70: 31.4, 60: 29.8, 50: 28.3, 40: 26.8, 30: 25.1, 20: 23.2, 15: 22.0, 10: 20.6, 5: 18.4 },
-    '>77': { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
-  },
-};
+const ReyResultsDTO = require('../../dto/reyResultsDTO');
+const { REY_TABLE_RC, REY_TABLE_MCP_MLP, TIME_TABLE } = require('../../constants/reyTables');
 
 class postREYUseCase {
+
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
-  // Calculate age in years from a birthdate
-  calculateAge (birthdate) {
+  // ── Age helpers ─────────────────────────────────────────────────────────────
+
+  // Calculates age in years from a birthdate string.
+  #calculateAge (birthdate) {
     if (!birthdate) return null;
     const today = new Date();
     const birth = new Date(birthdate);
-    let years = today.getFullYear() - birth.getFullYear();
+    let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years--;
-    return years;
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
   }
 
-  // Map age in years to the table's age range key
-  resolveAgeRange (age) {
-    if (age >= 18 && age <= 22) return '18-22';
-    if (age >= 23 && age <= 27) return '23-27';
-    if (age >= 28 && age <= 32) return '28-32';
-    if (age >= 33 && age <= 37) return '33-37';
-    if (age >= 38 && age <= 42) return '38-42';
-    if (age >= 43 && age <= 47) return '43-47';
-    if (age >= 48 && age <= 52) return '48-52';
-    if (age >= 53 && age <= 57) return '53-57';
-    if (age >= 58 && age <= 62) return '58-62';
-    if (age >= 63 && age <= 67) return '63-67';
-    if (age >= 68 && age <= 72) return '68-72';
-    if (age >= 73 && age <= 77) return '73-77';
-    if (age > 77) return '>77';
-    return null; // under 18 — not covered by table
-  }
-
-  // Map schooling years to education block key
-  resolveEducationBlock (schoolingYears) {
-    if (schoolingYears === null) return null;
-    return schoolingYears > 12 ? '>12' : '1-12';
-  }
-
-  // Map schooling label to years (mirrors MoCA logic)
-  resolveSchoolingYears (schooling) {
+  // Maps schooling label to years of education.
+  #resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria': 6,
-      'Secundaria': 9,
-      'Bachillerato': 12,
-      'Licenciatura': 16,
-      'Posgrado': 18,
+      'Primaria':        6,
+      'Secundaria':      9,
+      'Bachillerato':    12,
+      'Licenciatura':    16,
+      'Posgrado':        18,
     };
     return map[schooling] ?? null;
   }
 
-  /**
-   * Logic:
-   * - percentiles are sorted descending in the table (95 → 5)
-   * - find the exact percentile row if it exists
-   * - if the percentile entered is above the highest available → use highest available score
-   * - if the percentile entered is below 5 → use lowest available score
-   */
-  resolveNormativeScore (percentile, educationBlock, ageRange) {
-  // Get the table column based on education block and age range
-    const column = REY_TABLE[educationBlock]?.[ageRange];
-
-    // Return null if the table segment does not exist
-    if (!column) return null;
-
-    // Convert percentile keys from strings to numbers
-    const percentiles = Object.keys(column).map(Number);
-
-    // Initialize with the first available percentile
-    let closest = percentiles[0];
-    let minDiff = Math.abs(percentile - closest);
-
-    // Find the closest percentile available in the matrix
-    for (const p of percentiles) {
-      const diff = Math.abs(percentile - p);
-
-      // Replace current closest if this percentile is nearer
-      if (diff < minDiff) {
-        closest = p;
-        minDiff = diff;
-      }
-
-      // If distances are equal, prefer the lower percentile
-      // This follows the clinical interpretation rule
-      else if (diff === minDiff && p < closest) {
-        closest = p;
-      }
-    }
-
-    // Return the exact normative score stored in the matrix
-    return column[closest];
+  // Returns '>12' or '1-12' education block.
+  #resolveEducationBlock (schoolingYears) {
+    if (schoolingYears === null) return null;
+    return schoolingYears > 12 ? '>12' : '1-12';
   }
 
-  /**
-   * Main execute method.
-   * score       = percentile entered by clinician (0–95)
-   * interpretation = normative score looked up from table (0–36)
-   */
-  async execute ({ id_user, id_application, score, notes }) {
+  // Maps age to normative age range string.
+  #resolveAgeRange (age) {
+    if (age === null) return null;
+    if (age <= 22) return '18-22';
+    if (age <= 27) return '23-27';
+    if (age <= 32) return '28-32';
+    if (age <= 37) return '33-37';
+    if (age <= 42) return '38-42';
+    if (age <= 47) return '43-47';
+    if (age <= 52) return '48-52';
+    if (age <= 57) return '53-57';
+    if (age <= 62) return '58-62';
+    if (age <= 67) return '63-67';
+    if (age <= 72) return '68-72';
+    if (age <= 77) return '73-77';
+    return '>77';
+  }
 
-    // 1. Validate percentile (score field)
-    const percentile = Number(score);
-    if (score === undefined || score === null || score === '' || isNaN(percentile)) {
-      const err = new Error('score must be a valid number');
+  // Maps age to TIME_TABLE key string.
+  #resolveTimeAgeKey (age) {
+    if (age === null) return null;
+    if (age <= 5)  return '5';
+    if (age <= 6)  return '6';
+    if (age <= 7)  return '7';
+    if (age <= 8)  return '8';
+    if (age <= 9)  return '9';
+    if (age <= 10) return '10';
+    if (age <= 11) return '11';
+    if (age <= 12) return '12';
+    if (age <= 13) return '13';
+    if (age <= 14) return '14';
+    return '15+';
+  }
+
+  // ── Interpolation ───────────────────────────────────────────────────────────
+
+  // Resolves percentile for a score using linear interpolation.
+  // Table format: { percentile: score } — higher percentile = higher score.
+  // Returns null if score or table is missing.
+  #resolveScorePercentile (score, educationBlock, ageRange, table) {
+    if (score === null || score === undefined) return null;
+    if (!educationBlock || !ageRange)          return null;
+
+    const column = table?.[educationBlock]?.[ageRange];
+    if (!column) return null;
+
+    // Sort entries descending by percentile (highest first)
+    const entries = Object.entries(column)
+      .map(([p, v]) => ({ p: Number(p), v }))
+      .sort((a, b) => b.p - a.p);
+
+    const maxEntry = entries[0];
+    const minEntry = entries[entries.length - 1];
+
+    // Score above or equal to max score → max percentile
+    if (score >= maxEntry.v) return maxEntry.p;
+
+    // Score below or equal to min score → min percentile
+    if (score <= minEntry.v) return minEntry.p;
+
+    // Find the two neighbors surrounding the score
+    // entries are sorted descending by percentile so scores are descending too
+    for (let i = 0; i < entries.length - 1; i++) {
+      const upper = entries[i];     // higher percentile, higher score
+      const lower = entries[i + 1]; // lower percentile, lower score
+
+      if (score <= upper.v && score >= lower.v) {
+        // Linear interpolation
+        const percentile = upper.p +
+          ((score - upper.v) / (lower.v - upper.v)) * (lower.p - upper.p);
+        return Math.round(percentile);
+      }
+    }
+
+    return null;
+  }
+
+  // Resolves percentile for a time using linear interpolation.
+  // Table format: { percentile: time } — lower time = higher percentile.
+  // Returns null if time or table is missing.
+  #resolveTimePercentile (time, age) {
+    if (time === null || time === undefined) return null;
+
+    const ageKey = this.#resolveTimeAgeKey(age);
+    if (!ageKey) return null;
+
+    const column = TIME_TABLE[ageKey];
+    if (!column) return null;
+
+    // Sort entries descending by percentile (highest first = lowest time)
+    const entries = Object.entries(column)
+      .map(([p, t]) => ({ p: Number(p), t }))
+      .sort((a, b) => b.p - a.p);
+
+    const bestEntry  = entries[0];                    // highest percentile, lowest time
+    const worstEntry = entries[entries.length - 1];   // lowest percentile, highest time
+
+    // Time faster than best → best percentile
+    if (time <= bestEntry.t)  return bestEntry.p;
+
+    // Time slower than worst → worst percentile
+    if (time >= worstEntry.t) return worstEntry.p;
+
+    // Find neighbors — entries sorted desc by percentile means asc by time
+    for (let i = 0; i < entries.length - 1; i++) {
+      const faster = entries[i];     // higher percentile, lower time
+      const slower = entries[i + 1]; // lower percentile, higher time
+
+      if (time >= faster.t && time <= slower.t) {
+        // Linear interpolation — time inverse: more time = less percentile
+        const percentile = faster.p +
+          ((time - faster.t) / (slower.t - faster.t)) * (slower.p - faster.p);
+        return Math.round(percentile);
+      }
+    }
+
+    return null;
+  }
+
+  // ── Validation ──────────────────────────────────────────────────────────────
+
+  #parseOptionalScore (value, fieldName) {
+    if (value === undefined || value === null || value === '') return null;
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      const err = new Error(`${fieldName} must be a non-negative number`);
       err.status = 422;
       throw err;
     }
+    return parsed;
+  }
 
-    if (percentile < 0 || percentile > 95) {
-      const err = new Error('score (percentile) must be between 0 and 95');
-      err.status = 422;
-      throw err;
-    }
+  // ── Execute ─────────────────────────────────────────────────────────────────
 
-    // 2. Validate notes
+  async execute ({
+    id_user, id_application,
+    score_rc,  time_rc,
+    score_mcp, time_mcp,
+    score_mlp, time_mlp,
+    notes,
+  }) {
+
+    // 1. Parse and validate all scores and times — all optional
+    const scoreRC  = this.#parseOptionalScore(score_rc,  'score_rc');
+    const timeRC   = this.#parseOptionalScore(time_rc,   'time_rc');
+    const scoreMCP = this.#parseOptionalScore(score_mcp, 'score_mcp');
+    const timeMCP  = this.#parseOptionalScore(time_mcp,  'time_mcp');
+    const scoreMLP = this.#parseOptionalScore(score_mlp, 'score_mlp');
+    const timeMLP  = this.#parseOptionalScore(time_mlp,  'time_mlp');
+
+    // 2. Validate notes length if provided
     if (notes && String(notes).length > 200) {
       const err = new Error('notes must be 200 characters or less');
       err.status = 422;
@@ -160,7 +200,7 @@ class postREYUseCase {
     const row = await this.impTestResultsRepository.fetchResultRow({
       id_user,
       id_application,
-      id_test: 3, // REY is id_test = 3
+      id_test: 3,
     });
 
     if (!row) {
@@ -169,50 +209,53 @@ class postREYUseCase {
       throw err;
     }
 
-    // 4. Fetch schooling and birthdate to determine table lookup keys
-    const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
-    const birthdate      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    // 4. Fetch schooling and age server-side — never trust the client
+    const schooling = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
+    const birthdate = await this.impTestResultsRepository.fetchUserAge({ id_user });
 
-    const schoolingYears  = this.resolveSchoolingYears(schooling);
-    const educationBlock  = this.resolveEducationBlock(schoolingYears);
-    const ageYears        = this.calculateAge(birthdate);
-    const ageRange        = this.resolveAgeRange(ageYears);
+    const schoolingYears   = this.#resolveSchoolingYears(schooling);
+    const age              = this.#calculateAge(birthdate);
+    const educationBlock   = this.#resolveEducationBlock(schoolingYears);
+    const ageRange         = this.#resolveAgeRange(age);
 
+    // 5. Both are required to calculate percentiles
     if (!educationBlock || !ageRange) {
-      const err = new Error('Cannot calculate REY score: missing age or schooling data for this user');
+      const err = new Error('Cannot calculate REY percentiles: missing age or schooling data');
       err.status = 422;
       throw err;
     }
 
-    // 5. Look up normative score from table
-    const normativeScore = this.resolveNormativeScore(percentile, educationBlock, ageRange);
+    // 6. Calculate all percentiles server-side via interpolation
+    const pcRC      = this.#resolveScorePercentile(scoreRC,  educationBlock, ageRange, REY_TABLE_RC);
+    const pcTimeRC  = this.#resolveTimePercentile(timeRC,  age);
+    const pcMCP     = this.#resolveScorePercentile(scoreMCP, educationBlock, ageRange, REY_TABLE_MCP_MLP);
+    const pcTimeMCP = this.#resolveTimePercentile(timeMCP, age);
+    const pcMLP     = this.#resolveScorePercentile(scoreMLP, educationBlock, ageRange, REY_TABLE_MCP_MLP);
+    const pcTimeMLP = this.#resolveTimePercentile(timeMLP, age);
 
-    if (normativeScore === null) {
-      const err = new Error('Could not resolve normative score from table');
-      err.status = 422;
-      throw err;
-    }
-
-    // 6. Persist
-    // score          = percentile entered by clinician
-    // interpretation = normative score from table (string for VARCHAR column)
-    const updated = await this.impTestResultsRepository.saveResult({
-      id_results: row.idResults,
-      score: percentile,
-      interpretation: String(normativeScore),
-      notes: notes ?? null,
+    // 7. Persist
+    const saved = await this.impTestResultsRepository.saveREYResult({
+      id_results:  row.idResults,
+      score_rc:    scoreRC,  pc_rc:      pcRC,
+      time_rc:     timeRC,   pc_time_rc: pcTimeRC,
+      score_mcp:   scoreMCP, pc_mcp:     pcMCP,
+      time_mcp:    timeMCP,  pc_time_mcp: pcTimeMCP,
+      score_mlp:   scoreMLP, pc_mlp:     pcMLP,
+      time_mlp:    timeMLP,  pc_time_mlp: pcTimeMLP,
+      notes:       notes ?? null,
     });
 
-    return {
-      idResults: updated.idResults,
-      idTest: updated.idTest,
-      testName: updated.testName,
-      status: updated.status,
-      score: updated.score,
-      interpretation: updated.interpretation,
-      dateApplied: updated.dateApplied,
-      notes: updated.notes,
-    };
+    // 8. Map to DTO
+    return new ReyResultsDTO({
+      idResults:   row.idResults,
+      idTest:      3,
+      status:      3,
+      dateApplied: saved.date_applied ?? null,
+      rc:  { score: saved.score_rc,  pc: saved.pc_rc,  time: saved.time_rc,  pcTime: saved.pc_time_rc  },
+      mcp: { score: saved.score_mcp, pc: saved.pc_mcp, time: saved.time_mcp, pcTime: saved.pc_time_mcp },
+      mlp: { score: saved.score_mlp, pc: saved.pc_mlp, time: saved.time_mlp, pcTime: saved.pc_time_mlp },
+      notes: saved.notes ?? null,
+    });
   }
 }
 
