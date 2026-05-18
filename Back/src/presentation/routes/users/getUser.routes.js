@@ -39,9 +39,16 @@ module.exports = (authUseCase) => {
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
 
+  const expiryUseCase    = new checkExpiryUseCase(testAppRepository, testResultsRepository);
+  const expiryController = new checkExpiryController(expiryUseCase);
+
+  // Check and update expiry status for all active applications of a user.
+  // Must be declared before /:id_user or Express matches it as a param.
   router.get(
-    '/:id_user', authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+    '/:id_user/aplicaciones/check-expiry',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => expiryController.checkExpiry(req, res)
   );
 
   router.get('/consultUser', (req, res) => {
@@ -51,13 +58,9 @@ module.exports = (authUseCase) => {
     });
   });
 
-  // Check and update expiry status for all active applications of a user.
-  // Called when the user profile page loads.
   router.get(
-    '/:id_user/aplicaciones/check-expiry',
-    authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('user management', 'consultation'),
-    (req, res) => expiryController.checkExpiry(req, res)
+    '/:id_user', authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
   );
 
   //Create Application route

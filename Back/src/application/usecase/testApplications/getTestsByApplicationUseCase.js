@@ -1,5 +1,13 @@
 const TestsDTO = require('../../dto/testsDTO');
 
+const APPLICATION_STATUS_LABEL = {
+  1: 'Por comenzar',
+  2: 'En proceso',
+  3: 'Calificada',
+  4: 'Entregado',
+  5: 'Caducada',
+};
+
 class getTestsByApplicationUseCase {
 
   // impTestResultsRepository owns everything related to test results and their session.
@@ -32,7 +40,7 @@ class getTestsByApplicationUseCase {
 
     // 3. Map entities to DTOs — never expose raw entities across boundaries
     return {
-      applicationStatus: application.status,
+      applicationStatus: APPLICATION_STATUS_LABEL[application.status] ?? String(application.status),
       tests: tests.map(t => new TestsDTO(
         t.idTest,
         t.testName,
