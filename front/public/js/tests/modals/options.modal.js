@@ -1,11 +1,21 @@
 /* global escapeHTML, TEST_REGISTRY */
 
 // eslint-disable-next-line no-unused-vars
-function openOptionsModal (idUser, idApplication, test) {
+function openOptionsModal (idUser, idApplication, test, applicationStatus) {
   const existing = document.getElementById('modalOptions');
   if (existing) existing.remove();
 
-const hasScore = test.status === 'Calificada';
+  const isExpired  = applicationStatus === 'Caducada';
+  const hasScore   = test.status === 'Calificada';
+
+  // Registrar — disabled if already graded or application is expired
+  const canRegister = !hasScore && !isExpired;
+
+  // Modificar — disabled if not graded or application is expired
+  const canModify   = hasScore && !isExpired;
+
+  // Consultar — available if graded, even when expired
+  const canConsult  = hasScore;
 
   const modal = document.createElement('div');
   modal.id        = 'modalOptions';
@@ -25,28 +35,38 @@ const hasScore = test.status === 'Calificada';
 
       <div class="modal__body flex flex-col gap-4">
 
-        <!-- Register — always enabled -->
+        <!-- Registrar -->
         <button id="btnGoRegister"
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
-                border-gray-200 transition text-left
-                ${!hasScore ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer' : 'opacity-40 cursor-not-allowed'}"
-          ${hasScore ? 'disabled' : ''}>
+                 border-gray-200 transition text-left
+                 ${canRegister
+                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+                   : 'opacity-40 cursor-not-allowed'}"
+          ${canRegister ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
           </svg>
           <div>
             <p class="text-sm font-semibold text-gray-900">Registrar resultados</p>
-            <p class="text-xs text-gray-400">Ingresar puntaje e interpretación por primera vez</p>
+            <p class="text-xs text-gray-400">
+              ${isExpired
+                ? 'No disponible — aplicación caducada'
+                : hasScore
+                  ? 'Ya registrado — usa Modificar para editar'
+                  : 'Ingresar puntaje e interpretación por primera vez'}
+            </p>
           </div>
         </button>
 
-        <!-- Modify — disabled until scored -->
+        <!-- Modificar -->
         <button id="btnGoModify"
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
                  border-gray-200 transition text-left
-                 ${hasScore ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer' : 'opacity-40 cursor-not-allowed'}"
-          ${hasScore ? '' : 'disabled'}>
+                 ${canModify
+                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+                   : 'opacity-40 cursor-not-allowed'}"
+          ${canModify ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -57,17 +77,23 @@ const hasScore = test.status === 'Calificada';
           <div>
             <p class="text-sm font-semibold text-gray-900">Modificar resultados</p>
             <p class="text-xs text-gray-400">
-              ${hasScore ? 'Editar puntaje y notas existentes' : 'Disponible después de registrar'}
+              ${isExpired
+                ? 'No disponible — aplicación caducada'
+                : canModify
+                  ? 'Editar puntaje y notas existentes'
+                  : 'Disponible después de registrar'}
             </p>
           </div>
         </button>
 
-        <!-- Consult — disabled until scored -->
+        <!-- Consultar -->
         <button id="btnGoConsult"
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
                  border-gray-200 transition text-left
-                 ${hasScore ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer' : 'opacity-40 cursor-not-allowed'}"
-          ${hasScore ? '' : 'disabled'}>
+                 ${canConsult
+                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+                   : 'opacity-40 cursor-not-allowed'}"
+          ${canConsult ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -80,7 +106,9 @@ const hasScore = test.status === 'Calificada';
           <div>
             <p class="text-sm font-semibold text-gray-900">Consultar resultados</p>
             <p class="text-xs text-gray-400">
-              ${hasScore ? 'Ver puntaje, interpretación y notas' : 'Disponible después de registrar'}
+              ${canConsult
+                ? 'Ver puntaje, interpretación y notas'
+                : 'Disponible después de registrar'}
             </p>
           </div>
         </button>
@@ -96,21 +124,24 @@ const hasScore = test.status === 'Calificada';
   document.getElementById('btnCloseOptions').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-  // Look up this test's config to know which modal functions to call
   const config = TEST_REGISTRY[test.idTest];
   if (!config) return;
 
-  document.getElementById('btnGoRegister').addEventListener('click', () => {
-    closeModal();
-    config.openRegister(idUser, idApplication, test);
-  });
+  if (canRegister) {
+    document.getElementById('btnGoRegister').addEventListener('click', () => {
+      closeModal();
+      config.openRegister(idUser, idApplication, test);
+    });
+  }
 
-  if (hasScore) {
+  if (canModify) {
     document.getElementById('btnGoModify').addEventListener('click', () => {
       closeModal();
       config.openModify(idUser, idApplication, test);
     });
+  }
 
+  if (canConsult) {
     document.getElementById('btnGoConsult').addEventListener('click', () => {
       closeModal();
       config.openConsult(idUser, idApplication, test);

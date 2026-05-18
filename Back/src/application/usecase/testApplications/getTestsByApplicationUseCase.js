@@ -31,14 +31,16 @@ class getTestsByApplicationUseCase {
       .fetchTestsByApplication({ id_user, id_application });
 
     // 3. Map entities to DTOs — never expose raw entities across boundaries
-    return tests.map(t => ({
-      idResults: t.idResults,
-      idTest: t.idTest,
-      testName: t.testName,
-      resultTable: t.resultTable,
-      status: t.status,
-      dateApplied: t.dateApplied,
-    }));
+    return {
+      applicationStatus: application.status,
+      tests: tests.map(t => new TestsDTO(
+        t.idTest,
+        t.testName,
+        t.idResults,
+        t.status,
+        t.dateApplied,
+      )),
+    };
   }
 }
 

@@ -58,6 +58,11 @@
         return;
       }
 
+      // Show expiry banner if application is Caducada
+      if (json.data.applicationStatus === 'Caducada') {
+        document.getElementById('expiryBanner').classList.remove('hidden');
+      }
+
       if (!json.data || json.data.length === 0) {
         container.innerHTML = `
                       <p class="text-sm text-gray-400 col-span-3 text-center py-8">
