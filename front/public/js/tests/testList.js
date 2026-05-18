@@ -4,24 +4,22 @@
 
   // ── Card builder ────────────────────────────────────────────────────────────
 
-  function createTestCard (test, idUser, idApplication) {
-    const variant = getVariant(test.status);
+  function createTestCard (test, idUser, idApplication, applicationStatus) {
+    const variant       = getVariant(test.status);
     const dateFormatted = test.dateApplied
       ? new Date(test.dateApplied).toLocaleDateString('es-MX')
       : 'Sin fecha';
 
-    // Only render as clickable if the test has a registered config
-    const isClickable =  !!TEST_REGISTRY[test.idTest];
-
-    const testJson = escapeHTML(JSON.stringify(test));
+    const isClickable = !!TEST_REGISTRY[test.idTest];
+    const testJson    = escapeHTML(JSON.stringify(test));
 
     return `
       <div class="application-card application-card--${variant} ${isClickable ? 'cursor-pointer' : ''}"
           data-id-results="${escapeHTML(test.idResults)}"
           data-id-test="${escapeHTML(String(test.idTest))}"
           ${isClickable
-    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson})'`
-    : ''}>
+            ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson},"${escapeHTML(applicationStatus)}")'`
+            : ''}>
 
         <div class="application-card__badge application-card__badge--${variant}">
           <p>${escapeHTML(test.status) || 'N/A'}</p>
@@ -47,8 +45,7 @@
     const container = document.getElementById('testListContainer');
 
     try {
-      const res = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas`);
-
+      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas`);
       const json = await res.json();
 
       removeSkeletons();
@@ -58,28 +55,33 @@
         return;
       }
 
+      const { applicationStatus, tests } = json.data;
+
       // Show expiry banner if application is Caducada
-      if (json.data.applicationStatus === 'Caducada') {
+      if (applicationStatus === 'Caducada') {
         document.getElementById('expiryBanner').classList.remove('hidden');
       }
 
-      if (!json.data || json.data.length === 0) {
+      if (!tests || tests.length === 0) {
         container.innerHTML = `
-                      <p class="text-sm text-gray-400 col-span-3 text-center py-8">
-                          No hay pruebas asignadas para esta sesión.
-                      </p>
-                  `;
+          <p class="text-sm text-gray-400 col-span-3 text-center py-8">
+            No hay pruebas asignadas para esta aplicación.
+          </p>`;
         return;
       }
 
       // Render one card per test result
-      json.data.forEach(test => {
-        container.insertAdjacentHTML('beforeend', createTestCard(test, idUser, idApplication));
+      tests.forEach(test => {
+        container.insertAdjacentHTML(
+          'beforeend',
+          createTestCard(test, idUser, idApplication, applicationStatus)
+        );
       });
 
     } catch (err) {
       removeSkeletons();
       showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
       console.error('[testList] fetch error:', err);
     }
   }

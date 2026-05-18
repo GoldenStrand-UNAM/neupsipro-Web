@@ -1,7 +1,7 @@
 class checkExpiryUseCase {
 
   constructor (testApplicationRepository, testResultsRepository) {
-    this.appRepo    = testApplicationRepository;
+    this.appRepo     = testApplicationRepository;
     this.resultsRepo = testResultsRepository;
   }
 
@@ -9,15 +9,16 @@ class checkExpiryUseCase {
   #resolveExpiryMonths (protocol) {
     if (protocol === 'Research') return 6;
     if (protocol === 'Clinical') return 3;
-    return 6; // default to most permissive if unknown
+    return 6;
   }
 
-  // Calculates months elapsed between two dates.
-  #monthsElapsed (createdAt) {
+  // Calculates months elapsed between a given date and today.
+  #monthsElapsed (date) {
+    if (!date) return 0;
     const now     = new Date();
-    const created = new Date(createdAt);
-    return (now.getFullYear() - created.getFullYear()) * 12
-      + (now.getMonth() - created.getMonth());
+    const past    = new Date(date);
+    return (now.getFullYear() - past.getFullYear()) * 12
+      + (now.getMonth() - past.getMonth());
   }
 
   async execute ({ id_user }) {
@@ -39,19 +40,18 @@ class checkExpiryUseCase {
     const expired   = [];
     const completed = [];
 
-    // 3. Evaluate each active application
     for (const app of activeApps) {
 
-      // 3a. Check if all tests in this application are graded
-      const statuses     = await this.resultsRepo.fetchTestStatusByApplication({
+      // 3. Fetch all tests for this application
+      const tests = await this.resultsRepo.fetchTestsWithDateByApplication({
         id_application: app.id_application,
       });
 
-      const allCalificada = statuses.length > 0 &&
-        statuses.every(s => s === 3);
+      // 4. Check if all tests are graded
+      const allCalificada = tests.length > 0 && tests.every(t => t.status === 3);
 
       if (allCalificada) {
-        // All tests graded — mark application as completed, skip expiry check
+        // All graded — mark application as completed, skip expiry
         await this.appRepo.updateApplicationStatus({
           id_application: app.id_application,
           status:         3,
@@ -60,10 +60,20 @@ class checkExpiryUseCase {
         continue;
       }
 
-      // 3b. Not all graded — check if expiry threshold has been crossed
-      const months = this.#monthsElapsed(app.created_at);
+      // 5. Check if any incomplete test has been pending too long.
+      // A test is expired if:
+      // - status !== 3 (not graded)
+      // - AND date_applied is set AND months elapsed >= threshold
+      // - OR date_applied is null but created_at of application >= threshold
+      const hasExpiredTest = tests.some(t => {
+        if (t.status === 3) return false;
 
-      if (months >= expiryMonths) {
+        // Use date_applied if available, otherwise fall back to application created_at
+        const referenceDate = t.date_applied ?? app.created_at;
+        return this.#monthsElapsed(referenceDate) >= expiryMonths;
+      });
+
+      if (hasExpiredTest) {
         // Expire the application and all its incomplete tests
         await this.appRepo.updateApplicationStatus({
           id_application: app.id_application,
@@ -78,7 +88,6 @@ class checkExpiryUseCase {
       }
     }
 
-    // 4. Return summary — front uses this to show banners
     return { expired, completed };
   }
 }

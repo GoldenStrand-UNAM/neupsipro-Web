@@ -457,6 +457,21 @@ async saveREYResult ({
     );
   }
 
+  // Fetch status and date_applied for all tests in an application.
+  // Used by checkExpiryUseCase to evaluate per-test expiry.
+  async fetchTestsWithDateByApplication ({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT status, date_applied
+      FROM test_results
+      WHERE id_application = ?`,
+      [id_application]
+    );
+    return rows.map(r => ({
+      status:       r.status,
+      date_applied: r.date_applied ?? null,
+    }));
+  }
+
 
 
 }

@@ -126,6 +126,11 @@ async expireIncompleteTests ({ _id_application }) {
   throw new Error('expireIncompleteTests() not implemented');
 }
 
+// Fetch status and date_applied for all tests in an application
+async fetchTestsWithDateByApplication ({ _id_application }) {
+  throw new Error('fetchTestsWithDateByApplication() not implemented');
+}
+
 }
 
 module.exports = resultRepository;
