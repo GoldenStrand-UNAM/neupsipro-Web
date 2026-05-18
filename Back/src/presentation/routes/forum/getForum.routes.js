@@ -1,7 +1,7 @@
 const express = require('express');
 
 const ImpForumRepository = require('../../../infrastructure/repositories/ImpForumRepository');
-const ForumController = require('../../controller/forum/GetForum.Controller');
+const ForumController = require('../../controller/forum/getForum.controller');
 const GetForumUseCase = require('../../../application/usecase/forum/getForumUseCase');
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');

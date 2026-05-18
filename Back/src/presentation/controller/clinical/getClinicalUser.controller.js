@@ -9,7 +9,7 @@ class ClinicalUserController {
       const { id_user } = req.params;
       const user = await this.getClinicalUserUseCase.execute({ id_user });
       return res.render('clinical/consultClinicalUser', {
-        activePage: 'usuario',
+        activePage: 'clinical',
         usuario: user,
       });
     } catch (error) {

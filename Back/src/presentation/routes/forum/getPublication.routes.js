@@ -1,6 +1,6 @@
 const express = require('express');
 
-const PublicationController = require('../../controller/forum/getPublication.Controller');
+const PublicationController = require('../../controller/forum/getPublication.controller');
 const GetPublicationUseCase =  require('../../../application/usecase/forum/getPublicationUseCase');
 const InteractionRepository = require('../../../infrastructure/repositories/ImpInteractionRepository');
 const PublicationRepository = require('../../../infrastructure/repositories/ImpForumRepository');
@@ -8,6 +8,8 @@ const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRe
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
+const DeletePublicationUseCase    = require('../../../application/usecase/forum/deletePublicationUseCase');
+const DeletePublicationController = require('../../controller/forum/deletePublication.controller');
 
 module.exports = (authUseCase) => {
   const router = express.Router();
@@ -24,12 +26,23 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
+  // Requiered for delete
+  const deleteUseCase = new DeletePublicationUseCase(repository, intRepository);
+  const deleteController = new DeletePublicationController(deleteUseCase);
+
   // Route to get a publication by its id.
   router.get (
     '/:idPublication',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Forum', 'consultation'),
     (req, res) => controller.getPublication(req, res)
+  );
+
+  router.delete(
+    '/:idPublication',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Forum', 'eliminate'),
+    (req, res) => deleteController.deletePublication(req, res)
   );
 
   return router;

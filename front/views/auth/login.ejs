@@ -14,8 +14,9 @@
             <div class="login-triangle-gray"></div>
             <div class="flex flex-col items-center justify-center mt-7">
                 <img src="../assets/enes-white-logo.svg" alt="Logo ENES" class="logo-white"/>
-                <h1 class="title">NeuPsi-Pro</h1>
+                <h1 class="title">Golondrina</h1>
             <form id="loginForm" action="/auth/login" method="POST">
+                <input type="hidden" name="x-csrf-token" value="<%= csrfToken %>">
                 <div class="login-form">
 
                     <!-- Usuario -->
