@@ -1,4 +1,4 @@
-const ReyResultsDTO = require('../../dto/reyResultsDTO');
+const ReyResultsDTO = require('../../dto/reyDTO');
 
 class getREYResultUseCase {
 
