@@ -740,3 +740,6 @@ ALTER TABLE user_clinical
     ADD COLUMN start_date DATE NOT NULL,
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
+
+ALTER TABLE initial_interview
+    ADD COLUMN student_name varchar(50) NULL after id_user_relation;
