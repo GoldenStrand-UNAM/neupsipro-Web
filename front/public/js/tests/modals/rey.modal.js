@@ -496,3 +496,167 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
       </div>
     </div>`;
 }
+
+// ── Form Listeners ───────────────────────────────────────────────────────────
+// Wires up live percentile calculation per area, notes counter,
+// validation, and the save fetch for register/modify modes.
+// educationBlock and age are passed in to mirror server-side logic.
+
+function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, age, closeModal) {
+
+  const notesInput = document.getElementById('inputREYNotes');
+  const notesCount = document.getElementById('reyNotesCount');
+  const apiError   = document.getElementById('reyApiError');
+
+  // Area field definitions — score input, pc display, time input, pc_time display
+  const areas = [
+    {
+      scoreId:   'inputRC_Score',
+      pcId:      'displayRC_Pc',
+      timeId:    'inputRC_Time',
+      pcTimeId:  'displayRC_PcTime',
+      errorId:   'errorRC',
+      scoreKey:  'score_rc',
+      timeKey:   'time_rc',
+      table:     REY_TABLE_RC,
+    },
+    {
+      scoreId:   'inputMCP_Score',
+      pcId:      'displayMCP_Pc',
+      timeId:    'inputMCP_Time',
+      pcTimeId:  'displayMCP_PcTime',
+      errorId:   'errorMCP',
+      scoreKey:  'score_mcp',
+      timeKey:   'time_mcp',
+      table:     REY_TABLE_MCP_MLP,
+    },
+    {
+      scoreId:   'inputMLP_Score',
+      pcId:      'displayMLP_Pc',
+      timeId:    'inputMLP_Time',
+      pcTimeId:  'displayMLP_PcTime',
+      errorId:   'errorMLP',
+      scoreKey:  'score_mlp',
+      timeKey:   'time_mlp',
+      table:     REY_TABLE_MCP_MLP,
+    },
+  ];
+
+  // ── Notes counter ──────────────────────────────────────────────────────────
+
+  notesInput.addEventListener('input', () => {
+    const len = notesInput.value.length;
+    notesCount.textContent = `${len} / 200`;
+    notesCount.classList.toggle('text-red-500', len >= 200);
+    notesCount.classList.toggle('text-gray-400', len < 200);
+  });
+
+  // ── Live percentile per area ───────────────────────────────────────────────
+
+  areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, table }) => {
+
+    // Score → percentile
+    document.getElementById(scoreId).addEventListener('input', () => {
+      const el    = document.getElementById(scoreId);
+      const errEl = document.getElementById(errorId);
+      errEl.classList.add('hidden');
+
+      const score = Number(el.value);
+      if (el.value.trim() === '' || isNaN(score) || score < 0) {
+        document.getElementById(pcId).textContent = '—';
+        return;
+      }
+
+      const pc = reyResolveScorePercentile(score, educationBlock, ageRange, table);
+      document.getElementById(pcId).textContent = pc ?? '—';
+    });
+
+    // Time → time percentile
+    document.getElementById(timeId).addEventListener('input', () => {
+      const el   = document.getElementById(timeId);
+      const time = Number(el.value);
+
+      if (el.value.trim() === '' || isNaN(time) || time < 0) {
+        document.getElementById(pcTimeId).textContent = '—';
+        return;
+      }
+
+      const pcTime = reyResolveTimePercentile(time, age);
+      document.getElementById(pcTimeId).textContent = pcTime ?? '—';
+    });
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────────
+
+  document.getElementById('btnSaveREY').addEventListener('click', async () => {
+    apiError.classList.add('hidden');
+
+    let valid  = true;
+    const body = {};
+
+    // Validate and collect all area values — all optional but must be non-negative if present
+    areas.forEach(({ scoreId, timeId, errorId, scoreKey, timeKey }) => {
+      const scoreEl = document.getElementById(scoreId);
+      const timeEl  = document.getElementById(timeId);
+      const errEl   = document.getElementById(errorId);
+
+      const scoreVal = scoreEl.value.trim();
+      const timeVal  = timeEl.value.trim();
+
+      if (scoreVal !== '') {
+        const n = Number(scoreVal);
+        if (isNaN(n) || n < 0) {
+          errEl.textContent = 'Puntuación inválida';
+          errEl.classList.remove('hidden');
+          valid = false;
+        } else {
+          body[scoreKey] = n;
+        }
+      }
+
+      if (timeVal !== '') {
+        const n = Number(timeVal);
+        if (isNaN(n) || n < 0) {
+          errEl.textContent = 'Tiempo inválido';
+          errEl.classList.remove('hidden');
+          valid = false;
+        } else {
+          body[timeKey] = n;
+        }
+      }
+    });
+
+    if (!valid) return;
+
+    body.notes = notesInput.value.trim() || null;
+
+    const config = TEST_REGISTRY[3];
+
+    try {
+      const res = await fetch(config.endpoint(idUser, idApplication), {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Send raw scores and times — server calculates all percentiles
+        body:    JSON.stringify(body),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        apiError.textContent = json.error || 'Error al guardar el resultado';
+        apiError.classList.remove('hidden');
+        return;
+      }
+
+      updateTestCardStatus(json.data);
+      closeModal();
+      showToast('Resultado guardado con éxito');
+
+    } catch (_err) {
+      apiError.textContent = 'No se pudo conectar con el servidor';
+      apiError.classList.remove('hidden');
+      // eslint-disable-next-line no-console
+      console.error('[REY] post error:', _err);
+    }
+  });
+}
