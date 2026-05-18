@@ -295,3 +295,204 @@ function buildREYConsultHTML (test) {
       </div>
     </div>`;
 }
+
+// ── Modify and register view  ────────────────────────────────────────────────────────────────
+// Each area has: score input, percentile display, time input, time percentile display.
+// Percentiles are calculated live — never entered by the clinician.
+
+function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
+  const title        = mode === 'register' ? 'Registrar' : 'Modificar';
+  const hasSchooling = schoolingData !== null;
+  const hasAge       = ageData !== null;
+  const hasBoth      = hasSchooling && hasAge;
+
+  // Info banner — shows schooling block and age range
+  const infoBanner = hasBoth ? `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
+                bg-blue-50 border border-blue-200">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor"
+           class="w-5 h-5 shrink-0 text-blue-500">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+      </svg>
+      <div class="flex flex-col">
+        <span class="text-sm font-medium text-blue-700">
+          Escolaridad: ${escapeHTML(schoolingData.schooling)}
+          (${schoolingData.years} años) —
+          Bloque: ${schoolingData.years > 12 ? '>12' : '1-12'}
+        </span>
+        <span class="text-xs text-blue-500">
+          Edad: ${ageData.age} años —
+          Rango: ${prefill.ageRange ?? '—'}
+        </span>
+      </div>
+    </div>` : `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
+                bg-yellow-50 border border-yellow-200">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke-width="1.5" stroke="currentColor"
+           class="w-5 h-5 shrink-0 text-yellow-500">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948
+                 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949
+                 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+      </svg>
+      <span class="text-sm text-yellow-700">
+        Sin datos de escolaridad o edad — los percentiles no se calcularán en vivo
+      </span>
+    </div>`;
+
+  // Reusable area row — score + pc + time + pc_time
+  function areaRow (title, scoreId, pcId, timeId, pcTimeId, errorId, prefillArea) {
+    return `
+      <div class="flex flex-col gap-2">
+
+        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          ${title}
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+          <!-- Score -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Puntuación</label>
+            <input
+              id="${scoreId}"
+              type="number"
+              min="0"
+              placeholder="Score"
+              value="${escapeHTML(String(prefillArea.score))}"
+              class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition"/>
+            <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
+          </div>
+
+          <!-- Percentile — read-only, computed live -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Percentil</label>
+            <div class="w-full h-[40px] flex items-center
+                        border border-gray-300 rounded-lg px-3 bg-gray-50">
+              <span id="${pcId}" class="text-sm text-gray-800">
+                ${prefillArea.pc ?? '—'}
+              </span>
+            </div>
+          </div>
+
+          <!-- Time -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Tiempo (min)</label>
+            <input
+              id="${timeId}"
+              type="number"
+              min="0"
+              step="0.1"
+              placeholder="Tiempo"
+              value="${escapeHTML(String(prefillArea.time))}"
+              class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition"/>
+          </div>
+
+          <!-- Time percentile — read-only, computed live -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Pc Tiempo</label>
+            <div class="w-full h-[40px] flex items-center
+                        border border-gray-300 rounded-lg px-3 bg-gray-50">
+              <span id="${pcTimeId}" class="text-sm text-gray-800">
+                ${prefillArea.pcTime ?? '—'}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">REY — ${title}</h2>
+        <button id="btnCloseREY" class="modal__close" aria-label="Cerrar modal">
+          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
+               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body flex flex-col gap-4">
+
+        ${infoBanner}
+
+        ${areaRow(
+          'R-C — Copia',
+          'inputRC_Score', 'displayRC_Pc', 'inputRC_Time', 'displayRC_PcTime', 'errorRC',
+          prefill.rc
+        )}
+
+        ${areaRow(
+          'R-MCp — Memoria Corto Plazo',
+          'inputMCP_Score', 'displayMCP_Pc', 'inputMCP_Time', 'displayMCP_PcTime', 'errorMCP',
+          prefill.mcp
+        )}
+
+        ${areaRow(
+          'R-MLp — Memoria Largo Plazo',
+          'inputMLP_Score', 'displayMLP_Pc', 'inputMLP_Time', 'displayMLP_PcTime', 'errorMLP',
+          prefill.mlp
+        )}
+
+        <!-- Notes -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Notas</label>
+          <textarea
+            id="inputREYNotes"
+            rows="2"
+            maxlength="200"
+            placeholder="Observaciones"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                   focus:border-transparent transition resize-none"
+          >${escapeHTML(prefill.notes)}</textarea>
+          <p id="reyNotesCount" class="text-xs text-gray-400 text-right">
+            ${prefill.notes.length} / 200
+          </p>
+        </div>
+
+        <p id="reyApiError" class="text-xs text-red-500 hidden"></p>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+
+          <button id="btnCancelREY"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 border border-gray-300 rounded-2xl
+                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <span class="whitespace-nowrap">Cancelar</span>
+          </button>
+
+          <button id="btnSaveREY"
+            class="flex-1 flex items-center justify-center gap-3
+                   px-4 py-3 rounded-2xl bg-[#3350A9] text-white
+                   font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+            </svg>
+            <span class="whitespace-nowrap">Guardar</span>
+          </button>
+
+        </div>
+      </div>
+    </div>`;
+}
