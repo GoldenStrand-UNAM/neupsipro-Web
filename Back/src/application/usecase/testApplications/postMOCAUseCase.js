@@ -11,11 +11,11 @@ class postMOCAUseCase {
   resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria':        6,
-      'Secundaria':      9,
-      'Bachillerato':    12,
-      'Licenciatura':    16,
-      'Posgrado':        18,
+      'Primaria': 6,
+      'Secundaria': 9,
+      'Bachillerato': 12,
+      'Licenciatura': 16,
+      'Posgrado': 18,
     };
     return map[schooling] ?? null;
   }
@@ -87,21 +87,21 @@ class postMOCAUseCase {
 
     // 7. Persist into moca_results — save final score, not raw
     const saved = await this.impTestResultsRepository.saveMOCAResult({
-      id_results:     row.idResults,
-      score:          finalScore,
+      id_results: row.idResults,
+      score: finalScore,
       interpretation,
-      notes:          notes ?? null,
+      notes: notes ?? null,
     });
 
     // 8. Map to DTO — never expose raw DB row across boundaries
     return new MocaResultsDTO({
-      idResults:      row.idResults,
-      idTest:         4,
-      status:         3,
-      dateApplied:    saved.date_applied ?? null,
-      score:          saved.score,
+      idResults: row.idResults,
+      idTest: 4,
+      status: 3,
+      dateApplied: saved.date_applied ?? null,
+      score: saved.score,
       interpretation: saved.interpretation,
-      notes:          saved.notes ?? null,
+      notes: saved.notes ?? null,
     });
   }
 }

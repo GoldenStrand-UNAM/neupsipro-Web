@@ -88,7 +88,6 @@ class impTestResultsRepository extends resultRepository {
   // works for both first-time registration and modify.
   // Also updates status from test_results
 
-
   // Post BANFE
   async saveBANFEResult ({
     id_results,
@@ -231,54 +230,54 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
-// ================= MOCA ==================
+  // ================= MOCA ==================
 
-// Fetch existing MOCA result by id_results for modify/consult prefill
-async fetchMOCAResult ({ id_results }) {
-  const [rows] = await db.query(
-    `SELECT mr.*,
+  // Fetch existing MOCA result by id_results for modify/consult prefill
+  async fetchMOCAResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT mr.*,
             tr.status,
             tr.date_applied
      FROM moca_results mr
      JOIN test_results tr ON mr.id_results = tr.id_results
      WHERE mr.id_results = ?
      LIMIT 1`,
-    [id_results]
-  );
-  return rows[0] ?? null;
-}
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
 
-// Upserts into moca_results — works for register and modify.
-async saveMOCAResult ({ id_results, score, interpretation, notes }) {
+  // Upserts into moca_results — works for register and modify.
+  async saveMOCAResult ({ id_results, score, interpretation, notes }) {
 
-  // Update parent row status and application date
-  await db.query(
-    `UPDATE test_results
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
      SET status       = 3,
          date_applied = CURDATE()
      WHERE id_results = ?`,
-    [id_results]
-  );
+      [id_results]
+    );
 
-  await db.query(
-    `INSERT INTO moca_results
+    await db.query(
+      `INSERT INTO moca_results
        (id_results, score, interpretation, notes)
      VALUES (?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        score          = VALUES(score),
        interpretation = VALUES(interpretation),
        notes          = VALUES(notes)`,
-    [id_results, score, interpretation, notes]
-  );
+      [id_results, score, interpretation, notes]
+    );
 
-  const [rows] = await db.query(
-    'SELECT * FROM moca_results WHERE id_results = ?',
-    [id_results]
-  );
-  return rows[0];
-}
+    const [rows] = await db.query(
+      'SELECT * FROM moca_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
 
-// ================= MOCA & REY ==================
+  // ================= MOCA & REY ==================
 
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
@@ -308,93 +307,92 @@ async saveMOCAResult ({ id_results, score, interpretation, notes }) {
 
   // ================= GET NIH ==================
 
-// Fetch existing NIH result by id_results for modify/consult prefill
-async fetchNIHResult ({ id_results }) {
-  const [rows] = await db.query(
-    `SELECT nr.*,
+  // Fetch existing NIH result by id_results for modify/consult prefill
+  async fetchNIHResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT nr.*,
             tr.status,
             tr.date_applied
      FROM nih_results nr
      JOIN test_results tr ON nr.id_results = tr.id_results
      WHERE nr.id_results = ?
      LIMIT 1`,
-    [id_results]
-  );
-  return rows[0] ?? null;
-}
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
 
-// ================= SAVE NIH ==================
+  // ================= SAVE NIH ==================
 
-// Upserts into nih_results — works for register and modify.
-async saveNIHResult ({ id_results, notes }) {
+  // Upserts into nih_results — works for register and modify.
+  async saveNIHResult ({ id_results, notes }) {
 
-  // Update parent row status and application date
-  await db.query(
-    `UPDATE test_results
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
      SET status       = 3,
          date_applied = CURDATE()
      WHERE id_results = ?`,
-    [id_results]
-  );
+      [id_results]
+    );
 
-  // ON DUPLICATE KEY covers the modify flow (row already exists)
-  await db.query(
-    `INSERT INTO nih_results (id_results, notes)
+    // ON DUPLICATE KEY covers the modify flow (row already exists)
+    await db.query(
+      `INSERT INTO nih_results (id_results, notes)
      VALUES (?, ?)
      ON DUPLICATE KEY UPDATE
        notes = VALUES(notes)`,
-    [id_results, notes]
-  );
+      [id_results, notes]
+    );
 
-  // Return the saved row for DTO mapping
-  const [rows] = await db.query(
-    'SELECT * FROM nih_results WHERE id_results = ?',
-    [id_results]
-  );
-  return rows[0];
-}
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM nih_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
 
+  // ================= GET REY ==================
 
-// ================= GET REY ==================
-
-// Fetch existing REY result by id_results for modify/consult prefill
-async fetchREYResult ({ id_results }) {
-  const [rows] = await db.query(
-    `SELECT rr.*,
+  // Fetch existing REY result by id_results for modify/consult prefill
+  async fetchREYResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT rr.*,
             tr.status,
             tr.date_applied
      FROM rey_results rr
      JOIN test_results tr ON rr.id_results = tr.id_results
      WHERE rr.id_results = ?
      LIMIT 1`,
-    [id_results]
-  );
-  return rows[0] ?? null;
-}
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
 
-// ================= SAVE REY ==================
+  // ================= SAVE REY ==================
 
-// Upserts into rey_results — works for register and modify.
-// Also updates test_results.status and date_applied.
-async saveREYResult ({
-  id_results,
-  score_rc,  pc_rc,  time_rc,  pc_time_rc,
-  score_mcp, pc_mcp, time_mcp, pc_time_mcp,
-  score_mlp, pc_mlp, time_mlp, pc_time_mlp,
-  notes,
-}) {
+  // Upserts into rey_results — works for register and modify.
+  // Also updates test_results.status and date_applied.
+  async saveREYResult ({
+    id_results,
+    score_rc,  pc_rc,  time_rc,  pc_time_rc,
+    score_mcp, pc_mcp, time_mcp, pc_time_mcp,
+    score_mlp, pc_mlp, time_mlp, pc_time_mlp,
+    notes,
+  }) {
   // Update parent row status and application date
-  await db.query(
-    `UPDATE test_results
+    await db.query(
+      `UPDATE test_results
      SET status       = 3,
          date_applied = CURDATE()
      WHERE id_results = ?`,
-    [id_results]
-  );
+      [id_results]
+    );
 
-  // ON DUPLICATE KEY covers the modify flow (row already exists)
-  await db.query(
-    `INSERT INTO rey_results
+    // ON DUPLICATE KEY covers the modify flow (row already exists)
+    await db.query(
+      `INSERT INTO rey_results
        (id_results,
         score_rc,  pc_rc,  time_rc,  pc_time_rc,
         score_mcp, pc_mcp, time_mcp, pc_time_mcp,
@@ -415,24 +413,24 @@ async saveREYResult ({
         time_mlp      = VALUES(time_mlp),
         pc_time_mlp   = VALUES(pc_time_mlp),
         notes         = VALUES(notes)`,
-    [
-      id_results,
-      score_rc  ?? null, pc_rc  ?? null, time_rc  ?? null, pc_time_rc  ?? null,
-      score_mcp ?? null, pc_mcp ?? null, time_mcp ?? null, pc_time_mcp ?? null,
-      score_mlp ?? null, pc_mlp ?? null, time_mlp ?? null, pc_time_mlp ?? null,
-      notes     ?? null,
-    ]
-  );
+      [
+        id_results,
+        score_rc  ?? null, pc_rc  ?? null, time_rc  ?? null, pc_time_rc  ?? null,
+        score_mcp ?? null, pc_mcp ?? null, time_mcp ?? null, pc_time_mcp ?? null,
+        score_mlp ?? null, pc_mlp ?? null, time_mlp ?? null, pc_time_mlp ?? null,
+        notes     ?? null,
+      ]
+    );
 
-  // Return the saved row for DTO mapping
-  const [rows] = await db.query(
-    'SELECT * FROM rey_results WHERE id_results = ?',
-    [id_results]
-  );
-  return rows[0];
-}
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM rey_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
 
-//============ STATUS =================================
+  //============ STATUS =================================
 
   // Fetch all test statuses for an application — used to check if all are graded.
   async fetchTestStatusByApplication ({ id_application }) {
@@ -467,12 +465,10 @@ async saveREYResult ({
       [id_application]
     );
     return rows.map(r => ({
-      status:       r.status,
+      status: r.status,
       date_applied: r.date_applied ?? null,
     }));
   }
-
-
 
 }
 

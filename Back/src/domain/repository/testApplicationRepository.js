@@ -32,9 +32,7 @@ class testApplicationRepository {
   // Update application status
   async updateApplicationStatus ({ _id_application, _status }) {
     throw new Error('updateApplicationStatus() not implemented');
+  }
 }
-}
-
-
 
 module.exports = testApplicationRepository;

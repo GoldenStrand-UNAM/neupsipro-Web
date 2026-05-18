@@ -19,11 +19,11 @@ class getNIHResultUseCase {
 
     // 2. Map to DTO — never expose raw DB row across boundaries
     return new NihResultsDTO({
-      idResults:   row.id_results,
-      idTest:      5,
-      status:      row.status,
+      idResults: row.id_results,
+      idTest: 5,
+      status: row.status,
       dateApplied: row.date_applied ?? null,
-      notes:       row.notes ?? null,
+      notes: row.notes ?? null,
     });
   }
 }

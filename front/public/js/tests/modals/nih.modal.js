@@ -164,9 +164,9 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ notes }),
+        body: JSON.stringify({ notes }),
       });
 
       const json = await res.json();
@@ -209,9 +209,7 @@ async function openNIHModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(
-        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/5/resultados/${test.idResults}`
-      );
+      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/5/resultados/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {

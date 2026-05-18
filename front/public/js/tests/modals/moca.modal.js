@@ -141,8 +141,8 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
         </span>
         <span class="text-xs ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
           ${bonusApplies
-            ? 'Aplica bono +2 puntos si puntaje bruto ≤ 28'
-            : 'No aplica bono de escolaridad'}
+    ? 'Aplica bono +2 puntos si puntaje bruto ≤ 28'
+    : 'No aplica bono de escolaridad'}
         </span>
       </div>
     </div>` : `
@@ -346,10 +346,10 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Send raw score — server applies bonus and interpretation
-        body:    JSON.stringify({ score: raw, notes }),
+        body: JSON.stringify({ score: raw, notes }),
       });
 
       const json = await res.json();
@@ -407,9 +407,7 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(
-        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados/${test.idResults}`
-      );
+      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {

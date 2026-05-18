@@ -18,8 +18,8 @@
           data-id-results="${escapeHTML(test.idResults)}"
           data-id-test="${escapeHTML(String(test.idTest))}"
           ${isClickable
-            ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson},"${escapeHTML(applicationStatus)}")'`
-            : ''}>
+    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson},"${escapeHTML(applicationStatus)}")'`
+    : ''}>
 
         <div class="application-card__badge application-card__badge--${variant}">
           <p>${escapeHTML(test.status) || 'N/A'}</p>

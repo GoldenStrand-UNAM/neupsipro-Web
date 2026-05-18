@@ -1,15 +1,15 @@
 class PostBANFEController {
 
-  constructor(postBANFEUseCase) {
+  constructor (postBANFEUseCase) {
     this.useCase = postBANFEUseCase;
   }
 
-  async postResult(req, res) {
+  async postResult (req, res) {
     try {
       const { id_user, id_application } = req.params;
 
       // Destructure the three area scores from the request body
-      const { score_orbit_frontal, score_prefrontal_before, score_d_lateral, notes} = req.body;
+      const { score_orbit_frontal, score_prefrontal_before, score_d_lateral, notes } = req.body;
 
       const dto = await this.useCase.execute({
         id_user,

@@ -40,8 +40,8 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
                  border-gray-200 transition text-left
                  ${canRegister
-                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
-                   : 'opacity-40 cursor-not-allowed'}"
+    ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+    : 'opacity-40 cursor-not-allowed'}"
           ${canRegister ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -51,10 +51,10 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
             <p class="text-sm font-semibold text-gray-900">Registrar resultados</p>
             <p class="text-xs text-gray-400">
               ${isExpired
-                ? 'No disponible — aplicación caducada'
-                : hasScore
-                  ? 'Ya registrado — usa Modificar para editar'
-                  : 'Ingresar puntaje e interpretación por primera vez'}
+    ? 'No disponible — aplicación caducada'
+    : hasScore
+      ? 'Ya registrado — usa Modificar para editar'
+      : 'Ingresar puntaje e interpretación por primera vez'}
             </p>
           </div>
         </button>
@@ -64,8 +64,8 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
                  border-gray-200 transition text-left
                  ${canModify
-                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
-                   : 'opacity-40 cursor-not-allowed'}"
+    ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+    : 'opacity-40 cursor-not-allowed'}"
           ${canModify ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -78,10 +78,10 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
             <p class="text-sm font-semibold text-gray-900">Modificar resultados</p>
             <p class="text-xs text-gray-400">
               ${isExpired
-                ? 'No disponible — aplicación caducada'
-                : canModify
-                  ? 'Editar puntaje y notas existentes'
-                  : 'Disponible después de registrar'}
+    ? 'No disponible — aplicación caducada'
+    : canModify
+      ? 'Editar puntaje y notas existentes'
+      : 'Disponible después de registrar'}
             </p>
           </div>
         </button>
@@ -91,8 +91,8 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
           class="w-full flex items-center gap-4 px-6 py-5 rounded-2xl border
                  border-gray-200 transition text-left
                  ${canConsult
-                   ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
-                   : 'opacity-40 cursor-not-allowed'}"
+    ? 'hover:border-[#3350A9] hover:bg-[#3350A9]/5 cursor-pointer'
+    : 'opacity-40 cursor-not-allowed'}"
           ${canConsult ? '' : 'disabled'}>
           <svg class="w-6 h-6 text-[#000000] shrink-0" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -107,8 +107,8 @@ function openOptionsModal (idUser, idApplication, test, applicationStatus) {
             <p class="text-sm font-semibold text-gray-900">Consultar resultados</p>
             <p class="text-xs text-gray-400">
               ${canConsult
-                ? 'Ver puntaje, interpretación y notas'
-                : 'Disponible después de registrar'}
+    ? 'Ver puntaje, interpretación y notas'
+    : 'Disponible después de registrar'}
             </p>
           </div>
         </button>

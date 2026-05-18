@@ -15,15 +15,15 @@ class BanfeResultsDTO {
     this.dateApplied = dateApplied;
     this.areas       = {
       orbitFrontal: {
-        score:          areas.orbitFrontal.score,
+        score: areas.orbitFrontal.score,
         interpretation: areas.orbitFrontal.interpretation,
       },
       prefrontalBefore: {
-        score:          areas.prefrontalBefore.score,
+        score: areas.prefrontalBefore.score,
         interpretation: areas.prefrontalBefore.interpretation,
       },
       dLateral: {
-        score:          areas.dLateral.score,
+        score: areas.dLateral.score,
         interpretation: areas.dLateral.interpretation,
       },
     };

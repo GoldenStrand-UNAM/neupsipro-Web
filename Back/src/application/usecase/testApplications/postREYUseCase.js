@@ -24,11 +24,11 @@ class postREYUseCase {
   #resolveSchoolingYears (schooling) {
     const map = {
       'Sin escolaridad': 0,
-      'Primaria':        6,
-      'Secundaria':      9,
-      'Bachillerato':    12,
-      'Licenciatura':    16,
-      'Posgrado':        18,
+      'Primaria': 6,
+      'Secundaria': 9,
+      'Bachillerato': 12,
+      'Licenciatura': 16,
+      'Posgrado': 18,
     };
     return map[schooling] ?? null;
   }
@@ -235,23 +235,23 @@ class postREYUseCase {
 
     // 7. Persist
     const saved = await this.impTestResultsRepository.saveREYResult({
-      id_results:  row.idResults,
-      score_rc:    scoreRC,  pc_rc:      pcRC,
-      time_rc:     timeRC,   pc_time_rc: pcTimeRC,
-      score_mcp:   scoreMCP, pc_mcp:     pcMCP,
-      time_mcp:    timeMCP,  pc_time_mcp: pcTimeMCP,
-      score_mlp:   scoreMLP, pc_mlp:     pcMLP,
-      time_mlp:    timeMLP,  pc_time_mlp: pcTimeMLP,
-      notes:       notes ?? null,
+      id_results: row.idResults,
+      score_rc: scoreRC,  pc_rc: pcRC,
+      time_rc: timeRC,   pc_time_rc: pcTimeRC,
+      score_mcp: scoreMCP, pc_mcp: pcMCP,
+      time_mcp: timeMCP,  pc_time_mcp: pcTimeMCP,
+      score_mlp: scoreMLP, pc_mlp: pcMLP,
+      time_mlp: timeMLP,  pc_time_mlp: pcTimeMLP,
+      notes: notes ?? null,
     });
 
     // 8. Map to DTO
     return new ReyResultsDTO({
-      idResults:   row.idResults,
-      idTest:      3,
-      status:      3,
+      idResults: row.idResults,
+      idTest: 3,
+      status: 3,
       dateApplied: saved.date_applied ?? null,
-      rc:  { score: saved.score_rc,  pc: saved.pc_rc,  time: saved.time_rc,  pcTime: saved.pc_time_rc  },
+      rc: { score: saved.score_rc,  pc: saved.pc_rc,  time: saved.time_rc,  pcTime: saved.pc_time_rc  },
       mcp: { score: saved.score_mcp, pc: saved.pc_mcp, time: saved.time_mcp, pcTime: saved.pc_time_mcp },
       mlp: { score: saved.score_mlp, pc: saved.pc_mlp, time: saved.time_mlp, pcTime: saved.pc_time_mlp },
       notes: saved.notes ?? null,

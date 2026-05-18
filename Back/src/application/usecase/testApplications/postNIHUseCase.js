@@ -33,16 +33,16 @@ class postNIHUseCase {
     // 3. Persist into nih_results
     const saved = await this.impTestResultsRepository.saveNIHResult({
       id_results: row.idResults,
-      notes:      notes ?? null,
+      notes: notes ?? null,
     });
 
     // 4. Map to DTO — never expose raw DB row across boundaries
     return new NihResultsDTO({
-      idResults:   row.idResults,
-      idTest:      5,
-      status:      3,
+      idResults: row.idResults,
+      idTest: 5,
+      status: 3,
       dateApplied: saved.date_applied ?? null,
-      notes:       saved.notes ?? null,
+      notes: saved.notes ?? null,
     });
   }
 }

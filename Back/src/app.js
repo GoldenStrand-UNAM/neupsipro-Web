@@ -146,15 +146,11 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase));
 
-
 // Applications
 
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase));
-
-
-
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

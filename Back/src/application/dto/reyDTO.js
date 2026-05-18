@@ -14,22 +14,22 @@ class ReyResultsDTO {
     this.status      = status;
     this.dateApplied = dateApplied;
     this.rc          = {
-      score:   rc.score   ?? null,
-      pc:      rc.pc      ?? null,
-      time:    rc.time    ?? null,
-      pcTime:  rc.pcTime  ?? null,
+      score: rc.score   ?? null,
+      pc: rc.pc      ?? null,
+      time: rc.time    ?? null,
+      pcTime: rc.pcTime  ?? null,
     };
     this.mcp         = {
-      score:   mcp.score  ?? null,
-      pc:      mcp.pc     ?? null,
-      time:    mcp.time   ?? null,
-      pcTime:  mcp.pcTime ?? null,
+      score: mcp.score  ?? null,
+      pc: mcp.pc     ?? null,
+      time: mcp.time   ?? null,
+      pcTime: mcp.pcTime ?? null,
     };
     this.mlp         = {
-      score:   mlp.score  ?? null,
-      pc:      mlp.pc     ?? null,
-      time:    mlp.time   ?? null,
-      pcTime:  mlp.pcTime ?? null,
+      score: mlp.score  ?? null,
+      pc: mlp.pc     ?? null,
+      time: mlp.time   ?? null,
+      pcTime: mlp.pcTime ?? null,
     };
     this.notes       = notes ?? null;
   }

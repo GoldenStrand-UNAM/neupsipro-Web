@@ -11,7 +11,6 @@ const postBANFEController = require('../../controller/testApplications/postBANFE
 const getBANFEResultUseCase    = require('../../../application/usecase/testApplications/getBANFEUseCase');
 const getBANFEResultController = require('../../controller/testApplications/getBANFE.controller');
 
-
 //WAIS
 
 const postWAISUseCase    = require('../../../application/usecase/testApplications/postWAISUseCase');
@@ -40,10 +39,8 @@ const getREYController     = require('../../controller/testApplications/getREY.c
 const postNIHUseCase       = require('../../../application/usecase/testApplications/postNIHUseCase');
 const postNIHController    = require('../../controller/testApplications/postNIH.controller');
 
-
 const getNIHResultUseCase  = require('../../../application/usecase/testApplications/getNIHUseCase');
 const getNIHResultController     = require('../../controller/testApplications/getNIH.controller');
-
 
 //AUTH & PERMISSIONS
 const JwtService            = require('../../../infrastructure/external/jwt.service');
@@ -93,8 +90,6 @@ module.exports = (authUseCase) => {
   const getREYUseCase = new getREYResultUseCase(testResultsRepo);
   const getREYCtrl    = new getREYController(getREYUseCase);
 
-
-
   //AUTH & PERMISSIONS MIDDLEWARE
 
   const jwtService            = new JwtService();
@@ -140,7 +135,6 @@ module.exports = (authUseCase) => {
     (req, res) => waisController.postResult(req, res)
   );
 
-
   router.get(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados/:id_results',
     authMiddleware.verifyToken,
@@ -163,7 +157,6 @@ module.exports = (authUseCase) => {
     (req, res) => getMOCAController.getResult(req, res)
   );
 
-
   // ======================== REY ===============================
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados',
@@ -173,10 +166,10 @@ module.exports = (authUseCase) => {
   );
 
   router.get(
-  '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados/:id_results',
-  authMiddleware.verifyToken,
-  permissionsMiddleware.requirePermission('Tests', 'consultation'),
-  (req, res) => getREYCtrl.getResult(req, res)
+    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getREYCtrl.getResult(req, res)
   );
 
   // ======================== NIH ===============================
@@ -193,7 +186,6 @@ module.exports = (authUseCase) => {
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getNIHController.getResult(req, res)
   );
-
 
   // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
 
@@ -242,7 +234,6 @@ module.exports = (authUseCase) => {
         .catch(err => res.status(500).json({ error: err.message }));
     }
   );
-
 
   return router;
 };

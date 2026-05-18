@@ -1,6 +1,5 @@
 const BanfeResultsDTO = require('../../dto/banfeResultsDTO');
 
-
 class postBANFEUseCase {
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
@@ -77,38 +76,38 @@ class postBANFEUseCase {
 
     // 6. Persist the result
     const saved = await this.impTestResultsRepository.saveBANFEResult({
-      id_results:              row.idResults,
-      score_orbit_frontal:     orbitFrontal,
-      inter_orbit_frontal:     interOrbitFrontal,
+      id_results: row.idResults,
+      score_orbit_frontal: orbitFrontal,
+      inter_orbit_frontal: interOrbitFrontal,
       score_prefrontal_before: prefrontalBefore,
       inter_prefrontal_before: interPrefrontalBefore,
-      score_d_lateral:         dLateral,
-      inter_d_lateral:         interDLateral,
-      score_total:             scoreTotal,
-      notes:                   notes ?? null,
+      score_d_lateral: dLateral,
+      inter_d_lateral: interDLateral,
+      score_total: scoreTotal,
+      notes: notes ?? null,
     });
 
     // 7. Return DTO — never expose raw entity across boundaries
-    return new BanfeResultsDTO( {
+    return new BanfeResultsDTO({
       idResults: row.idResults,
-      idTest:    1,
-      status:    3,
+      idTest: 1,
+      status: 3,
       areas: {
         orbitFrontal: {
-          score:          saved.score_orbit_frontal,
+          score: saved.score_orbit_frontal,
           interpretation: saved.inter_orbit_frontal,
         },
         prefrontalBefore: {
-          score:          saved.score_prefrontal_before,
+          score: saved.score_prefrontal_before,
           interpretation: saved.inter_prefrontal_before,
         },
         dLateral: {
-          score:          saved.score_d_lateral,
+          score: saved.score_d_lateral,
           interpretation: saved.inter_d_lateral,
         },
       },
       scoreTotal: saved.score_total,
-      notes:      saved.notes,
+      notes: saved.notes,
     });
 
   }

@@ -14,19 +14,19 @@ class WaisResultsDTO {
     this.dateApplied = dateApplied;
     this.areas       = {
       comVerbal: {
-        score:          areas.comVerbal.score,
+        score: areas.comVerbal.score,
         interpretation: areas.comVerbal.interpretation,
       },
       razonPerceptual: {
-        score:          areas.razonPerceptual.score,
+        score: areas.razonPerceptual.score,
         interpretation: areas.razonPerceptual.interpretation,
       },
       memWork: {
-        score:          areas.memWork.score,
+        score: areas.memWork.score,
         interpretation: areas.memWork.interpretation,
       },
       veloProce: {
-        score:          areas.veloProce.score,
+        score: areas.veloProce.score,
         interpretation: areas.veloProce.interpretation,
       },
     };

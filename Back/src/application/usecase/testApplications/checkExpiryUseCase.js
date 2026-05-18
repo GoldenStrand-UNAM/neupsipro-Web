@@ -54,7 +54,7 @@ class checkExpiryUseCase {
         // All graded — mark application as completed, skip expiry
         await this.appRepo.updateApplicationStatus({
           id_application: app.id_application,
-          status:         3,
+          status: 3,
         });
         completed.push(app.id_application);
         continue;
@@ -77,7 +77,7 @@ class checkExpiryUseCase {
         // Expire the application and all its incomplete tests
         await this.appRepo.updateApplicationStatus({
           id_application: app.id_application,
-          status:         5,
+          status: 5,
         });
 
         await this.resultsRepo.expireIncompleteTests({

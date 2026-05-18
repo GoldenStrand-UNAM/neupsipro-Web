@@ -311,9 +311,9 @@ function bindFormListeners (idUser, idApplication, closeModal) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ ...scores, notes }),
+        body: JSON.stringify({ ...scores, notes }),
       });
 
       const json = await res.json();
@@ -337,7 +337,6 @@ function bindFormListeners (idUser, idApplication, closeModal) {
   });
 }
 
-
 // Decides which HTML to render and whether to bind form listeners.
 
 // eslint-disable-next-line no-unused-vars
@@ -353,9 +352,7 @@ async function openBANFEModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res = await fetch(
-        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados/${test.idResults}`
-      );
+      const res = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {
@@ -379,15 +376,15 @@ async function openBANFEModal (idUser, idApplication, test, mode) {
   const areas = (isModify || isConsult) ? (fetchedTest.areas ?? {}) : {};
   const prefill = {
     orbitFrontal: {
-      score:  areas.orbitFrontal?.score          ?? '',
+      score: areas.orbitFrontal?.score          ?? '',
       interp: areas.orbitFrontal?.interpretation ?? '—',
     },
     prefrontalBefore: {
-      score:  areas.prefrontalBefore?.score          ?? '',
+      score: areas.prefrontalBefore?.score          ?? '',
       interp: areas.prefrontalBefore?.interpretation ?? '—',
     },
     dLateral: {
-      score:  areas.dLateral?.score          ?? '',
+      score: areas.dLateral?.score          ?? '',
       interp: areas.dLateral?.interpretation ?? '—',
     },
     notes: (isModify || isConsult) ? (fetchedTest.notes ?? '') : '',

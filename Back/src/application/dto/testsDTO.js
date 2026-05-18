@@ -4,7 +4,7 @@ class TestsDTO {
     testName,
     idResults,
     status,
-    dateApplied,
+    dateApplied
   ) {
     this.idTest      = idTest;
     this.testName    = testName;

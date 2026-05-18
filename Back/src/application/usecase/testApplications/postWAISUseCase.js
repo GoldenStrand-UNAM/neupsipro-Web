@@ -1,6 +1,5 @@
 const WaisResultsDTO = require('../../dto/waisResultDTO');
 
-
 class postWAISUseCase {
   constructor (impTestResultsRepository) {
     this.impTestResultsRepository = impTestResultsRepository;
@@ -34,17 +33,16 @@ class postWAISUseCase {
     return 'Discapacidad';
   }
 
-
   /**
    * Saves WAIS score, recalculates interpretation server-side,
    * and updates the result row to status 3 (Calificada).
  */
-    async execute ({
+  async execute ({
     id_user, id_application,
     score_com_verbal, score_razon_perceptual,
     score_mem_work, score_velo_proce,
     score_total, notes,
-  }){
+  }) {
 
     // 1. Validate and parse each area score
     const comVerbal      = this.#parseAreaScore(score_com_verbal,       'score_com_verbal');
@@ -74,7 +72,6 @@ class postWAISUseCase {
       throw err;
     }
 
-
     // 4. Recalculate interpretations server-side — never trust the client
     const interComVerbal      = this.resolveInterpretation(comVerbal);
     const interRazonPerceptual = this.resolveInterpretation(razonPerceptual);
@@ -83,33 +80,33 @@ class postWAISUseCase {
 
     // 5. Persist the result
     const saved = await this.impTestResultsRepository.saveWAISResult({
-      id_results:             row.idResults,
-      score_com_verbal:       comVerbal,
-      inter_com_verbal:       interComVerbal,
+      id_results: row.idResults,
+      score_com_verbal: comVerbal,
+      inter_com_verbal: interComVerbal,
       score_razon_perceptual: razonPerceptual,
       inter_razon_perceptual: interRazonPerceptual,
-      score_mem_work:         memWork,
-      inter_mem_work:         interMemWork,
-      score_velo_proce:       veloProce,
-      inter_velo_proce:       interVeloProce,
-      score_total:            total,
-      notes:                  notes ?? null,
+      score_mem_work: memWork,
+      inter_mem_work: interMemWork,
+      score_velo_proce: veloProce,
+      inter_velo_proce: interVeloProce,
+      score_total: total,
+      notes: notes ?? null,
     });
 
     // 6. Map to DTO — never expose raw DB row across boundaries
     return new WaisResultsDTO({
-      idResults:   row.idResults,
-      idTest:      2,
-      status:      3,
+      idResults: row.idResults,
+      idTest: 2,
+      status: 3,
       dateApplied: saved.date_applied ?? null,
       areas: {
-        comVerbal:       { score: saved.score_com_verbal,       interpretation: saved.inter_com_verbal       },
+        comVerbal: { score: saved.score_com_verbal,       interpretation: saved.inter_com_verbal       },
         razonPerceptual: { score: saved.score_razon_perceptual, interpretation: saved.inter_razon_perceptual },
-        memWork:         { score: saved.score_mem_work,         interpretation: saved.inter_mem_work         },
-        veloProce:       { score: saved.score_velo_proce,       interpretation: saved.inter_velo_proce       },
+        memWork: { score: saved.score_mem_work,         interpretation: saved.inter_mem_work         },
+        veloProce: { score: saved.score_velo_proce,       interpretation: saved.inter_velo_proce       },
       },
       scoreTotal: saved.score_total,
-      notes:      saved.notes ?? null,
+      notes: saved.notes ?? null,
     });
   }
 

@@ -19,13 +19,13 @@ class getMOCAResultUseCase {
 
     // 2. Map to DTO — never expose raw DB row across boundaries
     return new MocaResultsDTO({
-      idResults:      row.id_results,
-      idTest:         4,
-      status:         row.status,
-      dateApplied:    row.date_applied ?? null,
-      score:          row.score,
+      idResults: row.id_results,
+      idTest: 4,
+      status: row.status,
+      dateApplied: row.date_applied ?? null,
+      score: row.score,
       interpretation: row.interpretation,
-      notes:          row.notes ?? null,
+      notes: row.notes ?? null,
     });
   }
 }

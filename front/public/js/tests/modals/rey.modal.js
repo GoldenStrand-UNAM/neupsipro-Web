@@ -17,7 +17,7 @@ const REY_TABLE_RC = {
     '63-67': { 80: 36.0, 70: 34.4, 60: 32.8, 50: 31.3, 40: 29.8, 30: 28.1, 20: 26.2, 15: 25.0, 10: 23.6, 5: 21.4 },
     '68-72': { 85: 36.0, 80: 35.9, 70: 34.0, 60: 32.4, 50: 30.9, 40: 29.4, 30: 27.7, 20: 25.8, 15: 24.6, 10: 23.2, 5: 21.0 },
     '73-77': { 85: 36.0, 80: 35.5, 70: 33.6, 60: 32.0, 50: 30.5, 40: 29.0, 30: 27.3, 20: 25.4, 15: 24.2, 10: 22.8, 5: 20.6 },
-    '>77':   { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
+    '>77': { 85: 36.0, 80: 35.1, 70: 33.2, 60: 31.5, 50: 30.0, 40: 28.6, 30: 26.9, 20: 25.0, 15: 23.8, 10: 22.4, 5: 20.2 },
   },
   '1-12': {
     '18-22': { 80: 36.0, 70: 35.8, 60: 34.2, 50: 32.7, 40: 31.2, 30: 29.6, 20: 27.7, 15: 26.5, 10: 25.0, 5: 22.9 },
@@ -32,7 +32,7 @@ const REY_TABLE_RC = {
     '63-67': { 90: 36.0, 85: 35.3, 80: 34.1, 70: 32.2, 60: 30.6, 50: 29.1, 40: 27.6, 30: 26.0, 20: 24.0, 15: 22.8, 10: 21.4, 5: 19.2 },
     '68-72': { 90: 36.0, 85: 34.9, 80: 33.7, 70: 31.8, 60: 30.2, 50: 28.7, 40: 27.2, 30: 25.5, 20: 23.6, 15: 22.4, 10: 21.0, 5: 18.8 },
     '73-77': { 95: 36.0, 90: 35.9, 85: 34.5, 80: 33.3, 70: 31.4, 60: 29.8, 50: 28.3, 40: 26.8, 30: 25.1, 20: 23.2, 15: 22.0, 10: 20.6, 5: 18.4 },
-    '>77':   { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
+    '>77': { 95: 36.0, 90: 35.5, 85: 34.1, 80: 32.9, 70: 31.0, 60: 29.4, 50: 27.9, 40: 26.4, 30: 24.7, 20: 22.8, 15: 21.6, 10: 20.2, 5: 18.0 },
   },
 };
 
@@ -50,7 +50,7 @@ const REY_TABLE_MCP_MLP = {
     '63-67': { 95: 29.2, 90: 26.8, 85: 25.1, 80: 23.8, 70: 21.6, 60: 19.8, 50: 18.1, 40: 16.4, 30: 14.6, 20: 12.5, 15: 11.1, 10: 9.5,  5: 7.1  },
     '68-72': { 95: 28.4, 90: 26.0, 85: 24.4, 80: 23.0, 70: 20.9, 60: 19.0, 50: 17.3, 40: 15.7, 30: 13.8, 20: 11.7, 15: 10.3, 10: 8.7,  5: 6.3  },
     '73-77': { 95: 27.6, 90: 25.2, 85: 23.6, 80: 22.2, 70: 20.1, 60: 18.3, 50: 16.6, 40: 14.9, 30: 13.1, 20: 10.9, 15: 9.6,  10: 7.9,  5: 5.5  },
-    '>77':   { 95: 26.9, 90: 24.4, 85: 22.8, 80: 21.5, 70: 19.3, 60: 17.5, 50: 15.8, 40: 14.1, 30: 12.3, 20: 10.1, 15: 8.8,  10: 7.2,  5: 4.7  },
+    '>77': { 95: 26.9, 90: 24.4, 85: 22.8, 80: 21.5, 70: 19.3, 60: 17.5, 50: 15.8, 40: 14.1, 30: 12.3, 20: 10.1, 15: 8.8,  10: 7.2,  5: 4.7  },
   },
   '1-12': {
     '18-22': { 95: 33.1, 90: 30.7, 85: 29.0, 80: 27.7, 70: 25.5, 60: 23.7, 50: 22.0, 40: 20.3, 30: 18.5, 20: 16.4, 15: 15.0, 10: 13.4, 5: 11.0 },
@@ -65,21 +65,21 @@ const REY_TABLE_MCP_MLP = {
     '63-67': { 95: 26.1, 90: 23.7, 85: 22.0, 80: 20.7, 70: 18.5, 60: 16.7, 50: 15.0, 40: 13.3, 20: 9.3,  15: 8.0,  10: 6.4,  5: 3.9   },
     '68-72': { 95: 25.3, 90: 22.9, 85: 21.3, 80: 19.9, 70: 17.7, 60: 15.9, 50: 14.2, 40: 12.5, 30: 10.7, 20: 8.6,  15: 7.2,  10: 5.6,  5: 3.2  },
     '73-77': { 95: 24.5, 90: 22.1, 85: 20.5, 80: 19.1, 70: 17.0, 60: 15.1, 50: 13.5, 40: 11.8, 30: 9.9,  20: 7.8,  15: 6.4,  10: 4.8,  5: 2.4  },
-    '>77':   { 95: 23.7, 90: 21.3, 85: 19.7, 80: 18.3, 70: 16.2, 60: 14.4, 50: 12.7, 40: 11.0, 30: 9.2,  20: 7.0,  15: 5.7,  10: 4.0,  5: 1.6  },
+    '>77': { 95: 23.7, 90: 21.3, 85: 19.7, 80: 18.3, 70: 16.2, 60: 14.4, 50: 12.7, 40: 11.0, 30: 9.2,  20: 7.0,  15: 5.7,  10: 4.0,  5: 1.6  },
   },
 };
 
 const REY_TIME_TABLE = {
-  '5':   { 99: 4, 75: 5, 50: 6, 25: 9,  10: 10 },
-  '6':   { 99: 4, 75: 5, 50: 6, 25: 8,  10: 10 },
-  '7':   { 99: 4, 75: 6, 50: 7, 25: 9,  10: 10 },
-  '8':   { 99: 4, 75: 6, 50: 7, 25: 8,  10: 9  },
-  '9':   { 99: 4, 75: 6, 50: 7, 25: 8,  10: 9  },
-  '10':  { 99: 4, 75: 5, 50: 7, 25: 8,  10: 9  },
-  '11':  { 99: 3, 75: 4, 50: 5, 25: 6,  10: 7  },
-  '12':  { 99: 3,         50: 4, 25: 5,  10: 7  },
-  '13':  { 99: 2,         50: 3, 25: 4,  10: 6  },
-  '14':  { 99: 2, 75: 3, 50: 4, 25: 5,  10: 6  },
+  '5': { 99: 4, 75: 5, 50: 6, 25: 9,  10: 10 },
+  '6': { 99: 4, 75: 5, 50: 6, 25: 8,  10: 10 },
+  '7': { 99: 4, 75: 6, 50: 7, 25: 9,  10: 10 },
+  '8': { 99: 4, 75: 6, 50: 7, 25: 8,  10: 9  },
+  '9': { 99: 4, 75: 6, 50: 7, 25: 8,  10: 9  },
+  '10': { 99: 4, 75: 5, 50: 7, 25: 8,  10: 9  },
+  '11': { 99: 3, 75: 4, 50: 5, 25: 6,  10: 7  },
+  '12': { 99: 3,         50: 4, 25: 5,  10: 7  },
+  '13': { 99: 2,         50: 3, 25: 4,  10: 6  },
+  '14': { 99: 2, 75: 3, 50: 4, 25: 5,  10: 6  },
   '15+': { 99: 1, 75: 2, 50: 3, 25: 4,  10: 5  },
 };
 
@@ -427,22 +427,22 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
         ${infoBanner}
 
         ${areaRow(
-          'R-C — Copia',
-          'inputRC_Score', 'displayRC_Pc', 'inputRC_Time', 'displayRC_PcTime', 'errorRC',
-          prefill.rc
-        )}
+    'R-C — Copia',
+    'inputRC_Score', 'displayRC_Pc', 'inputRC_Time', 'displayRC_PcTime', 'errorRC',
+    prefill.rc
+  )}
 
         ${areaRow(
-          'R-MCp — Memoria Corto Plazo',
-          'inputMCP_Score', 'displayMCP_Pc', 'inputMCP_Time', 'displayMCP_PcTime', 'errorMCP',
-          prefill.mcp
-        )}
+    'R-MCp — Memoria Corto Plazo',
+    'inputMCP_Score', 'displayMCP_Pc', 'inputMCP_Time', 'displayMCP_PcTime', 'errorMCP',
+    prefill.mcp
+  )}
 
         ${areaRow(
-          'R-MLp — Memoria Largo Plazo',
-          'inputMLP_Score', 'displayMLP_Pc', 'inputMLP_Time', 'displayMLP_PcTime', 'errorMLP',
-          prefill.mlp
-        )}
+    'R-MLp — Memoria Largo Plazo',
+    'inputMLP_Score', 'displayMLP_Pc', 'inputMLP_Time', 'displayMLP_PcTime', 'errorMLP',
+    prefill.mlp
+  )}
 
         <!-- Notes -->
         <div class="flex flex-col gap-1">
@@ -511,34 +511,34 @@ function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, 
   // Area field definitions — score input, pc display, time input, pc_time display
   const areas = [
     {
-      scoreId:   'inputRC_Score',
-      pcId:      'displayRC_Pc',
-      timeId:    'inputRC_Time',
-      pcTimeId:  'displayRC_PcTime',
-      errorId:   'errorRC',
-      scoreKey:  'score_rc',
-      timeKey:   'time_rc',
-      table:     REY_TABLE_RC,
+      scoreId: 'inputRC_Score',
+      pcId: 'displayRC_Pc',
+      timeId: 'inputRC_Time',
+      pcTimeId: 'displayRC_PcTime',
+      errorId: 'errorRC',
+      scoreKey: 'score_rc',
+      timeKey: 'time_rc',
+      table: REY_TABLE_RC,
     },
     {
-      scoreId:   'inputMCP_Score',
-      pcId:      'displayMCP_Pc',
-      timeId:    'inputMCP_Time',
-      pcTimeId:  'displayMCP_PcTime',
-      errorId:   'errorMCP',
-      scoreKey:  'score_mcp',
-      timeKey:   'time_mcp',
-      table:     REY_TABLE_MCP_MLP,
+      scoreId: 'inputMCP_Score',
+      pcId: 'displayMCP_Pc',
+      timeId: 'inputMCP_Time',
+      pcTimeId: 'displayMCP_PcTime',
+      errorId: 'errorMCP',
+      scoreKey: 'score_mcp',
+      timeKey: 'time_mcp',
+      table: REY_TABLE_MCP_MLP,
     },
     {
-      scoreId:   'inputMLP_Score',
-      pcId:      'displayMLP_Pc',
-      timeId:    'inputMLP_Time',
-      pcTimeId:  'displayMLP_PcTime',
-      errorId:   'errorMLP',
-      scoreKey:  'score_mlp',
-      timeKey:   'time_mlp',
-      table:     REY_TABLE_MCP_MLP,
+      scoreId: 'inputMLP_Score',
+      pcId: 'displayMLP_Pc',
+      timeId: 'inputMLP_Time',
+      pcTimeId: 'displayMLP_PcTime',
+      errorId: 'errorMLP',
+      scoreKey: 'score_mlp',
+      timeKey: 'time_mlp',
+      table: REY_TABLE_MCP_MLP,
     },
   ];
 
@@ -634,10 +634,10 @@ function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, 
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // Send raw scores and times — server calculates all percentiles
-        body:    JSON.stringify(body),
+        body: JSON.stringify(body),
       });
 
       const json = await res.json();
@@ -660,7 +660,6 @@ function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, 
     }
   });
 }
-
 
 // ── CLOSE AND OPEN MODAL LOGIC ──────────────────────────────────────────────────────────────
 // Fetches schooling, age, and existing result (modify/consult) before rendering.
@@ -696,16 +695,14 @@ async function openREYModal (idUser, idApplication, test, mode) {
 
   // Existing result — only needed for modify/consult
   if (isModify || isConsult) {
-    fetches.push(
-      fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados/${test.idResults}`)
-        .then(r => r.json())
-        .then(json => {
-          if (json.data) fetchedTest = { ...test, ...json.data };
-        })
-        .catch(() => {
-          showToast('No se pudo conectar con el servidor');
-        })
-    );
+    fetches.push(fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados/${test.idResults}`)
+      .then(r => r.json())
+      .then(json => {
+        if (json.data) fetchedTest = { ...test, ...json.data };
+      })
+      .catch(() => {
+        showToast('No se pudo conectar con el servidor');
+      }));
   }
 
   await Promise.all(fetches);
@@ -721,24 +718,24 @@ async function openREYModal (idUser, idApplication, test, mode) {
   const isReadable = isModify || isConsult;
   const prefill = {
     rc: {
-      score:  isReadable ? (fetchedTest.rc?.score  ?? '') : '',
-      pc:     isReadable ? (fetchedTest.rc?.pc     ?? '—') : '—',
-      time:   isReadable ? (fetchedTest.rc?.time   ?? '') : '',
+      score: isReadable ? (fetchedTest.rc?.score  ?? '') : '',
+      pc: isReadable ? (fetchedTest.rc?.pc     ?? '—') : '—',
+      time: isReadable ? (fetchedTest.rc?.time   ?? '') : '',
       pcTime: isReadable ? (fetchedTest.rc?.pcTime ?? '—') : '—',
     },
     mcp: {
-      score:  isReadable ? (fetchedTest.mcp?.score  ?? '') : '',
-      pc:     isReadable ? (fetchedTest.mcp?.pc     ?? '—') : '—',
-      time:   isReadable ? (fetchedTest.mcp?.time   ?? '') : '',
+      score: isReadable ? (fetchedTest.mcp?.score  ?? '') : '',
+      pc: isReadable ? (fetchedTest.mcp?.pc     ?? '—') : '—',
+      time: isReadable ? (fetchedTest.mcp?.time   ?? '') : '',
       pcTime: isReadable ? (fetchedTest.mcp?.pcTime ?? '—') : '—',
     },
     mlp: {
-      score:  isReadable ? (fetchedTest.mlp?.score  ?? '') : '',
-      pc:     isReadable ? (fetchedTest.mlp?.pc     ?? '—') : '—',
-      time:   isReadable ? (fetchedTest.mlp?.time   ?? '') : '',
+      score: isReadable ? (fetchedTest.mlp?.score  ?? '') : '',
+      pc: isReadable ? (fetchedTest.mlp?.pc     ?? '—') : '—',
+      time: isReadable ? (fetchedTest.mlp?.time   ?? '') : '',
       pcTime: isReadable ? (fetchedTest.mlp?.pcTime ?? '—') : '—',
     },
-    notes:    isReadable ? (fetchedTest.notes ?? '') : '',
+    notes: isReadable ? (fetchedTest.notes ?? '') : '',
     ageRange: ageRange ?? '—',
   };
 

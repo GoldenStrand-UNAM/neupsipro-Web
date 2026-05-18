@@ -1,5 +1,5 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
-// Interpretation 
+// Interpretation
 
 function interpretWAIS (score) {
   const n = Number(score);
@@ -106,7 +106,6 @@ function buildWAISConsultHTML (test) {
 }
 
 // ── register / modify form modal
-
 
 function buildWAISFormHTML (mode, prefill) {
   const title = mode === 'register' ? 'Registrar' : 'Modificar';
@@ -331,9 +330,9 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ ...scores, notes }),
+        body: JSON.stringify({ ...scores, notes }),
       });
 
       const json = await res.json();
@@ -374,9 +373,7 @@ async function openWAISModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res = await fetch(
-        `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados/${test.idResults}`
-      );
+      const res = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {
@@ -400,23 +397,23 @@ async function openWAISModal (idUser, idApplication, test, mode) {
   const areas = (isModify || isConsult) ? (fetchedTest.areas ?? {}) : {};
   const prefill = {
     comVerbal: {
-      score:  areas.comVerbal?.score          ?? '',
+      score: areas.comVerbal?.score          ?? '',
       interp: areas.comVerbal?.interpretation ?? '—',
     },
     razonPerceptual: {
-      score:  areas.razonPerceptual?.score          ?? '',
+      score: areas.razonPerceptual?.score          ?? '',
       interp: areas.razonPerceptual?.interpretation ?? '—',
     },
     memWork: {
-      score:  areas.memWork?.score          ?? '',
+      score: areas.memWork?.score          ?? '',
       interp: areas.memWork?.interpretation ?? '—',
     },
     veloProce: {
-      score:  areas.veloProce?.score          ?? '',
+      score: areas.veloProce?.score          ?? '',
       interp: areas.veloProce?.interpretation ?? '—',
     },
     scoreTotal: (isModify || isConsult) ? (fetchedTest.scoreTotal ?? '') : '',
-    notes:      (isModify || isConsult) ? (fetchedTest.notes      ?? '') : '',
+    notes: (isModify || isConsult) ? (fetchedTest.notes      ?? '') : '',
   };
 
   // ── Render ────────────────────────────────────────────────────────────────

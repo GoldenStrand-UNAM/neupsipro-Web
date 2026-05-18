@@ -74,8 +74,5 @@ module.exports = (authUseCase) => {
     (req, res) => deleteController.deleteUser(req, res)
   );
 
-
-  
-
   return router;
 };

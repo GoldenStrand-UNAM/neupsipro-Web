@@ -46,7 +46,7 @@ class getTestsByApplicationUseCase {
         t.testName,
         t.idResults,
         t.status,
-        t.dateApplied,
+        t.dateApplied
       )),
     };
   }
