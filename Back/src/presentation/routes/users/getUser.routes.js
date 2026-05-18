@@ -19,6 +19,9 @@ const ApplicationsController   = require('../../controller/testApplications/post
 const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
 const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
+const checkExpiryUseCase    = require('../../../application/usecase/testApplications/checkExpiryUseCase');
+const checkExpiryController = require('../../controller/testApplications/checkExpiry.controller');
+
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
@@ -48,6 +51,15 @@ module.exports = (authUseCase) => {
     });
   });
 
+  // Check and update expiry status for all active applications of a user.
+  // Called when the user profile page loads.
+  router.get(
+    '/:id_user/aplicaciones/check-expiry',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => expiryController.checkExpiry(req, res)
+  );
+
   //Create Application route
 
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
@@ -58,6 +70,9 @@ module.exports = (authUseCase) => {
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
   );
+
+
+  
 
   return router;
 };
