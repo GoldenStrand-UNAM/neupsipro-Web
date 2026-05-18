@@ -33,6 +33,9 @@ const getMOCAResultController     = require('../../controller/testApplications/g
 const postREYUseCase    = require('../../../application/usecase/testApplications/postREYUseCase');
 const postREYController = require('../../controller/testApplications/postREY.controller');
 
+const getREYResultUseCase  = require('../../../application/usecase/testApplications/getREYUseCase');
+const getREYController     = require('../../controller/testApplications/getREY.controller');
+
 //NIH
 const postNIHUseCase       = require('../../../application/usecase/testApplications/postNIHUseCase');
 const postNIHController    = require('../../controller/testApplications/postNIH.controller');
@@ -87,6 +90,9 @@ module.exports = (authUseCase) => {
   const reyUseCase    = new postREYUseCase(testResultsRepo);
   const reyController = new postREYController(reyUseCase);
 
+  const getREYUseCase = new getREYResultUseCase(testResultsRepo);
+  const getREYCtrl    = new getREYController(getREYUseCase);
+
 
 
   //AUTH & PERMISSIONS MIDDLEWARE
@@ -111,7 +117,7 @@ module.exports = (authUseCase) => {
     (req, res) => controller.getTests(req, res)
   );
 
-  //========================= REY ===============================
+  //========================= BANFE ===============================
   router.post(
     '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/1/resultados',
     authMiddleware.verifyToken,
@@ -164,6 +170,13 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('tests', 'consultation'),
     (req, res) => reyController.postResult(req, res)
+  );
+
+  router.get(
+  '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados/:id_results',
+  authMiddleware.verifyToken,
+  permissionsMiddleware.requirePermission('Tests', 'consultation'),
+  (req, res) => getREYCtrl.getResult(req, res)
   );
 
   // ======================== NIH ===============================
