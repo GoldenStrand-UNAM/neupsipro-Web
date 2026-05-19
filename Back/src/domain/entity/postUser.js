@@ -1,25 +1,25 @@
 class User {
-  constructor ({ idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex }) {
-    this.idRole = idRole,
-    this.userName = userName,
-    this.firstName = firstName,
-    this.lastnameP = lastnameP,
-    this.lastnameM = lastnameM || null,
-    this.birthdate = birthdate,
-    this.passwordHash = passwordHash,
-    this.assigned = assigned,
-    this.phase = phase,
-    this.basePathology = basePathology,
-    this.modality = modality,
-    this.profilePhoto = profilePhoto || null,
-    this.referenceNumber = referenceNumber,
-    this.amputationDate = amputationDate,
-    this.amputationLevel = amputationLevel,
-    this.laterality = laterality,
-    this.prosthetist = prosthetist,
-    this.neuroEntryDate = neuroEntryDate,
-    this.pairs = pairs,
-    this.sex = sex
+  constructor ({ data }) {
+    this.id_role = data.idRole,
+    this.user_name = data.userName,
+    this.first_name = data.firstName,
+    this.lastname_p = data.lastnameP,
+    this.lastname_m = data.lastnameM || null,
+    this.birthdate = data.birthdate,
+    this.password_hash = data.passwordHash,
+    this.id_clinic_user = data.assigned,
+    this.neuro_status = data.phase,
+    this.base_pathology = data.basePathology,
+    this.attendance = data.modality,
+    this.profile_photo = data.profilePhoto || null,
+    this.reference_number = data.referenceNumber,
+    this.amputation_date = data.amputationDate,
+    this.amputation_level = data.amputationLevel,
+    this.laterality = data.laterality,
+    this.prosthetist = data.prosthetist,
+    this.neuro_entry_date = data.neuroEntryDate,
+    this.group_intervention = data.pairs,
+    this.gender = data.sex
   }
 }
 
