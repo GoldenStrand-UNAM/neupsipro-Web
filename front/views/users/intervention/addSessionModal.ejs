@@ -65,9 +65,8 @@
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
 <script>
 (function () {
@@ -85,6 +84,7 @@
     const inputDqp = document.getElementById('sessionDqpInput');
 
     const idUser = (window.__INTERVENTION_DATA__ || {}).idUser;
+    
     let picker = null;
 
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
@@ -128,7 +128,7 @@
             // post to api json with fetch
             const res = await fetch(`/users/${idUser}/intervention/sessions`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken,  },
                 credentials: 'include',
                 body: JSON.stringify({
                     session_number: sessionNumber || null,
