@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
-//const { doubleCsrf } = require('csrf-csrf');
+const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
 const app = express();
@@ -18,9 +18,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet({
+  //TODO: remove once we have HTTPS certificate
+  hsts: false,
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'upgrade-insecure-requests': null,
 
       'default-src': ["'self'"],
 
@@ -63,7 +66,7 @@ app.use (session({
   saveUninitialized: true,
 }));
 
-/*const {
+const {
   generateCsrfToken,
   doubleCsrfProtection,
 } = doubleCsrf({
@@ -71,14 +74,16 @@ app.use (session({
   getSessionIdentifier: (req) => req.session.id,
   cookieName: 'x-csrf-token',
   cookieOptions: { httpOnly: true, sameSite: 'lax', secure: false },
-  getCsrfTokenFromRequest: (req) => req.body['x-csrf-token'] || req.headers['x-csrf-token'],
+  getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-app.use(doubleCsrfProtection);
+if (process.env.NODE_ENV !== 'test') {
+  app.use(doubleCsrfProtection);
+}
 app.use((req, res, next) => {
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
-});*/
+});
 
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
