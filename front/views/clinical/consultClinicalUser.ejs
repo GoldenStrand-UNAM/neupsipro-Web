@@ -159,6 +159,7 @@
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Fecha de asignación</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Actividad</th>
+                                <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Consultar información</th>
                             </tr>
                         </thead>
                         <tbody id="users-tbody">
@@ -214,6 +215,8 @@ async function fetchUsers() {
 
 // = ====  Render===========
 function renderTable(users) {
+    console.log("¿Qué trae users?", users); 
+    console.log("Estructura del primer usuario:", users[0]);
     const tbody = document.getElementById("users-tbody");
     if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
 
@@ -222,7 +225,22 @@ function renderTable(users) {
             <td class="py-3 px-4 text-gray-500">${escapeHtml(u.name)}</td>
             <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(formatAppointmentDate(u.assigmentDate))}</td>
-            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>            
+            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>   
+            <td class="py-3 px-6 flex justify-center">
+                        <button
+                            onclick="consultar('${escapeHtml(u.id)}')"
+                            class="btn-mini bg-[#3350A9]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
+                                    9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span>Consultar</span>
+                        </button>
+                    </td>         
         </tr>
     `).join("");
 }
@@ -271,6 +289,9 @@ function showMsg(msg, colorClass) {
     </td>
     </tr>`;
     document.getElementById("pagination").innerHTML = "";
+}
+function consultar(id) {
+            window.location.href = `/users/${id}`
 }
 fetchUsers();
     </script>
