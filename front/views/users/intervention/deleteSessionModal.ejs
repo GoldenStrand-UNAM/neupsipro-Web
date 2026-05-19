@@ -69,6 +69,7 @@
             const res = await fetch(`/users/${idUser}/intervention/sessions/${pendingSessionId}`, {
                 method: 'DELETE',
                 credentials: 'include',
+                 headers: {'x-csrf-token': _csrfToken,},
             });
             const json = await res.json();
             if (!res.ok) throw new Error(json.error || 'Error al eliminar');
