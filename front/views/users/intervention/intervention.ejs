@@ -155,13 +155,30 @@
                                 </tr>
                             <% } else { %>
                                 <% intervention.sessions.forEach((s, idx) => { %>
-                                    <tr class="border-t border-gray-100 hover:bg-gray-50 align-top">
-                                        <td class="py-3 px-4 text-gray-700 break-words"><%= new Date(s.sessionDate).toLocaleDateString('es-MX') %></td>
-                                        <td class="py-3 px-4 text-gray-700 break-words"><%= s.sessionNumber || '—' %></td>
-                                        <td class="py-3 px-4 text-gray-700 break-words truncatable"><%= s.development || '—' %></td>
-                                        <td class="py-3 px-4 text-gray-700 break-words truncatable"><%= s.objectives || '—' %></td>
-                                        <td class="py-3 px-4 text-gray-700 break-words truncatable"><%= s.dqpTask || '—' %></td>
-                                        <td class="py-3 px-4 text-center">
+                                    <tr class="session-row border-t border-gray-100 hover:bg-gray-50 align-top cursor-pointer"
+                                        data-date="<%= new Date(s.sessionDate).toLocaleDateString('es-MX') %>"
+                                        data-number="<%= s.sessionNumber || '—' %>"
+                                        data-development="<%= s.development || '—' %>"
+                                        data-objectives="<%= s.objectives || '—' %>"
+                                        data-dqp="<%= s.dqpTask || '—' %>">
+
+                                        <td class="py-3 px-4 text-gray-700 break-words">
+                                            <%= new Date(s.sessionDate).toLocaleDateString('es-MX') %>
+                                        </td>
+                                        <td class="py-3 px-4 text-gray-700 break-words">
+                                            <%= s.sessionNumber || '—' %>
+                                        </td>
+                                        <td class="py-3 px-4 text-gray-500 break-words truncatable">
+                                            <%= s.development || '—' %>
+                                        </td>
+                                        <td class="py-3 px-4 text-gray-500 break-words truncatable">
+                                            <%= s.objectives || '—' %>
+                                        </td>
+                                        <td class="py-3 px-4 text-gray-500 break-words truncatable">
+                                            <%= s.dqpTask || '—' %>
+                                        </td>
+
+                                        <td class="py-3 px-4 text-center" onclick="event.stopPropagation()">
                                             <% if (idx === intervention.sessions.length - 1) { %>
                                                 <button class="btn-delete-session text-red-500 hover:text-red-700 cursor-pointer"
                                                         data-session-id="<%= s.idSession %>"
@@ -195,34 +212,6 @@
         </main>
     </div>
 
-    <script>
-const LIMIT = 120;
-// Truncate long text in session table and add "Leer más" button
-document.querySelectorAll('#sessionsTbody .truncatable').forEach(td => {
-    const full = td.textContent.trim();
-    // If text is short enough, leave it as is
-    if (full.length <= LIMIT) return;
-    // Replace cell content with two spans short preview till limit and button 
-    td.innerHTML = `
-        <span class="short">${full.substring(0, LIMIT)}…</span>
-        <span class="full hidden">${full}</span>
-        <button class="read-more-btn text-[#3350A9] text-xs hover:underline ml-1 cursor-pointer">Leer más</button>
-    `;
-});
-
-document.getElementById('sessionsTbody').addEventListener('click', e => {
-    // Ignore clicks that arent on a read-more button
-    const btn = e.target.closest('.read-more-btn');
-    if (!btn) return;
-
-    const td = btn.closest('td');
-
-    // Toggle full text visibility and flip short text accordingly
-    const expanded = td.querySelector('.full').classList.toggle('hidden');
-    td.querySelector('.short').classList.toggle('hidden', !expanded);
-    btn.textContent = expanded ? 'Leer más' : 'Leer menos';
-});
-</script>
 
     <script>
         window.__INTERVENTION_DATA__ = {
@@ -240,5 +229,6 @@ document.getElementById('sessionsTbody').addEventListener('click', e => {
     <%- include('./editContractModal') %>
     <%- include('./addSessionModal') %>
     <%- include('./deleteSessionModal') %>
+    <%- include('./sessionDetailModal') %>
 </body>
 </html>
