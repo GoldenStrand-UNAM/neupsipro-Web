@@ -82,6 +82,26 @@ class ImpForumRepository extends forumRepository {
     );
     return result;
   }
+
+  // find publication
+  async findById ({ idPublication }) {
+    const [rows] = await db.query(
+      `SELECT id_publication, id_user, title, image
+       FROM publication
+       WHERE id_publication = ?
+       LIMIT 1`,
+      [idPublication]
+    );
+    return rows.length ? rows[0] : null;
+  }
+  // delete publication by id
+  async deletePublication ({ idPublication }) {
+    const [result] = await db.query(
+      'DELETE FROM publication WHERE id_publication = ?',
+      [idPublication]
+    );
+    return result.affectedRows > 0;
+  }
 }
 
 module.exports = ImpForumRepository;
