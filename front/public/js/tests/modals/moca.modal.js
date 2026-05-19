@@ -1,4 +1,4 @@
-/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
 
 // ── Interpretation ───────────────────────────────────────────────────────────
 
@@ -347,7 +347,7 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         // Send raw score — server applies bonus and interpretation
         body: JSON.stringify({ score: raw, notes }),
       });
