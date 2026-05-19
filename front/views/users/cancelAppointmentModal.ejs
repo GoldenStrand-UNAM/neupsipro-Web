@@ -67,7 +67,7 @@
 
             const res = await fetch(`/users/${idUser}/appointments`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken,  },
                 credentials: 'include',
             });
 

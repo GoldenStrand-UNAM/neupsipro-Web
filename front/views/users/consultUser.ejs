@@ -490,6 +490,7 @@
 
    <script>
         window.__USER_DATA__ = <%- JSON.stringify(usuario).replace(/</g, '\\u003c') %>;
+        window.__CSRF_TOKEN__ = "<%= csrfToken %>";
     </script>
 
 
