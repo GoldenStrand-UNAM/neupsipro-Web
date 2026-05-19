@@ -39,6 +39,7 @@ class appointmentsDTO {
       date: appointmentsDTO._formatDate(appointment.date_time),
       name: appointment.full_name,
       day: appointment.day_separation,
+      issue: appointment.issue,
     }));
   }
   static _formatDate (d) {
