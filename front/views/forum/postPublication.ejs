@@ -205,6 +205,7 @@
     try {
       const res = await fetch('/forum/post', {
         method: 'POST',
+        headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
 
