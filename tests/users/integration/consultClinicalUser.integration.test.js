@@ -27,7 +27,7 @@ jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () =>
 
 // 3. ClinicalUseCase Mock (Retunr DTO data)
 const mockExecuteClinical = jest.fn();
-jest.mock('../../../Back/src/application/Usecase/clinical/getClinicalUserUseCase', () => {
+jest.mock('../../../Back/src/application/usecase/clinical/getClinicalUserUseCase', () => {
     return jest.fn().mockImplementation(() => ({
         execute: mockExecuteClinical,
     }));
