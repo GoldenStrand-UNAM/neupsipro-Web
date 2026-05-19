@@ -1,4 +1,4 @@
-/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
 
 // ── CONSULT MODAL ─────────────────────────────────────────────────────────────
 // Read-only view of a graded NIH result.
@@ -165,7 +165,7 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         body: JSON.stringify({ notes }),
       });
 

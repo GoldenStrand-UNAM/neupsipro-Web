@@ -1,4 +1,4 @@
-/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
 
 // ── Normative tables (client-side mirror for live display) ───────────────────
 // These are read-only copies — server always recalculates on save.
@@ -635,7 +635,7 @@ function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         // Send raw scores and times — server calculates all percentiles
         body: JSON.stringify(body),
       });

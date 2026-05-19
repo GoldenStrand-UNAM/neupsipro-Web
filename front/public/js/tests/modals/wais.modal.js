@@ -1,4 +1,4 @@
-/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast */
+/* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
 // Interpretation
 
 function interpretWAIS (score) {
@@ -331,7 +331,7 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         body: JSON.stringify({ ...scores, notes }),
       });
 
