@@ -1,4 +1,4 @@
-const LoginUseCase = require('../../../Back/src/application/Usecase/auth/loginUseCase');
+const LoginUseCase = require('../../../Back/src/application/usecase/auth/loginUseCase');
 
 describe('LoginUseCase Unit Test', () => {
     let loginUseCase;

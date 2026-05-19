@@ -38,7 +38,7 @@ describe('Session in multiple tabs', () => {
       .set('Cookie', sharedToken);
 
     const res = await request(app)
-      .get('/home')
+      .get('/dashboard')
       .set('Cookie', sharedToken);
 
     expect([302, 401, 403]).toContain(res.status);
