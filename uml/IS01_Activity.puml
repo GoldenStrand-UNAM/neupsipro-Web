@@ -1,0 +1,47 @@
+@startuml login IS01
+title Login Flow
+
+|User|
+start
+:Enters to the web page;
+:Enters username in username field;
+:Enters password in password field;
+:Clicks login button;
+
+|System|
+:Checks if the username exists;
+
+if (Username exists?) then (yes)
+    :Checks if username is active;
+    if (Username is active?) then (yes)
+        :Checks if passwords match;
+        if (Passwords match?) then (yes)
+            :Redirects to home page;
+        else (no)
+            :Shows message 'Credenciales inválidas';
+            if (Attempts > 3) then (yes)
+                |System|
+                :Blocks account for 15 min;
+            else (no)
+                |User|
+                :Tries again;
+            endif
+        endif
+    else (no)
+        |System|
+        :Shows message 'This account is not active';
+    endif
+else (no)
+    |System|
+    :Shows message 'Credenciales inválidas';
+    if (Attempts > 3) then (yes)
+                |System|
+                :Blocks account for 15 min;
+            else (no)
+                |User|
+                :Tries again;
+            endif
+endif
+
+stop
+@enduml
