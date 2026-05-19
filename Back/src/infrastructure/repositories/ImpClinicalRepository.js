@@ -2,7 +2,7 @@ const db = require('../database/database');
 const clinicalRepository = require('../../domain/repository/clinicalRepository');
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
-const ClinicalPatient = require('../../domain/entity/ClinicalPatient');
+const ClinicalPatient = require('../../domain/entity/clinicalPatient');
 
 class ImpClinicalRepository extends clinicalRepository {
   async fetchActivePatients ({ search, page, limit }) {
