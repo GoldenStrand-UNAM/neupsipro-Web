@@ -1,57 +1,107 @@
 @startuml Registro de resultados de pruebas
 
+title Registro de resultados de pruebas
+
+|Usuario|
 start
+:Selecciona tarjeta de prueba;
 
-:Select test;
+|Sistema|
+if (¿Aplicación caducada?) then (sí)
+  :Muestra banner de caducidad;\nnote right\n  Solo Consultar habilitado\nend note
+  |Usuario|
+  :Solo puede consultar resultados;
+  stop
+endif
 
-:Show modal with options;
+:Muestra modal de opciones;
 note right
-- Registrar resultados
-- Modificar resultados
-- Consultar resultados
+  Registrar: deshabilitado si ya calificada
+  Modificar: solo si calificada y activa
+  Consultar: solo si calificada
 end note
 
-:Select "Registrar resultados";
+|Usuario|
+:Selecciona "Registrar resultados";
 
-:Show register results modal;
+|Sistema|
+if (¿Prueba requiere escolaridad/edad?) then (sí)
+  :Hace fetch GET /escolaridad\ny GET /edad en paralelo;
+  :Muestra banner informativo\ncon bloque educativo y rango de edad;
+endif
+:Muestra modal de registro\ncon inputs por área;
 
-:Enter score number;
+|Usuario|
+:Ingresa scores por área;
 
-:System interprets result automatically;
+|Sistema|
+:Valida input en vivo\n(solo dígitos, no negativo);
+if (¿Input inválido?) then (sí)
+  :Muestra error por campo;
+  |Usuario|
+  :Corrige el campo;
+  |Sistema|
+endif
+:Calcula interpretación en vivo\npor área (sin submit);
+:Actualiza score total en vivo\n(suma de áreas si aplica);
 
-:Show live interpretation;
-note right
-Only one word
-Example:
-"Normal"
-"Low"
-"High"
-end note
+|Usuario|
+:Ingresa notas (opcional);
 
-:Enter notes;
+|Sistema|
+:Actualiza contador\nlen / max (200 o 500 chars);
 
-if (¿Desea guardar resultados?) then (Sí)
+|Usuario|
+if (¿Desea guardar?) then (sí)
 
-    :Validate data;
+  |Sistema|
+  :Valida client-side\n- scores presentes y no negativos\n- notas dentro del límite;
+  if (¿Datos válidos?) then (no)
+    :Muestra error por campo;
+    |Usuario|
+    :Corrige los datos;
+    |Sistema|
+  endif
 
-    if (¿Datos correctos?) then (Sí)
+  :Hace POST con scores\n(sin interpretaciones);
 
-        :Save data in database;
-        :Show confirmation message;
-        stop
-
-    else (No)
-
-        :Show error message;
-        stop
-
-    endif
-
-else (No)
-
-    :Close modal;
+  :Valida scores en servidor\n(tipo, rango, presencia);
+  if (¿Validación ok?) then (no)
+    :Retorna HTTP 422;
+    :Muestra error de API;
     stop
+  endif
 
+  :Busca fila en test_results\npor id_user + id_application + id_test;
+  if (¿Fila encontrada?) then (no)
+    :Retorna HTTP 404;
+    :Muestra error de API;
+    stop
+  endif
+
+  if (¿Prueba requiere escolaridad/edad?) then (sí)
+    :Obtiene escolaridad y edad desde DB;
+    :Resuelve bloque educativo\ny rango de edad;
+    if (¿Datos insuficientes?) then (sí)
+      :Retorna HTTP 422\n'Missing age or schooling data';
+      :Muestra error de API;
+      stop
+    endif
+  endif
+
+  :Recalcula interpretaciones\nserver-side;
+  :UPSERT en tabla del instrumento\n(banfe_results, wais_results, etc.);
+  :Actualiza test_results\nSET status = 3, date_applied = CURDATE();
+  :Retorna HTTP 200 con DTO;
+
+  :Cierra modal;
+  :Actualiza badge de tarjeta\n"Por comenzar" → "Calificada";
+  :Muestra toast\n"Resultado guardado con éxito" (3s);
+  stop
+
+else (no)
+  :Cierra modal;
+  stop
 endif
 
 @enduml
