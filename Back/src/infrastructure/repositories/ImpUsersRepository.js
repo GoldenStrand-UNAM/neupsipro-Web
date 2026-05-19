@@ -89,26 +89,32 @@ class ImpUsersRepository extends usersRepository {
     
     try{
       await db.query(
-      `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash]
+      `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash, gender)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash, sex]
       );
 
       await db.query(
-      `INSERT INTO user_info (id_user, program_phase, base_patology, modality, profile_photo, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention, sex)
-      VALUES (?, ?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, phase, basePathology, modality, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex] 
+      `INSERT INTO user_info (id_user, neuro_status, base_patology, attendance, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention)
+      VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?)`,
+      [idUser, phase, basePathology, modality, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs] 
       );
 
       await db.query(
-        `INSERT INTO user_relation (id_user_relation, id_user, id_clinical, assignment_date., type)
+        `INSERT INTO user_relation (id_user_relation, id_user, id_clinic_user, assignment_date, type)
         VALUES(?, ?, ?, ?, CURRENT_DATE, 'assigned')`,
         [idRelation, idUser, assigned]
       );
 
       const [rows] = await db.query(
-            `SELECT * FROM users u, user_info ui
-            WHERE id_user = ?`,
+            `SELECT
+            u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.password_hash, u.profile_photo, u.gender,
+            ui.neuro_status, ui.base_pathology, ui.attendance, ui.reference_number, ui.amputation_date, ui.amputation_level, ui.laterality, ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
+            ur.id_clinic_user
+            FROM users u
+            LEFT JOIN user_info ui ON ui.id_user = u.id_user
+            LEFT JOIN user_relation ur ON ur.id_user = u.id_user
+            WHERE u.id_role = ? AND ur.type = 'assigned';`,
             [idUser]
           );
       

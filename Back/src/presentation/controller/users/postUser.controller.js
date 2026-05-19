@@ -35,11 +35,7 @@ class PostUserController {
       });
       res.status(200).json(user);
     } catch (error) {
-      if (error.message.includes('obligatorio') || error.message.includes('caracteres')) {
-        return res.status(422).json({ error: error.message });
-      }
-      console.log(error);
-      res.status(500).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 
