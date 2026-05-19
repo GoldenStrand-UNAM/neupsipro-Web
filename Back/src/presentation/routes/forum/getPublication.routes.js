@@ -1,6 +1,6 @@
 const express = require('express');
 
-const PublicationController = require('../../controller/forum/getPublication.Controller');
+const PublicationController = require('../../controller/forum/getPublication.controller');
 const GetPublicationUseCase =  require('../../../application/usecase/forum/getPublicationUseCase');
 const InteractionRepository = require('../../../infrastructure/repositories/ImpInteractionRepository');
 const PublicationRepository = require('../../../infrastructure/repositories/ImpForumRepository');

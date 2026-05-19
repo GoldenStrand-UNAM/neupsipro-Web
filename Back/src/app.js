@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
-//const { doubleCsrf } = require('csrf-csrf');
+const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
 const app = express();
@@ -18,9 +18,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet({
+  //TODO: remove once we have HTTPS certificate
+  hsts: false,
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'upgrade-insecure-requests': null,
 
       'default-src': ["'self'"],
 
@@ -49,21 +52,22 @@ app.use((req, res, next) => {
 if (loginLimiter) app.post('/auth/login', loginLimiter);
 if (generalLimiter) app.use(generalLimiter);
 
-const AuthService = require("./infrastructure/auth/AuthService");
-const LoginUseCase = require("./application/Usecase/auth/loginUseCase");
-const LogoutUseCase = require("./application/Usecase/auth/logoutUseCase");
-const AuthorizationUseCase = require("./application/Usecase/auth/authorizationUseCase");
+const AuthService = require('./infrastructure/auth/authService');
+const LoginUseCase = require('./application/usecase/auth/loginUseCase');
+const LogoutUseCase = require('./application/usecase/auth/logoutUseCase');
+const AuthorizationUseCase = require('./application/usecase/auth/authorizationUseCase');
 const PostUserUseCase = require("./application/Usecase/users/postUserUseCase");
-const LoginController = require("./presentation/controller/auth/login.controller");
-const LogoutController = require("./presentation/controller/auth/logout.controller");
-const authRoutes = require("./presentation/routes/auth/auth.routes");
+const LoginController = require('./presentation/controller/auth/login.controller');
+const LogoutController = require('./presentation/controller/auth/logout.controller');
+const authRoutes = require('./presentation/routes/auth/auth.routes');
+
 app.use (session({
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
   saveUninitialized: true,
 }));
 
-/*const {
+const {
   generateCsrfToken,
   doubleCsrfProtection,
 } = doubleCsrf({
@@ -71,14 +75,16 @@ app.use (session({
   getSessionIdentifier: (req) => req.session.id,
   cookieName: 'x-csrf-token',
   cookieOptions: { httpOnly: true, sameSite: 'lax', secure: false },
-  getCsrfTokenFromRequest: (req) => req.body['x-csrf-token'] || req.headers['x-csrf-token'],
+  getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-app.use(doubleCsrfProtection);
+if (process.env.NODE_ENV !== 'test') {
+  app.use(doubleCsrfProtection);
+}
 app.use((req, res, next) => {
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
-});*/
+});
 
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
@@ -88,7 +94,6 @@ const HashingService = require('./infrastructure/external/hashing.service');
 const JwtService = require('./infrastructure/external/jwt.service');
 const CacheService = require('./infrastructure/external/memoryCache.service');
 
-const homeRoutes = require('./presentation/routes/home/home.routes');
 const AuthMiddleware = require('./infrastructure/auth/auth.middleware');
 
 const jwtService = new JwtService();
@@ -110,15 +115,12 @@ const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
 app.use('/auth', authRoutes(logoutController, loginController));
-app.use('/', homeRoutes(authUseCase));
 
 //================ Routes =======================
 app.use((req, res, next) => {
   res.locals.activePage = '';
   next();
 });
-
-app.use('/', homeRoutes(authMiddleware));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
@@ -133,7 +135,7 @@ const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase));
 
-const userRoutes = require('./presentation/routes/users/getUser.Routes');
+const userRoutes = require('./presentation/routes/users/getUser.routes');
 
 app.use('/users', userRoutes(authUseCase));
 
@@ -144,11 +146,11 @@ app.use('/', postUserRoutes(authUseCase));
 
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
-const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.Routes');
+const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
 
 app.use('/', clinicalRoutes(authUseCase));
 
-const postPublicationRoutes = require('./presentation/routes/forum/postPublication.Routes');
+const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
 
 app.use('/', postPublicationRoutes(authUseCase));
 
