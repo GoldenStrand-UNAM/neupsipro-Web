@@ -1,0 +1,69 @@
+@startuml Activity_Consultar_Usuarios_Clinicos
+
+start
+
+:Admin accesses "Equipo Clínico";
+
+:consultUsersClinicalList.ejs loads;
+
+:main.js executes fetchUsers();
+
+:GET /api/usuarios-clinicos;
+
+:verifyToken();
+
+if (JWT valid?) then (Yes)
+
+    :requirePermission();
+
+    if (Permission granted?) then (Yes)
+
+        :Controller extracts query params;
+
+        :sanitize search;
+
+        fork
+
+            :fetchActivePatients();
+
+            :SELECT clinical users;
+
+            :Map rows → userClinicalSummaryEntity;
+
+        fork again
+
+            :countActivePatients();
+
+            :COUNT total users;
+
+        end fork
+
+        :Calculate totalPages;
+
+        :Map Entity → DTO;
+
+        :HTTP 200 JSON Response;
+
+        :renderTable(users);
+
+        :renderPagination();
+
+        :Update DOM;
+
+        :Display clinical users table;
+
+    else (No)
+
+        :403 Forbidden;
+
+    endif
+
+else (No)
+
+    :401 Unauthorized;
+
+endif
+
+stop
+
+@enduml
