@@ -60,7 +60,7 @@ function openSessionDetailModal({ date, number, development, objectives, dqp }) 
             <!-- Tab content panels -->
             ${tabs.map((t, i) => `
                 <p id="tab-${t.key}"
-                   class="text-sm text-gray-700 leading-relaxed whitespace-pre-line ${i !== 0 ? 'hidden' : ''}">
+                    class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words overflow-hidden ${i !== 0 ? 'hidden' : ''}">
                     ${t.content}
                 </p>
             `).join('')}
