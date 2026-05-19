@@ -1,0 +1,20 @@
+@startuml Consultar_Publicaciones
+title Consultar Publicaciones
+
+|Usuario|
+start
+:Clic en "Ver publicaciones";
+
+|Sistema|
+if (¿Existen publicaciones?) then (no)
+    :Muestra mensaje 'No hay publicaciones disponibles';
+else (sí)
+    :Carga lista de publicaciones;
+    :Muestra publicaciones al usuario;
+endif
+
+|Usuario|
+:Visualiza las publicaciones;
+
+stop
+@enduml
