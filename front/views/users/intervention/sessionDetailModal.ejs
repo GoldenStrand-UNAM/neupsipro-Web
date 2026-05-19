@@ -14,13 +14,14 @@ function openSessionDetailModal({ date, number, development, objectives, dqp }) 
 
     // Remove any existing instance
     document.getElementById('sessionDetailModal')?.remove();
-
+    // key matches the panel id and the data-tab attribute of the button
     const tabs = [
         { key: 'development', label: 'Desarrollo', content: development },
         { key: 'objectives', label: 'Objetivos', content: objectives  },
         { key: 'dqp', label: 'DQP / Tarea', content: dqp  },
     ];
-
+   
+    // Create the modal overlay and inject HTML
     const modal = document.createElement('div');
     modal.id  = 'sessionDetailModal';
     modal.className = 'fixed inset-0 z-50 flex items-center justify-center';
