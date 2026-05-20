@@ -20,6 +20,8 @@ describe('GetClinicalUserDashboardUseCase', () => {
     usersRepository = {
       fetchNumberUsers: jest.fn(),
       fetchAllWithClinical: jest.fn(),
+      fetchHistoricalNumberUsers: jest.fn(),
+
     };
     appointmentRepository = {
       fecthAppointmentWithClinical: jest.fn(),
@@ -58,6 +60,7 @@ describe('GetClinicalUserDashboardUseCase', () => {
   test('return empty structures if there is no data', async () => {
     usersRepository.fetchNumberUsers.mockResolvedValue([{ total: 0 }]);
     usersRepository.fetchAllWithClinical.mockResolvedValue([]);
+    usersRepository.fetchHistoricalNumberUsers.mockResolvedValue([{ total: 0 }]);
     appointmentRepository.fecthAppointmentWithClinical.mockResolvedValue([]);
 
     const result = await useCase.execute({ idClinicalUser: 1 });
@@ -72,32 +75,40 @@ describe('GetClinicalUserDashboardUseCase', () => {
     });
   });
 
-  test('Happy path', async () => {
-    const fakeNumberUsers = [{ total: 3 }];
-    const fakeUsers = [
-      { idUser: 1, name: 'Ana López', protocol: 'P-001' },
-      { idUser: 2, name: 'Carlos Ruiz', protocol: 'P-002' },
-      { idUser: 3, name: 'María Torres', protocol: 'P-003' },
-    ];
-    const fakeAppointments = [
-      { idAppointment: 10, idUser: 1, date: '2025-06-01', status: 'scheduled' },
-      { idAppointment: 11, idUser: 2, date: '2025-06-03', status: 'completed' },
+test('Happy path', async () => {
+    const fakeNumbers         = { total: 3, discharged: 1, inIntervention: 2 };
+    const fakeHistorical      = { total: 10, discharged: 5, inIntervention: 5 };
+    const fakeUsers           = [
+      { id_user: 1, first_name: 'Ana',    lastname_p: 'López',  lastname_m: 'M' },
+      { id_user: 2, first_name: 'Carlos', lastname_p: 'Ruiz',   lastname_m: 'R' },
     ];
 
-    usersRepository.fetchNumberUsers.mockResolvedValue(fakeNumberUsers);
+    const fakeAppointments    = [
+      { id_appointment: 10, day_separation: 'today',    full_name: 'Ana López',   date_time: '2025-06-01T10:00:00' },
+      { id_appointment: 11, day_separation: 'tomorrow', full_name: 'Carlos Ruiz', date_time: '2025-06-02T11:00:00' },
+      { id_appointment: 12, day_separation: 'other',    full_name: 'María Torres', date_time: '2025-06-05T09:00:00' },
+    ];
+
+    usersRepository.fetchNumberUsers.mockResolvedValue([fakeNumbers]);
     usersRepository.fetchAllWithClinical.mockResolvedValue(fakeUsers);
+    usersRepository.fetchHistoricalNumberUsers.mockResolvedValue([fakeHistorical]);
     appointmentRepository.fecthAppointmentWithClinical.mockResolvedValue(fakeAppointments);
 
     const result = await useCase.execute({ idClinicalUser: 5 });
 
+
     expect(result).toEqual({
-      numberUsers: { total: 3 },
-      users: { usersList: fakeUsers },
-      appointments: fakeAppointments,
+      numbers:              fakeNumbers,
+      users:                { usersList: fakeUsers },
+      appointmentsToday:    { appointmentsList: [fakeAppointments[0]] },
+      appointmentsTomorrow: { appointmentsList: [fakeAppointments[1]] },
+      appointmentsOther:    { appointmentsList: [fakeAppointments[2]] },
+      historicalNumbers:    fakeHistorical,
     });
 
     expect(usersRepository.fetchNumberUsers).toHaveBeenCalledWith({ idClinicalUser: 5 });
     expect(usersRepository.fetchAllWithClinical).toHaveBeenCalledWith({ idClinicalUser: 5 });
+    expect(usersRepository.fetchHistoricalNumberUsers).toHaveBeenCalledWith({ idClinicalUser: 5 });
     expect(appointmentRepository.fecthAppointmentWithClinical).toHaveBeenCalledWith({ idClinicalUser: 5 });
   });
 });
