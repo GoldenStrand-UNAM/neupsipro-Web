@@ -1,90 +1,59 @@
 @startuml Activity_Registrar_Publicacion
+title Register Publication
+
+|Clinic User|
 
 start
 
-:Clinic User opens Forum;
+:Open Forum;
 
-:Click [+ Publicar];
+:Click "Publicar";
 
-:Load publication form;
+:Fill publication form;
 
-:Fill title/content/image;
+:Attach optional image;
 
-:Click Publicar;
+:Submit publication;
 
-if (Content empty?) then (Yes)
+if (Content completed?) then (no)
 
-    :showToast("Contenido obligatorio");
-
+    |System|
+    :Show validation message;
     stop
 
 endif
 
-:POST /forum/post;
+|System|
 
-:verifyToken();
+:Validate user authorization;
 
-if (JWT valid?) then (Yes)
+if (Authorized?) then (no)
 
-    :requirePermission();
+    :Reject action;
+    stop
 
-    if (Permission granted?) then (Yes)
+endif
 
-        :Multer temporary upload;
+if (Image attached?) then (yes)
 
-        if (Image exists?) then (Yes)
+    :Validate image;
 
-            :Validate image type and size;
+    if (Valid image?) then (no)
 
-            if (Image valid?) then (No)
-
-                :HTTP Error;
-
-                stop
-
-            endif
-
-            :Upload image to AWS S3;
-
-            :Generate public URL;
-
-        endif
-
-        :Controller extracts data;
-
-        :Create Publication Entity;
-
-        if (Entity validation fails?) then (Yes)
-
-            :HTTP 422 Validation Error;
-
-            stop
-
-        endif
-
-        :Repository save();
-
-        :INSERT publication;
-
-        :Map Entity → DTO;
-
-        :HTTP 201 Created;
-
-        :Redirect to Forum;
-
-        :Display success toast;
-
-    else (No)
-
-        :403 Forbidden;
+        :Show upload error;
+        stop
 
     endif
 
-else (No)
-
-    :401 Unauthorized;
+    :Store image;
 
 endif
+
+:Save publication;
+
+:Show confirmation message;
+
+:Redirect to forum;
 
 stop
 

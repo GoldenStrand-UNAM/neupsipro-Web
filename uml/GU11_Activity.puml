@@ -1,76 +1,49 @@
 @startuml Activity_Consultar_Usuarios
+title Consult Users List
+
+|Admin|
 
 start
 
-:Admin accesses "Usuarios";
+:Access "Usuarios";
 
-:consultUsersList.ejs loads;
+|System|
 
-:main.js executes fetchUsers();
+:Load users page;
 
-:GET /api/users;
+:Display users list;
 
-:verifyToken();
+|Admin|
 
-if (JWT valid?) then (Yes)
+:Search users or change page;
 
-    :requirePermission();
+|System|
 
-    if (Permission granted?) then (Yes)
+:Validate search criteria;
 
-        :Controller extracts query params;
+if (Search valid?) then (no)
 
-        if (search length >100?) then (Yes)
+    :Show validation message;
 
-            :HTTP 429 Search Too Long;
+else (yes)
 
-        else (No)
+    :Retrieve matching users;
 
-            :sanitize search;
+    :Calculate pagination;
 
-            :parse page and limit;
+    :Update users table;
 
-            fork
+    :Display results;
 
-                :fetchActivePatients();
+endif
 
-                :SELECT active users;
+if (More pages?) then (yes)
 
-                :Map rows → userSummaryEntity;
+    |Admin|
+    :Navigate pages;
 
-            fork again
-
-                :countActivePatients();
-
-                :COUNT total users;
-
-            end fork
-
-            :Calculate totalPages;
-
-            :Map Entity → DTO;
-
-            :HTTP 200 JSON Response;
-
-            :renderTable(users);
-
-            :renderPagination();
-
-            :Update DOM;
-
-            :Display users table;
-
-        endif
-
-    else (No)
-
-        :403 Forbidden;
-
-    endif
-
-else (No)
-
-    :401 Unauthorized;
+    |System|
+    :Load selected page;
 
 endif
 
