@@ -172,7 +172,7 @@
               >
                 <option disabled selected hidden value="">Elige una opción</option>
                 <option value="Presencial" class="text-black">Presencial</option>
-                <option value="Rotario" class="text-black">Rotaria</option>
+                <option value="Rotaria" class="text-black">Rotaria</option>
               </select>
             </div>
           </div>
@@ -416,10 +416,10 @@
                 name="password"
                 id="password"
                 placeholder="Contraseña del usuario"
-                maxlength="20"
+                maxlength="30"
               >
               <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
+                0/30 
               </span>
             </div>
           </div>
@@ -484,6 +484,10 @@
   </div>
 
   <script src="/js/sidebar.js"></script>
+
+  <script>
+    window.__CSRF_TOKEN__ = "<%= csrfToken %>";
+  </script>
   </body>
 
   <script>
@@ -544,23 +548,27 @@
     });
 
     form.addEventListener('submit', async (e) => {
+      event.preventDefault();
       const formData = new FormData(form);
+      const objectData = Object.fromEntries(formData);
+      const JSONData = JSON.stringify(objectData);
 
       try {
       const res = await fetch('/user/post', {
         method: 'POST',
-        body: formData,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
+        body: JSONData,
       });
-
-      console.log(formData);
 
       const data = await res.json();
 
       if (res.ok) {
-        showToast('Usuario guardado correctamente', 'error');
-        resetForm();
+        sessionStorage.setItem('usuarioGuardado', 'true');
         window.location.href = '/users';
-      } else showToast((data.error || 'Error desconocido'), 'error');
+      } else {
+        showToast((data.error || 'Error desconocido'), 'error');
+      }
       } catch (error) {
       showToast(`Error de conexión: ${error.message}`, 'error');
       }

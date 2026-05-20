@@ -21,12 +21,12 @@ class PostUserUseCase {
     const ffirstName = validation.validate(firstName, 30, "El nombre", true);
     const flastnameP = validation.validate(lastnameP, 30, "El apellido paterno", true);
     const flastnameM = validation.validate(lastnameM, 30, "EL apellido materno", false);
-    validation.validate(password, 20, "La contraseña", true);
+    validation.validate(password, 30, "La contraseña", true);
     validation.validate(assigned, 36, "El clínico asignado", true);
     const fprofilePhoto = validation.validate(profilePhoto, 255, "La URL de la foto de perfil", false);
     const freferenceNumber = validation.validate(referenceNumber, 10, "El folio", true);
     const fprosthetist = validation.validate(prosthetist, 20, "El/la protesista", true);
-    const fsex = validation.validateEnum("", enumSex);
+    const fsex = validation.validateEnum(sex, enumSex);
     const fmodality = validation.validateEnum(modality, enumModality);
     const flaterality = validation.validateEnum(laterality, enumLaterality);
     const fphase = validation.validateEnum(phase, enumPhase);
@@ -40,7 +40,7 @@ class PostUserUseCase {
     const user = new User ({
       idRole: 2,
       userName,
-      firstName: ffirstName,
+      firstName: "ffirstName",
       lastnameP: flastnameP,
       lastnameM: flastnameM || null,
       birthdate: fBirthdate,
@@ -60,9 +60,7 @@ class PostUserUseCase {
       sex: fsex
     });
 
-    console.log("user: ", user);
     const saved = await this.userRepository.postUser(user);
-    console.log("saved", saved);
 
     // Map saved into clean DTO for the client
     return UsersDTO.fromEntity(saved);
