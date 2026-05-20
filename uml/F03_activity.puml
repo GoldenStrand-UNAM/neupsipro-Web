@@ -1,20 +1,20 @@
-@startuml Consultar_Publicaciones
-title Consultar Publicaciones
+@startuml Consul_Forum
+title Consult Forum
 
 |Usuario|
 start
-:Clic en "Ver publicaciones";
+:Click on  "Forum";
 
-|Sistema|
-if (¿Existen publicaciones?) then (no)
-    :Muestra mensaje 'No hay publicaciones disponibles';
+|Sistem|
+if (¿There's posts?) then (no)
+    :Shows message 'No hay publicaciones disponibles';
 else (sí)
-    :Carga lista de publicaciones;
-    :Muestra publicaciones al usuario;
+    :load list of publications;
+    :Show publications to the user;
 endif
 
 |Usuario|
-:Visualiza las publicaciones;
+:See forum;
 
 stop
 @enduml
