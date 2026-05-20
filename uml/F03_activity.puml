@@ -8,7 +8,7 @@ start
 |Sistem|
 if (¿There's posts?) then (no)
     :Shows message 'No hay publicaciones disponibles';
-else (sí)
+else (yes)
     :load list of publications;
     :Show publications to the user;
 endif
