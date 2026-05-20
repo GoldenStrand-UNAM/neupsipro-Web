@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="flex items-center justify-center md:justify-end gap-2">
-                            <svg class="w-6 h-5 md:w-8 md:h-7 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
+                            <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
                                 <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47585 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
                             </svg>
                             <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Parentesco:</span>
@@ -159,6 +159,7 @@
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Fecha de asignación</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Actividad</th>
+                                <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Consultar información</th>
                             </tr>
                         </thead>
                         <tbody id="users-tbody">
@@ -214,6 +215,8 @@ async function fetchUsers() {
 
 // = ====  Render===========
 function renderTable(users) {
+    console.log("¿Qué trae users?", users); 
+    console.log("Estructura del primer usuario:", users[0]);
     const tbody = document.getElementById("users-tbody");
     if (!users.length) { showMsg("Sin resultados", "text-gray-400"); return; }
 
@@ -222,7 +225,22 @@ function renderTable(users) {
             <td class="py-3 px-4 text-gray-500">${escapeHtml(u.name)}</td>
             <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(formatAppointmentDate(u.assigmentDate))}</td>
-            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>            
+            <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>   
+            <td class="py-3 px-6 flex justify-center">
+                        <button
+                            onclick="consultar('${escapeHtml(u.id)}')"
+                            class="btn-mini bg-[#3350A9]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943
+                                    9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span>Consultar</span>
+                        </button>
+                    </td>         
         </tr>
     `).join("");
 }
@@ -271,6 +289,9 @@ function showMsg(msg, colorClass) {
     </td>
     </tr>`;
     document.getElementById("pagination").innerHTML = "";
+}
+function consultar(id) {
+            window.location.href = `/users/${id}`
 }
 fetchUsers();
     </script>

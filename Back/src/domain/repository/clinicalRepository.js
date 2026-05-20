@@ -8,5 +8,8 @@ class clinicalRepository {
   async fetchAll () {
   throw new Error('fetchAll() must be implemented');
 }
+  async fetchClinicalUsers () {
+    throw new Error('fetchClinicalUsers() is not working/implemented');
+  }
 }
 module.exports = clinicalRepository;

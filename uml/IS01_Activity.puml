@@ -1,0 +1,34 @@
+@startuml login IS01
+title Improved Login Flow
+
+|User|
+start
+:Enters to the web page;
+:Enters username in username field;
+:Enters password in password field;
+:Clicks login button;
+
+|System|
+if (Username exists?) then (no)
+    :Shows message 'Credenciales inválidas';
+    |User|
+    :Tries again;
+elseif (Username is active?) then (no)
+    |System|
+    :Shows message 'Esta cuenta está desactivada ';
+elseif (Passwords match?) then (no)
+    |System|
+    :Shows message 'Credenciales inválidas';
+    if (Attempts > 3) then (yes)
+        :Blocks account for 15 min;
+    else (no)
+        |User|
+        :Tries again;
+    endif
+else (yes)
+    |System|
+    :Redirects to home page;
+endif
+
+stop
+@enduml
