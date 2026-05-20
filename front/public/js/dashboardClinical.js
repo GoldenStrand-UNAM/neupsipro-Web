@@ -60,7 +60,7 @@ function clinicalMenu (list) {
     </select>
   `;
   document.getElementById('selectClinical')
-                .addEventListener('change', e => loadDashboard(e.target.value));
+    .addEventListener('change', e => loadDashboard(e.target.value));
 
   loadDashboard(list[0].id);
 };
@@ -109,7 +109,7 @@ function renderFlowChart (counts) {
             label: ctx => {
               // Current value of the hovered section
               // Polar charts use ctx.parse.r for the value
-              const value  = ctx.parsed?.r ?? ctx.parsed ?? 0; 
+              const value  = ctx.parsed?.r ?? ctx.parsed ?? 0;
               // Calculate percentage based on total
               const percentage = total ? Math.round((value / total) * 100) : 0;
 
@@ -122,7 +122,7 @@ function renderFlowChart (counts) {
       scales: {
         r: {
           ticks: { display: false, stepSize: 1 },
-          grid:  { color: 'rgba(0,0,0,0.06)' },
+          grid: { color: 'rgba(0,0,0,0.06)' },
           angleLines: { color: 'rgba(0,0,0,0.06)' },
         },
       },
@@ -161,7 +161,7 @@ function initUserInfoPanel (list) {
 
 async function loadUserInfoPanel (user) {
   const target = document.getElementById('userInfoDetail');
-  target.innerHTML = `<p class="text-gray-400 text-sm">Cargando...</p>`;
+  target.innerHTML = '<p class="text-gray-400 text-sm">Cargando...</p>';
   try {
     const res  = await fetch(ENDPOINTS.userDetail(user));
     const data = await res.json();
@@ -202,7 +202,7 @@ async function loadUserInfoPanel (user) {
           </svg>
           </div>
         `;
-        target.innerHTML = `
+    target.innerHTML = `
                 <div class="space-y-2">
                     <!-- Avatar + name -->
                     <div class="flex items-center gap-3 pb-2 border-b border-gray-200">
@@ -244,7 +244,7 @@ async function loadUserInfoPanel (user) {
 
   } catch (err) {
     console.error('Network error:', err);
-    target.innerHTML = `<p class="text-red-500 text-sm">No se pudo conectar al servidor.</p>`;
+    target.innerHTML = '<p class="text-red-500 text-sm">No se pudo conectar al servidor.</p>';
   }
 }
 
@@ -328,7 +328,7 @@ async function loadDashboard (user) {
   }
   catch (err) {
     console.error('Network error:', err);
-    containerIntroText.innerHTML = `<p class="text-red-500 text-sm">No se pudo conectar al servidor.</p>`;
+    containerIntroText.innerHTML = '<p class="text-red-500 text-sm">No se pudo conectar al servidor.</p>';
   }
 }
 
