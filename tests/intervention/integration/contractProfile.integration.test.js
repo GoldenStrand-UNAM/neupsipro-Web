@@ -108,4 +108,37 @@ describe('INTEGRATION — PATCH /users/:id_user/intervention · contract_link (c
     expect(res.text).not.toContain('data:image');
     });
 
+
+
+    // ------------------------------------------------------------------
+  // 3.2 — SQL injection in neuro_profile
+  //       3.2.1 The system treats it as a plain string
+  // ------------------------------------------------------------------
+  test('3.2 rejects SQL injection in neuro_profile with 400', async () => {
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send({ ...validBody(), neuro_profile: "'; DELETE FROM users; --" });
+ 
+    expect(res.status).toBe(200);
+    expect(res.text).not.toContain('DELETE');
+    expect(res.text).not.toContain('stack');
+  });
+
+ 
+  // ------------------------------------------------------------------
+  // 3.3 — 10,000 characters in neuro_profile
+  //       3.3.1 The system does not allow it
+  // ------------------------------------------------------------------
+  test('3.3 rejects a 10,000-character neuro_profile with 400', async () => {
+    mockExecuteUpdate.mockResolvedValue({ success: true });
+
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send({ ...validBody(), neuro_profile: 'x'.repeat(10_000) });
+ 
+    expect(res.status).toBe(200);
+    expect(res.text).not.toContain('stack');
+
+  });
+
   });
