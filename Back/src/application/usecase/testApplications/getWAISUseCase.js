@@ -30,6 +30,7 @@ class getWAISResultUseCase {
         veloProce: { score: row.score_velo_proce,       interpretation: row.inter_velo_proce       },
       },
       scoreTotal: row.score_total,
+      interTotal: row.inter_total ?? null,
       notes: row.notes ?? null,
     });
   }

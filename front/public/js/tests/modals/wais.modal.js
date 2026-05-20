@@ -69,12 +69,16 @@ function buildWAISConsultHTML (test) {
         ${areaRow('Velocidad de Procesamiento', areas.veloProce)}
 
         <!-- CI Total — no interpretation, clinician-provided -->
-        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
-                    gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
-          <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">CI Total:</span>
-          <span class="text-base sm:text-lg text-gray-900 font-medium">
-            ${test.scoreTotal ?? '—'}
-          </span>
+        <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] ...">
+          <span ...>CI Total:</span>
+          <div class="flex flex-col gap-1">
+            <span class="text-base sm:text-lg text-gray-900 font-medium">
+              ${test.scoreTotal ?? '—'}
+            </span>
+            <span class="text-sm text-gray-500">
+              ${escapeHTML(test.interTotal ?? '—')}
+            </span>
+          </div>
         </div>
 
         <!-- Notas -->
@@ -182,10 +186,12 @@ function buildWAISFormHTML (mode, prefill) {
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-400">Interpretación</label>
+            <label class="text-sm font-medium text-gray-700">Interpretación</label>
             <div class="w-full h-[40px] flex items-center
-                        border border-gray-200 rounded-lg px-3 bg-gray-50">
-              <span class="text-sm text-gray-400 italic">No aplica</span>
+                        border border-gray-300 rounded-lg px-3 bg-gray-50">
+              <span id="interpWAISTotal" class="text-sm text-gray-800">
+                ${prefill.interTotal ?? '—'}
+              </span>
             </div>
           </div>
 
@@ -252,7 +258,10 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
   const notesCount = document.getElementById('waisNotesCount');
   const apiError   = document.getElementById('waisApiError');
 
-  // Area fields — each has live interpretation
+  // CI Total — declared here so both the listener and save can use it
+  const totalEl    = document.getElementById('inputWAISTotal');
+  const totalErrEl = document.getElementById('errorWAISTotal');
+
   const fields = [
     { input: 'inputComVerbal',       interp: 'interpComVerbal',       error: 'errorComVerbal',       key: 'score_com_verbal'       },
     { input: 'inputRazonPerceptual', interp: 'interpRazonPerceptual', error: 'errorRazonPerceptual', key: 'score_razon_perceptual' },
@@ -276,15 +285,22 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
 
-      // Strip non-digit characters
       if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
-
       errEl.classList.add('hidden');
 
       const n = Number(el.value);
       document.getElementById(interp).textContent =
         el.value === '' || isNaN(n) ? '—' : interpretWAIS(n);
     });
+  });
+
+  // ── Live interpretation CI Total ───────────────────────────────────────────
+
+  totalEl.addEventListener('input', () => {
+    if (!/^\d*$/.test(totalEl.value)) totalEl.value = totalEl.value.replace(/\D/g, '');
+    const n = Number(totalEl.value);
+    document.getElementById('interpWAISTotal').textContent =
+      totalEl.value === '' || isNaN(n) ? '—' : interpretWAIS(n);
   });
 
   // ── Save ───────────────────────────────────────────────────────────────────
@@ -295,7 +311,6 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
     let valid  = true;
     const scores = {};
 
-    // Validate 4 area fields
     fields.forEach(({ input, error, key }) => {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
@@ -310,10 +325,8 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
       }
     });
 
-    // Validate CI Total — clinician-provided, no interpretation
-    const totalEl    = document.getElementById('inputWAISTotal');
-    const totalErrEl = document.getElementById('errorWAISTotal');
-    const totalVal   = Number(totalEl.value);
+    // Validate CI Total
+    const totalVal = Number(totalEl.value);
 
     if (totalEl.value.trim() === '' || isNaN(totalVal) || totalVal < 0) {
       totalErrEl.textContent = 'Ingresa un valor válido para CI Total';
@@ -330,9 +343,9 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
 
     try {
       const res = await fetch(config.endpoint(idUser, idApplication), {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
-        body: JSON.stringify({ ...scores, notes }),
+        body:    JSON.stringify({ ...scores, notes }),
       });
 
       const json = await res.json();
@@ -354,7 +367,6 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
       console.error('[WAIS] post error:', _err);
     }
   });
-
 }
 
 // Fetches existing result before opening modify/consult.
@@ -413,6 +425,8 @@ async function openWAISModal (idUser, idApplication, test, mode) {
       interp: areas.veloProce?.interpretation ?? '—',
     },
     scoreTotal: (isModify || isConsult) ? (fetchedTest.scoreTotal ?? '') : '',
+    interTotal:  (isModify || isConsult) ? (fetchedTest.interTotal  ?? '—') : '—',
+
     notes: (isModify || isConsult) ? (fetchedTest.notes      ?? '') : '',
   };
 

@@ -6,6 +6,7 @@ class WaisResultsDTO {
     dateApplied,
     areas,
     scoreTotal,
+    interTotal,
     notes,
   }) {
     this.idResults   = idResults;
@@ -31,6 +32,7 @@ class WaisResultsDTO {
       },
     };
     this.scoreTotal  = scoreTotal;
+    this.interTotal = interTotal ?? null;
     this.notes       = notes ?? null;
   }
 }
