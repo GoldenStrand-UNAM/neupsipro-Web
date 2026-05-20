@@ -15,7 +15,7 @@ const mockExecute = jest.fn();
 
 // ===================== TESTING ================================
 
-const InterventionController = require('../../../Back/src/presentation/controller/intervention/intervention.controller');
+const InterventionController = require('../../../Back/src/presentation/controller/interventions/intervention.controller');
 
 // Se instancia igual que lo hace app.js: inyectando el use case mockeado.
 const interventionController = new InterventionController({
@@ -43,3 +43,26 @@ const buildRes = () => {
   res.json   = jest.fn().mockReturnValue(res);
   return res;
 };
+
+describe('UNIT — PATCH /users/:id_user/intervention · contract_link', () => {
+  beforeEach(() => jest.clearAllMocks());
+ 
+  // ------------------------------------------------------------------
+  // 2.1 — User tries to submit an image in the contract_link input
+  //       2.1.1 The system does not accept images and they are not stored
+  // ------------------------------------------------------------------
+  test('2.1 rejects an image data-URI in contract_link with 400', async () => {
+    // The endpoint receives JSON; an image arrives as a base64 data-URI.
+    const imagePayload = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
+ 
+    const req = buildReq({ body: { contract_link: imagePayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    // The controller must reject the value before calling the use case.
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+  });
+  
+});
