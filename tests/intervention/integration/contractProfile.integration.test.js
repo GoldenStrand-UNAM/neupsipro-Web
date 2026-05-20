@@ -171,6 +171,28 @@ describe('INTEGRATION — PATCH /users/:id_user/intervention · contract_link (c
     expect(res.text).not.toContain('stack');
   });
 
+  // 3.6 — Emojis in free-text field: accepted (200) or sanitised (400).
+  test('3.6 handles emojis in neuro_profile without internal errors', async () => {
+    mockExecuteUpdate.mockResolvedValue({ success: true });
+ 
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send({ ...validBody(), neuro_profile: 'Profile with emojis 😊🧠✅' });
+ 
+    expect([200, 400]).toContain(res.status);
+    expect(res.text).not.toContain('stack');
+  });
+ 
+  test('redirects to /auth/ when there is no active session', async () => {
+    asUnauthenticated();
+ 
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send(validBody());
+ 
+    expect(res.status).toBe(302);
+    expect(res.header.location).toBe('/auth/');
+  });
 
 
   });
