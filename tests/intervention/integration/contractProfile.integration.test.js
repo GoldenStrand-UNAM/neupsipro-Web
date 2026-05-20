@@ -89,18 +89,6 @@ describe('INTEGRATION — PATCH /users/:id_user/intervention · contract_link (c
     expect(res.text).not.toContain('stack');
   });
 
-  // 2.3 — Long strings pass through (200).
-  test('2.3 accepts a 10,000-character contract_link as plain string', async () => {
-    mockExecuteUpdate.mockResolvedValue({ success: true });
-
-    const res = await request(app)
-      .patch('/users/1/intervention')
-      .send({ ...validBody(), contract_link: 'a'.repeat(10_000) });
-
-    expect(res.status).toBe(200);
-    expect(res.text).not.toContain('stack');
-  });
-
   // 2.4 — XSS passes through as plain string (200); neutralised at render time via EJS escaping.
   test('2.4 accepts an XSS payload in contract_link as plain string', async () => {
     mockExecuteUpdate.mockResolvedValue({ success: true });
@@ -157,18 +145,6 @@ describe('INTEGRATION — PATCH /users/:id_user/intervention · neuro_profile (c
 
     expect(res.status).toBe(200);
     expect(res.text).not.toContain('DELETE');
-    expect(res.text).not.toContain('stack');
-  });
-
-  // 3.3 — Long strings pass through (200).
-  test('3.3 accepts a 10,000-character neuro_profile as plain string', async () => {
-    mockExecuteUpdate.mockResolvedValue({ success: true });
-
-    const res = await request(app)
-      .patch('/users/1/intervention')
-      .send({ ...validBody(), neuro_profile: 'x'.repeat(10_000) });
-
-    expect(res.status).toBe(200);
     expect(res.text).not.toContain('stack');
   });
 

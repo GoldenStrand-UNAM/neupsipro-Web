@@ -80,5 +80,34 @@ describe('INTEGRATION — POST /users/:id_user/intervention/sessions · session 
     expect(res.text).not.toContain('stack');
   });
 
+    // 7.2 — SQL passes through as plain string (201); parameterised queries prevent injection.
+  test('7.2 accepts SQL injection in objectives as plain string', async () => {
+    mockExecuteAdd.mockResolvedValue({ success: true, idSession: 4 });
+ 
+    const res = await request(app)
+      .post('/users/1/intervention/sessions')
+      .send({ ...validSessionBody(), objectives: "'; DROP TABLE intervention_session; --" });
+ 
+    expect(res.status).toBe(201);
+    expect(res.text).not.toContain('DROP');
+    expect(res.text).not.toContain('stack');
+  });
+
+
+   // 7.4 — XSS passes through as plain string (201); neutralised at render time via EJS escaping.
+  test('7.4 accepts an XSS script payload in development as plain string', async () => {
+    mockExecuteAdd.mockResolvedValue({ success: true, idSession: 9 });
+ 
+    const res = await request(app)
+      .post('/users/1/intervention/sessions')
+      .send({ ...validSessionBody(), development: '<script>window.location="https://evil.com"</script>' });
+ 
+    expect(res.status).toBe(201);
+    expect(res.text).not.toContain('<script>');
+    expect(res.text).not.toContain('stack');
+  });
+ 
+
+
 
 });
