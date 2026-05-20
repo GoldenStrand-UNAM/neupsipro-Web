@@ -107,5 +107,16 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       page,
     };
   }
+
+  async fetchClinicalUsers () {
+    const [rows] = await db.query (`SELECT 
+        id_user AS id,
+          CONCAT_WS( ' ', first_name, lastname_p, lastname_m) AS full_name
+        FROM users
+        WHERE id_role = 3
+          AND eliminated = 0
+          ORDER BY user_name ASC`);
+    return rows.map(row => new userClinicalSummary(row));
+  }
 }
 module.exports = ImpClinicalRepository;
