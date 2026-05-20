@@ -87,6 +87,11 @@ const LIMIT       = 6;
 let searchQuery   = "";
 let debounceTimer;
 
+if (sessionStorage.getItem('usuarioGuardado') === 'true') {
+    showToast('Usuario guardado correctamente');
+    sessionStorage.removeItem('usuarioGuardado');
+}
+
 // = ====  Fetch===========
 async function fetchUsers() {
     const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });

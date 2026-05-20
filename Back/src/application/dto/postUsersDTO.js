@@ -22,26 +22,26 @@ class UsersDTO {
         this.sex = user.sex;
     } static fromEntity (entity) {
       return new UsersDTO ({
-        idRole: entity.idRole,
-        userName: entity.userName,
-        firstName: entity.firstName,
-        lastnameP: entity.lastnameP,
-        lastnameM: entity.lastnameM,
+        idRole: entity.id_role,
+        userName: entity.user_name,
+        firstName: entity.first_name,
+        lastnameP: entity.lastname_p,
+        lastnameM: entity.lastname_m,
         birthdate: entity.birthdate,
-        passwordHash: entity.passwordHash,
-        assigned: entity.assigned,
-        phase: entity.phase,
-        basePathology: entity.basePathology,
-        modality: entity.modality,
-        profilePhoto: entity.profilePhoto,
-        referenceNumber: entity.referenceNumber,
+        passwordHash: entity.password_hash,
+        assigned: entity.id_clinic_user,
+        phase: entity.neuro_status,
+        basePathology: entity.base_patology,
+        modality: entity.attendance,
+        profilePhoto: entity.profile_photo,
+        referenceNumber: entity.reference_number,
         laterality: entity.laterality,
         prosthetist: entity.prosthetist,
-        neuroEntryDate: entity.neuroEntryDate,
-        amputationDate: entity.amputationDate,
-        amputationLevel: entity.amputationLevel,
-        pairs: entity.pairs,
-        sex: entity.sex
+        neuroEntryDate: entity.neuro_entry_date,
+        amputationDate: entity.amputation_date,
+        amputationLevel: entity.amputation_level,
+        pairs: entity.group_intervention,
+        sex: entity.gender
       });
     }
 }

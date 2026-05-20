@@ -29,7 +29,7 @@ module.exports = (authUseCase) => {
     "/user/post", 
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('user management', 'writing'),
-    (req, res) => controller.postUserPage(req, res)
+    (req, res) => res.render('users/postUser', { activePage: 'users' })
   );
   
   router.post(
