@@ -50,7 +50,8 @@ class postWAISUseCase {
     const memWork        = this.#parseAreaScore(score_mem_work,          'score_mem_work');
     const veloProce      = this.#parseAreaScore(score_velo_proce,        'score_velo_proce');
 
-    const total = this.#parseAreaScore(score_total, 'score_total');
+    const total          = this.#parseAreaScore(score_total, 'score_total');
+    const interTotal     = this.resolveInterpretation(total);
 
     // 2. Validate notes length if provided
     if (notes && String(notes).length > 200) {
@@ -90,6 +91,7 @@ class postWAISUseCase {
       score_velo_proce: veloProce,
       inter_velo_proce: interVeloProce,
       score_total: total,
+      inter_total: interTotal,
       notes: notes ?? null,
     });
 
@@ -106,6 +108,7 @@ class postWAISUseCase {
         veloProce: { score: saved.score_velo_proce,       interpretation: saved.inter_velo_proce       },
       },
       scoreTotal: saved.score_total,
+      interTotal: saved.inter_total,
       notes: saved.notes ?? null,
     });
   }
