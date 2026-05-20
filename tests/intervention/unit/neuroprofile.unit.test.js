@@ -15,7 +15,7 @@ const mockExecute = jest.fn();
  
 // ===================== Testing ================================
  
-const InterventionController = require('../../../Back/src/presentation/controller/intervention/intervention.controller');
+const InterventionController = require('../../../Back/src/presentation/controller/interventions/intervention.controller');
  
 const interventionController = new InterventionController({
   updateContract: { execute: mockExecute },
@@ -59,6 +59,50 @@ describe('UNIT — PATCH /users/:id_user/intervention · neuro_profile', () => {
  
     expect(res.status).toHaveBeenCalledWith(400);
     expect(mockExecute).not.toHaveBeenCalled();
+  });
+
+  // ------------------------------------------------------------------
+  // 3.2 — User tries to inject SQL in neuro_profile
+  //       3.2.1 The system treats it as a plain string
+  // ------------------------------------------------------------------
+  test('3.2 rejects an SQL injection payload in neuro_profile with 400', async () => {
+
+    // neuro_profile is free-text but the controller still rejects it
+    const sqlPayload = "'; DELETE FROM users; --";
+ 
+    const req = buildReq({ body: { neuro_profile: sqlPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('DELETE');
+    expect(body).not.toContain('stack');
+  });
+ 
+  // ------------------------------------------------------------------
+  // 3.3 — User tries to submit 10,000 characters in neuro_profile
+  //       3.3.1 The system does not allow it
+  // ------------------------------------------------------------------
+  test('3.3 rejects a 10,000-character neuro_profile with 400', async () => {
+    const longPayload = 'x'.repeat(10_000);
+ 
+    const req = buildReq({ body: { neuro_profile: longPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+ 
+    const body = res.json.mock.calls[0][0];
+    const hasErrorKey = 'message' in body || 'error' in body;
+    expect(hasErrorKey).toBe(true);
+    expect(JSON.stringify(body)).not.toContain('stack');
+    expect(JSON.stringify(body)).not.toContain('at Object.');
   });
 
   });
