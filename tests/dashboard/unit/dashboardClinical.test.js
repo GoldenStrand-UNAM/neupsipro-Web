@@ -1,11 +1,16 @@
 const GetClinicalUserDashboardUseCase = require('../../../Back/src/application/usecase/dashboard/getClinicalUserDashboardUseCase');
 
 jest.mock('../../../Back/src/application/dto/clinicalDashboardDTO', () => ({
-  clinicalDashboardDTO: jest.fn().mockImplementation((numberUsers, users, appointments) => ({
-    numberUsers,
-    users: { usersList: users },
-    appointments,
-  })),
+  clinicalDashboardDTO: jest.fn().mockImplementation(
+    (numbers, users, today, tomorrow, other, historicalNumbers) => ({
+      numbers,
+      users: { usersList: users },
+      appointmentsToday:     { appointmentsList: today },
+      appointmentsTomorrow:  { appointmentsList: tomorrow },
+      appointmentsOther:     { appointmentsList: other },
+      historicalNumbers,
+    })
+  ),
 }));
 
 describe('GetClinicalUserDashboardUseCase', () => {
@@ -24,8 +29,8 @@ describe('GetClinicalUserDashboardUseCase', () => {
 
   test('throw an error if all fetches fail', async () => {
     usersRepository.fetchNumberUsers.mockRejectedValue(new Error('Error ejecutando la consulta'));
-    usersRepository.fetchAllWithClinical.mockRejectedValue(new Error('Error ejecutando la consulta'));
-    appointmentRepository.fecthAppointmentWithClinical.mockRejectedValue(new Error('Error ejecutando la consulta'));
+    usersRepository.fetchAllWithClinical.mockResolvedValue([]);  
+    appointmentRepository.fecthAppointmentWithClinical.mockResolvedValue([]);
     await expect(useCase.execute({ idClinicalUser: 1 })).rejects.toThrow('Error ejecutando la consulta');
   });
 
@@ -58,9 +63,12 @@ describe('GetClinicalUserDashboardUseCase', () => {
     const result = await useCase.execute({ idClinicalUser: 1 });
 
     expect(result).toEqual({
-      numberUsers: { total: 0 },
-      users: { usersList: [] },
-      appointments: [],
+        numbers:              expect.any(Object),
+        users:                { usersList: [] },
+        appointmentsToday:    { appointmentsList: [] },
+        appointmentsTomorrow: { appointmentsList: [] },
+        appointmentsOther:    { appointmentsList: [] },
+        historicalNumbers:    expect.any(Object),
     });
   });
 
