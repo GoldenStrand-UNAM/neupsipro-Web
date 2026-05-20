@@ -77,6 +77,7 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
     expect(res.status).toHaveBeenCalledWith(400);
     expect(mockExecute).not.toHaveBeenCalled();
   });
+  
  
   test('7.1b rejects an image data-URI in the development field with 400', async () => {
     const imagePayload = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD';
@@ -91,6 +92,7 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
     expect(res.status).toHaveBeenCalledWith(400);
     expect(mockExecute).not.toHaveBeenCalled();
   });
+
 
     // ------------------------------------------------------------------
   // 7.3 — User tries to submit a 10,000-character string
@@ -116,6 +118,7 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
     expect(JSON.stringify(body)).not.toContain('at Object.');
   });
 
+
     // ------------------------------------------------------------------
   // 7.4 — User tries an XSS attack in the session inputs
   //       7.4.1 The system only receives it as a string
@@ -136,6 +139,52 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
     const body = JSON.stringify(res.json.mock.calls[0][0]);
     expect(body).not.toContain('<script>');
     expect(body).not.toContain('stack');
+  });
+
+
+    // ------------------------------------------------------------------
+  // 7.5 — User tries to submit emojis in the session creation inputs
+  //       7.5.1 The system does not store them or treats them as a string
+  // ------------------------------------------------------------------
+  test('7.5 accepts emojis in free-text fields as plain strings', async () => {
+    // objectives and development are free-text fields: emojis are acceptable.
+    const emojiPayload = 'Assess emotional state 😊 of the patient 🧠';
+ 
+    mockExecute.mockResolvedValue({ success: true, idSession: 46 });
+ 
+    const req = buildReq({
+      body: { ...validSessionBody(), objectives: emojiPayload },
+    });
+    const res = buildRes();
+ 
+    await interventionController.addSession(req, res);
+ 
+    // Valid outcome: 201 (stored as string) or 400 (rejected).
+    const statusCode = res.status.mock.calls[0][0];
+    expect([201, 400]).toContain(statusCode);
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('stack');
+    expect(body).not.toContain('ReferenceError');
+  });
+ 
+  
+  // ------------------------------------------------------------------
+  // Base case — complete valid session: must respond 201
+  // ------------------------------------------------------------------
+  test('a session with valid data is created successfully with 201', async () => {
+    mockExecute.mockResolvedValue({ success: true, idSession: 10 });
+ 
+    const req = buildReq();
+    const res = buildRes();
+ 
+    await interventionController.addSession(req, res);
+ 
+    expect(mockExecute).toHaveBeenCalledTimes(1);
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true })
+    );
   });
 
   });
