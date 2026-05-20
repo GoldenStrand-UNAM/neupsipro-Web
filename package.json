@@ -63,6 +63,6 @@
     "jest": "^30.3.0",
     "lint-staged": "^16.4.0",
     "supertest": "^7.2.2",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.2.2"
   }
 }
