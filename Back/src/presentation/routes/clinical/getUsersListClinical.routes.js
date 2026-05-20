@@ -1,7 +1,5 @@
 const express = require('express');
 
-const router = express.Router();
-
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
 const getUsersClinicalListController = require('../../controller/clinical/getUsersListClinical.controller');
