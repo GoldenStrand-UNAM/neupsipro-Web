@@ -790,6 +790,7 @@ CREATE TABLE wais_results (
     score_velo_proce         DECIMAL(5,2) NULL,
     inter_velo_proce         VARCHAR(36),
     score_total              DECIMAL(5,2) NULL,
+    inter_total        VARCHAR(36),
     notes                       VARCHAR(200),
     CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );

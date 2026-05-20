@@ -164,7 +164,7 @@ class impTestResultsRepository extends resultRepository {
     score_razon_perceptual, inter_razon_perceptual,
     score_mem_work,         inter_mem_work,
     score_velo_proce,       inter_velo_proce,
-    score_total,
+    score_total,            inter_total,
     notes,
   }) {
 
@@ -184,8 +184,9 @@ class impTestResultsRepository extends resultRepository {
           score_razon_perceptual, inter_razon_perceptual,
           score_mem_work,         inter_mem_work,
           score_velo_proce,       inter_velo_proce,
-          score_total,            notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          score_total,            inter_total, 
+          notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
           score_com_verbal       = VALUES(score_com_verbal),
           inter_com_verbal       = VALUES(inter_com_verbal),
@@ -196,6 +197,7 @@ class impTestResultsRepository extends resultRepository {
           score_velo_proce       = VALUES(score_velo_proce),
           inter_velo_proce       = VALUES(inter_velo_proce),
           score_total            = VALUES(score_total),
+          inter_total            = VALUES(inter_total),
           notes                  = VALUES(notes)`,
       [
         id_results,
@@ -203,7 +205,8 @@ class impTestResultsRepository extends resultRepository {
         score_razon_perceptual, inter_razon_perceptual,
         score_mem_work,         inter_mem_work,
         score_velo_proce,       inter_velo_proce,
-        score_total,            notes,
+        score_total,            inter_total,
+        notes,
       ]
     );
 
@@ -277,7 +280,7 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-  // ================= MOCA & REY ==================
+  // ================= schooling and age ==================
 
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
@@ -305,7 +308,7 @@ class impTestResultsRepository extends resultRepository {
     return rows.length ? rows[0].birthdate : null;
   }
 
-  // ================= GET NIH ==================
+  // ================= NIH ==================
 
   // Fetch existing NIH result by id_results for modify/consult prefill
   async fetchNIHResult ({ id_results }) {
@@ -321,8 +324,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0] ?? null;
   }
-
-  // ================= SAVE NIH ==================
 
   // Upserts into nih_results — works for register and modify.
   async saveNIHResult ({ id_results, notes }) {
@@ -353,7 +354,7 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-  // ================= GET REY ==================
+  // ================= REY ==================
 
   // Fetch existing REY result by id_results for modify/consult prefill
   async fetchREYResult ({ id_results }) {
@@ -369,8 +370,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0] ?? null;
   }
-
-  // ================= SAVE REY ==================
 
   // Upserts into rey_results — works for register and modify.
   // Also updates test_results.status and date_applied.
