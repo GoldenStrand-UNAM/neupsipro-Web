@@ -1,4 +1,4 @@
-const GetClinicalUserDashboardUseCase = require('../../../Back/src/application/usecase/dahsboard/getClinicalUserDashboardUseCase');
+const GetClinicalUserDashboardUseCase = require('../../../Back/src/application/usecase/dashboard/getClinicalUserDashboardUseCase');
 
 jest.mock('../../../Back/src/application/dto/clinicalDashboardDTO', () => ({
   clinicalDashboardDTO: jest.fn().mockImplementation((numberUsers, users, appointments) => ({
