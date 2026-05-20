@@ -6,7 +6,6 @@ jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
   jest.fn(() => ({ verifyToken: mockVerifyToken }))
 );
 
-// El rate limiter nunca bloquea en pruebas unitarias.
 jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
   () => (_req, _res, next) => next()
 );
