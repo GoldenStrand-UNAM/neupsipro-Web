@@ -1,11 +1,11 @@
 @startuml Consul_Forum
 title Consult Forum
 
-|Usuario|
+|User|
 start
 :Click on  "Forum";
 
-|Sistem|
+|System|
 if (¿There's posts?) then (no)
     :Shows message 'No hay publicaciones disponibles';
 else (yes)
@@ -13,7 +13,7 @@ else (yes)
     :Show publications to the user;
 endif
 
-|Usuario|
+|User|
 :See forum;
 
 stop
