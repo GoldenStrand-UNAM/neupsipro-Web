@@ -31,7 +31,7 @@ module.exports = (authUseCase) => {
   router.get(
     '/api',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller1.getMenuClinicalUsers(req, res)
 
   );
@@ -39,21 +39,21 @@ module.exports = (authUseCase) => {
   router.get(
     '/view',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller2.getDashboardView(req, res)
   );
 
   router.get(
     '/api/:idClinicalUser',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller2.getClinicalDashboard(req, res)
   );
 
   router.get(
     '/api/user/:idUser',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Forum', 'consultation'), //QUE PERMISOS USA?
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller3.getClinicalDashboard(req, res)
   );
 
