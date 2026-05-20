@@ -80,7 +80,7 @@ describe('INTEGRATION — POST /users/:id_user/intervention/sessions · session 
     expect(res.text).not.toContain('stack');
   });
 
-    // 7.2 — SQL passes through as plain string (201); parameterised queries prevent injection.
+  // 7.2 — SQL passes through as plain string (201); parameterised queries prevent injection.
   test('7.2 accepts SQL injection in objectives as plain string', async () => {
     mockExecuteAdd.mockResolvedValue({ success: true, idSession: 4 });
  
@@ -94,7 +94,7 @@ describe('INTEGRATION — POST /users/:id_user/intervention/sessions · session 
   });
 
 
-   // 7.4 — XSS passes through as plain string (201); neutralised at render time via EJS escaping.
+  // 7.4 — XSS passes through as plain string (201); neutralised at render time via EJS escaping.
   test('7.4 accepts an XSS script payload in development as plain string', async () => {
     mockExecuteAdd.mockResolvedValue({ success: true, idSession: 9 });
  
@@ -104,6 +104,45 @@ describe('INTEGRATION — POST /users/:id_user/intervention/sessions · session 
  
     expect(res.status).toBe(201);
     expect(res.text).not.toContain('<script>');
+    expect(res.text).not.toContain('stack');
+  });
+
+    // 7.5 — Emojis: accepted (201) or sanitised (400).
+  test('7.5 handles emojis in session fields without internal errors', async () => {
+    mockExecuteAdd.mockResolvedValue({ success: true, idSession: 11 });
+ 
+    const res = await request(app)
+      .post('/users/1/intervention/sessions')
+      .send({
+        ...validSessionBody(),
+        objectives : 'Assess emotional state 😊 of the patient 🧠',
+        development: 'Smooth session ✅ with active participation 💬',
+      });
+ 
+    expect([201, 400]).toContain(res.status);
+    expect(res.text).not.toContain('stack');
+  });
+ 
+  test('redirects to /auth/ when there is no active session', async () => {
+    asUnauthenticated();
+ 
+    const res = await request(app)
+      .post('/users/1/intervention/sessions')
+      .send(validSessionBody());
+ 
+    expect(res.status).toBe(302);
+    expect(res.header.location).toBe('/auth/');
+  });
+ 
+  test('responds 400 when no active intervention exists for the user', async () => {
+    mockExecuteAdd.mockRejectedValue(new Error('No active intervention found'));
+ 
+    const res = await request(app)
+      .post('/users/1/intervention/sessions')
+      .send(validSessionBody());
+ 
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
     expect(res.text).not.toContain('stack');
   });
  
