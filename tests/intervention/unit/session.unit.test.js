@@ -92,4 +92,50 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
     expect(mockExecute).not.toHaveBeenCalled();
   });
 
+    // ------------------------------------------------------------------
+  // 7.3 — User tries to submit a 10,000-character string
+  //       7.3.1 The system does not allow it
+  // ------------------------------------------------------------------
+  test('7.3 rejects 10,000 characters in objectives with 400', async () => {
+    const longPayload = 'o'.repeat(10_000);
+ 
+    const req = buildReq({
+      body: { ...validSessionBody(), objectives: longPayload },
+    });
+    const res = buildRes();
+ 
+    await interventionController.addSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+ 
+    const body = res.json.mock.calls[0][0];
+    const hasErrorKey = 'message' in body || 'error' in body;
+    expect(hasErrorKey).toBe(true);
+    expect(JSON.stringify(body)).not.toContain('stack');
+    expect(JSON.stringify(body)).not.toContain('at Object.');
+  });
+
+    // ------------------------------------------------------------------
+  // 7.4 — User tries an XSS attack in the session inputs
+  //       7.4.1 The system only receives it as a string
+  // ------------------------------------------------------------------
+  test('7.4 rejects an XSS script payload in development with 400', async () => {
+    const xssPayload = '<script>window.location="https://evil.com"</script>';
+ 
+    const req = buildReq({
+      body: { ...validSessionBody(), development: xssPayload },
+    });
+    const res = buildRes();
+ 
+    await interventionController.addSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('<script>');
+    expect(body).not.toContain('stack');
+  });
+
   });
