@@ -79,11 +79,28 @@ const {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  app.use(doubleCsrfProtection);
+  app.use((req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
+      return next();
+    }
+    doubleCsrfProtection(req, res, next);
+  });
 }
+
 app.use((req, res, next) => {
+  const userAgent = req.headers['user-agent'] || '';
+  if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
+});
+
+app.get('/auth/token', (req, res) => {
+  res.json({ csrfToken: res.locals.csrfToken });
 });
 
 const dbPool = require('./infrastructure/database/database');
