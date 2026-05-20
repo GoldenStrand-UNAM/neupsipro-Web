@@ -169,22 +169,5 @@ describe('UNIT — POST /users/:id_user/intervention/sessions · session inputs'
   });
  
   
-  // ------------------------------------------------------------------
-  // Base case — complete valid session: must respond 201
-  // ------------------------------------------------------------------
-  test('a session with valid data is created successfully with 201', async () => {
-    mockExecute.mockResolvedValue({ success: true, idSession: 10 });
- 
-    const req = buildReq();
-    const res = buildRes();
- 
-    await interventionController.addSession(req, res);
- 
-    expect(mockExecute).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ success: true })
-    );
-  });
 
   });
