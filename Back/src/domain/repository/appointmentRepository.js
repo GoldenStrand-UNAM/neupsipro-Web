@@ -10,6 +10,10 @@ class appointmentRepository {
   }
   async deleteUpcomingByUser ({ _id_user }) {
   throw new Error('deleteUpcomingByUser() must be implemented');
+ }
+  async fecthAppointmentWithClinical () {
+    throw new Error('fetchAppointmentWithClinical is not working/implemented');
+  }
 }
-}
+
 module.exports = appointmentRepository;
