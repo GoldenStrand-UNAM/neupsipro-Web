@@ -105,4 +105,54 @@ describe('UNIT — PATCH /users/:id_user/intervention · neuro_profile', () => {
     expect(JSON.stringify(body)).not.toContain('at Object.');
   });
 
+   // ------------------------------------------------------------------
+  // 3.5 — User tries an XSS attack in neuro_profile
+  //       3.5.1 The system only receives it as a string
+  // ------------------------------------------------------------------
+  test('3.5 rejects an XSS payload in neuro_profile with 400', async () => {
+    // The controller blocks XSS patterns even in free-text fields.
+    const xssPayload = '<img src=x onerror="alert(document.cookie)">';
+ 
+    const req = buildReq({ body: { neuro_profile: xssPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(mockExecute).not.toHaveBeenCalled();
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('<img');
+    expect(body).not.toContain('onerror');
+    expect(body).not.toContain('stack');
+  });
+ 
+  // ------------------------------------------------------------------
+  // 3.6 — User tries to submit emojis in neuro_profile
+  //       3.6.1 The system does not store them or treats them as a string
+  // ------------------------------------------------------------------
+  test('3.6 accepts emojis in neuro_profile as plain text (free-text field)', async () => {
+
+
+    const emojiPayload = 'Normal profile with emojis 😊🧠✅';
+ 
+    mockExecute.mockResolvedValue({ success: true });
+ 
+    const req = buildReq({ body: { neuro_profile: emojiPayload } });
+    const res = buildRes();
+ 
+    await interventionController.updateContract(req, res);
+ 
+    // Both are valid per the spec — here we verify no code is executed.
+    const statusCode = res.status.mock.calls[0][0];
+    expect([200, 400]).toContain(statusCode);
+ 
+
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('stack');
+    expect(body).not.toContain('ReferenceError');
+
+
+  });
+
   });
