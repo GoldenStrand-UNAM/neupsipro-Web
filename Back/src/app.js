@@ -139,6 +139,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Dasboards
+const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
+
+app.use('/dashboardClinical', dashRoutes(authUseCase));
+
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
