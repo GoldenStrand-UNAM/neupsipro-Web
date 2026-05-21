@@ -83,24 +83,68 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
-  async postUser ({idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, amputationDate, amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, sex }) {
+  async postUser ({
+    idRole,
+    userName,
+    firstName,
+    lastnameP,
+    lastnameM,
+    birthdate,
+    passwordHash,
+    assigned,
+    phase,
+    basePathology,
+    modality,
+    profilePhoto,
+    referenceNumber,
+    amputationDate,
+    amputationLevel,
+    laterality,
+    prosthetist,
+    neuroEntryDate,
+    pairs,
+    sex,
+  }) {
     const idUser = uuidv4();
     const idRelation = uuidv4();
     const connection = await db.getConnection();
-    
-    try{
+
+    try {
       await connection.query('START TRANSACTION');
 
       await connection.query(
-      `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash, gender)
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash, gender)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash, sex]
+        [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash, sex]
       );
 
       await connection.query(
-      `INSERT INTO user_info (id_user, neuro_status, base_patology, attendance, registration_date, reference_number, laterality, prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention)
+        `INSERT INTO user_info (
+        id_user,
+        neuro_status,
+        base_patology,
+        attendance,
+        registration_date,
+        reference_number,
+        laterality,
+        prosthetist,
+        neuro_entry_date,
+        amputation_date,
+        amputation_level,
+        group_intervention
+        )
       VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?)`,
-      [idUser, phase, basePathology, modality, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs] 
+        [idUser,
+          phase,
+          basePathology,
+          modality,
+          referenceNumber,
+          laterality,
+          prosthetist,
+          neuroEntryDate,
+          amputationDate,
+          amputationLevel,
+          pairs]
       );
 
       await connection.query(
@@ -122,17 +166,16 @@ class ImpUsersRepository extends usersRepository {
       );
 
       await connection.query('COMMIT');
-      
+
       return rows[0];
-    } catch (error){
+    } catch (error) {
       await connection.query('ROLLBACK');
-      console.log("Error en base de datos: ", error.message);
       throw error;
     } finally {
       connection.release();
     }
   }
-  
+
   async softDeleteUser ({ id_user }) {
     const [result] = await db.query(
       `UPDATE users 

@@ -1,5 +1,26 @@
 class User {
-  constructor ({ idRole, userName, firstName, lastnameP, lastnameM, birthdate, passwordHash, assigned, phase, basePathology, modality, profilePhoto, referenceNumber, laterality, prosthetist, neuroEntryDate, amputationDate, amputationLevel, pairs, sex }) {
+  constructor ({
+    idRole,
+    userName,
+    firstName,
+    lastnameP,
+    lastnameM,
+    birthdate,
+    passwordHash,
+    assigned,
+    phase,
+    basePathology,
+    modality,
+    profilePhoto,
+    referenceNumber,
+    laterality,
+    prosthetist,
+    neuroEntryDate,
+    amputationDate,
+    amputationLevel,
+    pairs,
+    sex,
+  }) {
     this.idRole = idRole,
     this.userName = userName,
     this.firstName = firstName,
@@ -19,7 +40,7 @@ class User {
     this.prosthetist = prosthetist,
     this.neuroEntryDate = neuroEntryDate || null,
     this.pairs = pairs,
-    this.sex = sex
+    this.sex = sex;
   }
 }
 

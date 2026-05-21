@@ -5,8 +5,8 @@ class PostUserController {
 
   async postUser (request, res) {
     try {
-      // Extract query params 
-      const { idRole = "2", userName, firstName, lastnameP, lastnameM = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex } = request.body;
+      // Extract query params
+      const { idRole = '2', userName, firstName, lastnameP, lastnameM = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex } = request.body;
       const profilePhoto = request.file ? request.file.s3Location : null;
 
       const user = await this.PostUserUseCase.execute({
@@ -31,7 +31,7 @@ class PostUserController {
         prosthetist,
         neuroEntryDate,
         pairs,
-        sex
+        sex,
       });
       return res.status(201).json(user);
     } catch (error) {
@@ -42,7 +42,7 @@ class PostUserController {
   async postUserPage (req, res) {
     try {
       res.locals.activePage = 'usuario';
-      res.render("users/postUser");
+      res.render('users/postUser');
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
