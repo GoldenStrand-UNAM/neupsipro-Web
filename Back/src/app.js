@@ -27,8 +27,8 @@ app.use(helmet({
 
       'default-src': ["'self'"],
 
-      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
 
       'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
 
@@ -172,6 +172,10 @@ app.use('/', postPublicationRoutes(authUseCase));
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
 app.use('/', dashboardRoutes(authUseCase));
+
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+
+app.use('/', getAllClinicalsRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

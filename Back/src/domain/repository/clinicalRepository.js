@@ -5,6 +5,9 @@ class clinicalRepository {
   async countActivePatients ({ _search }) {
     throw new Error('countActivePatients() must be implemented');
   }
+  async fetchAll () {
+    throw new Error('fetchAll() must be implemented');
+  }
   async fetchClinicalUsers () {
     throw new Error('fetchClinicalUsers() is not working/implemented');
   }
