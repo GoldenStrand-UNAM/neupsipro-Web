@@ -7,7 +7,7 @@ class validation {
     if (!Object.values(enumOptions).includes(param)) {
       throw new Error(`Elige una opción disponible: ${Object.values(enumOptions).join(', ')}`);
     } else //return crypt.encrypt(param);
-    return param;
+      return param;
   }
 
   validate (param, requiredLength, label, required) {
@@ -15,7 +15,7 @@ class validation {
       if (param.trim().length > requiredLength) {
         throw new Error(`${label} no puede superar los ${requiredLength} caracteres`);
       } else //return crypt.encrypt(param);
-      return param;
+        return param;
     } else if (required) {
       if (!param || param.trim().length === 0) {
         throw new Error(`${label} debe llenarse`);
