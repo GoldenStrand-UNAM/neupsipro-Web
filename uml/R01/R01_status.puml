@@ -46,7 +46,7 @@ loop Por cada aplicación activa
   DB --> RREPO : [ { status, date_applied } ]
   RREPO --> UC_EXP : [ { status, date_applied } ]
 
-  UC_EXP -> UC_EXP : allCalificada = tests.every(t => t.status === 3)
+  UC_EXP -> UC_EXP : allCalificada = tests.every(t => t.status === 3)\nsomeCalificada = tests.some(t => t.status === 3)
 
   alt Todas las pruebas Calificadas
     UC_EXP -> AREPO : updateApplicationStatus({ id_application, status: 3 })
@@ -57,7 +57,17 @@ loop Por cada aplicación activa
       caducidad ya no aplica nunca.
     end note
 
-  else No todas Calificadas — evaluar caducidad
+  else No todas Calificadas — evaluar estado y caducidad
+
+    alt someCalificada && app.status !== 2
+      UC_EXP -> AREPO : updateApplicationStatus({ id_application, status: 2 })
+      AREPO -> DB : UPDATE test_applications\nSET status = 2\nWHERE id_application = ?
+      DB --> AREPO : OK
+      note right
+        Al menos una prueba calificada —
+        aplicación pasa a "En proceso".
+      end note
+    end
 
     UC_EXP -> UC_EXP : hasExpiredTest = tests.some(t =>\n  t.status !== 3 &&\n  monthsElapsed(t.date_applied ?? app.created_at)\n  >= expiryMonths)
 
@@ -78,7 +88,7 @@ loop Por cada aplicación activa
 
 end
 
-UC_EXP --> UROUTE : { expired: [id_application], completed: [id_application] }
+UC_EXP --> UROUTE : { expired: [id_application],\ncompleted: [id_application],\ninProgress: [id_application] }
 UROUTE --> UPROF : HTTP 200 { data }
 
 note right of UPROF
