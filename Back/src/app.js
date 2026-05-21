@@ -27,8 +27,8 @@ app.use(helmet({
 
       'default-src': ["'self'"],
 
-      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
 
       'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
 
@@ -78,11 +78,28 @@ const {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  app.use(doubleCsrfProtection);
+  app.use((req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
+      return next();
+    }
+    doubleCsrfProtection(req, res, next);
+  });
 }
+
 app.use((req, res, next) => {
+  const userAgent = req.headers['user-agent'] || '';
+  if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
+});
+
+app.get('/auth/token', (req, res) => {
+  res.json({ csrfToken: res.locals.csrfToken });
 });
 
 const dbPool = require('./infrastructure/database/database');
@@ -117,6 +134,11 @@ app.use((req, res, next) => {
   res.locals.activePage = '';
   next();
 });
+
+// Dasboards
+const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
+
+app.use('/dashboardClinical', dashRoutes(authUseCase));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
@@ -156,6 +178,9 @@ app.use('/', dashboardRoutes(authUseCase));
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase));
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+
+app.use('/', getAllClinicalsRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

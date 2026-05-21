@@ -16,17 +16,29 @@ const GetUserUseCase = require('../../../application/usecase/users/getUserUseCas
 const postApplicationUseCase   = require('../../../application/usecase/testApplications/postApplicationUseCase');
 const ApplicationsController   = require('../../controller/testApplications/postApplications.controller');
 
+//APOINTMENTS create
+const ImpAppointmentRepository = require('../../../infrastructure/repositories/ImpAppointmentRepository');
+const createAppointmentUseCase = require('../../../application/usecase/appointments/createAppointmentUseCase');
+const createAppointmentController = require('../../controller/appointments/createAppointment.controller');
+
+//apointment delete
+const deleteAppointmentUseCase    = require('../../../application/usecase/appointments/deleteAppointmentUseCase');
+const deleteAppointmentController = require('../../controller/appointments/deleteAppointment.controller');
 const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
 const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
 const checkExpiryUseCase    = require('../../../application/usecase/testApplications/checkExpiryUseCase');
 const checkExpiryController = require('../../controller/testApplications/checkExpiry.controller');
+const ClinicsController = require('../../controller/clinical/getListClinics.controller');
+const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
+const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
   const testAppRepository  = new impTestApplicationsRepository();
-  const useCase            = new GetUserUseCase(usersRepository, testAppRepository);
+  const appointmentRepository = new ImpAppointmentRepository();
+  const useCase            = new GetUserUseCase(usersRepository, testAppRepository, appointmentRepository);
   const controller = new UserController(useCase);
   const jwtService = new JwtService();
   const authMiddleware = new AuthMiddleware(jwtService);
@@ -36,6 +48,11 @@ module.exports = (authUseCase) => {
   const createAppUseCase       = new postApplicationUseCase(testAppRepository, testResultsRepository);
   const appController = new ApplicationsController(createAppUseCase);
 
+  const createAppointment = new createAppointmentUseCase(appointmentRepository);
+  const appointmentController = new createAppointmentController(createAppointment);
+
+  const deleteAppointment   = new deleteAppointmentUseCase(appointmentRepository);
+  const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
 
@@ -43,6 +60,10 @@ module.exports = (authUseCase) => {
   const expiryController = new checkExpiryController(expiryUseCase);
 
   // Check and update expiry status for all active applications of a user.
+  const clinicRepository = new ImpClinicRepository();
+  const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
+  const clinicsController = new ClinicsController(listClinicsUseCase);
+
   router.get(
     '/:id_user/applications/check-expiry',
     authMiddleware.verifyToken,
@@ -66,6 +87,26 @@ module.exports = (authUseCase) => {
 
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
 
+  router.get(
+    '/clinics/list',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => clinicsController.listClinics(req, res)
+  );
+
+  router.post(
+    '/:id_user/appointments',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => appointmentController.createAppointment(req, res)
+  );
+
+  router.delete(
+    '/:id_user/appointments',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
+  );
   router.delete(
     '/:id_user',
     authMiddleware.verifyToken,
