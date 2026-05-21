@@ -6,14 +6,16 @@ class validation {
   validateEnum (param, enumOptions) {
     if (!Object.values(enumOptions).includes(param)) {
       throw new Error(`Elige una opción disponible: ${Object.values(enumOptions).join(', ')}`);
-    } else return crypt.encrypt(param);
+    } else //return crypt.encrypt(param);
+    return param;
   }
 
   validate (param, requiredLength, label, required) {
     if (param) {
       if (param.trim().length > requiredLength) {
         throw new Error(`${label} no puede superar los ${requiredLength} caracteres`);
-      } else return crypt.encrypt(param);
+      } else //return crypt.encrypt(param);
+      return param;
     } else if (required) {
       if (!param || param.trim().length === 0) {
         throw new Error(`${label} debe llenarse`);
@@ -42,7 +44,8 @@ class validation {
         throw new Error('La fecha debe ser válida, anterior a hoy y después de 1900');
       }
 
-      return crypt.encrypt(date);
+      //return crypt.encrypt(date);
+      return date;
     } if (required)
       throw new Error(`${label} ' debe llenarse`);
     else
