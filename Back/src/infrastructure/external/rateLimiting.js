@@ -20,10 +20,21 @@ const response = (req, res) => {
   return res.status(429).render('errors/429');
 };
 
-const loginHandler = (req, res) =>
-  //error msg
-  res.redirect('/auth?error=Demasiados+intentos.+Espera+15+minutos+e+intenta+de+nuevo.')
-;
+const loginHandler = (req, res) => {
+  const wantsJson =
+    req.xhr ||
+    req.headers['x-requested-with'] === 'XMLHttpRequest' ||
+    req.headers.accept?.includes('application/json');
+
+  if (wantsJson) {
+    return res.status(429).json({
+      error: 'Demasiados intentos. Espera 15 minutos e intenta de nuevo.',
+    });
+  }
+
+  return res.redirect('/auth?error=Demasiados+intentos.+Espera+15+minutos+e+intenta+de+nuevo.');
+};
+
 // login by IP
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
