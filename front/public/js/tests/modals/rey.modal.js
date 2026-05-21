@@ -681,13 +681,13 @@ async function openREYModal (idUser, idApplication, test, mode) {
 
   const fetches = [
     // Schooling
-    fetch(`/api/usuarios/${idUser}/escolaridad`)
+    fetch(`/api/users/${idUser}/schooling`)
       .then(r => r.json())
       .then(json => { schoolingData = json; })
       .catch(() => { schoolingData = null; }),
 
     // Age
-    fetch(`/api/usuarios/${idUser}/edad`)
+    fetch(`/api/users/${idUser}/age`)
       .then(r => r.json())
       .then(json => { ageData = json; })
       .catch(() => { ageData = null; }),
@@ -695,7 +695,7 @@ async function openREYModal (idUser, idApplication, test, mode) {
 
   // Existing result — only needed for modify/consult
   if (isModify || isConsult) {
-    fetches.push(fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados/${test.idResults}`)
+    fetches.push(fetch(`/api/users/${idUser}/applications/${idApplication}/tests/3/results/${test.idResults}`)
       .then(r => r.json())
       .then(json => {
         if (json.data) fetchedTest = { ...test, ...json.data };

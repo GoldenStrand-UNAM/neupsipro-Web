@@ -352,7 +352,7 @@ async function openBANFEModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados/${test.idResults}`);
+      const res = await fetch(`/api/users/${idUser}/applications/${idApplication}/tests/1/results/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {

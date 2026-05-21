@@ -10,9 +10,6 @@ class postApplicationUseCase {
     // 1. Verify user exists and retrieve their assigned protocol
     const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
 
-    console.log('id_user recibido:', id_user);
-    console.log('userRecord:', userRecord);
-
     if (!userRecord) {
       const err  = new Error('User not found');
       err.status = 404;

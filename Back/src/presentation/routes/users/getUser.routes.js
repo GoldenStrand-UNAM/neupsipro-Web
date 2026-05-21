@@ -43,9 +43,8 @@ module.exports = (authUseCase) => {
   const expiryController = new checkExpiryController(expiryUseCase);
 
   // Check and update expiry status for all active applications of a user.
-  // Must be declared before /:id_user or Express matches it as a param.
   router.get(
-    '/:id_user/aplicaciones/check-expiry',
+    '/:id_user/applications/check-expiry',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => expiryController.checkExpiry(req, res)

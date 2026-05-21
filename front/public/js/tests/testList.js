@@ -45,7 +45,7 @@
     const container = document.getElementById('testListContainer');
 
     try {
-      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas`);
+      const res  = await fetch(`/api/users/${idUser}/applications/${idApplication}/tests`);
       const json = await res.json();
 
       removeSkeletons();

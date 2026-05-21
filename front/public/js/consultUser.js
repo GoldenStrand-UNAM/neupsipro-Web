@@ -166,7 +166,7 @@ function setupShowMoreToggle () {
   const idUser = window.__USER_DATA__?.idUser;
   if (!idUser) return;
   try {
-    const res  = await fetch(`/users/${idUser}/aplicaciones/check-expiry`);
+    const res  = await fetch(`/users/${idUser}/applications/check-expiry`);
     const json = await res.json();
     if (!res.ok) { console.error('[checkExpiry]', json.error); return; }
   } catch (err) {

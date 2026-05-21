@@ -98,7 +98,7 @@ module.exports = (authUseCase) => {
 
   // Only manage the render
   router.get(
-    '/usuarios/:id_user/aplicaciones/:id_application/pruebas',
+    '/users/:id_user/applications/:id_application/tests',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.renderTests(req, res)
@@ -106,7 +106,7 @@ module.exports = (authUseCase) => {
 
   // Only manage the API
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas',
+    '/api/users/:id_user/applications/:id_application/tests',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.getTests(req, res)
@@ -114,14 +114,14 @@ module.exports = (authUseCase) => {
 
   //========================= BANFE ===============================
   router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/1/resultados',
+    '/api/users/:id_user/applications/:id_application/tests/1/results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => banfeController.postResult(req, res)
   );
 
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/1/resultados/:id_results',
+    '/api/users/:id_user/applications/:id_application/tests/1/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getBANFEController.getResult(req, res)
@@ -129,14 +129,14 @@ module.exports = (authUseCase) => {
 
   // ======================== WAIS ===============================
   router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados',
+    '/api/users/:id_user/applications/:id_application/tests/2/results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => waisController.postResult(req, res)
   );
 
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/2/resultados/:id_results',
+    '/api/users/:id_user/applications/:id_application/tests/2/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getWAISController.getResult(req, res)
@@ -144,14 +144,14 @@ module.exports = (authUseCase) => {
 
   // ======================== MOCA ===============================
   router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados',
+    '/api/users/:id_user/applications/:id_application/tests/4/results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => mocaController.postResult(req, res)
   );
 
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/4/resultados/:id_results',
+    '/api/users/:id_user/applications/:id_application/tests/4/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getMOCAController.getResult(req, res)
@@ -159,14 +159,14 @@ module.exports = (authUseCase) => {
 
   // ======================== REY ===============================
   router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados',
+    '/api/users/:id_user/applications/:id_application/tests/3/results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('tests', 'consultation'),
     (req, res) => reyController.postResult(req, res)
   );
 
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/3/resultados/:id_results',
+    '/api/users/:id_user/applications/:id_application/tests/3/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getREYCtrl.getResult(req, res)
@@ -174,14 +174,14 @@ module.exports = (authUseCase) => {
 
   // ======================== NIH ===============================
   router.post(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/5/resultados',
+    '/api/users/:id_user/applications/:id_application/tests/5/results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => nihController.postResult(req, res)
   );
 
   router.get(
-    '/api/usuarios/:id_user/aplicaciones/:id_application/pruebas/5/resultados/:id_results',
+    '/api/users/:id_user/applications/:id_application/tests/5/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getNIHController.getResult(req, res)
@@ -190,17 +190,15 @@ module.exports = (authUseCase) => {
   // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
 
   router.get(
-    '/api/usuarios/:id_user/escolaridad',
+    '/api/users/:id_user/schooling',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => {
       const { id_user } = req.params;
       testResultsRepo.fetchUserSchooling({ id_user })
         .then(schooling => {
-          // eslint-disable-next-line no-console
-          console.log('[escolaridad endpoint] schooling:', schooling);
           const map = {
-            'Sin escolaridad': 0,
+            'Sin schooling': 0,
             'Primaria': 6,
             'Secundaria': 9,
             'Bachillerato': 12,
@@ -216,7 +214,7 @@ module.exports = (authUseCase) => {
 
   // GET REY age for modal
   router.get(
-    '/api/usuarios/:id_user/edad',
+    '/api/users/:id_user/age',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => {

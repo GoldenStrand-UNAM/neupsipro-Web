@@ -209,7 +209,7 @@ async function openNIHModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/5/resultados/${test.idResults}`);
+      const res  = await fetch(`/api/users/${idUser}/applications/${idApplication}/tests/5/results/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {

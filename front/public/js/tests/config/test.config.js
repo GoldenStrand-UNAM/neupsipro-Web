@@ -14,7 +14,7 @@ const TEST_REGISTRY = {
     openConsult: (idUser, idApplication, test) =>
       openBANFEModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
-      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/1/resultados`,
+      `/api/users/${idUser}/applications/${idApplication}/tests/1/results`,
   },
 
   //WAIS
@@ -28,7 +28,7 @@ const TEST_REGISTRY = {
     openConsult: (idUser, idApplication, test) =>
       openWAISModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
-      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/2/resultados`,
+      `/api/users/${idUser}/applications/${idApplication}/tests/2/results`,
   },
 
   3: {
@@ -40,11 +40,11 @@ const TEST_REGISTRY = {
     openConsult: (idUser, idApplication, test) =>
       openREYModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
-      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/3/resultados`,
+      `/api/users/${idUser}/applications/${idApplication}/tests/3/results`,
     schoolingEndpoint: (idUser) =>
-      `/api/usuarios/${idUser}/escolaridad`,
+      `/api/users/${idUser}/schooling`,
     ageEndpoint: (idUser) =>
-      `/api/usuarios/${idUser}/edad`,
+      `/api/users/${idUser}/age`,
   },
 
   // MOCA
@@ -58,9 +58,9 @@ const TEST_REGISTRY = {
     openConsult: (idUser, idApplication, test) =>
       openMOCAModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
-      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados`,
+      `/api/users/${idUser}/applications/${idApplication}/tests/4/results`,
     schoolingEndpoint: (idUser) =>
-      `/api/usuarios/${idUser}/escolaridad`,
+      `/api/users/${idUser}/schooling`,
   },
 
   // NIHS
@@ -74,7 +74,7 @@ const TEST_REGISTRY = {
     openConsult: (idUser, idApplication, test) =>
       openNIHModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
-      `/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/5/resultados`,
+      `/api/users/${idUser}/applications/${idApplication}/tests/5/results`,
   },
 
 };

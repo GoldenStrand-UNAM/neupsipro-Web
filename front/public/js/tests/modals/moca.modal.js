@@ -391,7 +391,7 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
   let schoolingData = null;
 
   try {
-    const res  = await fetch(`/api/usuarios/${idUser}/escolaridad`);
+    const res  = await fetch(`/api/users/${idUser}/schooling`);
     const json = await res.json();
     if (res.ok) schoolingData = json;
   } catch (_err) {
@@ -407,7 +407,7 @@ async function openMOCAModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(`/api/usuarios/${idUser}/aplicaciones/${idApplication}/pruebas/4/resultados/${test.idResults}`);
+      const res  = await fetch(`/api/users/${idUser}/applications/${idApplication}/tests/4/results/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {
