@@ -12,8 +12,11 @@ class GetUsersListClinicalController {
       // Sanitize search input
       const safeSearch = String(search).slice(0, 100);
 
+      const safePage = Math.max(1, parseInt(page) || 1);
+      const safeLimit = Math.max(1, parseInt(limit) || 10);
+
       //Exceute useCase
-      const result = await this.GetUsersClinicalListUseCase.execute({ search: safeSearch, page, limit });
+      const result = await this.GetUsersClinicalListUseCase.execute({ search: safeSearch, page: safePage, limit: safeLimit });
 
       //Successful response
       res.status(200).json(result);
