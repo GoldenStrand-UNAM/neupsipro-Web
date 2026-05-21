@@ -94,8 +94,9 @@ function populateUserInfo (user) {
   document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
   document.getElementById('state').innerHTML = getStatusBadge(user.state);
-  document.getElementById('nextApt').textContent = formatAppointmentDate(user.nextAppointment) || 'N/A';
-  document.getElementById('protocol').textContent = user.protocol || 'N/A';
+  document.getElementById('nextApt').textContent = user.nextAppointment
+    ? formatAppointmentDate(user.nextAppointment.dateTime)
+    : 'Sin cita programada';  document.getElementById('protocol').textContent = user.protocol || 'N/A';
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 
