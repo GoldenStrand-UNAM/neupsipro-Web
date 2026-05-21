@@ -110,6 +110,7 @@ const authUseCase = new AuthorizationUseCase(authRepository);
 const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
+//login routes
 app.use('/auth', authRoutes(logoutController, loginController));
 app.use('/', authRoutes(logoutController, loginController));
 
