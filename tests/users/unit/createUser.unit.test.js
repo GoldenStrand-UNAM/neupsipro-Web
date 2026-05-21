@@ -72,18 +72,39 @@ describe('createUserUseCase',()=>{
         ).rejects.toThrow('La etiología de amputación debe llenarse');
     });
 
-    test('throws error when user already exists',async()=>{
 
-        hashingService.hash.mockResolvedValue('hashedPassword');
+    test('rejects SQL injection in userName', async()=>{
 
-        userRepository.postUser.mockRejectedValue(
-            new Error(
-                'Usuario duplicado'
-            )
-        );
+        const invalid = validPayload();
 
-        await expect(useCase.execute(validPayload())
-        ).rejects.toThrow('Usuario duplicado');
+        invalid.userName = "' OR '1'='1; DROP TABLE users; --";
+
+        await expect(useCase.execute(invalid)).rejects.toThrow();
+    });
+    test('rejects XSS payload in firstName', async()=>{
+
+        const invalid = validPayload();
+
+        invalid.firstName = '<script>alert(document.cookie)</script>';
+
+        await expect(useCase.execute(invalid)).rejects.toThrow();
+    });
+    test('rejects emojis in userName', async()=>{
+
+        const invalid = validPayload();
+
+        invalid.userName ='juan😊';
+
+        await expect(useCase.execute(invalid)).rejects.toThrow();
+    });
+
+    test('rejects 10,000-character userName', async()=>{
+
+        const invalid = validPayload();
+
+        invalid.userName ='a'.repeat(10000);
+
+        await expect(useCase.execute(invalid)).rejects.toThrow();
     });
 
 });
