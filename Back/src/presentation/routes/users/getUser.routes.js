@@ -27,6 +27,10 @@ const deleteAppointmentController = require('../../controller/appointments/delet
 const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
 const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
+const ClinicsController = require('../../controller/clinical/getListClinics.controller');
+const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
+const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
+
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
@@ -49,6 +53,10 @@ module.exports = (authUseCase) => {
   const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
+
+  const clinicRepository = new ImpClinicRepository();
+  const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
+  const clinicsController = new ClinicsController(listClinicsUseCase);
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
