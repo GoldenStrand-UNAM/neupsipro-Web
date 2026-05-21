@@ -1,0 +1,82 @@
+@startuml Consultar_Usuarios
+
+actor "Admin" as GC
+participant "consultUsersList.ejs" as V
+participant "main.js" as MAIN
+participant "getUsersList.Routes" as ROUTE
+participant "authMiddleware" as AUTH
+participant "permissionsMiddleware" as PERM
+participant "getUsersList.Controller" as CTRL
+participant "GetUsersListUseCase" as UC
+participant "UserSummaryDTO" as DTO
+participant "userSummaryEntity" as ENT
+participant "ImpUsersRepository" as REPO
+database "DB" as DB
+
+GC -> V : Accesses "Usuarios" module
+
+V -> MAIN : fetchUsers()
+
+MAIN -> ROUTE : GET /api/users?search=&page=1&limit=6
+
+ROUTE -> AUTH : verifyToken(req,res,next)
+
+AUTH -> AUTH : Verifies and decodes JWT\n(role, valid session)
+
+AUTH --> ROUTE : next()
+
+ROUTE -> PERM : requirePermission('user management','consultation')
+
+PERM -> PERM : Validate module/action permission
+
+PERM --> ROUTE : next()
+
+ROUTE -> CTRL : controller.getUsers(req,res)
+
+CTRL -> CTRL : Extract query params\nvalidate length(search)\nsanitize search\nparse page & limit
+
+CTRL -> UC : execute({search,page,limit})
+
+par Fetch Active Users
+
+UC -> REPO : fetchActivePatients({search,page,limit})
+
+REPO -> DB : SELECT id, full_name,\nreference_number,state,protocol\nFROM users...\nLIMIT ? OFFSET ?
+
+DB --> REPO : List<RowDataPacket>
+
+REPO -> ENT : new userSummary(row)
+
+REPO --> UC : List<userSummaryEntity>
+
+else Count Users
+
+UC -> REPO : countActivePatients({search})
+
+REPO -> DB : SELECT COUNT(*) AS total\nFROM users\nWHERE id_role=2 ...
+
+DB --> REPO : {total:N}
+
+REPO --> UC : rows[0].total
+
+end
+
+UC -> UC : totalPages=Math.ceil(total/limit)
+
+UC -> DTO : new UserSummaryDTO(u)\nfor each entity
+
+UC --> CTRL : {users,total,page,\nlimit,totalPages}
+
+CTRL --> ROUTE : HTTP 200 OK\nres.json(result)
+
+ROUTE --> MAIN : JSON response
+
+MAIN -> MAIN : renderTable(users)
+
+MAIN -> MAIN : renderPagination(totalPages,page)
+
+MAIN -> V : Updates DOM
+
+V --> GC : Table: Folio | Nombre |\nEstatus | Protocolo
+
+@enduml

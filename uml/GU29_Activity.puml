@@ -1,0 +1,49 @@
+@startuml ScheduleAppointmentActivity
+title Schedule Appointment - Activity
+
+start
+
+:User opens patient detail page;
+:User clicks "Agendar cita";
+:Appointment modal opens;
+:Load clinics list into dropdown;
+:Initialize date picker;
+
+:User fills date, clinic and issue;
+:User clicks "Agendar";
+
+if (All fields valid?) then (yes)
+
+    if (Auth & permissions OK?) then (yes)
+
+        if (Date is in the future?) then (yes)
+
+            if (User has upcoming appointment?) then (no)
+
+                :Find or create user_relation;
+                :Insert appointment in DB;
+                :Show success toast;
+                :Reload page with new appointment;
+                stop
+
+            else (yes)
+                :Show "Already has appointment" error;
+                stop
+            endif
+
+        else (no)
+            :Show "Invalid date" error;
+            stop
+        endif
+
+    else (no)
+        :Reject request (401/403);
+        stop
+    endif
+
+else (no)
+    :Show validation error;
+    stop
+endif
+
+@enduml
