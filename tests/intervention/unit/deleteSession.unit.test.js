@@ -59,4 +59,67 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
     );
   });
 
+   // FS01 — SQL injection in id_session.
+  test('FS01 accepts SQL injection in id_session as plain string and responds 200', async () => {
+    mockExecute.mockResolvedValue({ success: true });
+ 
+    const req = buildReq({
+      params: { id_user: 'u-1', id_session: "1; DROP TABLE intervention_session; --" },
+    });
+    const res = buildRes();
+ 
+    await interventionController.deleteLastSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(200);
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('DROP');
+    expect(body).not.toContain('stack');
+  });
+ 
+  // FE01 — Database fails during deletion.
+  test('FE01 responds 400 when the database fails during deletion', async () => {
+    mockExecute.mockRejectedValue(new Error('DB_ERROR'));
+ 
+    const req = buildReq();
+    const res = buildRes();
+ 
+    await interventionController.deleteLastSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('stack');
+  });
+ 
+  // FE02 — Database connection lost during deletion.
+  test('FE02 responds 400 when the database connection is lost', async () => {
+    mockExecute.mockRejectedValue(new Error('ECONNREFUSED'));
+ 
+    const req = buildReq();
+    const res = buildRes();
+ 
+    await interventionController.deleteLastSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(400);
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('stack');
+  });
+ 
+  // Alternating flow — id_session is not the last session.
+  test('responds 409 when the session is not the last one', async () => {
+    mockExecute.mockRejectedValue(new Error('Solo se puede eliminar la última sesión'));
+ 
+    const req = buildReq();
+    const res = buildRes();
+ 
+    await interventionController.deleteLastSession(req, res);
+ 
+    expect(res.status).toHaveBeenCalledWith(409);
+ 
+    const body = JSON.stringify(res.json.mock.calls[0][0]);
+    expect(body).not.toContain('stack');
+  });
+
 });
