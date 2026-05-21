@@ -5,7 +5,7 @@ const Appointment = require('../../domain/entity/appointment');
 
 class ImpAppointmentRepository extends appointmentRepository {
 
-// Finds the next upcoming appointment info of  a user or null
+  // Finds the next upcoming appointment info of  a user or null
   async findUpcomingByUser ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
@@ -40,7 +40,7 @@ class ImpAppointmentRepository extends appointmentRepository {
     if (existing.length) {
       return existing[0].id_user_relation;
     }
-// If no existing relation, create oneof the type 'appointment' and return its id
+    // If no existing relation, create oneof the type 'appointment' and return its id
     const idUserRelation = uuidv4();
     await db.query(
       `INSERT INTO user_relation 
@@ -50,7 +50,7 @@ class ImpAppointmentRepository extends appointmentRepository {
     );
     return idUserRelation;
   }
-// Creates an appointment and returns id
+  // Creates an appointment and returns id
   async createAppointment ({ id_user_relation, issue, date_time }) {
     const idAppointment = uuidv4();
     await db.query(
@@ -61,41 +61,41 @@ class ImpAppointmentRepository extends appointmentRepository {
     return idAppointment;
   }
   // Deletes the upcoming appointment of a user, returns true if deleted
-    async deleteUpcomingByUser ({ id_user }) {
+  async deleteUpcomingByUser ({ id_user }) {
     //  Find the upcoming appointment id and its user_relation id
     const [rows] = await db.query(
-        `SELECT a.id_appointment, a.id_user_relation
+      `SELECT a.id_appointment, a.id_user_relation
         FROM appointment a
         JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
         WHERE ur.id_user = ?
         AND ur.type = 'appointment'
         AND a.date_time >= NOW()
         LIMIT 1`,
-        [id_user]
+      [id_user]
     );
 
     if (rows.length === 0) {
-        return false;
+      return false;
     }
 
     const { id_appointment, id_user_relation } = rows[0];
 
     // Delete the appointment
     await db.query(
-        `DELETE FROM appointment WHERE id_appointment = ?`,
-        [id_appointment]
+      'DELETE FROM appointment WHERE id_appointment = ?',
+      [id_appointment]
     );
 
     // Delete the user_relation
     await db.query(
-        `DELETE FROM user_relation WHERE id_user_relation = ?`,
-        [id_user_relation]
+      'DELETE FROM user_relation WHERE id_user_relation = ?',
+      [id_user_relation]
     );
 
     return true;
-    }
-    async fecthAppointmentWithClinical ({ idClinicalUser }) {
-      const [users] = await db.query (`SELECT a.id_appointment, a.date_time, a.issue, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+  }
+  async fecthAppointmentWithClinical ({ idClinicalUser }) {
+    const [users] = await db.query (`SELECT a.id_appointment, a.date_time, a.issue, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
       CASE
           WHEN DATE(a.date_time) = CURDATE() THEN 'today'
         WHEN DATE(a.date_time) = DATE_ADD(CURDATE(), INTERVAL 1 DAY) THEN 'tomorrow'
@@ -105,8 +105,8 @@ class ImpAppointmentRepository extends appointmentRepository {
             JOIN user_relation ur ON ur.id_user_relation = a.id_user_relation
             JOIN users u ON u.id_user = ur.id_user
           WHERE ur.id_clinic_user = ? AND DATE(a.date_time) >= CURDATE()`, [idClinicalUser]);
-        return users;
-      }
+    return users;
+  }
 }
 
 module.exports = ImpAppointmentRepository;

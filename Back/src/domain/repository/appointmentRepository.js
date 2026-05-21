@@ -9,8 +9,8 @@ class appointmentRepository {
     throw new Error('findOrCreateUserRelation() must be implemented');
   }
   async deleteUpcomingByUser ({ _id_user }) {
-  throw new Error('deleteUpcomingByUser() must be implemented');
- }
+    throw new Error('deleteUpcomingByUser() must be implemented');
+  }
   async fecthAppointmentWithClinical () {
     throw new Error('fetchAppointmentWithClinical is not working/implemented');
   }

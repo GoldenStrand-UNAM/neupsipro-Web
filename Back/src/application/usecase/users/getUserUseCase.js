@@ -5,7 +5,7 @@ class consultUserUseCase {
   constructor (userRepository, impTestApplicationRepository, appointmentRepository) {
     this.userRepository = userRepository;
     this.impTestApplicationRepository = impTestApplicationRepository;
-    this.appointmentRepository = appointmentRepository; 
+    this.appointmentRepository = appointmentRepository;
   }
 
   async execute ({ id_user }) {
@@ -32,7 +32,7 @@ class consultUserUseCase {
       ? await getPresignedUrl(cleanUser.photo)
       : cleanUser.photo;
 
-      const nextAppointment = await this.appointmentRepository.findUpcomingByUser({ id_user });
+    const nextAppointment = await this.appointmentRepository.findUpcomingByUser({ id_user });
 
     return {
       ...cleanUser,
@@ -40,7 +40,7 @@ class consultUserUseCase {
       hasProtocol,
       assignedApplications,
       canStartIntervention,
-      nextAppointment, 
+      nextAppointment,
     };
 
   }
