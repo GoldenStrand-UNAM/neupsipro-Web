@@ -31,7 +31,7 @@ module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
   const testAppRepository  = new impTestApplicationsRepository();
-  const appointmentRepository = new ImpAppointmentRepository(); 
+  const appointmentRepository = new ImpAppointmentRepository();
   const useCase            = new GetUserUseCase(usersRepository, testAppRepository, appointmentRepository);
   const controller = new UserController(useCase);
   const jwtService = new JwtService();
@@ -49,7 +49,6 @@ module.exports = (authUseCase) => {
   const deleteAppointmentCtrl = new deleteAppointmentController(deleteAppointment);
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
-  
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,
@@ -67,7 +66,7 @@ module.exports = (authUseCase) => {
 
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
 
-    router.get(
+  router.get(
     '/clinics/list',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
@@ -82,10 +81,10 @@ module.exports = (authUseCase) => {
   );
 
   router.delete(
-  '/:id_user/appointments',
-  authMiddleware.verifyToken,
-  permissionsMiddleware.requirePermission('user management', 'eliminate'),
-  (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
+    '/:id_user/appointments',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
   );
   router.delete(
     '/:id_user',
