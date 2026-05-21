@@ -1,5 +1,6 @@
 const express = require('express');
 
+
 module.exports = (logoutController, loginController) => {
   const router = express.Router();
 
