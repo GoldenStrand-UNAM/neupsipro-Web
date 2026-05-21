@@ -37,8 +37,9 @@ class checkExpiryUseCase {
     // 2. Fetch only active applications — skip completed (3) and already expired (5)
     const activeApps = await this.appRepo.fetchActiveApplicationsByUser({ id_user });
 
-    const expired   = [];
-    const completed = [];
+    const expired    = [];
+    const completed  = [];
+    const inProgress = [];
 
     for (const app of activeApps) {
 
@@ -60,7 +61,18 @@ class checkExpiryUseCase {
         continue;
       }
 
-      // 5. Check if any incomplete test has been pending too long.
+      // 5. Check if at least one test is graded (En proceso)
+      const someCalificada = tests.some(t => t.status === 3);
+
+      if (someCalificada && app.status !== 2) {
+        await this.appRepo.updateApplicationStatus({
+          id_application: app.id_application,
+          status: 2,
+        });
+        inProgress.push(app.id_application);
+      }
+
+      // 6. Check if any incomplete test has been pending too long.
       // A test is expired if:
       // - status !== 3 (not graded)
       // - AND date_applied is set AND months elapsed >= threshold
@@ -74,7 +86,7 @@ class checkExpiryUseCase {
       });
 
       if (hasExpiredTest) {
-        // Expire the application and all its incomplete tests
+        // Expire the application and all its incomplete tests — overwrites in-progress
         await this.appRepo.updateApplicationStatus({
           id_application: app.id_application,
           status: 5,
@@ -88,7 +100,7 @@ class checkExpiryUseCase {
       }
     }
 
-    return { expired, completed };
+    return { expired, completed, inProgress };
   }
 }
 

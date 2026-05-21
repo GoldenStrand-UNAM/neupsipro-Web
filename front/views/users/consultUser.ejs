@@ -427,6 +427,11 @@
                 card: "bg-[#002B79]/30",
                 icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />`
             },
+            complete: {
+                tag: "bg-green-600",
+                card: "bg-green-600/30",
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />`
+            },
             fatal: {
                 tag: "bg-[#FF0404]",
                 card: "bg-[#FF0404]/30",
@@ -435,10 +440,11 @@
         };
 
         const _statusMap = {
-            "Por Comenzar": "neutral",
+            "Por comenzar": "neutral",
 
             "En proceso": "warning",
-            "Calificado": "warning",
+
+            "Calificada": "complete",
 
             "Entregado": "success",
             "Terminada": "success",
