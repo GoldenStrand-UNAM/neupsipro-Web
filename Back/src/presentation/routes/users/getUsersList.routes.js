@@ -1,7 +1,6 @@
 const express = require('express');
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const GetUsersListUseCase = require('../../../application/usecase/users/getUserListUseCase');
 const getUsersListController = require('../../controller/users/getUsersList.controller');

@@ -7,7 +7,6 @@ const s3UploadMiddleware = require('../../../infrastructure/external/s3.middlewa
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 const { apiLimiter , publicationLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');

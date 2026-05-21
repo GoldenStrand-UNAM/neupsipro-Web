@@ -1,7 +1,6 @@
 const express = require('express');
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const router = express.Router();
 
 const UserController = require('../../controller/users/getUser.controller');
@@ -77,7 +76,7 @@ module.exports = (authUseCase) => {
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
 
   router.get(
-    '/clinics/list', 
+    '/clinics/list',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => clinicsController.listClinics(req, res)

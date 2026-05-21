@@ -52,7 +52,6 @@ app.use((req, res, next) => {
 if (loginLimiter) app.post('/auth/login', loginLimiter);
 if (generalLimiter) app.use(generalLimiter);
 
-
 const AuthService = require('./infrastructure/auth/authService');
 const LoginUseCase = require('./application/usecase/auth/loginUseCase');
 const LogoutUseCase = require('./application/usecase/auth/logoutUseCase');
