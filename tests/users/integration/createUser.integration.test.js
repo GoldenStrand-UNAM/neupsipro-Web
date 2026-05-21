@@ -56,6 +56,13 @@ const validBody = () => ({
   sex:'Masculino'
 });
 
+test('renders post user form',async()=>{
+
+    const res =await request(app).get('/user/post');
+
+    expect(res.status).toBe(200);
+});
+
 describe('INTEGRATION — POST /user/post',()=>{
 
     beforeEach(()=>{
@@ -97,5 +104,5 @@ describe('INTEGRATION — POST /user/post',()=>{
 
         expect(res.header.location).toBe('/auth/');
     });
-
+    
 });
