@@ -111,6 +111,7 @@ const loginController = new LoginController(loginUseCase);
 const logoutController = new LogoutController(logoutUseCase);
 
 app.use('/auth', authRoutes(logoutController, loginController));
+app.use('/', authRoutes(logoutController, loginController));
 
 //================ Routes =======================
 app.use((req, res, next) => {
