@@ -5,7 +5,7 @@ class updateContractUseCase {
 
   async execute ({ id_user, contract_link, neuro_profile }) {
     if (!id_user) throw new Error('id_user es requerido');
-        
+
     if (contract_link && contract_link.length > 500)  throw new Error('El enlace del contrato no puede superar los 500 caracteres');
     if (neuro_profile && neuro_profile.length > 2000) throw new Error('El perfil neuropsicológico no puede superar los 2000 caracteres');
 
@@ -23,4 +23,4 @@ class updateContractUseCase {
     return { success: true, message: 'Datos guardados' };
   }
 }
-module.exports = updateContractUseCase; 
+module.exports = updateContractUseCase;
