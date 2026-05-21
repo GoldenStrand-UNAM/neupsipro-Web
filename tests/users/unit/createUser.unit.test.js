@@ -44,7 +44,7 @@ describe('createUserUseCase',()=>{
         prosthetist:'Carlos',
         neuroEntryDate:'01/01/2024',
         pairs:'Sí asiste',
-        sex:'Masculino'
+        sex:'Never'
     });
 
     test('creates a new user successfully',async()=>{
