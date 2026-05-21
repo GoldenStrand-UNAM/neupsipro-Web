@@ -1,4 +1,6 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+
 
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
@@ -30,7 +32,7 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/api',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller1.getMenuClinicalUsers(req, res)
 
@@ -38,21 +40,21 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/view',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller2.getDashboardView(req, res)
   );
 
   router.get(
     '/api/:idClinicalUser',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller2.getClinicalDashboard(req, res)
   );
 
   router.get(
     '/api/user/:idUser',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller3.getClinicalDashboard(req, res)
   );
