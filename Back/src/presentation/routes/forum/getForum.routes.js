@@ -1,7 +1,6 @@
 const express = require('express');
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const ImpForumRepository = require('../../../infrastructure/repositories/ImpForumRepository');
 const ForumController = require('../../controller/forum/getForum.controller');
 const GetForumUseCase = require('../../../application/usecase/forum/getForumUseCase');

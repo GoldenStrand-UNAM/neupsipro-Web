@@ -1,7 +1,6 @@
 const express = require('express');
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const router = express.Router();
 
 const ClinicalUserController = require('../../controller/clinical/getClinicalUser.controller');

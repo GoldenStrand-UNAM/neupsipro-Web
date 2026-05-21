@@ -1,7 +1,6 @@
 const express = require('express');
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
 const getUsersClinicalListController = require('../../controller/clinical/getUsersListClinical.controller');
