@@ -1,48 +1,82 @@
 @startuml Consultar_Usuarios_Clinicos
+
 actor "Admin" as GC
 participant "consultUsersClinicalList.ejs" as V
 participant "main.js" as MAIN
 participant "getUsersListClinical.Routes" as ROUTE
 participant "authMiddleware" as AUTH
+participant "permissionsMiddleware" as PERM
 participant "getUsersListClinical.Controller" as CTRL
 participant "GetUsersClinicalListUseCase" as UC
 participant "UserClinicalSummaryDTO" as DTO
 participant "userClinicalSummaryEntity" as ENT
-participant "ClinicalRepository" as REPO
-participant "ImpClinicalRepository" as IREPO
+participant "ImpClinicalRepository" as REPO
 database "DB" as DB
 
 GC -> V : Accesses "Equipo Clínico" module
-V -> MAIN : fetchUsers()
-MAIN -> ROUTE : GET /api/usuarios-clinicos?search=&page=1&limit=6\n[Authorization: Bearer JWT]
-ROUTE -> AUTH : authMiddleware(req, res, next)
-AUTH -> AUTH : Verifies and decodes JWT\n(role, valid session)
-AUTH --> ROUTE : next()
-ROUTE -> CTRL : controller.getUsers(req, res)
-CTRL -> CTRL : page = Number(page)\nlimit = Number(limit)
-CTRL -> UC : GetUsersClinicalListUseCase.execute\n({ search, page, limit })
 
-UC -> IREPO : fetchActivePatients({search, page, limit})
-IREPO -> REPO : Extend
-REPO -> DB : SELECT u.id_user AS id,\nCONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,\nuc.affiliation, uc.activity,\n(SELECT COUNT(*) FROM user_relation ur\n WHERE ur.id_clinic_user=u.id_user\n AND ur.type='assigned') AS assigned_count\nFROM users u\nLEFT JOIN user_clinical uc ON uc.id_user=u.id_user\nWHERE u.id_role=3 AND u.eliminated=0\nAND (? IS NULL OR CONCAT_WS(...) LIKE ?)\nORDER BY u.user_name ASC\nLIMIT ? OFFSET ?
+V -> MAIN : fetchUsers()
+
+MAIN -> ROUTE : GET /api/usuarios-clinicos?search=&page=1&limit=6
+
+ROUTE -> AUTH : verifyToken(req,res,next)
+
+AUTH -> AUTH : Verifies and decodes JWT\n(role, valid session)
+
+AUTH --> ROUTE : next()
+
+ROUTE -> PERM : requirePermission('clinical','consultation')
+
+PERM -> PERM : Validate module/action permission
+
+PERM --> ROUTE : next()
+
+ROUTE -> CTRL : controller.getUsers(req,res)
+
+CTRL -> CTRL : Extract query params\nsafeSearch = String(search).slice(0,100)
+
+CTRL -> UC : execute({search,page,limit})
+
+par Fetch Clinical Users
+
+UC -> REPO : fetchActivePatients({search,page,limit})
+
+REPO -> DB : SELECT u.id_user AS id,\nCONCAT_WS(...) AS full_name,\nuc.affiliation,\nuc.activity,\nassigned_count\nFROM users...\nLIMIT ? OFFSET ?
+
 DB --> REPO : List<RowDataPacket>
-REPO -> ENT : new userClinicalSummary(row) for each row
+
+REPO -> ENT : new userClinicalSummary(row)
+
 REPO --> UC : List<userClinicalSummaryEntity>
 
-UC -> IREPO : countActivePatients({search})
-IREPO -> REPO : Extend
-REPO -> DB : SELECT COUNT(*) AS total\nFROM users u\nWHERE u.id_role=3 AND u.eliminated=0\nAND (? IS NULL OR CONCAT_WS(...) LIKE ?)
-DB --> REPO : { total: N }
+else Count Users
+
+UC -> REPO : countActivePatients({search})
+
+REPO -> DB : SELECT COUNT(*) AS total\nFROM users\nWHERE id_role=3 ...
+
+DB --> REPO : { total:N }
+
 REPO --> UC : rows[0].total
 
-UC -> UC : totalPages = Math.ceil(total / limit)
-UC -> DTO : new UserClinicalSummaryDTO(u) for each entity
-UC --> CTRL : { users: List<DTO>, total,\npage, limit, totalPages }
-CTRL --> ROUTE : HTTP 200 OK\n{ users, total, page, limit, totalPages }
+end
+
+UC -> UC : totalPages=Math.ceil(total/limit)
+
+UC -> DTO : new UserClinicalSummaryDTO(u)\nfor each entity
+
+UC --> CTRL : {users,total,page,\nlimit,totalPages}
+
+CTRL --> ROUTE : HTTP 200 OK\nres.json(result)
+
 ROUTE --> MAIN : JSON response
+
 MAIN -> MAIN : renderTable(users)
-MAIN -> MAIN : renderPagination(totalPages, page)
+
+MAIN -> MAIN : renderPagination(totalPages,page)
+
 MAIN -> V : Updates DOM
-V --> GC : Table: Name | Affiliation | Activity |\nAssigned Patients | Consult Button
+
+V --> GC : Table: Name | Affiliation |\nActivity | Assigned Patients
 
 @enduml

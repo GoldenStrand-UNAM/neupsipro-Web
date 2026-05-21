@@ -1,0 +1,52 @@
+@startuml Activity_Consultar_Usuarios
+title Consult Users List
+
+|Admin|
+
+start
+
+:Access "Usuarios";
+
+|System|
+
+:Load users page;
+
+:Display users list;
+
+|Admin|
+
+:Search users or change page;
+
+|System|
+
+:Validate search criteria;
+
+if (Search valid?) then (no)
+
+    :Show validation message;
+
+else (yes)
+
+    :Retrieve matching users;
+
+    :Calculate pagination;
+
+    :Update users table;
+
+    :Display results;
+
+endif
+
+if (More pages?) then (yes)
+
+    |Admin|
+    :Navigate pages;
+
+    |System|
+    :Load selected page;
+
+endif
+
+stop
+
+@enduml
