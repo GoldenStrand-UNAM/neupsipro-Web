@@ -77,12 +77,33 @@ const {
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use(doubleCsrfProtection);
-}
 app.use((req, res, next) => {
+  const isAndroidOrApi =
+    (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) ||
+    (req.headers['content-type'] === 'application/json');
+
+  if (isAndroidOrApi) {
+    return next();
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    return doubleCsrfProtection(req, res, next);
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
+});
+
+app.get('/auth/token', (req, res) => {
+  res.json({ csrfToken: res.locals.csrfToken });
 });
 
 const dbPool = require('./infrastructure/database/database');
@@ -104,11 +125,11 @@ const sessionRepository = new SessionRepository(dbPool);
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
-const logoutUseCase = new LogoutUseCase(authService);
+const logoutUseCase = new LogoutUseCase(authRepository);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
-const logoutController = new LogoutController(logoutUseCase);
+const logoutController = new LogoutController(logoutUseCase, jwtService);
 
 app.use('/auth', authRoutes(logoutController, loginController));
 
