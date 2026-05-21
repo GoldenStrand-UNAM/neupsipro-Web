@@ -1,7 +1,14 @@
 const User = require('../../../domain/entity/postUser');
 const UsersDTO = require('../../dto/postUsersDTO');
 const Validation = require('../../../infrastructure/external/validations');
+
 const validation = new Validation();
+
+const enumSex = { FEMENINE: 'Femenino', MASCULINE: 'Masculino', NOT_SPECIFIED: 'Sin especificar' };
+const enumModality = { ROTARY: 'Rotaria', IN_PERSON: 'Presencial' };
+const enumLaterality = { LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra' };
+const enumPhase = { PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología' };
+const enumPairs = { YES: 'Sí asiste', NO: 'No asiste' };
 
 class PostUserUseCase {
   constructor (userRepository, hashingService) {
@@ -9,23 +16,40 @@ class PostUserUseCase {
     this.hashingService = hashingService;
   }
 
-  async execute ({ userName, firstName, lastnameP, lastnameM, birthdate, password, assigned, phase, basePathology, otherPathology, modality, profilePhoto, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex }) {
-    const enumSex = {FEMENINE: 'Femenino', MASCULINE: 'Masculino', NOT_SPECIFIED: 'Sin especificar'};
-    const enumModality = {ROTARY: 'Rotaria', IN_PERSON: 'Presencial'};
-    const enumLaterality = {LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra'};
-    const enumPhase = {PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología'};
-    const enumPairs = {YES: "Sí asiste", NO: "No asiste"};
-    const fpathology = validation.others(basePathology, otherPathology, 50, "La etiología de amputación", true);
-    const flevel = validation.others(amputationLevel, otherLevel, "El nivel de amputación ", true);
-    validation.validate(userName, 30, "El nombre de usuario", true);
-    const ffirstName = validation.validate(firstName, 30, "El nombre", true);
-    const flastnameP = validation.validate(lastnameP, 30, "El apellido paterno", true);
-    const flastnameM = validation.validate(lastnameM, 30, "EL apellido materno", false);
-    validation.validate(password, 30, "La contraseña", true);
-    validation.validate(assigned, 36, "El clínico asignado", true);
-    const fprofilePhoto = validation.validate(profilePhoto, 255, "La URL de la foto de perfil", false);
-    const freferenceNumber = validation.validate(referenceNumber, 10, "El folio", true);
-    const fprosthetist = validation.validate(prosthetist, 20, "El/la protesista", true);
+  async execute ({
+    userName,
+    firstName,
+    lastnameP,
+    lastnameM,
+    birthdate,
+    password,
+    assigned,
+    phase,
+    basePathology,
+    otherPathology,
+    modality,
+    profilePhoto,
+    referenceNumber,
+    amputationDate,
+    amputationLevel,
+    otherLevel,
+    laterality,
+    prosthetist,
+    neuroEntryDate,
+    pairs,
+    sex,
+  }) {
+    const fpathology = validation.others(basePathology, otherPathology, 50, 'La etiología de amputación', true);
+    const flevel = validation.others(amputationLevel, otherLevel, 'El nivel de amputación ', true);
+    validation.validate(userName, 30, 'El nombre de usuario', true);
+    const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
+    const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
+    const flastnameM = validation.validate(lastnameM, 30, 'EL apellido materno', false);
+    validation.validate(password, 30, 'La contraseña', true);
+    validation.validate(assigned, 36, 'El clínico asignado', true);
+    validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
+    const freferenceNumber = validation.validate(referenceNumber, 10, 'El folio', true);
+    const fprosthetist = validation.validate(prosthetist, 20, 'El/la protesista', true);
     const fsex = validation.validateEnum(sex, enumSex);
     const fmodality = validation.validateEnum(modality, enumModality);
     const flaterality = validation.validateEnum(laterality, enumLaterality);
@@ -40,7 +64,7 @@ class PostUserUseCase {
     const user = new User ({
       idRole: 2,
       userName,
-      firstName: "ffirstName",
+      firstName: ffirstName,
       lastnameP: flastnameP,
       lastnameM: flastnameM || null,
       birthdate: fBirthdate,
@@ -57,7 +81,7 @@ class PostUserUseCase {
       prosthetist: fprosthetist,
       neuroEntryDate: fNeuroEntry || null,
       pairs: fpairs,
-      sex: fsex
+      sex: fsex,
     });
 
     const saved = await this.userRepository.postUser(user);
