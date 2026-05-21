@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
-const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter, apiLimiter, publicationLimiter } = require('./infrastructure/external/rateLimiting');
 const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 //APP LIMITER
 if (loginLimiter) app.post('/auth/login', loginLimiter);
 if (generalLimiter) app.use(generalLimiter);
+
 
 const AuthService = require('./infrastructure/auth/authService');
 const LoginUseCase = require('./application/usecase/auth/loginUseCase');
