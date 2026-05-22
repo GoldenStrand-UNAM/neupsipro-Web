@@ -77,17 +77,45 @@ const {
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
+// Middleware to either apply or skip csrf
 app.use((req, res, next) => {
-  const isAndroidOrApi =
-    (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) ||
-    (req.headers['content-type'] === 'application/json');
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
 
+  // Use include to ignore charset
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  //If any of the three above is true, means it is android request
   if (isAndroidOrApi) {
     return next();
   }
 
+  // If web, validate csrf
   if (process.env.NODE_ENV !== 'test') {
     return doubleCsrfProtection(req, res, next);
+  }
+  next();
+});
+
+// Middleware to generate csfr for web
+app.use((req, res, next) => {
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  // If mobile, does not generate csrf
+  if (isAndroidOrApi) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
+  // Generate only if it is web
+  try {
+    res.locals.csrfToken = generateCsrfToken(req, res);
+  } catch (error) {
+    res.locals.csrfToken = '';
   }
   next();
 });
