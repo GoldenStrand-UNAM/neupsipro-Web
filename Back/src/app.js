@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
-const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter, apiLimiter, publicationLimiter } = require('./infrastructure/external/rateLimiting');
 const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
@@ -27,8 +27,8 @@ app.use(helmet({
 
       'default-src': ["'self'"],
 
-      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
 
       'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
 
@@ -78,19 +78,23 @@ const {
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use((req, res, next) => {
-    const userAgent = req.headers['user-agent'] || '';
-    if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
-      return next();
-    }
-    doubleCsrfProtection(req, res, next);
-  });
-}
+app.use((req, res, next) => {
+  const isAndroidOrApi =
+    (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) ||
+    (req.headers['content-type'] === 'application/json');
+
+  if (isAndroidOrApi) {
+    return next();
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    return doubleCsrfProtection(req, res, next);
+  }
+  next();
+});
 
 app.use((req, res, next) => {
-  const userAgent = req.headers['user-agent'] || '';
-  if (userAgent.includes('Android') || userAgent.includes('okhttp')) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     res.locals.csrfToken = null;
     return next();
   }
@@ -124,11 +128,11 @@ const userRepository = new UserRepository();
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
-const logoutUseCase = new LogoutUseCase(authService);
+const logoutUseCase = new LogoutUseCase(authRepository);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
-const logoutController = new LogoutController(logoutUseCase);
+const logoutController = new LogoutController(logoutUseCase, jwtService);
 
 app.use('/auth', authRoutes(logoutController, loginController));
 
@@ -179,6 +183,10 @@ app.use('/', postPublicationRoutes(authUseCase));
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
 app.use('/', dashboardRoutes(authUseCase));
+
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+
+app.use('/', getAllClinicalsRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
