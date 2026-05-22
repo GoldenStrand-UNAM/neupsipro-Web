@@ -1,3 +1,5 @@
+import js from "@eslint/js";
+import globals from "globals";
 import { defineConfig } from "eslint/config";
 import pluginSecurity from "eslint-plugin-security";
 import importX from 'eslint-plugin-import-x';
@@ -6,8 +8,6 @@ import { sourceType } from "eslint-plugin-import-x/utils";
 export default defineConfig([
   { ignores: ["eslint.config.mjs", "**/*.spec.js", "**/*.test.js", "tailwind.config.js"] },
   pluginSecurity.configs.recommended,
-  { files: ["**/*.{js,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node } },
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
   { files: ["**/*.{js,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.node, sourceType: 'commonjs' } }, 
   { files: ['front/public/js/**/*.js'], plugins: { js }, extends: ['js/recommended'], languageOptions: { globals: globals.browser, sourceType: 'script',},},
   {
