@@ -102,6 +102,11 @@
                 const res  = await fetch(`/api/usuarios-clinicos?${params}`);
                 const data = await res.json();
 
+                if (res.status === 429) {
+                    showMsg('Demasiadas solicitudes. Intenta de nuevo en unos minutos.', 'text-red-400');
+                    return;
+                }
+
                 if (!res.ok) {
                     console.error("Server error:", data.error);
                     showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");

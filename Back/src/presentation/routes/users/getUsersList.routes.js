@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const GetUsersListUseCase = require('../../../application/usecase/users/getUserListUseCase');
@@ -19,8 +20,8 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-  router.get('/users',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsersPage(req, res));
-  router.get('/api/users',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsers(req, res));
+  router.get('/users',  authMiddleware.verifyToken, apiLimiter, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsersPage(req, res));
+  router.get('/api/users',  authMiddleware.verifyToken, apiLimiter, permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUsers(req, res));
 
   return router;
 
