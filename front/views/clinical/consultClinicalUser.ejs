@@ -43,7 +43,7 @@
                 
                 
                 <!-- User info -->
-                <div class="relative grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
+                <div class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
                     <!-- Hidden button for future edite and delete funcionability-->
                     <button class="hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" aria-label="Opciones de usuario">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -62,14 +62,14 @@
 
                     <!-- First Column -->
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
                                 <path d="M0.5 1.98485H11.8641V13.3484H0.5V1.98485ZM14.1668 7.66626L21.3334 0.5L28.5 7.66626L21.3334 14.8325L14.1668 7.66626ZM0.5 17.1365H11.8641V28.5H0.5V17.1365ZM15.6524 17.1365H27.0165V28.5H15.6524V17.1365Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span class="text-gray-600">Actividad:</span>
                             <span class="font-medium" id="activity"></span>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
                                 <path d="M28.75 12.3056V19.5278C28.75 22.9323 28.75 24.6339 27.7252 25.6927C26.699 26.75 25.0498 26.75 21.75 26.75H7.75C4.4502 26.75 2.7996 26.75 1.7748 25.6927C0.75 24.6339 0.75 22.9323 0.75 19.5278V12.3056C0.75 10.2833 0.75 9.27222 1.1308 8.49944C1.46642 7.81962 2.0021 7.26694 2.661 6.92067C3.41 6.52778 4.39 6.52778 6.35 6.52778L11.39 2.62778C13.0084 1.37544 13.8162 0.75 14.75 0.75C15.6838 0.75 16.4916 1.37544 18.11 2.62778L23.15 6.52778C25.11 6.52778 26.09 6.52778 26.839 6.92067C27.4974 7.26718 28.0325 7.81984 28.3678 8.49944C28.75 9.27222 28.75 10.2833 28.75 12.3056Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M11.95 26.7504V22.4171C11.95 21.6509 12.245 20.9161 12.7701 20.3743C13.2952 19.8326 14.0074 19.5282 14.75 19.5282C15.4926 19.5282 16.2048 19.8326 16.7299 20.3743C17.255 20.9161 17.55 21.6509 17.55 22.4171V26.7504M7.05002 12.306H5.65002V13.7504H7.05002V12.306ZM7.05002 18.806H5.65002V20.2504H7.05002V18.806ZM23.85 12.306H22.45V13.7504H23.85V12.306ZM23.85 18.806H22.45V20.2504H23.85V18.806ZM14.75 13.7504C15.4926 13.7504 16.2048 13.4461 16.7299 12.9043C17.255 12.3625 17.55 11.6277 17.55 10.8615C17.55 10.0954 17.255 9.36056 16.7299 8.81879C16.2048 8.27702 15.4926 7.97266 14.75 7.97266C14.0074 7.97266 13.2952 8.27702 12.7701 8.81879C12.245 9.36056 11.95 10.0954 11.95 10.8615C11.95 11.6277 12.245 12.3625 12.7701 12.9043C13.2952 13.4461 14.0074 13.7504 14.75 13.7504Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -77,7 +77,7 @@
                             <span class="text-gray-600">Afiliación:</span>
                             <span class="font-medium" id="affiliation"></span>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -90,14 +90,21 @@
 
                     <!-- Second Column -->
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0 3.354 3.354 0 0 0-3 0 3.354 3.354 0 0 1-3 0L3 16.5m15-3.379a48.474 48.474 0 0 0-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 0 1 3 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 0 1 6 13.12M12.265 3.11a.375.375 0 1 1-.53 0L12 2.845l.265.265Zm-3 0a.375.375 0 1 1-.53 0L9 2.845l.265.265Zm6 0a.375.375 0 1 1-.53 0L15 2.845l.265.265Z" />
+                            </svg>
+                            <span class="text-gray-600">Fecha de nacimiento:</span>
+                            <span class="font-medium" id="birthdate"></span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 22 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17.6 0H8.8C7.63305 0 6.51389 0.465788 5.68873 1.2949C4.86357 2.124 4.4 3.24852 4.4 4.42105V10.3158H5.86667V4.42105C5.86667 3.63936 6.17571 2.88969 6.72582 2.33695C7.27593 1.78421 8.02203 1.47368 8.8 1.47368H17.6C18.378 1.47368 19.1241 1.78421 19.6742 2.33695C20.2243 2.88969 20.5333 3.63936 20.5333 4.42105V23.5789C20.5333 24.3606 20.2243 25.1103 19.6742 25.6631C19.1241 26.2158 18.378 26.5263 17.6 26.5263H8.8C8.02203 26.5263 7.27593 26.2158 6.72582 25.6631C6.17571 25.1103 5.86667 24.3606 5.86667 23.5789V17.6842H4.4V23.5789C4.4 24.7515 4.86357 25.876 5.68873 26.7051C6.51389 27.5342 7.63305 28 8.8 28H17.6C18.767 28 19.8861 27.5342 20.7113 26.7051C21.5364 25.876 22 24.7515 22 23.5789V4.42105C22 3.24852 21.5364 2.124 20.7113 1.2949C19.8861 0.465788 18.767 0 17.6 0ZM0 13.2632H15.0333L10.2667 8.47368L11.2347 7.36842L17.8347 14L11.2347 20.6316L10.2667 19.5263L15.0333 14.7368H0V13.2632Z" fill="black"/>
                             </svg>
                             <span class="text-gray-600">Fecha de ingreso:</span>
                             <span class="font-medium" id="startDate"></span>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 22 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3.44468 0H10.334C11.2476 0 12.1238 0.465788 12.7698 1.2949C13.4158 2.124 13.7787 3.24852 13.7787 4.42105V10.3158H12.6305V4.42105C12.6305 3.63936 12.3885 2.88969 11.9579 2.33695C11.5272 1.78421 10.9431 1.47368 10.334 1.47368H3.44468C2.83562 1.47368 2.25151 1.78421 1.82084 2.33695C1.39017 2.88969 1.14823 3.63936 1.14823 4.42105V23.5789C1.14823 24.3606 1.39017 25.1103 1.82084 25.6631C2.25151 26.2158 2.83562 26.5263 3.44468 26.5263H10.334C10.9431 26.5263 11.5272 26.2158 11.9579 25.6631C12.3885 25.1103 12.6305 24.3606 12.6305 23.5789V17.6842H13.7787V23.5789C13.7787 24.7515 13.4158 25.876 12.7698 26.7051C12.1238 27.5342 11.2476 28 10.334 28H3.44468C2.53109 28 1.65492 27.5342 1.00892 26.7051C0.36292 25.876 0 24.7515 0 23.5789V4.42105C0 3.24852 0.36292 2.124 1.00892 1.2949C1.65492 0.465788 2.53109 0 3.44468 0ZM6.88935 13.2632H19.8069L16.0752 8.47368L16.833 7.36842L22 14L16.833 20.6316L16.0752 19.5263L19.8069 14.7368H6.88935V13.2632Z" fill="black"/>
                             </svg>
@@ -110,7 +117,7 @@
                 <!--Emergency Contact-->
                 <div id="emergencyContactCard" class="bg-[#BA8700]/30 rounded-4xl p-6 md:p-8 w-full flex flex-col gap-6 font-sans"> 
                     
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                         <svg class="w-6 h-6 md:w-7 md:h-7 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"/>
@@ -120,9 +127,9 @@
                         <h3 class="text-2xl text-black font-bold"> Contacto de emergencia </h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-6 w-full md:px-16 lg:px-24">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full md:px-10 xl:px-24">
                         
-                        <div class="flex items-center justify-center md:justify-start gap-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"/>
@@ -131,7 +138,7 @@
                             <span id="emergencyName" class="text-black text-lg md:text-xl whitespace-nowrap"></span>
                         </div>
 
-                        <div class="flex items-center justify-center gap-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.38466C8.84711 3 9.24838 3.32135 9.35418 3.77443L10.3702 8.12921C10.4578 8.50486 10.2816 8.8893 9.93284 9.06363L7.74238 10.1589C9.2052 13.084 11.4552 15.334 14.3803 16.7968L15.4756 14.6064C15.6499 14.2576 16.0344 14.0814 16.41 14.169L20.7648 15.185C21.2179 15.2908 21.5392 15.6921 21.5392 16.1545V19C21.5392 20.3807 20.4199 21.5 19.0392 21.5C10.1812 21.5 3 14.3188 3 5.46083V5.5Z"/>
                             </svg>
@@ -139,7 +146,7 @@
                             <span id="emergencyPhone" class="text-black text-lg md:text-xl whitespace-nowrap "></span>
                         </div>
 
-                        <div class="flex items-center justify-center md:justify-end gap-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
                             <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
                                 <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47585 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
                             </svg>
