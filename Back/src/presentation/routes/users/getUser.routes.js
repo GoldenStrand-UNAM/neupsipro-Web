@@ -59,17 +59,17 @@ module.exports = (authUseCase) => {
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
 
-  router.get(
-    '/:id_user', authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
-  );
-
   router.get('/consultUser', (req, res) => {
     res.render('users/consultUser', {
       activePage: 'usuario',
 
     });
   });
+
+  router.get(
+    '/:id_user', authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+  );
 
   //Create Application route
 
