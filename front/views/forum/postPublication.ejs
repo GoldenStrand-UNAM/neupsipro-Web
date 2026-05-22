@@ -217,11 +217,11 @@
           type: 'success' 
         }));
         window.location.href = '/forum';
-      } else if (res.status === 429) {
-          showToast('Has alcanzado el límite de publicaciones. Intenta más tarde.', 'error');
-    } else {
-        showToast('Error al publicar', 'error');
-      }  
+      } const fallback =
+          res.status === 413 ? 'La imagen es demasiado grande (max 5mb)':
+          res.status === 422 ? 'Datos inválidos' :
+          res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 'Error al publicar';
+        showToast(data.error || fallback, 'error');
     } catch (err) {
       showToast('Error de conexión ', 'error');
     }

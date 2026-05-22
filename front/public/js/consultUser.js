@@ -86,10 +86,10 @@ function populateUserInfo (user) {
   document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
 
   document.getElementById('prosthetist').textContent = user.prosthetist || 'N/A';
-  document.getElementById('neuroDate').textContent = user.neuroEntryDate
-    ? new Date(user.neuroEntryDate).toLocaleDateString() : 'N/A';
-  document.getElementById('amputationDate').textContent = user.amputationDate
-    ? new Date(user.amputationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('neuroDate').textContent = user.neuroEntryDate || 'N/A';
+
+  document.getElementById('amputationDate').textContent = user.amputationDate || 'N/A';
+
   document.getElementById('amputationLevel').textContent = user.amputationLevel || 'N/A';
   document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
