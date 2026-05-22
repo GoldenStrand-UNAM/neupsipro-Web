@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(`/users/${user.idUser}/applications`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken},
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         body: JSON.stringify({ application_name: name }),
       });
 

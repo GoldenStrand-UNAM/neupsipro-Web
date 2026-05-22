@@ -122,7 +122,6 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
-
 }
 
 module.exports = impTestResultsRepository;

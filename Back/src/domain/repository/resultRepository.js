@@ -37,7 +37,6 @@ class resultRepository {
     throw new Error('fetchTestsWithDateByApplication() not implemented');
   }
 
-
 }
 
 module.exports = resultRepository;
