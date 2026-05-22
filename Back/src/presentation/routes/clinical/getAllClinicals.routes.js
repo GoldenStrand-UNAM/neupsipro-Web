@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const listClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
@@ -22,6 +23,7 @@ module.exports = (authUseCase) => {
   router.get(
     '/api/clinics/list',
     authMiddleware.verifyToken,
+    apiLimiter,
     permissionsMiddleware.requirePermission('clinical', 'consultation'),
     (req, res) => controller.listClinics(req, res)
   );
