@@ -6,7 +6,7 @@
     <title>Intervención - NeuPsi-Pro</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body class="bg-[#0A2472] flex min-h-screen flex-col lg:flex-row transition-transform duration-300">
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -19,7 +19,7 @@
             <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto space-y-6 mt-6">
 
                 <div>
-                    <div class="flex items-center gap-4 mb-5">
+                    <div class="flex flex-wrap items-center gap-3 md:gap-4 mb-5">
                         <a href="/users/<%= idUser %>">
                             <button class="cursor-pointer">
                                 <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -27,22 +27,22 @@
                                 </svg>
                             </button>
                         </a>
-                        <h1 class="text-2xl font-bold text-[#1E1E1E]">Intervención</h1>
+                        <h1 class="text-xl sm:text-2xl font-bold text-[#1E1E1E]">Intervención</h1>
                     </div>
                     <hr class="border-3 rounded-2xl border-[#002B7A]">
                 </div>
 
                 <!-- User_info-->
                 <div class="border border-gray-200 rounded-2xl p-6 space-y-4">
-                    <div class="flex items-start gap-4">
+                    <div class="flex flex-col sm:flex-row items-start gap-4">
                         <% if (intervention.photo) { %>
                             <img 
                                 src="<%= intervention.photo %>" 
-                                class="w-20 h-20 rounded-full object-cover border-2 border-white shadow-sm" 
+                                class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-white shadow-sm" 
                                 alt="Foto de <%= intervention.userFullName %>"
                             >
                         <% } else { %>
-                            <div class="w-20 h-20 rounded-full bg-gray-200 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
                                 <svg 
                                     class="w-10 h-10 text-gray-500" 
                                     fill="currentColor" 
@@ -58,11 +58,11 @@
                         <% } %>
 
                         <div class="flex-1">
-                            <h2 class="text-xl font-bold text-gray-900">
+                            <h2 class="text-lg sm:text-xl font-bold break-words text-gray-900">
                                 <%= intervention.referenceNumber || 'Sin código' %>
                             </h2>
 
-                            <p class="text-sm text-gray-500">
+                            <p class="text-sm break-words text-gray-500">
                                 <%= intervention.userFullName %>
                             </p>
 
@@ -85,25 +85,35 @@
                     </div>
 
                     <!-- Clinic Contract -->
-                    <div class="flex items-center gap-3 pt-3 border-t border-gray-100 min-w-0">
-                        <svg class="black-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                        </svg>
-                        <span class="text-gray-600 text-sm shrink-0">Contrato clínico:</span>
+                    <div class="pt-3 border-t border-gray-100">
 
-                        <% if (intervention.contractLink) { %>
-                            <a href="<%= intervention.contractLink %>" target="_blank" class="text-[#3350A9] text-sm hover:underline truncate flex-1 min-w-0">
-                                <%= intervention.contractLink %>
-                            </a>
-                        <% } else { %>
-                            <span class="text-gray-400 text-sm italic flex-1">Sin contrato registrado</span>
-                        <% } %>
+                        <div class="flex items-start gap-3">
 
-                        <button id="btnEditContract" class="text-gray-400 hover:text-[#3350A9] cursor-pointer shrink-0" title="Editar datos">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="black-icon-mini">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                            <svg class="black-icon-mini shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                             </svg>
-                        </button>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <p class="text-gray-600 text-sm">
+                                        Contrato clínico:
+                                    </p>
+                                    <button id="btnEditContract" class="text-gray-400 hover:text-[#3350A9] shrink-0 cursor-pointer" title="Editar datos">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <% if (intervention.contractLink) { %>
+                                    <a href="<%= intervention.contractLink %>" target="_blank" class="text-[#3350A9] text-sm hover:underline break-all">
+                                        <%= intervention.contractLink %>
+                                    </a>
+                                <% } else { %>
+                                    <p class="text-gray-400 text-sm italic">
+                                        Sin contrato registrado
+                                    </p>
+                                <% } %>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- neuro Profile -->
@@ -134,8 +144,9 @@
                 </div>
 
                 <!-- Tabla de sesiones -->
-                <div class="border border-gray-200 rounded-2xl overflow-x-auto">
-                    <table class="w-full text-sm table-fixed">
+                <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-[900px] w-full text-sm table-fixed">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="py-3 px-4 text-left text-gray-700 font-medium w-28">Fecha</th>
@@ -193,14 +204,15 @@
                                 <% }) %>
                             <% } %>
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- add session -->
                 <div class="flex justify-center mt-6 mb-2">
                     <button id="btnAddSession" class="btn-mini bg-[#BA8700] w-full md:w-[220px]">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         <span>Agregar sesión</span>
                     </button>

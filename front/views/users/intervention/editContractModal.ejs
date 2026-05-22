@@ -1,6 +1,6 @@
 <div id="editContractModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-    <div class="relative bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
+    <div class="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
 
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-semibold text-gray-900">Datos de la intervención</h2>
@@ -33,14 +33,17 @@
             <p id="editContractError" class="text-sm text-red-500 hidden"></p>
         </div>
 
-        <div class="flex gap-3 justify-end mt-6">
-            <button id="cancelEditContract" class="flex items-center gap-2 px-5 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 cursor-pointer">
+        <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-6">
+            <button id="cancelEditContract" class="btn-mini bg-white text-gray-700 border border-gray-300
+               hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700
+               hover:brightness-100
+               w-full sm:w-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>  
                 <span>Cancelar</span>
             </button>
-            <button id="confirmEditContract" class="btn-mini bg-[#3350A9]">
+            <button id="confirmEditContract" class="btn-mini bg-[#3350A9] w-full sm:w-auto sm:min-w-[140px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon-mini">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10.5 18.75 19.5 5.25" />
                 </svg>
