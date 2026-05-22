@@ -1,3 +1,5 @@
+/* global createApplicationCard, _csrfToken*/
+
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;
 
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(`/users/${user.idUser}/applications`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken},
         body: JSON.stringify({ application_name: name }),
       });
 
@@ -68,14 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Prepend new card before the "Crear aplicación" button
       const addBtn = document.getElementById('btnCreateSession');
-      addBtn.insertAdjacentHTML('beforebegin', createSessionCard({
+      addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
         idApplication: json.data.idApplication,
         applicationName: json.data.applicationName,
         status: json.data.status,
         createdAt: json.data.createdAt,
-      }));
+      }, user.idUser));
 
-    } catch (err) {
+    } catch (_err) {
       showModalError('Error de red, intenta de nuevo');
     } finally {
       const btnSave = document.getElementById('btnSaveApp');

@@ -10,9 +10,6 @@ class postApplicationUseCase {
     // 1. Verify user exists and retrieve their assigned protocol
     const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
 
-    console.log('id_user recibido:', id_user);
-    console.log('userRecord:', userRecord);
-
     if (!userRecord) {
       const err  = new Error('User not found');
       err.status = 404;
@@ -41,9 +38,9 @@ class postApplicationUseCase {
     }
 
     // 4. Fetch the tests associated with the protocol
-    const testIds = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
+    const tests = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
 
-    if (!testIds.length) {
+    if (!tests.length) {
       const err  = new Error(`No tests found for protocol: ${protocol}`);
       err.status = 422;
       throw err;
@@ -56,6 +53,8 @@ class postApplicationUseCase {
     });
 
     // 6. Bulk-create the result rows for each test in the protocol
+    // Extract only the id_test values from the test objects
+    const testIds = tests.map(test => test.id_test);
     await this.impTestResultsRepository.createResults(
       savedEntity.idApplication,
       id_user,

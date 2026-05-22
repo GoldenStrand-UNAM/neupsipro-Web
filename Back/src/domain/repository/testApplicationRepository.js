@@ -23,6 +23,16 @@ class testApplicationRepository {
   async fetchProtocolTests ({ _protocol }) {
     throw new Error('fetchProtocolTests() must be implemented');
   }
+
+  // Fetch all active applications for a user — excludes completed (3) and expired (5)
+  async fetchActiveApplicationsByUser ({ _id_user }) {
+    throw new Error('fetchActiveApplicationsByUser() not implemented');
+  }
+
+  // Update application status
+  async updateApplicationStatus ({ _id_application, _status }) {
+    throw new Error('updateApplicationStatus() not implemented');
+  }
 }
 
 module.exports = testApplicationRepository;
