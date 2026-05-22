@@ -1,5 +1,5 @@
 const express = require('express');
-const { apiLimiter } = require('../../../infrastructure/external/rateLimiting'); 
+const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
