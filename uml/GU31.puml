@@ -52,7 +52,7 @@ ENT --> UC : clinicalUserEntity
 
 UC -> IREPO : save(clinicalUserEntity)
 
-IREPO -> DB : INSERT INTO user\n(id_user, id_role, user_name,\nfirst_name, lastname_p,\nlastname_m, birthdate,\npassword_hash, email)\n\nINSERT INTO user_clinical\naffilation activity,\nemergency_contact_name\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, end_date, hours
+IREPO -> DB : INSERT INTO users\n(id_user, id_role, user_name,\nfirst_name, lastname_p,\nlastname_m, birthdate,\npassword_hash, email)\n\nINSERT INTO user_clinical\naffilation activity,\nemergency_contact_name\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, end_date, hours)
 DB --> IREPO : { clinicalUser }
 
 IREPO -> ENT : clinicalUser.set(clinicalUser)
