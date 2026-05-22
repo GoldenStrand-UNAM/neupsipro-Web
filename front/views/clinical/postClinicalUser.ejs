@@ -21,7 +21,16 @@
     <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
       <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
+          <div class="flex items-center gap-3">
+            <a href="/clinical">
+              <button class="cursor-pointer pb">
+                <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </button>
+            </a>
+            <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
+          </div>
           <div class="flex items-center gap-3">
             <button 
               onclick="resetFormBtn()" 
@@ -141,10 +150,11 @@
 
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Afiliación
+              Afiliación <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
               <input
+                required
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
                 type="text"
                 name="affiliation"
@@ -160,10 +170,11 @@
 
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Actividad
+              Actividad <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
               <input
+                required
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
                 type="text"
                 name="activity"
@@ -178,10 +189,11 @@
           </div>
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Fecha de inicio
+              Fecha de inicio <span style="color: #FF0404">*</span>
             </label>
             <div class="relative w-full sm:flex-1 flex items-center">
               <input 
+                required
                 type="text" 
                 id="startDate" 
                 name="startDate"
@@ -198,10 +210,11 @@
 
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Fecha de fin
+              Fecha de fin <span style="color: #FF0404">*</span>
             </label>
             <div class="relative w-full sm:flex-1 flex items-center">
               <input 
+                required
                 type="text" 
                 id="finishDate" 
                 name="finishDate"
@@ -226,7 +239,7 @@
                 name="hours"
                 id="hours"
                 placeholder="200"
-                maxlength="20"
+                maxlength="4"
               >
             </div>
           </div>
@@ -240,8 +253,8 @@
                 required
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
                 type="text"
-                name="userName"
-                id="userName"
+                name="username"
+                id="username"
                 placeholder="Nombre de usuario"
                 maxlength="30"
               >
@@ -271,7 +284,7 @@
             </div>
           </div>
 
-          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
               Confirma contraseña <span style="color: #FF0404">*</span>
             </label>
@@ -288,6 +301,13 @@
               <span id="charactersConfirmPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/30 
               </span>
+            </div>
+          </div>
+          <div class="mb-8 flex flex-col sm:flex-row w-full">
+            <div class="sm:block sm:w-1/4 shrink-0"></div>
+            <div class="flex flex-row w-full justify-between px-4">
+              <button type="button" id="showPw" style="color: #0600b7" class="text-sm"><span id="showHide">Mostrar</span> Contraseña</button>
+              <div id="validation" style="color: #ff1f0b" class="text-sm"></div>
             </div>
           </div>
 
@@ -323,10 +343,10 @@
             <div class="inputs w-full relative flex items-center">
               <input
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                type="tel"
                 name="emergencyContactPhone"
                 id="emergencyContactPhone"
-                placeholder="0000000000"
+                placeholder="1234567890"
                 maxlength="15"
               >
               <span id="charactersEmergencyContactPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -395,27 +415,24 @@
     form.addEventListener('submit', async (e) => {
       event.preventDefault();
       const formData = new FormData(form);
-      const objectData = Object.fromEntries(formData);
-      const JSONData = JSON.stringify(objectData);
 
       try {
-      const res = await fetch('/user/post', {
+      const res = await fetch('/clinical/post', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
-        body: JSONData,
+        headers: { 'x-csrf-token': _csrfToken },
+        body: formData,
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        sessionStorage.setItem('usuarioGuardado', 'true');
+        sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
       } else {
         showToast((data.error || 'Error desconocido'), 'error');
       }
       } catch (error) {
-      showToast(`Error de conexión: ${error.message}`, 'error');
+      showToast('Error de conexión', 'error');
       }
     });
 
@@ -470,6 +487,71 @@
       });
     }
 
+    function validateFutureDates(id){
+      const inputFecha = document.getElementById(id);
+      const today = new Date();
+
+      const fp = flatpickr(document.getElementById(id), {
+        dateFormat: "d/m/Y",
+        allowInput: true,
+        maxDate: "31/12/2100",
+        minDate: "today",
+        disableMobile: true
+      });
+
+      inputFecha.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        let finalValue = "";
+        const actualYear = new Date().getFullYear();
+
+        if (v.length > 0) {
+          let day = v.substring(0, 2);
+          let month = v.substring(2, 4);
+          let year = v.substring(4, 8);
+
+          if (parseInt(day) > 31) day = "31";
+          if (parseInt(month) > 12) month = "12";
+          if (parseInt(year) < 2026 && v.length == 8) year = actualYear;
+          if (parseInt(year) > 2100) year = 2100;
+
+          if (v.length <= 2) finalValue = day;
+          else if (v.length <= 4) finalValue = day + "/" + month;
+          else finalValue = day + "/" + month + "/" + year;
+        }
+
+        e.target.value = finalValue;
+
+      });
+    }
+
+    function validatePhone(id) {
+      const inputPhone = document.getElementById(id);
+
+      inputPhone.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/[^0-9+]/g, '');
+
+        if (v.includes('+')) {
+          const hasPlus = v.startsWith('+');
+          v = v.replace(/\+/g, '');
+          if (hasPlus) {
+            v = '+' + v;
+          }
+        }
+
+        e.target.value = v;
+      });
+    }
+
+    function validateNumber(id) {
+      const inputNumber = document.getElementById(id);
+
+      inputNumber.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/[^0-9]/g, '');
+
+        e.target.value = v;
+      });
+    }
+
     function validateMatch() {
       const val = passInput.value;
       const confVal = confirmInput.value;
@@ -512,6 +594,8 @@
     setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
     validateDates('birthdate');
     validateDates('startDate');
-    validateDates('finishDate');
+    validateFutureDates('finishDate');
+    validatePhone('emergencyContactPhone');
+    validateNumber('hours');
   </script>
 </html>

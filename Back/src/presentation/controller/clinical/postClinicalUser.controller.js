@@ -1,42 +1,37 @@
 class PostClinicalUserController {
-  /*constructor (PostClinicalUserUseCase) {
+  constructor (PostClinicalUserUseCase) {
     this.PostClinicalUserUseCase = PostClinicalUserUseCase;
-  }*/
+  }
 
-  /*async postClinicalUser (request, res) {
+  async postClinicalUser (request, res) {
     try {
       // Extract query params
-      const { idRole = '2', userName, firstName, lastnameP, lastnameM = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex } = request.body;
+      const { idRole = '3', firstName, lastnameP, lastnameM = null, birthdate, email = null, affiliation, activity, startDate, finishDate, hours = null, username, password, emergencyContactName = null, emergencyContactPhone = null, emergencyContactRelation = null } = request.body;
 
       const clinicalUser = await this.PostClinicalUserUseCase.execute({
         idRole,
-        userName,
         firstName,
         lastnameP,
         lastnameM,
         birthdate,
+        email,
+        affiliation,
+        activity,
+        startDate,
+        finishDate,
+        hours,
+        username,
         password,
-        assigned,
-        phase,
-        basePathology,
-        otherPathology,
-        modality,
-        profilePhoto,
-        referenceNumber,
-        amputationDate,
-        amputationLevel,
-        otherLevel,
-        laterality,
-        prosthetist,
-        neuroEntryDate,
-        pairs,
-        sex,
+        emergencyContactName,
+        emergencyContactPhone,
+        emergencyContactRelation,
       });
-      return res.status(201).json(user);
+      return res.status(201).json(clinicalUser);
     } catch (error) {
+      console.log(error);
       return res.status(400).json({ error: error.message });
     }
-  }*/
+  }
 
   postUser (req, res) {
     try {
