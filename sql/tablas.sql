@@ -73,7 +73,7 @@ CREATE TABLE tutorial (
 CREATE TABLE users (
 	id_user            VARCHAR(36)   NOT NULL PRIMARY KEY,
     id_role            INT           NOT NULL,
-    user_name          VARCHAR(118)  NOT NULL,
+    user_name          VARCHAR(118)  NOT NULL UNIQUE,
     first_name	       VARCHAR(118)  NOT NULL,
     lastname_p         VARCHAR(118)  NOT NULL,
     lastname_m         VARCHAR(118)  NULL,
