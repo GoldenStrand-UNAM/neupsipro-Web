@@ -42,13 +42,11 @@ function buildConsultBody (test, dateLabel) {
       ${consultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
       ${consultDataRow('Notas', `<span class="text-base sm:text-lg text-gray-900 leading-relaxed break-words">${notes ? escapeHTML(notes) : '—'}</span>`)}
       <div class="flex justify-end pt-4 border-t border-gray-200">
-        <button id="btnCancelBANFE"
-          class="flex items-center gap-3 px-6 py-3 border border-gray-300 rounded-2xl
-                 text-base hover:bg-gray-50 transition-colors cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+        <button id="btnCancelBANFE" class="btn-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
           </svg>
-          Cerrar
+          <span class="whitespace-nowrap">Cerrar</span>
         </button>
       </div>
     </div>`;
@@ -94,19 +92,15 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
 function buildFormActions () {
   return `
     <div class="flex justify-end gap-3">
-      <button id="btnCancelBANFE"
-        class="flex-1 flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-2xl font-regular hover:bg-gray-50 transition-colors cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+      <button id="btnCancelBANFE" class="btn-cancel">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
         </svg>
         <span class="whitespace-nowrap">Cancelar</span>
       </button>
-      <button id="btnSaveBANFE"
-        class="flex-1 flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-[#3350A9] text-white font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+      <button id="btnSaveBANFE" class="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
         </svg>
         <span class="whitespace-nowrap">Guardar</span>
       </button>
