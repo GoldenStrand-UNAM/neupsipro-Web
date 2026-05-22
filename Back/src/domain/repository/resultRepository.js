@@ -48,7 +48,7 @@ class resultRepository {
     throw new Error('saveBanfeResult() not implemented');
   }
 
-  async fetchBANFEResult ({ _id_results }) {
+  async fetchBanfeResult ({ _id_results }) {
     throw new Error('fetchBanfeResult() not implemented');
   }
 
@@ -63,7 +63,7 @@ class resultRepository {
     throw new Error('saveBanfeResult() not implemented');
   }
 
-  async fetchBANFEResult ({ _id_results }) {
+  async fetchBanfeResult ({ _id_results }) {
     throw new Error('fetchBanfeResult() not implemented');
   }
 
