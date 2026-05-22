@@ -1,10 +1,10 @@
-/* global getVariant, TEST_REGISTRY, escapeHTML, removeSkeletons, showToast, openOptionsModal */
+/* global getVariant, TEST_REGISTRY, escapeHTML, removeSkeletons, showToast*/
 
 (function () {
 
   // ── Card builder ────────────────────────────────────────────────────────────
 
-  function createTestCard (test, idUser, idApplication, applicationStatus) {
+  function createTestCard (test, { idUser, idApplication, applicationStatus }) {
     const variant       = getVariant(test.status);
     const dateFormatted = test.dateApplied
       ? new Date(test.dateApplied).toLocaleDateString('es-MX')
@@ -18,7 +18,7 @@
           data-id-results="${escapeHTML(test.idResults)}"
           data-id-test="${escapeHTML(String(test.idTest))}"
           ${isClickable
-    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",${testJson},"${escapeHTML(applicationStatus)}")'`
+    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",{test:${testJson},applicationStatus:"${escapeHTML(applicationStatus)}"})'`
     : ''}>
 
         <div class="application-card__badge application-card__badge--${variant}">
@@ -74,7 +74,7 @@
       tests.forEach(test => {
         container.insertAdjacentHTML(
           'beforeend',
-          createTestCard(test, idUser, idApplication, applicationStatus)
+          createTestCard(test, { idUser, idApplication, applicationStatus })
         );
       });
 

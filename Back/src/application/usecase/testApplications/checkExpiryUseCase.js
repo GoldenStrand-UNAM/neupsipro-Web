@@ -5,25 +5,37 @@ class checkExpiryUseCase {
     this.resultsRepo = testResultsRepository;
   }
 
-  // Resolves expiry threshold in months based on user protocol.
   #resolveExpiryMonths (protocol) {
     if (protocol === 'Research') return 6;
     if (protocol === 'Clinical') return 3;
     return 6;
   }
 
-  // Calculates months elapsed between a given date and today.
   #monthsElapsed (date) {
     if (!date) return 0;
-    const now     = new Date();
-    const past    = new Date(date);
+    const now  = new Date();
+    const past = new Date(date);
     return (now.getFullYear() - past.getFullYear()) * 12
       + (now.getMonth() - past.getMonth());
   }
 
-  async execute ({ id_user }) {
+  // Returns the new status (2, 3, 5) or null if no update is needed.
+  #evaluateApp (app, tests, expiryMonths) {
+    if (tests.length > 0 && tests.every(t => t.status === 3)) return 3;
 
-    // 1. Fetch user protocol to determine expiry threshold
+    const hasExpiredTest = tests.some(t => {
+      if (t.status === 3) return false;
+      const ref = t.date_applied ?? app.created_at;
+      return this.#monthsElapsed(ref) >= expiryMonths;
+    });
+    if (hasExpiredTest) return 5;
+
+    if (tests.some(t => t.status === 3) && app.status !== 2) return 2;
+
+    return null;
+  }
+
+  async execute ({ id_user }) {
     const userRecord = await this.appRepo.fetchUserProtocol({ id_user });
 
     if (!userRecord) {
@@ -33,72 +45,37 @@ class checkExpiryUseCase {
     }
 
     const expiryMonths = this.#resolveExpiryMonths(userRecord.protocol);
+    const activeApps   = await this.appRepo.fetchActiveApplicationsByUser({ id_user });
 
-    // 2. Fetch only active applications — skip completed (3) and already expired (5)
-    const activeApps = await this.appRepo.fetchActiveApplicationsByUser({ id_user });
+    // Phase 1 — fetch all test lists in parallel, paired with their app
+    const appTestPairs = await Promise.all(activeApps.map(async app => {
+      const tests = await this.resultsRepo.fetchTestsWithDateByApplication({ id_application: app.id_application });
+      return { app, tests };
+    }));
 
     const expired    = [];
     const completed  = [];
     const inProgress = [];
+    const updates    = [];
 
-    for (const app of activeApps) {
+    for (const { app, tests } of appTestPairs) {
+      const newStatus = this.#evaluateApp(app, tests, expiryMonths);
 
-      // 3. Fetch all tests for this application
-      const tests = await this.resultsRepo.fetchTestsWithDateByApplication({
-        id_application: app.id_application,
-      });
-
-      // 4. Check if all tests are graded
-      const allCalificada = tests.length > 0 && tests.every(t => t.status === 3);
-
-      if (allCalificada) {
-        // All graded — mark application as completed, skip expiry
-        await this.appRepo.updateApplicationStatus({
-          id_application: app.id_application,
-          status: 3,
-        });
+      if (newStatus === 3) {
         completed.push(app.id_application);
-        continue;
-      }
-
-      // 5. Check if at least one test is graded (En proceso)
-      const someCalificada = tests.some(t => t.status === 3);
-
-      if (someCalificada && app.status !== 2) {
-        await this.appRepo.updateApplicationStatus({
-          id_application: app.id_application,
-          status: 2,
-        });
-        inProgress.push(app.id_application);
-      }
-
-      // 6. Check if any incomplete test has been pending too long.
-      // A test is expired if:
-      // - status !== 3 (not graded)
-      // - AND date_applied is set AND months elapsed >= threshold
-      // - OR date_applied is null but created_at of application >= threshold
-      const hasExpiredTest = tests.some(t => {
-        if (t.status === 3) return false;
-
-        // Use date_applied if available, otherwise fall back to application created_at
-        const referenceDate = t.date_applied ?? app.created_at;
-        return this.#monthsElapsed(referenceDate) >= expiryMonths;
-      });
-
-      if (hasExpiredTest) {
-        // Expire the application and all its incomplete tests — overwrites in-progress
-        await this.appRepo.updateApplicationStatus({
-          id_application: app.id_application,
-          status: 5,
-        });
-
-        await this.resultsRepo.expireIncompleteTests({
-          id_application: app.id_application,
-        });
-
+        updates.push(this.appRepo.updateApplicationStatus({ id_application: app.id_application, status: 3 }));
+      } else if (newStatus === 5) {
         expired.push(app.id_application);
+        updates.push(this.appRepo.updateApplicationStatus({ id_application: app.id_application, status: 5 }));
+        updates.push(this.resultsRepo.expireIncompleteTests({ id_application: app.id_application }));
+      } else if (newStatus === 2) {
+        inProgress.push(app.id_application);
+        updates.push(this.appRepo.updateApplicationStatus({ id_application: app.id_application, status: 2 }));
       }
     }
+
+    // Phase 2 — run all writes in parallel
+    await Promise.all(updates);
 
     return { expired, completed, inProgress };
   }
