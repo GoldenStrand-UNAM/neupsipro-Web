@@ -1,4 +1,5 @@
 const express = require('express');
+const { apiLimiter , userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const PostUserUseCase = require('../../../application/usecase/users/postUserUseCase');
@@ -26,15 +27,17 @@ module.exports = (authUseCase) => {
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(
-    '/user/post',
+    '/post',
     authMiddleware.verifyToken,
+    apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => res.render('users/postUser', { activePage: 'users' })
   );
 
   router.post(
-    '/user/post',
+    '/post',
     authMiddleware.verifyToken,
+    userLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     upload.single('profilePhoto'),
     validateImageMiddleware,

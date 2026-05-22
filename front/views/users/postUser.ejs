@@ -566,7 +566,9 @@
       if (res.ok) {
         sessionStorage.setItem('usuarioGuardado', 'true');
         window.location.href = '/users';
-      } else {
+      } else if (res.status === 429) {
+          showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
+      }else {
         showToast((data.error || 'Error desconocido'), 'error');
       }
       } catch (error) {

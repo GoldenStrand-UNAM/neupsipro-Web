@@ -56,7 +56,6 @@ const AuthService = require('./infrastructure/auth/authService');
 const LoginUseCase = require('./application/usecase/auth/loginUseCase');
 const LogoutUseCase = require('./application/usecase/auth/logoutUseCase');
 const AuthorizationUseCase = require('./application/usecase/auth/authorizationUseCase');
-const PostUserUseCase = require('./application/Usecase/users/postUserUseCase');
 const LoginController = require('./presentation/controller/auth/login.controller');
 const LogoutController = require('./presentation/controller/auth/logout.controller');
 const authRoutes = require('./presentation/routes/auth/auth.routes');
@@ -110,7 +109,6 @@ app.get('/auth/token', (req, res) => {
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
 const SessionRepository = require('./infrastructure/repositories/ImpSessionRepository');
-const UserRepository = require('./infrastructure/repositories/ImpUsersRepository');
 const HashingService = require('./infrastructure/external/hashing.service');
 const JwtService = require('./infrastructure/external/jwt.service');
 const CacheService = require('./infrastructure/external/memoryCache.service');
@@ -123,7 +121,6 @@ const cacheService = new CacheService();
 const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
-const userRepository = new UserRepository();
 
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
@@ -168,7 +165,7 @@ const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUs
 
 const postUserRoutes = require('./presentation/routes/users/postUser.routes');
 
-app.use('/', postUserRoutes(authUseCase));
+app.use('/user', postUserRoutes(authUseCase));
 
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
