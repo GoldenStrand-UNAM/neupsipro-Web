@@ -130,7 +130,7 @@ CREATE TABLE user_info (
     attendance           VARCHAR(78)   NOT NULL,
     initial_interview    INT           NULL      DEFAULT 0 COMMENT 'Status: por comenzar, en proceso, calificado',
 	registration_date    DATE  		   NOT NULL,
-    reference_number     VARCHAR(78)   NOT NULL,
+    reference_number     VARCHAR(78)   NOT NULL  UNIQUE,
     amputation_date      VARCHAR(78)   NOT NULL,
     protocol             ENUM('Research','Clinical', 'Pending') NOT NULL DEFAULT 'Pending', 
     state                ENUM('Discharged','Stand_by', 'Declined', 'Active') NULL, -- estatus
