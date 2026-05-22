@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database/database');
 const interventionRepository = require('../../domain/repository/interventionRepository');
-const { Intervention, InterventionSession } = require('../../domain/entity/Intervention');
+const { Intervention, InterventionSession } = require('../../domain/entity/intervention');
 
 class ImpInterventionRepository extends interventionRepository {
 
