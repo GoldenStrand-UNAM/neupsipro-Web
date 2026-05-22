@@ -36,7 +36,11 @@ class LoginController {
   // Check if the request is from a mobile device
     const wantsJson = req.headers.accept?.includes('application/json');
     try {
-      const { username, password } = req.body;
+      const { password } = req.body;
+      let { username }  = req.body;
+      if (typeof username === 'string') {
+        username = username.trim();
+      }
       if (!username || !password) {
         if (wantsJson) return res.status(400).json({ code: 'EMPTY_FIELDS' });
         return res.render('auth/login.ejs', { error: 'El usuario y la contraseña son obligatorios' });
