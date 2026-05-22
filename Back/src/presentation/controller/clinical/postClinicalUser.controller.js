@@ -28,7 +28,6 @@ class PostClinicalUserController {
       });
       return res.status(201).json(clinicalUser);
     } catch (error) {
-      console.log(error);
       return res.status(400).json({ error: error.message });
     }
   }

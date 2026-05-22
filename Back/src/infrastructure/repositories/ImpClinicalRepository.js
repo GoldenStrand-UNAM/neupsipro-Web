@@ -149,7 +149,6 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     emergencyContactRelation,
   }) {
     const idUser = uuidv4();
-    const idRelation = uuidv4();
     const connection = await db.getConnection();
 
     try {
@@ -220,7 +219,8 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
   }
 
   async checkDuplicate ({ firstName, lastnameP, lastnameM, birthdate }) {
-    const [rows] = await db.query (`SELECT *
+    const [rows] = await db.query (
+      `SELECT *
           FROM users
           WHERE id_role = '3'
           AND first_name = ?
@@ -228,7 +228,8 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
           AND (lastname_m = ? OR (? IS NULL AND lastname_m IS NULL))
           AND birthdate = ?
           AND eliminated = '0';`,
-          [firstName, lastnameP, lastnameM, lastnameM, birthdate]);
+      [firstName, lastnameP, lastnameM, lastnameM, birthdate]
+    );
     return rows[0];
   }
 }

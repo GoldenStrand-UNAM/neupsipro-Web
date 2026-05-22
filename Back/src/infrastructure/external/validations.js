@@ -77,7 +77,7 @@ class validation {
       return null;
   }
 
-  validateNumber(param, label, max, required) {
+  validateNumber (param, label, max, required) {
     const number = Number(param);
     if (number || number === 0)
       if (Number.isInteger(number) && number <= max && number >= 0)
@@ -89,16 +89,16 @@ class validation {
     return null;
   }
 
-  validatePhone(phone, label, required) {
-    const valid = this.validate(phone, 15, label, required);
+  validatePhone (phone, label, required) {
+    this.validate(phone, 15, label, required);
     if (!required) return phone;
     const phoneStr = String(phone).trim();
     const phoneRegex = /^\+?[0-9]+$/;
 
     if (phoneRegex.test(phoneStr)) {
       return phoneStr;
-    } else {
-      throw new Error(`${label} solo debe contener números y un signo '+' opcional al inicio`);
     }
+    throw new Error(`${label} solo debe contener números y un signo '+' opcional al inicio`);
+
   }
 } module.exports = validation;
