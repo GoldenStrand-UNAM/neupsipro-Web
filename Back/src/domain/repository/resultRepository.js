@@ -52,7 +52,7 @@ class resultRepository {
     throw new Error('fetchBanfeResult() not implemented');
   }
 
-   //========= BANFE ========================
+  //========= BANFE ========================
   async saveBanfeResult ({
     _id_results,
     _score_orbit_frontal,    _inter_orbit_frontal,
@@ -66,7 +66,6 @@ class resultRepository {
   async fetchBANFEResult ({ _id_results }) {
     throw new Error('fetchBanfeResult() not implemented');
   }
-
 
 }
 

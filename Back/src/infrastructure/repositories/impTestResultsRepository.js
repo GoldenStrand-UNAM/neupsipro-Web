@@ -122,7 +122,7 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
- // ================= BANFE  ==================
+  // ================= BANFE  ==================
 
   // Upserts into banfe_results
   // works for both first-time registration and modify.
@@ -194,8 +194,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0] ?? null;
   }
-
-
 
 }
 
