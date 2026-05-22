@@ -63,7 +63,7 @@ class AuthRepository {
   async invalidateSession (token) {
     // Logic to delete user session
     try {
-      await this.db.execute('DELETE FROM sessions WHERE token = ?', [token]);
+      await this.db.execute('DELETE FROM sessions WHERE id_session = ?', [token]);
       return true;
     } catch (error) {
       throw new Error('Error al invalidar sesión', { cause: error });

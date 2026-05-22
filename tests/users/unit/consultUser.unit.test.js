@@ -1,13 +1,14 @@
 const consultUserUseCase = require('../../../Back/src/application/usecase/users/getUserUseCase');
 
 describe('consultUserUseCase', () => {
-  let userRepository, testAppRepo, useCase;
+  let userRepository, testAppRepo, appointmentRepository, useCase;
 
   // Reset mocks and rebuild the use case
   beforeEach(() => {
     userRepository = { fetchOne: jest.fn() };
     testAppRepo = { fetchTestApplications: jest.fn() };
-    useCase = new consultUserUseCase(userRepository, testAppRepo);
+    appointmentRepository = { findUpcomingByUser: jest.fn() };
+    useCase = new consultUserUseCase(userRepository, testAppRepo, appointmentRepository);
   });
 
   test('throw an error if user is not found', async () => {
