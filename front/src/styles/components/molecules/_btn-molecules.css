@@ -77,4 +77,56 @@
   width: 9rem;
   }
 
+.btn-cancel {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply border border-gray-300 rounded-lg;
+    @apply font-semibold text-gray-700;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:bg-gray-50 active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-schedule {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-[#3350A9] rounded-lg;
+    @apply font-semibold text-white;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:brightness-110 active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-logout {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-red-600 rounded-lg;
+    @apply font-semibold text-white;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:bg-red-700 active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-save {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-[#3350A9] text-white rounded-lg;
+    @apply font-semibold;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
 }
