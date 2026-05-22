@@ -11,6 +11,9 @@ const JwtService = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+
+
 module.exports = (authUseCase) => {
   const router = express.Router();
 
@@ -27,28 +30,28 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/users/:id_user/intervention',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getPage(req, res)
   );
 
   router.patch(
     '/users/:id_user/intervention',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'edit'),
     (req, res) => controller.updateContract(req, res)
   );
 
   router.post(
     '/users/:id_user/intervention/sessions',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => controller.addSession(req, res)
   );
 
   router.delete(
     '/users/:id_user/intervention/sessions/:id_session',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => controller.deleteLastSession(req, res)
   );
