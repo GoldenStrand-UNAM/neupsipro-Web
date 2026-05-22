@@ -4,6 +4,14 @@ const impTestResultsRepository        = require('../../../infrastructure/reposit
 const getTestsByApplicationUseCase    = require('../../../application/usecase/testApplications/getTestsByApplicationUseCase');
 const getTestsByApplicationController = require('../../controller/testApplications/getTestsByApplication.controller');
 
+
+//Banfe
+
+const postBanfeUseCase    = require('../../../application/usecase/testApplications/postBanfeUseCase');
+const postBanfeController = require('../../controller/testApplications/postBanfe.controller');
+const getBanfeResultUseCase    = require('../../../application/usecase/testApplications/getBanfeUseCase');
+const getBanfeResultController = require('../../controller/testApplications/getBanfe.controller');
+
 //AUTH & PERMISSIONS
 const JwtService            = require('../../../infrastructure/external/jwt.service');
 const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
@@ -22,6 +30,13 @@ module.exports = (authUseCase) => {
   const authMiddleware        = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
+  //Banfe
+
+  const banfeUseCase    = new postBanfeUseCase(testResultsRepo);
+  const banfeController = new postBanfeController(banfeUseCase);
+  const getBanfeUseCase    = new getBanfeResultUseCase(testResultsRepo);
+  const getBanfeController = new getBanfeResultController(getBanfeUseCase);
+
   // Only manage the render
   router.get(
     '/users/:id_user/applications/:id_application/tests',
@@ -36,6 +51,22 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.getTests(req, res)
+  );
+
+
+  //========================= BANFE ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/1/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => banfeController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/1/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getBanfeController.getResult(req, res)
   );
 
   return router;
