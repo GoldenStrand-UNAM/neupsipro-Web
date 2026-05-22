@@ -1,0 +1,91 @@
+@startuml diagrama de actividades BANFE
+
+title BANFE
+
+|Usuario|
+start
+:Selecciona tarjeta de prueba BANFE;
+
+|Sistema|
+if (¿Aplicación caducada?) then (sí)
+  :Muestra banner de caducidad\nSolo Consultar habilitado;
+  stop
+endif
+
+:Muestra modal de opciones;
+note right
+  Registrar: deshabilitado si ya calificada
+  Modificar: solo si calificada y activa
+  Consultar: solo si calificada
+end note
+
+|Usuario|
+:Selecciona "Registrar resultados";
+
+|Sistema|
+:Muestra modal de registro\ncon 3 áreas de puntuación;
+
+|Usuario|
+:Ingresa puntaje en un área;
+
+|Sistema|
+:Valida input en vivo;
+if (¿Input inválido?) then (sí)
+  :Muestra error por campo;
+  |Usuario|
+  :Corrige el campo;
+  |Sistema|
+endif
+:Muestra interpretación en vivo por área;
+:Actualiza puntaje total en vivo;
+
+|Usuario|
+:Ingresa notas (opcional);
+
+|Sistema|
+:Actualiza contador de caracteres;
+
+|Usuario|
+if (¿Desea guardar?) then (sí)
+
+  |Sistema|
+  :Valida datos en cliente;
+  if (¿Datos válidos?) then (no)
+    :Muestra error por campo;
+    |Usuario|
+    :Corrige los datos;
+    |Sistema|
+  endif
+
+  :Envía datos al servidor;
+
+  :Valida datos en servidor;
+  if (¿Validación ok?) then (no)
+    :Retorna error;
+    :Muestra error de API;
+    stop
+  endif
+
+  :Verifica existencia del resultado;
+  if (¿Resultado encontrado?) then (no)
+    :Retorna error;
+    :Muestra error de API;
+    stop
+  endif
+
+  :Recalcula interpretaciones;
+  :Guarda resultados en base de datos;
+  :Actualiza estado de la prueba;
+  :Retorna confirmación;
+
+  :Cierra modal;
+  :Actualiza badge de la tarjeta;
+  :Muestra mensaje de éxito;
+  stop
+
+else (no)
+  :Cierra modal;
+  stop
+endif
+
+@enduml
