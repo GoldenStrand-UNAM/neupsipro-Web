@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const router = express.Router();
 
@@ -58,11 +59,6 @@ module.exports = (authUseCase) => {
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
 
-  router.get(
-    '/:id_user', authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
-  );
-
   router.get('/consultUser', (req, res) => {
     res.render('users/consultUser', {
       activePage: 'usuario',
@@ -70,33 +66,38 @@ module.exports = (authUseCase) => {
     });
   });
 
+  router.get(
+    '/:id_user', authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+  );
+
   //Create Application route
 
   router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
 
   router.get(
     '/clinics/list',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => clinicsController.listClinics(req, res)
   );
 
   router.post(
     '/:id_user/appointments',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => appointmentController.createAppointment(req, res)
   );
 
   router.delete(
     '/:id_user/appointments',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
   );
   router.delete(
     '/:id_user',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
   );

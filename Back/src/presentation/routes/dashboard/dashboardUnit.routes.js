@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpDashboardRepository = require('../../../infrastructure/repositories/ImpDashboardUnitRepository');
 const GetDashboardSummaryUseCase = require('../../../application/usecase/dashboard/getDashboardUnitUseCase');
@@ -22,19 +23,19 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/dashboard',
-    authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'),
+    authMiddleware.verifyToken,     apiLimiter, permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getDashboardPage(req, res)
   );
 
   router.get(
     '/api/dashboard/summary',
-    authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'),
+    authMiddleware.verifyToken,     apiLimiter, permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getSummary(req, res)
   );
 
   router.get(
     '/api/dashboard/standby/:reference_number',
-    authMiddleware.verifyToken, permissionsMiddleware.requirePermission('user management', 'consultation'),
+    authMiddleware.verifyToken,     apiLimiter, permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getStandByDetail(req, res)
   );
 

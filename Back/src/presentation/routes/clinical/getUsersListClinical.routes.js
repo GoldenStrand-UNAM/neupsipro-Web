@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const getClinicalListUseCase = require('../../../application/usecase/clinical/getClinicalListUseCase');
@@ -19,8 +20,8 @@ module.exports = (authUseCase) => {
   const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
-  router.get('/clinical',  authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
-  router.get('/api/usuarios-clinicos', authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getUsers(req, res));
+  router.get('/clinical',  authMiddleware.verifyToken, apiLimiter, permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getUsersPage(req, res));
+  router.get('/api/usuarios-clinicos', authMiddleware.verifyToken,  apiLimiter, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getUsers(req, res));
 
   return router;
 };
