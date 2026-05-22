@@ -9,14 +9,14 @@ function escapeHTML (str) {
 }
 
 function getVariant (status) {
-  const map = {
-    'Por comenzar': 'neutral',
-    'En proceso': 'warning',
-    'Calificada': 'success',
-    'Entregada': 'success',
-    'Caducada': 'fatal',
-  };
-  return map[status] || 'neutral';
+  const map = new Map([
+    ['Por comenzar', 'neutral'],
+    ['En proceso', 'warning'],
+    ['Calificada', 'success'],
+    ['Entregada', 'success'],
+    ['Caducada', 'fatal'],
+  ]);
+  return map.get(status) ?? 'neutral';
 }
 
 // eslint-disable-next-line no-unused-vars

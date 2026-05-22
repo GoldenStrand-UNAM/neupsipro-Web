@@ -41,13 +41,7 @@ class getTestsByApplicationUseCase {
     // 3. Map entities to DTOs — never expose raw entities across boundaries
     return {
       applicationStatus: APPLICATION_STATUS_LABEL[application.status] ?? String(application.status),
-      tests: tests.map(t => new TestsDTO(
-        t.idTest,
-        t.testName,
-        t.idResults,
-        t.status,
-        t.dateApplied
-      )),
+      tests: tests.map(t => new TestsDTO(t)),
     };
   }
 }
