@@ -392,15 +392,6 @@
 
     function resetFormBtn(){
       if (form) form.reset();
-
-      const selects = document.querySelectorAll('select');
-      selects.forEach(select => {
-        select.classList.remove('text-black');
-        select.classList.add('text-gray-400');
-      });
-      filePreview.classList.add('hidden');
-      emptyState.classList.remove('hidden');
-      previewImg.src = '';
       showToast('Formulario limpiado');
     }
 
@@ -422,7 +413,7 @@
 
       if (res.ok) {
         sessionStorage.setItem('usuarioGuardado', 'true');
-        window.location.href = '/users';
+        window.location.href = '/clinical';
       } else {
         showToast((data.error || 'Error desconocido'), 'error');
       }

@@ -217,8 +217,9 @@
           type: 'success' 
         }));
         window.location.href = '/forum';
-      } 
-      else {
+      } else if (res.status === 429) {
+          showToast('Has alcanzado el límite de publicaciones. Intenta más tarde.', 'error');
+    } else {
         showToast('Error al publicar', 'error');
       }  
     } catch (err) {

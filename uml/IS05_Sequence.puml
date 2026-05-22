@@ -1,0 +1,63 @@
+@startuml
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+box "Presentation Layer (MVVM)" #LightBlue
+actor "Patient" as User
+participant "TopBarView" as View
+participant "LogoutViewModel" as VM
+end box
+
+box "Domain Layer (Clean Arch)" #LightGreen
+participant "LogoutUseCase" as UC
+end box
+
+box "Data Layer" #LightPink
+participant "AuthRepository" as Repo
+participant "LocalDataSource\n(Encrypted SharedPreferences/Keychain)" as Local
+end box
+
+== Initialization (User logged in with JWT) ==
+
+User -> View : Presses "Logout" button
+activate View
+
+View -> View : Show confirmation modal
+note right of View: Modal options:\n[Confirm] or [Cancel]
+
+alt User selects [Cancel]
+    User -> View : Presses "Cancel"
+    View -> View : Close confirmation modal
+    note right View: Patient remains on the current screen
+
+else User selects [Confirm]
+    User -> View : Presses "Confirm"
+    View -> VM : logout()
+    activate VM
+    
+    VM -> UC : execute()
+    activate UC
+    
+    UC -> Repo : clearSession()
+    activate Repo
+    
+    Repo -> Local : deleteJWTToken()
+    activate Local
+    Local --> Repo : Token deleted successfully
+    deactivate Local
+    
+    Repo --> UC : Session cleared
+    deactivate Repo
+    
+    UC --> VM : Logout success
+    deactivate UC
+    
+    VM --> View : NavigationState (Navigate to Login)
+    deactivate VM
+    
+    View -> View : Redirect to Login Screen
+    deactivate View
+end
+
+@enduml

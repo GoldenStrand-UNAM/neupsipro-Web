@@ -26,9 +26,12 @@ jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
 );
 
 // Bypass rate limiter — not under test in this suite.
-jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
-  () => (_req, _res, next) => next()
-);
+jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
+  loginLimiter:      (req, res, next) => next(),
+  generalLimiter:    (req, res, next) => next(),
+  apiLimiter:        (req, res, next) => next(),
+  publicationLimiter:(req, res, next) => next(),
+}));
 
 const mockGetProfile = jest.fn();
 
