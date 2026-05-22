@@ -163,6 +163,10 @@ app.use('/users', userRoutes(authUseCase));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
+const postUserRoutes = require('./presentation/routes/users/postUser.routes');
+
+app.use('/user', postUserRoutes(authUseCase));
+
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
