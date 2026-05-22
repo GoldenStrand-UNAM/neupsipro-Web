@@ -13,7 +13,6 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-
 module.exports = (authUseCase) => {
   const router = express.Router();
 
