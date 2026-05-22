@@ -128,7 +128,7 @@ function renderTable(users) {
                 escapeHtml(u.protocol === 'Clinical' ? 'Clínico' : u.protocol === 'Research' ? 'Investigación' : '—')}</td> 
             <td class="py-3 px-4 flex justify-center">
                 <button
-                    onclick="consultar('${escapeHtml(u.id)}')"
+                    onclick="consult('${escapeHtml(u.id)}')"
                     class="btn-mini bg-[#3350A9]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -208,8 +208,10 @@ function getStatusBadge(val) {
 }
 
 
-function consultar(id) { /* pendiente */ }
-function signUpUser()     { /* pendiente */ }
+function consult(id) { 
+    window.location.href = `/users/${id}`
+ }
+ function signUpUser()     { /* pendiente */ }
 
 fetchUsers();
 </script>
