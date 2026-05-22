@@ -12,11 +12,11 @@ class User {
     this.assignedClinic = data.assigned_clinic;
     this.modality = data.modality;
     this.attendance = data.attendance;
-    this.amputationDate = data.amputation_date;
+    this.amputationDate = this.formatDate(data.amputation_date);
     this.state = data.state;
     this.amputationEtiology = data.base_patology;
     this.prosthetist = data.prosthetist;
-    this.neuroEntryDate = data.neuro_entry_date;
+    this.neuroEntryDate = this.formatDate(data.neuro_entry_date);
     this.amputationLevel = data.amputation_level;
     this.nextAppointment = data.next_appointment;
     this.laterality = data.laterality;
@@ -54,6 +54,22 @@ class User {
     }
 
     return `${years} años, ${months} meses y ${days} días`;
+  }
+
+  formatDate (rawDate) {
+    if (!rawDate) return null;
+    let date;
+    if (typeof rawDate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+      const [day, month, year] = rawDate.split('/').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(rawDate);
+    }
+    if (isNaN(date.getTime())) return null;
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
   }
 
   getStatus (status) {
