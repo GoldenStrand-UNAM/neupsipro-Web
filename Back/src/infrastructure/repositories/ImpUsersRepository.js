@@ -91,5 +91,122 @@ class ImpUsersRepository extends usersRepository {
     );
     return result.affectedRows > 0;
   }
+
+  async fetchUserSnapshot ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT profile_photo, password_hash
+        FROM users
+        WHERE id_user = ?
+          AND eliminated = 0`,
+      [id_user]
+    );
+    if (!rows.length) return null;
+    return {
+      profilePhoto: rows[0].profile_photo,
+      passwordHash: rows[0].password_hash,
+    };
+  }
+
+  async editUser ({
+    id_user,
+    idRole,
+    userName,
+    firstName,
+    lastnameP,
+    lastnameM,
+    birthdate,
+    passwordHash,
+    assigned,
+    phase,
+    basePathology,
+    modality,
+    profilePhoto,
+    referenceNumber,
+    amputationDate,
+    amputationLevel,
+    laterality,
+    prosthetist,
+    neuroEntryDate,
+    pairs,
+    sex,
+  }) {
+    const connection = await db.getConnection();
+  
+    try {
+      await connection.query('START TRANSACTION');
+  
+      //  users 
+      await connection.query(
+        `UPDATE users
+            SET id_role       = ?,
+                user_name     = ?,
+                first_name    = ?,
+                lastname_p    = ?,
+                lastname_m    = ?,
+                profile_photo = ?,
+                birthdate     = ?,
+                password_hash = ?,
+                gender        = ?
+          WHERE id_user = ?
+            AND eliminated = 0`,
+        [idRole, userName, firstName, lastnameP, lastnameM,
+        profilePhoto, birthdate, passwordHash, sex, id_user]
+      );
+  
+      // user_info
+      await connection.query(
+        `UPDATE user_info
+            SET neuro_status        = ?,
+                base_patology       = ?,
+                attendance          = ?,
+                reference_number    = ?,
+                laterality          = ?,
+                prosthetist         = ?,
+                neuro_entry_date    = ?,
+                amputation_date     = ?,
+                amputation_level    = ?,
+                group_intervention  = ?
+          WHERE id_user = ?`,
+        [phase, basePathology, modality, referenceNumber,
+        laterality, prosthetist, neuroEntryDate,
+        amputationDate, amputationLevel, pairs, id_user]
+      );
+  
+      //  user_relation 
+      await connection.query(
+        `UPDATE user_relation
+            SET id_clinic_user = ?
+          WHERE id_user = ?
+            AND type = 'assigned'`,
+        [assigned, id_user]
+      );
+  
+      // Fetch updated user data
+      const [rows] = await connection.query(
+        `SELECT
+            u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m,
+            u.birthdate, u.password_hash, u.profile_photo, u.gender,
+            ui.neuro_status, ui.base_patology, ui.attendance, ui.reference_number,
+            ui.amputation_date, ui.amputation_level, ui.laterality, ui.prosthetist,
+            ui.neuro_entry_date, ui.group_intervention,
+            ur.id_clinic_user
+          FROM users u
+          LEFT JOIN user_info ui     ON ui.id_user = u.id_user
+          LEFT JOIN user_relation ur ON ur.id_user = u.id_user AND ur.type = 'assigned'
+        WHERE u.id_user = ?`,
+        [id_user]
+      );
+  
+      await connection.query('COMMIT');
+      return rows[0];
+  
+    } catch (error) {
+      await connection.query('ROLLBACK');
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
 }
+
 module.exports = ImpUsersRepository;
