@@ -1,6 +1,7 @@
 const ClinicalUser = require('../../../domain/entity/postClinicalUser');
 const ClinicalUserDTO = require('../../dto/postClinicalUserDTO');
 const Validation = require('../../../infrastructure/external/validations');
+
 const validation = new Validation();
 
 class PostClinicalUserUseCase {
@@ -46,7 +47,7 @@ class PostClinicalUserUseCase {
 
     // Entity validation
     const clinicalUser = new ClinicalUser ({
-      idRole: 3,
+      idRole,
       firstName: fFirstName,
       lastnameP: fLastnameP,
       lastnameM: fLastnameM,
@@ -58,7 +59,7 @@ class PostClinicalUserUseCase {
       finishDate: fFinishDate,
       hours: fHours,
       username,
-      passwordHash: passwordHash,
+      passwordHash,
       emergencyContactName: fEmergencyName,
       emergencyContactPhone: fEmergencyPhone,
       emergencyContactRelation: fEmergencyRelation,
@@ -67,7 +68,7 @@ class PostClinicalUserUseCase {
     const duplicate = await this.clinicalUserRepository.checkDuplicate(clinicalUser);
 
     if (duplicate) {
-      throw new Error("El usuario ya se encuentra registrado.");
+      throw new Error('El usuario ya se encuentra registrado.');
     } else {
       const saved = await this.clinicalUserRepository.postUser(clinicalUser);
       // Map saved into clean DTO for the client
