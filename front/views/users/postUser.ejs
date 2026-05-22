@@ -550,15 +550,12 @@
     form.addEventListener('submit', async (e) => {
       event.preventDefault();
       const formData = new FormData(form);
-      const objectData = Object.fromEntries(formData);
-      const JSONData = JSON.stringify(objectData);
 
       try {
       const res = await fetch('/user/post', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
-        body: JSONData,
+        headers: { 'x-csrf-token': _csrfToken },
+        body: formData,
       });
 
       const data = await res.json();
@@ -572,7 +569,7 @@
         showToast((data.error || 'Error desconocido'), 'error');
       }
       } catch (error) {
-      showToast(`Error de conexión: ${error.message}`, 'error');
+      showToast('Error de conexión');
       }
     });
 
