@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const PublicationController = require('../../controller/forum/getPublication.controller');
 const GetPublicationUseCase =  require('../../../application/usecase/forum/getPublicationUseCase');
@@ -33,14 +34,14 @@ module.exports = (authUseCase) => {
   // Route to get a publication by its id.
   router.get (
     '/:idPublication',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'consultation'),
     (req, res) => controller.getPublication(req, res)
   );
 
   router.delete(
     '/:idPublication',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'eliminate'),
     (req, res) => deleteController.deletePublication(req, res)
   );

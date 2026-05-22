@@ -17,8 +17,10 @@ jest.mock('../../../Back/src/infrastructure/auth/permissions.middleware', () => 
 });
 
 jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
-  loginLimiter: (req, res, next) => next(),
-  generalLimiter: (req, res, next) => next(),
+  loginLimiter:      (req, res, next) => next(),
+  generalLimiter:    (req, res, next) => next(),
+  apiLimiter:        (req, res, next) => next(),
+  publicationLimiter:(req, res, next) => next(),
 }));
 
 const app = require('../../../Back/src/app');

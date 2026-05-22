@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const router = express.Router();
 
@@ -79,7 +80,7 @@ module.exports = (authUseCase) => {
   });
 
   router.get(
-    '/:id_user', authMiddleware.verifyToken,
+    '/:id_user', authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
   );
 
@@ -89,27 +90,27 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/clinics/list',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => clinicsController.listClinics(req, res)
   );
 
   router.post(
     '/:id_user/appointments',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => appointmentController.createAppointment(req, res)
   );
 
   router.delete(
     '/:id_user/appointments',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
   );
   router.delete(
     '/:id_user',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
   );
