@@ -2,6 +2,7 @@ class ClinicalUserDTO {
   constructor ({
     idUser,
     name,
+    birthdate,
     activity,
     affiliation,
     emergencyName,
@@ -14,6 +15,7 @@ class ClinicalUserDTO {
     this.idUser = idUser;
 
     this.name = name;
+    this.birthdate = birthdate;
     this.activity = activity;
     this.affiliation = affiliation;
     this.emergencyName = emergencyName;
@@ -28,6 +30,7 @@ class ClinicalUserDTO {
     return new ClinicalUserDTO({
       idUser: entity.idUser,
       name: entity.name,
+      birthdate: entity.birthdate,
       activity: entity.activity,
       affiliation: entity.affiliation,
       emergencyName: entity.emergencyName,

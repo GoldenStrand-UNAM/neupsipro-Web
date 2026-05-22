@@ -52,21 +52,18 @@
             <p id="addSessionError" class="text-sm text-red-500 hidden"></p>
         </div>
         <!--Buttons-->
-        <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-6">
-            <button id="cancelAddSession" class="btn-mini bg-white text-gray-700 border border-gray-300
-               hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700
-               hover:brightness-100
-               w-full sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>  
-                <span>Cancelar</span>
+        <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+            <button class="btn-cancel flex-1" id="cancelAddSession">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="whitespace-nowrap">Cancelar</span>
             </button>
-            <button id="confirmAddSession" class="btn-mini bg-[#3350A9] w-full sm:w-auto sm:min-w-[140px]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon-mini">
+            <button id="confirmAddSession" class="btn-add flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                <span>Agregar</span>
+                <span class="whitespace-nowrap">Agregar</span>
             </button>
         </div>
     </div>
