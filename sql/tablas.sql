@@ -24,7 +24,7 @@ CREATE TABLE privilege_role (
 CREATE TABLE acl (
     id_acl         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     consultation   BOOL         NOT NULL,
-    writting       BOOL         NOT NULL,
+    writing       BOOL         NOT NULL,
     edit           BOOL         NOT NULL,
     eliminate      BOOL         NOT NULL
 );
@@ -696,7 +696,7 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
 
-ALTER TABLE acl CHANGE writting writing BOOL NOT NULL;
+ALTER TABLE acl CHANGE writing writing BOOL NOT NULL;
 
 CREATE TABLE user_clinical (
     id_user      VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -733,6 +733,30 @@ ALTER TABLE test_results
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
 
+
+CREATE TABLE intervention (
+    id_intervention      VARCHAR(36) NOT NULL PRIMARY KEY,
+    id_user              VARCHAR(36) NOT NULL UNIQUE,
+    neuro_profile   TEXT NULL,
+    contract_link        VARCHAR(255) NULL,
+    created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_intervention_user
+        FOREIGN KEY (id_user) REFERENCES users(id_user)
+);
+
+CREATE TABLE intervention_session (
+    id_session         VARCHAR(36) NOT NULL PRIMARY KEY,
+    id_intervention    VARCHAR(36) NOT NULL,
+    session_number     VARCHAR(20) NULL,
+    session_date       DATE NOT NULL,
+    objectives         TEXT NULL,
+    development        TEXT NULL,
+    dqp_task           TEXT NULL,
+    CONSTRAINT fk_session_intervention
+        FOREIGN KEY (id_intervention)
+        REFERENCES intervention(id_intervention)
+        ON DELETE CASCADE
+);
 ALTER TABLE user_clinical
     ADD COLUMN emergency_contact_name varchar(50) NOT NULL,
     ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL,
