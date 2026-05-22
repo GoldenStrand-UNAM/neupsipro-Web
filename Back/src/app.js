@@ -185,6 +185,12 @@ const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
 
+// Applications
+
+const testRoutes = require('./presentation/routes/applications/getTests.routes');
+
+app.use('/', testRoutes(authUseCase));
+
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
     activePage: 'usuario',
