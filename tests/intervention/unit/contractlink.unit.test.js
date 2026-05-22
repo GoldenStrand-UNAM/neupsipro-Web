@@ -6,9 +6,12 @@ jest.mock('../../../Back/src/infrastructure/auth/auth.middleware', () =>
   jest.fn(() => ({ verifyToken: mockVerifyToken }))
 );
 
-jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () =>
-  () => (_req, _res, next) => next()
-);
+jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
+  loginLimiter:      (req, res, next) => next(),
+  generalLimiter:    (req, res, next) => next(),
+  apiLimiter:        (req, res, next) => next(),
+  publicationLimiter:(req, res, next) => next(),
+}));
 
 const mockExecute = jest.fn();
 
