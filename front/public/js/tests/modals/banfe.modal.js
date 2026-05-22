@@ -77,7 +77,7 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1">
         <label class="text-2xl font-regular">${label} <span class="text-red-500">*</span></label>
-        <input id="${inputId}" type="number" min="0" placeholder="Puntaje"
+        <input id="${inputId}" type="number" min="0" max="200" placeholder="Puntaje"
           value="${escapeHTML(String(prefillArea.score))}"
           class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
         <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
@@ -193,8 +193,8 @@ async function handleSave (endpoint, fields, ctx) {
     const el    = document.getElementById(input);
     const errEl = document.getElementById(error);
     const val   = Number(el.value);
-    if (el.value.trim() === '' || isNaN(val) || val < 0) {
-      errEl.textContent = 'Ingresa un puntaje válido';
+    if (el.value.trim() === '' || isNaN(val) || val < 0 || val > 200) {
+      errEl.textContent = val > 200 ? 'El puntaje no puede superar 200' : 'Ingresa un puntaje válido';
       errEl.classList.remove('hidden');
       valid = false;
     } else {

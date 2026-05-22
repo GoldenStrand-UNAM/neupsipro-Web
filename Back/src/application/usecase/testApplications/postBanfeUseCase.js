@@ -16,8 +16,8 @@ class postBanfeUseCase {
       err.status = 422;
       throw err;
     }
-    if (parsed < 0) {
-      const err = new Error(`${fieldName} must be a non-negative number`);
+    if (parsed < 0 || parsed > 200) {
+      const err = new Error(`${fieldName} must be between 0 and 200`);
       err.status = 422;
       throw err;
     }
@@ -79,6 +79,7 @@ class postBanfeUseCase {
       idResults: row.idResults,
       idTest: 1,
       status: 3,
+      dateApplied: saved.date_applied ?? null,
       areas: {
         orbitFrontal: { score: saved.score_orbit_frontal,     interpretation: saved.inter_orbit_frontal     },
         prefrontalBefore: { score: saved.score_prefrontal_before, interpretation: saved.inter_prefrontal_before },
