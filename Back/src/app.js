@@ -167,6 +167,10 @@ app.use('/clinical', postClinicalUserRoutes(authUseCase));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
+const postUserRoutes = require('./presentation/routes/users/postUser.routes');
+
+app.use('/user', postUserRoutes(authUseCase));
+
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
@@ -181,6 +185,9 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase));
 
+const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
+
+app.use('/', interventionRoutes(authUseCase));
 const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
 
 app.use('/', getAllClinicalsRoutes(authUseCase));

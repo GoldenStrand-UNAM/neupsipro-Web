@@ -99,6 +99,5 @@ class validation {
       return phoneStr;
     }
     throw new Error(`${label} solo debe contener números y un signo '+' opcional al inicio`);
-
   }
 } module.exports = validation;
