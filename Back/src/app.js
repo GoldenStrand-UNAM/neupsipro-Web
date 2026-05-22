@@ -205,6 +205,9 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase));
 
+const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
+
+app.use('/', interventionRoutes(authUseCase));
 const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
 
 app.use('/', getAllClinicalsRoutes(authUseCase));
