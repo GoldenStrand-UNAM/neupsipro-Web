@@ -1,4 +1,5 @@
 const express = require('express');
+const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const impTestResultsRepository        = require('../../../infrastructure/repositories/impTestResultsRepository');
 const getTestsByApplicationUseCase    = require('../../../application/usecase/testApplications/getTestsByApplicationUseCase');
@@ -35,7 +36,7 @@ module.exports = (authUseCase) => {
   // Only manage the render
   router.get(
     '/users/:id_user/applications/:id_application/tests',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.renderTests(req, res)
   );
@@ -43,7 +44,7 @@ module.exports = (authUseCase) => {
   // Only manage the API
   router.get(
     '/api/users/:id_user/applications/:id_application/tests',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.getTests(req, res)
   );
@@ -51,14 +52,14 @@ module.exports = (authUseCase) => {
   //========================= BANFE ===============================
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/1/results',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => banfeController.postResult(req, res)
   );
 
   router.get(
     '/api/users/:id_user/applications/:id_application/tests/1/results/:id_results',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getBanfeController.getResult(req, res)
   );
