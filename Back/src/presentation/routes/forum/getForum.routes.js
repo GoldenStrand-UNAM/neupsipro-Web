@@ -1,4 +1,5 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpForumRepository = require('../../../infrastructure/repositories/ImpForumRepository');
 const ForumController = require('../../controller/forum/getForum.controller');
@@ -20,7 +21,7 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'consultation'),
     (req, res) => controller.getForum(req, res)
   );
