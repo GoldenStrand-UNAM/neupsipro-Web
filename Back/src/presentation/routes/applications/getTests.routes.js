@@ -4,7 +4,6 @@ const impTestResultsRepository        = require('../../../infrastructure/reposit
 const getTestsByApplicationUseCase    = require('../../../application/usecase/testApplications/getTestsByApplicationUseCase');
 const getTestsByApplicationController = require('../../controller/testApplications/getTestsByApplication.controller');
 
-
 //Banfe
 
 const postBanfeUseCase    = require('../../../application/usecase/testApplications/postBanfeUseCase');
@@ -24,13 +23,9 @@ module.exports = (authUseCase) => {
   const useCase         = new getTestsByApplicationUseCase(testResultsRepo);
   const controller      = new getTestsByApplicationController(useCase);
 
-  //AUTH & PERMISSIONS MIDDLEWARE
-
   const jwtService            = new JwtService();
   const authMiddleware        = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
-
-  //Banfe
 
   const banfeUseCase    = new postBanfeUseCase(testResultsRepo);
   const banfeController = new postBanfeController(banfeUseCase);
@@ -52,7 +47,6 @@ module.exports = (authUseCase) => {
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => controller.getTests(req, res)
   );
-
 
   //========================= BANFE ===============================
   router.post(

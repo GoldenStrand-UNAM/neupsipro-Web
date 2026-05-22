@@ -16,6 +16,7 @@ class GetBanfeController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
+      // eslint-disable-next-line no-console
       console.error('[GetBanfeController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
