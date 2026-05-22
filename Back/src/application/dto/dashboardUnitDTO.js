@@ -63,29 +63,48 @@ class DashboardStandByDetailDTO {
     this.assignedClinics = entity.assignedClinics || [];
   }
 
-  // calculates the age in years, months, and days from a birthdate
   static _calculateAge (birthdate) {
     if (!birthdate) return null;
-    const d = new Date(birthdate);
+
+    let d;
+
+    if (typeof birthdate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(birthdate)) {
+      const [day, month, year] = birthdate.split('/').map(Number);
+      d = new Date(year, month - 1, day);
+    } else {
+      d = new Date(birthdate);
+    }
+    if (isNaN(d.getTime())) return null;
+
     const now = new Date();
     let years = now.getFullYear() - d.getFullYear();
     let months = now.getMonth() - d.getMonth();
     let days  = now.getDate() - d.getDate();
+
     if (days < 0) {
       months -= 1;
       const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
       days += prevMonth.getDate();
     }
+
     if (months < 0) {
       years -= 1;
       months += 12;
     }
     return { years, months, days };
   }
+
   //DD/MM/YYYY format
-  static _formatDate (d) {
-    if (!d) return null;
-    const date = new Date(d);
+  static _formatDate (rawDate) {
+    if (!rawDate) return null;
+    let date;
+    if (typeof rawDate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+      const [day, month, year] = rawDate.split('/').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(rawDate);
+    }
+    if (isNaN(date.getTime())) return null;
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const yyyy = date.getFullYear();
