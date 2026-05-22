@@ -75,4 +75,15 @@ const publicationLimiter = rateLimit({
   validate: { keyGeneratorIpFallback: false },
 });
 
-module.exports = { loginLimiter, generalLimiter, apiLimiter, publicationLimiter };
+// to post users, limit by user id
+const userLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 20,                 // 20 users per hour
+  keyGenerator: keyByUser,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: response,
+  validate: { keyGeneratorIpFallback: false },
+});
+
+module.exports = { loginLimiter, generalLimiter, apiLimiter, publicationLimiter, userLimiter };
