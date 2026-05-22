@@ -1,0 +1,119 @@
+<div id="editContractModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Datos de la intervención</h2>
+            <button id="closeEditContract" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="editContractLinkInput">
+                    Link del contrato clínico
+                </label>
+                <div class="search-input">
+                    <input id="editContractLinkInput" type="url" placeholder="https://drive.google.com/..." class="search-input_field" maxlength="500" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="editNeuropsychInput">
+                    Perfil neuropsicológico
+                </label>
+                <textarea id="editNeuropsychInput" rows="5" maxlength="2000" placeholder="Descripción del perfil neuropsicológico..."
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+            </div>
+
+            <p class="text-xs text-gray-400">Deja los campos vacíos para borrar su contenido.</p>
+            <p id="editContractError" class="text-sm text-red-500 hidden"></p>
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-6">
+            <button id="cancelEditContract" class="btn-mini bg-white text-gray-700 border border-gray-300
+               hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700
+               hover:brightness-100
+               w-full sm:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>  
+                <span>Cancelar</span>
+            </button>
+            <button id="confirmEditContract" class="btn-mini bg-[#3350A9] w-full sm:w-auto sm:min-w-[140px]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon-mini">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10.5 18.75 19.5 5.25" />
+                </svg>
+                <span>Guardar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const btnOpenContract = document.getElementById('btnEditContract');
+    const btnOpenProfile = document.getElementById('btnEditProfile');     
+    const modal = document.getElementById('editContractModal');
+    const btnClose = document.getElementById('closeEditContract');
+    const btnCancel = document.getElementById('cancelEditContract');
+    const btnConfirm = document.getElementById('confirmEditContract');
+    const errorBox = document.getElementById('editContractError');
+    const inputLink = document.getElementById('editContractLinkInput');
+    const inputProfile = document.getElementById('editNeuropsychInput');
+
+    const data = window.__INTERVENTION_DATA__ || {};
+    const idUser = data.idUser;
+
+    function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+    function hideError()    { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
+
+    function openModal() {
+        hideError();
+        inputLink.value = data.contractLink || '';
+        inputProfile.value = data.neuroProfile || '';
+        modal.classList.remove('hidden');
+    }
+
+    btnOpenContract?.addEventListener('click', openModal);
+    btnOpenProfile?.addEventListener('click', openModal);
+
+    const close = () => modal.classList.add('hidden');
+    btnClose?.addEventListener('click', close);
+    btnCancel?.addEventListener('click', close);
+
+    btnConfirm?.addEventListener('click', async () => {
+        hideError();
+        const link = inputLink.value.trim();
+        const profile = inputProfile.value.trim();
+
+        const original = btnConfirm.innerHTML;
+        try {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<span>Guardando...</span>';
+
+            const res = await fetch(`/users/${idUser}/intervention`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json','x-csrf-token': _csrfToken,  },
+                credentials: 'include',
+                body: JSON.stringify({
+                    contract_link: link || null,
+                    neuro_profile: profile || null,
+                }),
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || 'Error al guardar');
+
+            showToast('Datos guardados', 'success');
+            setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+            showError(err.message);
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = original;
+        }
+    });
+})();
+</script>
