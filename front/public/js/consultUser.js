@@ -116,7 +116,7 @@ function populateLogbook (user) {
   } else {
     if (user.assignedApplications && user.assignedApplications.length > 0) {
       user.assignedApplications.forEach(application => {
-        container.innerHTML += createApplicationCard(application);
+        container.innerHTML += createApplicationCard(application, user.idUser);
       });
     }
     container.innerHTML += createAddSessionCard();
@@ -162,6 +162,18 @@ function setupShowMoreToggle () {
     }
   });
 }
+
+(async function checkApplicationExpiry () {
+  const idUser = window.__USER_DATA__?.idUser;
+  if (!idUser) return;
+  try {
+    const res  = await fetch(`/users/${idUser}/applications/check-expiry`);
+    const json = await res.json();
+    if (!res.ok) { console.error('[checkExpiry]', json.error); return; }
+  } catch (err) {
+    console.error('[checkExpiry] fetch error:', err);
+  }
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;

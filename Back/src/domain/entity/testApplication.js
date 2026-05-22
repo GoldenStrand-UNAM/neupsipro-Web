@@ -7,7 +7,7 @@ class TestApplication {
     this.createdAt = data.created_at;
 
     // Raw status number kept for persistence (getStatus returns a string)
-    this._rawStatus = data.status ?? 6;
+    this._rawStatus = data.status;
   }
 
   // Called by the repository after INSERT to attach the generated PK
