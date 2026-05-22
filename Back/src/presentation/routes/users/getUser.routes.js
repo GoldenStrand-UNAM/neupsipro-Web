@@ -27,6 +27,8 @@ const deleteAppointmentController = require('../../controller/appointments/delet
 const DeleteUserUseCase    = require('../../../application/usecase/users/deleteUserUseCase');
 const DeleteUserController = require('../../controller/users/deleteUser.controller');
 
+const checkExpiryUseCase    = require('../../../application/usecase/testApplications/checkExpiryUseCase');
+const checkExpiryController = require('../../controller/testApplications/checkExpiry.controller');
 const ClinicsController = require('../../controller/clinical/getListClinics.controller');
 const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
 const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
@@ -54,13 +56,19 @@ module.exports = (authUseCase) => {
   const deleteUseCase    = new DeleteUserUseCase(usersRepository);
   const deleteController = new DeleteUserController(deleteUseCase);
 
+  const expiryUseCase    = new checkExpiryUseCase(testAppRepository, testResultsRepository);
+  const expiryController = new checkExpiryController(expiryUseCase);
+
+  // Check and update expiry status for all active applications of a user.
   const clinicRepository = new ImpClinicRepository();
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
 
   router.get(
-    '/:id_user', authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+    '/:id_user/applications/check-expiry',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => expiryController.checkExpiry(req, res)
   );
 
   router.get('/consultUser', (req, res) => {
@@ -69,6 +77,11 @@ module.exports = (authUseCase) => {
 
     });
   });
+
+  router.get(
+    '/:id_user', authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+  );
 
   //Create Application route
 

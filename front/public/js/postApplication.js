@@ -1,26 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const user = window.__USER_DATA__;
+/* global createApplicationCard, _csrfToken*/
 
-  if (!user) return;
-
-  const modal        = document.getElementById('modalCreateApp');
-  const inputAppName = document.getElementById('inputAppName');
-  const modalError   = document.getElementById('modalError');
-  const toast        = document.getElementById('toast');
-  const container    = document.getElementById('logbookContainer');
-
-  // Event delegation — btnCreateSession is injected dynamically
-  container.addEventListener('click', (e) => {
-    if (e.target.closest('#btnCreateSession')) openModal();
-  });
+function setupModalControls (modal) {
+  const inputEl = document.getElementById('inputAppName');
+  const errorEl = document.getElementById('modalError');
 
   function openModal () {
-    inputAppName.value = '';
-    modalError.classList.add('hidden');
-    modalError.textContent = '';
+    inputEl.value = '';
+    errorEl.classList.add('hidden');
+    errorEl.textContent = '';
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    inputAppName.focus();
+    inputEl.focus();
   }
 
   function closeModal () {
@@ -28,73 +18,92 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.remove('flex');
   }
 
+  function showModalError (msg) {
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+  }
+
   document.getElementById('btnCloseModal').addEventListener('click', closeModal);
   document.getElementById('btnCancelModal').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-  document.getElementById('btnSaveApp').addEventListener('click', async () => {
-    const name = inputAppName.value.trim();
+  return { openModal, closeModal, showModalError };
+}
 
-    // Client-side validation — mirrors server rules
-    if (!name) {
-      showModalError('El nombre de la sesión es obligatorio');
+function showToast (toast) {
+  toast.classList.remove('hidden');
+  toast.classList.add('flex');
+  setTimeout(() => {
+    toast.classList.add('hidden');
+    toast.classList.remove('flex');
+  }, 3000);
+}
+
+async function saveApplication (user, ctx) {
+  const { inputAppName, closeModal, showModalError, toast } = ctx;
+  const name = inputAppName.value.trim();
+
+  if (!name) {
+    showModalError('El nombre de la sesión es obligatorio');
+    return;
+  }
+  if (name.length > 20) {
+    showModalError('El nombre debe tener máximo 20 caracteres');
+    return;
+  }
+
+  const btnSave = document.getElementById('btnSaveApp');
+  btnSave.disabled = true;
+  btnSave.classList.add('opacity-60');
+
+  try {
+    const response = await fetch(`/users/${user.idUser}/applications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
+      body: JSON.stringify({ application_name: name }),
+    });
+    const json = await response.json();
+
+    if (!response.ok) {
+      showModalError(json.error || 'Error al crear la sesión');
       return;
     }
-    if (name.length > 20) {
-      showModalError('El nombre debe tener máximo 20 caracteres');
-      return;
-    }
 
-    const btnSave = document.getElementById('btnSaveApp');
-    btnSave.disabled = true;
-    btnSave.classList.add('opacity-60');
+    closeModal();
+    showToast(toast);
 
-    try {
-      const response = await fetch(`/users/${user.idUser}/applications`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ application_name: name }),
-      });
+    const addBtn = document.getElementById('btnCreateSession');
+    addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
+      idApplication: json.data.idApplication,
+      applicationName: json.data.applicationName,
+      status: json.data.status,
+      createdAt: json.data.createdAt,
+    }, user.idUser));
 
-      const json = await response.json();
+  } catch {
+    showModalError('Error de red, intenta de nuevo');
+  } finally {
+    btnSave.disabled = false;
+    btnSave.classList.remove('opacity-60');
+  }
+}
 
-      if (!response.ok) {
-        showModalError(json.error || 'Error al crear la sesión');
-        return;
-      }
+document.addEventListener('DOMContentLoaded', () => {
+  const user = window.__USER_DATA__;
+  if (!user) return;
 
-      closeModal();
-      showToast();
+  const modal        = document.getElementById('modalCreateApp');
+  const inputAppName = document.getElementById('inputAppName');
+  const toast        = document.getElementById('toast');
+  const container    = document.getElementById('logbookContainer');
 
-      // Prepend new card before the "Crear aplicación" button
-      const addBtn = document.getElementById('btnCreateSession');
-      addBtn.insertAdjacentHTML('beforebegin', createSessionCard({
-        idApplication: json.data.idApplication,
-        applicationName: json.data.applicationName,
-        status: json.data.status,
-        createdAt: json.data.createdAt,
-      }));
+  const { openModal, closeModal, showModalError } = setupModalControls(modal);
 
-    } catch (err) {
-      showModalError('Error de red, intenta de nuevo');
-    } finally {
-      const btnSave = document.getElementById('btnSaveApp');
-      btnSave.disabled = false;
-      btnSave.classList.remove('opacity-60');
-    }
+  container.addEventListener('click', (e) => {
+    if (e.target.closest('#btnCreateSession')) openModal();
   });
 
-  function showModalError (msg) {
-    modalError.textContent = msg;
-    modalError.classList.remove('hidden');
-  }
-
-  function showToast () {
-    toast.classList.remove('hidden');
-    toast.classList.add('flex');
-    setTimeout(() => {
-      toast.classList.add('hidden');
-      toast.classList.remove('flex');
-    }, 3000);
-  }
+  document.getElementById('btnSaveApp').addEventListener('click', () => {
+    saveApplication(user, { inputAppName, closeModal, showModalError, toast });
+  });
 });
