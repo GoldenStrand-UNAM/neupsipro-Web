@@ -424,9 +424,9 @@
         // PATCH Section Content
         async function saveSection (section) {
             try {
-
+                
                 const body = buildSection(section);
-
+                console.log('body: ', body);
                 const res = await fetch(
                 `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`,
                 {

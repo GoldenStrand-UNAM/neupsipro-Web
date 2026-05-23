@@ -164,14 +164,17 @@ class postFinancialInterviewUseCase {
 
   // ----- Execute the update (main function) ---------------------------------
   async executeUpdate ({
-    id_user,
+    refNumber,
     step,
     subStep,
     body,
   }) {
+    // fetch user id
+    const res = await this.financialInterviewRepository.fetchUserId({ refNumber });
+    const idUser = res[0][0].id_user;
 
     // fetch relation
-    const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
+    const relationResult = await this.financialInterviewRepository.fetchRelation({ idUser });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
 
     // validate step
