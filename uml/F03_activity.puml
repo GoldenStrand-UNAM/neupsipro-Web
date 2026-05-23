@@ -1,0 +1,20 @@
+@startuml Consul_Forum
+title Consult Forum
+
+|User|
+start
+:Click on  "Forum";
+
+|System|
+if (¿There's posts?) then (no)
+    :Shows message 'No hay publicaciones disponibles';
+else (yes)
+    :load list of publications;
+    :Show publications to the user;
+endif
+
+|User|
+:See forum;
+
+stop
+@enduml

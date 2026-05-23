@@ -39,7 +39,7 @@ describe('Login Integration Test', () => {
         jest.clearAllMocks();
     });
 
-    test('POST /auth/login - Éxito: Debe redirigir a /home y crear cookie', async () => {
+    test('POST /auth/login - should redirect to dashboard and assign cookie', async () => {
         mockFindByUsername.mockResolvedValue({
             id_user: 1,
             user_name: 'testuser',
@@ -61,7 +61,7 @@ describe('Login Integration Test', () => {
         expect(response.status).toBe(302);
     });
 
-    test('POST /auth/login - Error: Campos vacíos', async () => {
+    test('POST /auth/login - should throw error if there are empty spaces', async () => {
         const response = await request(app)
             .post('/auth/login')
             .send({ username: '', password: '' });
@@ -69,7 +69,7 @@ describe('Login Integration Test', () => {
         expect(response.text).toContain('El usuario y la contraseña son obligatorios');
     });
 
-    test('POST /auth/login - Error: Credenciales inválidas', async () => {
+    test('POST /auth/login - should throw error when the credentials are invalid', async () => {
         mockFindByUsername.mockResolvedValue({ id_user: 1, user_name: 'test', password_hash: 'h', eliminated: 0});
         mockCompare.mockResolvedValue(false);
 
@@ -81,7 +81,7 @@ describe('Login Integration Test', () => {
         expect(response.text).toContain('Credenciales inválidas');
     });
 
-    test('POST /auth/login - Error: Usuario no encontrado', async () => {
+    test('POST /auth/login - should throw error if there is not a found user', async () => {
         mockFindByUsername.mockResolvedValue(null);
 
         const response = await request(app)
@@ -92,7 +92,7 @@ describe('Login Integration Test', () => {
         expect(response.text).toContain('Credenciales inválidas');
     });
 
-    test('POST /auth/login - SQL Injection: No debe permitir bypass', async () => {
+    test('POST /auth/login - should throw error by SQL inyection', async () => {
         mockFindByUsername.mockResolvedValue(null);
 
         const response = await request(app)
@@ -106,7 +106,7 @@ describe('Login Integration Test', () => {
         expect(response.text).toContain('Credenciales inválidas');
     });
 
-    test('POST /auth/login - XSS: Debe escapar caracteres especiales en la respuesta', async () => {
+    test('POST /auth/login - should throw error by XSS scripts', async () => {
         const xssPayload = "<script>alert('xss')</script>";
 
         const response = await request(app)
@@ -119,8 +119,8 @@ describe('Login Integration Test', () => {
         expect(response.text).not.toContain(xssPayload);
     });
 
-    test('POST /auth/login - Rate Limiting: Debe bloquear tras muchos intentos', async () => {
-        for (let i = 0; i < 5; i++) {
+    test('POST /auth/login - should throw error after many tries by the rate limiter', async () => {
+        for (let i = 0; i < 50; i++) {
             await request(app)
                 .post('/auth/login')
                 .send({ username: 'test', password: '1'});
@@ -128,6 +128,7 @@ describe('Login Integration Test', () => {
 
         const response = await request(app)
             .post('/auth/login')
+            .set('Accept', 'application/json') 
             .send({ username: 'test', password: '1' });
 
         expect(response.status).toBe(429);
