@@ -32,7 +32,7 @@ module.exports = (authUseCase) => {
   router.get(
     '/financial',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('clinical', 'consultation'),
+    permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
     (req, res) => controller.getFinancialPage(req, res)
   );
 

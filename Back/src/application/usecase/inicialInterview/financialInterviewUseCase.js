@@ -9,6 +9,7 @@ class FinancialInterviewUseCase {
 
   // Function that gets financial substeps info
   async getSecondStepData ({
+    refNumber,
     id_user,
     subStep,
     id_user_relation,
@@ -43,7 +44,7 @@ class FinancialInterviewUseCase {
     }
 
     return new FinancialInterview({
-      id_user,
+      refNumber,
       current_step: inicialProgress[0].current_step,
       current_section: subStep,
       inicialProgress,
@@ -68,6 +69,7 @@ class FinancialInterviewUseCase {
     // Get data by step
     if (step === 'financial') {
       return await this.getSecondStepData({
+        refNumber,
         id_user,
         subStep: Number(subStep),
         id_user_relation,

@@ -208,8 +208,8 @@ function renderFinancialData () {
 
   const info = financial.data;
 
-  document.getElementById('id_user').textContent =
-    info.id_user || '-';
+  document.getElementById('refNumber').textContent =
+    info.refNumber || '-';
 
   // Incomes
   renderIncomesData(info);

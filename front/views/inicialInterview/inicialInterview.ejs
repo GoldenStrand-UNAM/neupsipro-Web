@@ -30,7 +30,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
 
-                        <span id="id_user"></span> > Entrevista Inicial
+                        <span id="refNumber"></span> > Entrevista Inicial
 
                     </h1>
                     <hr class="border-2 border-[#002B7A]">
@@ -219,11 +219,6 @@
         async function loadSection(section) {
 
             try {
-                console.log("Entré al try en loadSection");
-                console.log(
-                    `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`
-                );
-
                 const res = await fetch(
                     `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`
                 );
@@ -308,8 +303,8 @@
                 // Set titles
                 setStepTitle(data);
 
-                document.getElementById("id_user").textContent =
-                    data.id_user || "";
+                document.getElementById("refNumber").textContent =
+                    data.refNumber || "";
 
                 window.sectionsState = {
                     currentStep: data.current_step,
@@ -428,9 +423,6 @@
 
         // PATCH Section Content
         async function saveSection (section) {
-
-            console.log("Estoy en save section")
-
             try {
 
                 const body = buildSection(section);
