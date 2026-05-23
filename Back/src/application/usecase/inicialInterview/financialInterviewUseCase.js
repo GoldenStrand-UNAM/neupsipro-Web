@@ -52,7 +52,10 @@ class FinancialInterviewUseCase {
     });
   }
 
-  async execute ({ id_user, step, subStep }) {
+  async execute ({ refNumber, step, subStep }) {
+
+    const res = await this.financialInterviewRepository.fetchUserId({ refNumber });
+    const id_user = res[0][0].id_user;
 
     // fetch  relation
     const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });

@@ -162,7 +162,7 @@
     <script src="/js/sidebar.js"></script>
     <script src="/js/inicialInterview/sectionsStepper.js"></script>
     <script src="/js/inicialInterview/sidebarTimeline.js"></script>
-    <script src="/js/inicialinterview/financial/financialBuilder.js"></script>
+    <script src="/js/inicialInterview/financial/financialBuilder.js"></script>
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
@@ -219,9 +219,13 @@
         async function loadSection(section) {
 
             try {
+                console.log("Entré al try en loadSection");
+                console.log(
+                    `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`
+                );
 
                 const res = await fetch(
-                    `/users/${id_user}/inicialInterview/api/${id_user}/financial/${section}`
+                    `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`
                 );
 
                 const data = await res.json();
@@ -432,7 +436,7 @@
                 const body = buildSection(section);
 
                 const res = await fetch(
-                `/users/${id_user}/inicialInterview/api/${id_user}/financial/${section}`,
+                `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`,
                 {
                     method: 'PATCH',
                     headers: {

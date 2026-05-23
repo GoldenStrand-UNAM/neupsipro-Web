@@ -6,6 +6,16 @@ const ImpFinancialInterviewRepository = require('../../domain/repository/ImpFina
 class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
   // ----- Auxiliar functions -------------------------------------------------
+  // Fetch user id by reference number
+  async fetchUserId ({ refNumber }) {
+    return await db.query(
+      `SELECT id_user
+             FROM user_info
+             WHERE reference_number = ?`,
+      [refNumber]
+    );
+  }
+
   // Fetch relation by id
   async fetchRelation ({ id_user }) {
     return await db.query(
