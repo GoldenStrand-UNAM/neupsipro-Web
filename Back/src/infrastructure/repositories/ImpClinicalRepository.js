@@ -70,6 +70,7 @@ class ImpClinicalRepository extends clinicalRepository {
       u.lastname_p, 
       u.lastname_m,
       u.email,
+      u.birthdate,
       uc.affiliation,
       uc.activity,
       uc.emergency_contact_name,
