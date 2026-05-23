@@ -1,0 +1,76 @@
+@startuml AddSessionSequence
+title Add Session - Sequence Diagram
+
+actor User as U
+participant "intervention.ejs\n(Browser)" as View
+participant "addSessionModal.ejs\n(JS)" as Modal
+participant "Flatpickr\n(Date Picker)" as Picker
+participant "Router" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "intervention\nController" as Ctrl
+participant "addSessionUseCase" as UseCase
+participant "ImpIntervention\nRepository" as Repo
+database "MySQL DB" as DB
+
+U -> View: Clicks "+" button
+activate View
+View -> Modal: Open modal
+activate Modal
+Modal -> Picker: initPicker()
+activate Picker
+Picker --> Modal: Date picker ready
+deactivate Picker
+Modal --> U: Show empty form
+deactivate View
+
+U -> Modal: Fills date, session, objectives,\ndevelopment, dqp_task
+U -> Modal: Clicks "Agregar"
+Modal -> Modal: Validate date is required
+Modal -> Modal: Disable button, show "Agregando..."
+
+Modal -> Router: POST /users/:id_user/intervention/sessions
+activate Router
+
+Router -> Auth: verifyToken + requirePermission('writing')
+Auth --> Router: OK
+
+Router -> Ctrl: addSession(req, res)
+activate Ctrl
+Ctrl -> UseCase: execute({ id_user, session_number,\nsession_date, objectives, ... })
+activate UseCase
+
+UseCase -> UseCase: Validate session_date is required
+UseCase -> Repo: findByUser({ id_user })
+activate Repo
+Repo -> DB: SELECT intervention
+DB --> Repo: row
+Repo --> UseCase: Intervention
+deactivate Repo
+
+alt No active intervention
+    UseCase --> Ctrl: throw "No existe intervención"
+    Ctrl --> Router: 400 { error }
+    Router --> Modal: 400 response
+    Modal --> U: Show error
+else Intervention exists
+    UseCase -> Repo: createSession({ id_intervention,\nsession_number, session_date, ... })
+    activate Repo
+    Repo -> DB: INSERT intervention_session
+    DB --> Repo: id_session
+    Repo --> UseCase: id_session
+    deactivate Repo
+
+    UseCase --> Ctrl: { success, idSession }
+    deactivate UseCase
+    Ctrl --> Router: 201 Created
+    deactivate Ctrl
+    Router --> Modal: 201 OK
+    deactivate Router
+
+    Modal -> Modal: showToast("Sesión agregada")
+    Modal -> View: window.location.reload()
+    deactivate Modal
+    View --> U: Refresh page with new session\nin the table
+end
+
+@enduml

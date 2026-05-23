@@ -4,6 +4,7 @@ class Clinical {
     this.name = [data.first_name, data.lastname_p, data.lastname_m]
       .filter(Boolean)
       .join(' ');
+    this.birthdate = data.birthdate;
     this.activity = data.activity;
     this.affiliation = data.affiliation;
     this.emergencyName = data.emergency_contact_name;
