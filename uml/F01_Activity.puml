@@ -1,0 +1,60 @@
+@startuml Activity_Registrar_Publicacion
+title Register Publication
+
+|Clinic User|
+
+start
+
+:Open Forum;
+
+:Click "Publicar";
+
+:Fill publication form;
+
+:Attach optional image;
+
+:Submit publication;
+
+if (Content completed?) then (no)
+
+    |System|
+    :Show validation message;
+    stop
+
+endif
+
+|System|
+
+:Validate user authorization;
+
+if (Authorized?) then (no)
+
+    :Reject action;
+    stop
+
+endif
+
+if (Image attached?) then (yes)
+
+    :Validate image;
+
+    if (Valid image?) then (no)
+
+        :Show upload error;
+        stop
+
+    endif
+
+    :Store image;
+
+endif
+
+:Save publication;
+
+:Show confirmation message;
+
+:Redirect to forum;
+
+stop
+
+@enduml

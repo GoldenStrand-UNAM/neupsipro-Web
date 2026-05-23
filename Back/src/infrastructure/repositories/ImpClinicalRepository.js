@@ -52,6 +52,16 @@ class ImpClinicalRepository extends clinicalRepository {
     );
     return rows[0]?.total ?? 0;
   }
+  //get all clinical users
+  async fetchAll () {
+    const [rows] = await db.query(`SELECT 
+        u.id_user AS id,
+        CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name
+     FROM users u
+     WHERE u.id_role = 3 AND u.eliminated = 0
+     ORDER BY u.first_name ASC`);
+    return rows;
+  }
 
   async fetchClinical ({ id_user }) {
     const [clinicalData] = await db.query (`SELECT 
@@ -60,6 +70,7 @@ class ImpClinicalRepository extends clinicalRepository {
       u.lastname_p, 
       u.lastname_m,
       u.email,
+      u.birthdate,
       uc.affiliation,
       uc.activity,
       uc.emergency_contact_name,
@@ -106,6 +117,17 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       totalPages,
       page,
     };
+  }
+
+  async fetchClinicalUsers () {
+    const [rows] = await db.query (`SELECT 
+        id_user AS id,
+          CONCAT_WS( ' ', first_name, lastname_p, lastname_m) AS full_name
+        FROM users
+        WHERE id_role = 3
+          AND eliminated = 0
+          ORDER BY user_name ASC`);
+    return rows.map(row => new userClinicalSummary(row));
   }
 }
 module.exports = ImpClinicalRepository;

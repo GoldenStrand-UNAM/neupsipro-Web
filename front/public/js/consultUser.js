@@ -86,16 +86,17 @@ function populateUserInfo (user) {
   document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
 
   document.getElementById('prosthetist').textContent = user.prosthetist || 'N/A';
-  document.getElementById('neuroDate').textContent = user.neuroEntryDate
-    ? new Date(user.neuroEntryDate).toLocaleDateString() : 'N/A';
-  document.getElementById('amputationDate').textContent = user.amputationDate
-    ? new Date(user.amputationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('neuroDate').textContent = user.neuroEntryDate || 'N/A';
+
+  document.getElementById('amputationDate').textContent = user.amputationDate || 'N/A';
+
   document.getElementById('amputationLevel').textContent = user.amputationLevel || 'N/A';
   document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
   document.getElementById('state').innerHTML = getStatusBadge(user.state);
-  document.getElementById('nextApt').textContent = formatAppointmentDate(user.nextAppointment) || 'N/A';
-  document.getElementById('protocol').textContent = user.protocol || 'N/A';
+  document.getElementById('nextApt').textContent = user.nextAppointment
+    ? formatAppointmentDate(user.nextAppointment.dateTime)
+    : 'Sin cita programada';  document.getElementById('protocol').textContent = user.protocol || 'N/A';
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 

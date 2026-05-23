@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foro - NeuPsi-Pro</title>
+    <title>Foro - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
@@ -47,7 +47,7 @@
 
 
                             <!-- Author -->
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-3 mb-3 wrap-break-word">
 
 
                             <% if (post.pp) { %>
@@ -65,7 +65,7 @@
                                     <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight"><%= post.author %></p>
                                 </div>
                                 <div class="ml-auto">
-                                    <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+                                    <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">
                                         <%= new Date(post.date).toLocaleString('es-MX', { 
                                             year: 'numeric', 
                                             month: '2-digit', 

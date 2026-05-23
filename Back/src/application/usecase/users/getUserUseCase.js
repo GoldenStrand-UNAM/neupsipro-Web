@@ -2,9 +2,10 @@ const UserDTO = require('../../dto/userDTO');
 const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
 
 class consultUserUseCase {
-  constructor (userRepository, impTestApplicationRepository) {
+  constructor (userRepository, impTestApplicationRepository, appointmentRepository) {
     this.userRepository = userRepository;
     this.impTestApplicationRepository = impTestApplicationRepository;
+    this.appointmentRepository = appointmentRepository;
   }
 
   async execute ({ id_user }) {
@@ -31,12 +32,15 @@ class consultUserUseCase {
       ? await getPresignedUrl(cleanUser.photo)
       : cleanUser.photo;
 
+    const nextAppointment = await this.appointmentRepository.findUpcomingByUser({ id_user });
+
     return {
       ...cleanUser,
       photo: resolvedPhotoUrl,
       hasProtocol,
       assignedApplications,
       canStartIntervention,
+      nextAppointment,
     };
 
   }
