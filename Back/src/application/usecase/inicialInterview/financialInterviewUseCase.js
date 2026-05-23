@@ -69,7 +69,6 @@ class FinancialInterviewUseCase {
     if (step === 'financial') {
       return await this.getSecondStepData({
         refNumber,
-        id_user,
         subStep: Number(subStep),
         id_user_relation,
         inicialProgress,

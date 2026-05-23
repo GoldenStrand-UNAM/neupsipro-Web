@@ -17,12 +17,12 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
   }
 
   // Fetch relation by id
-  async fetchRelation ({ id_user }) {
+  async fetchRelation ({ idUser }) {
     return await db.query(
       `SELECT id_user_relation
              FROM user_relation
              WHERE id_user = ?`,
-      [id_user]
+      [idUser]
     );
   }
 
