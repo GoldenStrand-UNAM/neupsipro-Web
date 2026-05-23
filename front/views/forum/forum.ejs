@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
+    <script src="/js/main.js"></script>
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
 
@@ -66,13 +67,7 @@
                                 </div>
                                 <div class="ml-auto">
                                     <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">
-                                        <%= new Date(post.date).toLocaleString('es-MX', { 
-                                            year: 'numeric', 
-                                            month: '2-digit', 
-                                            day: 'numeric', 
-                                            hour: '2-digit', 
-                                            minute: '2-digit' 
-                                        }) %>
+                                            <script>document.write(formatDate("<%= new Date(post.date).toISOString() %>"));</script>
                                     </p>                            
                                 </div>
                             </div>
@@ -137,7 +132,6 @@
                 <% } %>
 
             </div>
-            <script src="/js/main.js"></script>
 
             <%- include('../partials/publicationModal') %>
             <%- include('./deletePostModal') %>
