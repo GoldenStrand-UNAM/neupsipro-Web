@@ -10,7 +10,6 @@ class FinancialInterviewUseCase {
   // Function that gets financial substeps info
   async getSecondStepData ({
     refNumber,
-    id_user,
     subStep,
     id_user_relation,
     inicialProgress,
@@ -54,12 +53,12 @@ class FinancialInterviewUseCase {
   }
 
   async execute ({ refNumber, step, subStep }) {
-
+    // fetch user id
     const res = await this.financialInterviewRepository.fetchUserId({ refNumber });
-    const id_user = res[0][0].id_user;
+    const idUser = res[0][0].id_user;
 
     // fetch  relation
-    const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
+    const relationResult = await this.financialInterviewRepository.fetchRelation({ idUser });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
 
     // fetch inicial interview full progress

@@ -122,10 +122,11 @@ function renderESCData (info) {
 
   const totalExpenses = info.extra?.totalExpenses || 0;
   const totalIncome = info.extra?.totalIncome || 0;
-  const familyExpenses =  (totalExpenses * 100) / totalIncome;
+  const familyExpenses = 
+    totalIncome > 0 ? (totalExpenses * 100) / totalIncome : 0;
 
   document.getElementById('familyExpenses').value =
-    (familyExpenses) ;
+    Number.isFinite(familyExpenses) ? familyExpenses.toFixed(2) : 0;
 
   // ESC
   setSelectValue('ocupation', info.ocupation);
