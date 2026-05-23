@@ -1,12 +1,12 @@
 class LogoutUseCase {
-  constructor (authService) {
-    this.authService = authService;
+  constructor (authRepository) {
+    this.authRepository = authRepository;
   }
 
   async execute (token) {
     if (!token) return;
 
-    return await this.authService.invalidateSession(token);
+    return await this.authRepository.invalidateSession(token);
   }
 }
 

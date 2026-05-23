@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
-const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
+const { loginLimiter, generalLimiter, apiLimiter, publicationLimiter } = require('./infrastructure/external/rateLimiting');
 const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
@@ -27,8 +27,8 @@ app.use(helmet({
 
       'default-src': ["'self'"],
 
-      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
 
       'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
 
@@ -77,12 +77,61 @@ const {
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.use(doubleCsrfProtection);
-}
+// Middleware to either apply or skip csrf
 app.use((req, res, next) => {
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
+
+  // Use include to ignore charset
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  //If any of the three above is true, means it is android request
+  if (isAndroidOrApi) {
+    return next();
+  }
+
+  // If web, validate csrf
+  if (process.env.NODE_ENV !== 'test') {
+    return doubleCsrfProtection(req, res, next);
+  }
+  next();
+});
+
+// Middleware to generate csfr for web
+app.use((req, res, next) => {
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  // If mobile, does not generate csrf
+  if (isAndroidOrApi) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
+  // Generate only if it is web
+  try {
+    res.locals.csrfToken = generateCsrfToken(req, res);
+  } catch (error) {
+    res.locals.csrfToken = '';
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
+});
+
+app.get('/auth/token', (req, res) => {
+  res.json({ csrfToken: res.locals.csrfToken });
 });
 
 const dbPool = require('./infrastructure/database/database');
@@ -104,19 +153,26 @@ const sessionRepository = new SessionRepository(dbPool);
 const authMiddleware = new AuthMiddleware(jwtService, authService);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
-const logoutUseCase = new LogoutUseCase(authService);
+const logoutUseCase = new LogoutUseCase(authRepository);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
-const logoutController = new LogoutController(logoutUseCase);
+const logoutController = new LogoutController(logoutUseCase, jwtService);
 
+//login routes
 app.use('/auth', authRoutes(logoutController, loginController));
+app.use('/', authRoutes(logoutController, loginController));
 
 //================ Routes =======================
 app.use((req, res, next) => {
   res.locals.activePage = '';
   next();
 });
+
+// Dasboards
+const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
+
+app.use('/dashboardClinical', dashRoutes(authUseCase));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
@@ -137,6 +193,10 @@ app.use('/users', userRoutes(authUseCase));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
+const postUserRoutes = require('./presentation/routes/users/postUser.routes');
+
+app.use('/user', postUserRoutes(authUseCase));
+
 app.use('/clinical', clinicalUserRoutes(authUseCase));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
@@ -150,6 +210,13 @@ app.use('/', postPublicationRoutes(authUseCase));
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
 app.use('/', dashboardRoutes(authUseCase));
+
+const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
+
+app.use('/', interventionRoutes(authUseCase));
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+
+app.use('/', getAllClinicalsRoutes(authUseCase));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

@@ -12,26 +12,32 @@ class User {
     this.assignedClinic = data.assigned_clinic;
     this.modality = data.modality;
     this.attendance = data.attendance;
-    this.amputationDate = data.amputation_date;
+    this.amputationDate = this.formatDate(data.amputation_date);
     this.state = data.state;
-    this.amputationEtiology = data.amputation_etiology;
+    this.amputationEtiology = data.base_patology;
     this.prosthetist = data.prosthetist;
-    this.neuroEntryDate = data.neuro_entry_date;
+    this.neuroEntryDate = this.formatDate(data.neuro_entry_date);
     this.amputationLevel = data.amputation_level;
     this.nextAppointment = data.next_appointment;
-    this.laterality = this.setLaterality(data.laterality);
-    this.groupIntervention = this.getGroupIntervention(data.group_intervention);
+    this.laterality = data.laterality;
+    this.groupIntervention = data.group_intervention;
     this.initialInterview = this.getStatus(data.initial_interview);
     this.protocol = this.setProtocol(data.protocol);
   }
 
   calculateAge (birthdate) {
     if (!birthdate) return null;
+
+    const [day, month, year] = birthdate.split('/');
+
+    const birth = new Date(year, month - 1, day);
+    if (isNaN(birth.getTime())) return null;
+
     const today = new Date();
-    const birth = new Date(birthdate);
     let years = today.getFullYear() - birth.getFullYear();
     let months = today.getMonth() - birth.getMonth();
     let days = today.getDate() - birth.getDate();
+
     if (days < 0) {
       months -= 1;
       const daysInPreviousMonth = new Date(
@@ -41,12 +47,29 @@ class User {
       ).getDate();
       days += daysInPreviousMonth;
     }
+
     if (months < 0) {
       years -= 1;
       months += 12;
     }
 
     return `${years} años, ${months} meses y ${days} días`;
+  }
+
+  formatDate (rawDate) {
+    if (!rawDate) return null;
+    let date;
+    if (typeof rawDate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+      const [day, month, year] = rawDate.split('/').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(rawDate);
+    }
+    if (isNaN(date.getTime())) return null;
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
   }
 
   getStatus (status) {
@@ -60,30 +83,6 @@ class User {
       case 3:
         return 'Terminada';
     }
-  }
-
-  getGroupIntervention (status) {
-    if (status === null || status === undefined) return null;
-    switch (status) {
-      case 0:
-        return 'No asiste';
-      case 1:
-        return 'Sí asiste';
-    }
-  }
-
-  setLaterality (laterality) {
-    if (!laterality) {
-      return null;
-    }
-    if (laterality === 'right') {
-      return 'Diestra';
-    }
-    if (laterality === 'left') {
-      return 'Zurda';
-    }
-    if (laterality === 'both')
-      return 'Ambidiestra';
   }
 
   setProtocol (protocol) {

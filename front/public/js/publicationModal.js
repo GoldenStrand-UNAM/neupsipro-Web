@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable max-lines-per-function */
 document.addEventListener('DOMContentLoaded', () => {
 
   const savedToast = sessionStorage.getItem('pendingToast');
@@ -43,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${publication.firstName}</p>
         </div>
         <div>
-            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">${date}</p>
+            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">${date}</p>
         </div>
     </div>
 
@@ -92,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </button>  
         <p class="font-['Roboto'] text-lg sm:text-2xl text-gray-500 whitespace-nowrap pt-2 px-2">${dto.comments}</p>
     </div>
-
-    <div class="input-div py-8 px-6">
+    <!-- Hidden button forfuture functionality -->
+    <div class="hidden input-div py-8 px-6">
         <input id="comment" type="text" name="comment" placeholder="Escribe un comentario..." class="input-base" maxlength="200">
         <small id="usernameMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
     </div>

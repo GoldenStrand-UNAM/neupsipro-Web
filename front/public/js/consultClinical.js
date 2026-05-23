@@ -2,6 +2,7 @@
 /* global getStatusStyle */
 /* global document, window */
 
+//the linter shows an error in the following two functions (declared but unused) but they are used in the ejs file
 function getStatusBadge (val) {
   const statusMap = new Map([
     ['Discharged', { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' }],
@@ -35,11 +36,13 @@ function populateUserInfo (user) {
   document.getElementById('clinicalName').textContent = user.name || 'Sin nombre';
   document.getElementById('activity').textContent = user.activity || 'N/A';
   document.getElementById('affiliation').textContent = user.affiliation || 'N/A';
+  document.getElementById('birthdate').textContent = user.birthdate
+    ? new Date(user.birthdate).toLocaleDateString() : 'N/A';
   document.getElementById('hours').textContent = user.hours || 'N/A';
   document.getElementById('startDate').textContent = user.startDate
     ? new Date(user.startDate).toLocaleDateString() : 'N/A';
   document.getElementById('endDate').textContent = user.endDate
-    ? new Date(user.endDate).toLocaleDateString() : 'N/A';;
+    ? new Date(user.endDate).toLocaleDateString() : 'N/A';
   document.getElementById('emergencyName').textContent = user.emergencyName || 'N/A';
   document.getElementById('emergencyPhone').textContent = user.emergencyPhone || 'N/A';
   document.getElementById('emergencyRelation').textContent = user.emergencyRelation || 'N/A';
