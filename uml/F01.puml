@@ -2,72 +2,118 @@
 
 actor "Clinic User" as USR
 
-participant "ForumVire" as VFORO
+participant "ForumView" as VFORO
 participant "PostPublicationView" as VFORM
 participant "main.js" as MAIN
 participant "PublicationRoutes" as ROUTE
-participant "PublicationController" as CTRL
-participant "regPublicationUseCase" as UC
-participant "Publication\n(Entity)" as ENT
-participant "ImpPubliRep" as IREPO
-participant "RegPubliRep" as REPO
+participant "authMiddleware" as AUTH
+participant "permissionsMiddleware" as PERM
+participant "multer" as MULTER
+participant "validateImageMiddleware" as VALIDATE
+participant "s3UploadMiddleware" as S3
+participant "PostPublicationController" as CTRL
+participant "RegPublicationUseCase" as UC
+participant "Publication(Entity)" as ENT
+participant "ImpForumRepository" as REPO
+participant "PublicationDTO" as DTO
 database "DB" as DB
 
-USR -> VFORO : Go to forum 
+USR -> VFORO : Go to forum
+
 VFORO --> USR : Show Forum View
 
 USR -> VFORO : Click [+ Publicar]
-VFORO -> MAIN : navigate('/foro/nueva-publicacion')
+
+VFORO -> MAIN : navigate('/forum/post')
+
 MAIN -> VFORM : render()
-VFORM --> USR : Show forms\n(titulo*, contenido, imagen?)
 
-USR -> VFORM : Complete Form
-USR -> VFORM : Click [Publicar ahora]
+VFORM --> USR : Show form\n(titulo*, contenido*, imagen?)
 
-VFORM -> VFORM : validate required fields (titulo)
-alt Empty Title
-    VFORM --> USR : Error "El título es obligatorio"
+USR -> VFORM : Fill form
+
+USR -> VFORM : Click [Publicar]
+
+VFORM -> VFORM : Validate frontend\n(title/content required)
+
+alt Empty Content
+    VFORM --> USR : showToast("Contenido obligatorio")
 end
 
-VFORM -> MAIN : submitPublication(titulo, contenido, imagen?)
-MAIN -> ROUTE : POST /api/forum/publications\n[Authorization: Bearer JWT]
+VFORM -> MAIN : submit(FormData)
 
-ROUTE -> ROUTE : authMiddleware\n verify JWT → id_usuario
-ROUTE -> CTRL : controller.registerPublication(req, res)
+MAIN -> ROUTE : POST /forum/post\n[x-csrf-token]
 
-CTRL -> CTRL : req.body / req.file {titulo, contenido, imagen}
+ROUTE -> AUTH : verifyToken()
 
-CTRL -> UC : RegPublicationUseCase.execute({ id_usuario, titulo,\ncontenido, imagePath? })
+AUTH -> AUTH : Validate JWT
 
-UC -> UC : Validate (empty titulo, unvalid id_usuario)
-alt Validación falla
-    UC --> CTRL : throw DomainError(mensaje)
-    CTRL --> ROUTE : HTTP 422 { error }
-    ROUTE --> MAIN : HTTP 422 { error }
-    MAIN --> VFORM : Shows error to the Clinic user
+AUTH --> ROUTE : next()
+
+ROUTE -> PERM : requirePermission('Forum','writing')
+
+PERM --> ROUTE : next()
+
+ROUTE -> MULTER : upload.single('imagen')
+
+MULTER -> MULTER : Save temporary file
+
+MULTER --> ROUTE : req.file
+
+ROUTE -> VALIDATE : validateImageMiddleware()
+
+VALIDATE -> VALIDATE : MIME type / size validation
+
+alt Invalid Image
+    VALIDATE --> MAIN : HTTP 500 {error}
 end
 
-UC -> ENT : new Publicacion({\n  id_usuario, titulo,\n  contenido, imagenes,\n  fecha_y_hora: now() })
-ENT -> ENT : Valida invariantes\n(titulo requerido, longitud max)
-ENT --> UC : publicacionEntity
+ROUTE -> S3 : s3UploadMiddleware()
 
-UC -> REPO : guardar(publicacionEntity)
+S3 -> S3 : uploadToS3(file)
 
+S3 --> ROUTE : req.file.s3Location
 
-REPO -> REPO : Procesa imagen\n(guarda archivo → obtiene path/URL)
-REPO -> DB : INSERT INTO publicacion\n(id_usuario, titulo, contenido,\nimagenes, fecha_y_hora)
-DB --> REPO : { id_publicacion, fecha_y_hora }
+ROUTE -> CTRL : registerPublication(req,res)
 
-REPO -> ENT : publicacion.setId(id_publicacion)
-IREPO --> UC : publicacionGuardada
+CTRL -> CTRL : Extract body + JWT user\n+ S3 image URL
 
-UC -> UC : mapea Entity → PublicacionDTO
-UC --> CTRL : PublicacionDTO
-  
+CTRL -> UC : execute({id_usuario,\ntitulo,contenido,image})
 
-CTRL --> ROUTE : HTTP 201 Created\n{ data: publicacion }
-ROUTE --> MAIN : HTTP 201 Created\n{ data: publicacion }
-MAIN -> VFORO : navigate('/foro')\n+ agrega publicacion al inicio
-VFORO --> USR : Foro actualizado con\nnueva publicación
+UC -> ENT : new Publication(...)
+
+ENT -> ENT : Validate invariants\n(title required,\nmax length)
+
+alt Validation fails
+
+ENT --> CTRL : throw Error()
+
+CTRL --> MAIN : HTTP 422 {error}
+
+MAIN --> VFORM : showToast(error)
+
+end
+
+ENT --> UC : publicationEntity
+
+UC -> REPO : save(publication)
+
+REPO -> DB : INSERT INTO publication\n(...,NOW())
+
+DB --> REPO : publication row
+
+REPO --> UC : saved publication
+
+UC -> DTO : PublicationDTO.fromEntity()
+
+UC --> CTRL : PublicationDTO
+
+CTRL --> MAIN : HTTP 201 Created
+
+MAIN -> MAIN : sessionStorage.pendingToast
+
+MAIN -> VFORO : redirect('/forum')
+
+VFORO --> USR : Forum updated\nnew publication shown
 
 @enduml

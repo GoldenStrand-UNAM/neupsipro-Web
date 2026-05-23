@@ -27,7 +27,7 @@ class forumController {
       const totalPages = Math.ceil(total / limit);
 
       // Render forum view with data
-      response.render ('forum/forum', {
+      response.render ('Forum/forum', {
         activePage: 'forum',
         posts,
         page,
