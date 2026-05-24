@@ -27,7 +27,7 @@ class PostBanfeController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
-      // Unexpected errors
+      // eslint-disable-next-line no-console
       console.error('[PostBanfeController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
