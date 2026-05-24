@@ -178,6 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const publication = await fetch(`/publication/${id}`);
         if (!publication.ok) throw new Error('Error al buscar publicación');
+        publicationModal.innerHTML =
+          `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada!</p>
+          `;
         const result = await publication.json();
         if (result.success) {
           publicationModal.innerHTML = modalHTML(result.dto);
