@@ -1,0 +1,10 @@
+class UserSummaryDTO {
+    constructor(userSummary) {
+        this.id = userSummary.id;
+        this.reference_number = userSummary.referenceNumber ?? "Sin folio";
+        this.fullName = userSummary.fullName;
+        this.state = userSummary.state ?? "Sin estatus";
+        this.protocol = userSummary.protocol ?? "Pendiente";
+    }
+}
+module.exports = UserSummaryDTO;

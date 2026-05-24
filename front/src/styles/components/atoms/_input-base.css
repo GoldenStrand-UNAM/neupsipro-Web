@@ -1,0 +1,10 @@
+@layer components{
+    .input-div{
+        @apply space-y-1 relative;
+    }
+
+    .input-base{
+        @apply w-full px-4 py-2 rounded-lg border border-gray-300;
+        
+    }
+}

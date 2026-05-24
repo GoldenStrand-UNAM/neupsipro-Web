@@ -1,0 +1,42 @@
+@startuml consult Clinical User GU21
+title Consult User Flow
+
+|User|
+start
+:Click on 'Consultar' for a specific clinical user;
+
+|System|
+:Validates session;
+
+if (Valid session?) then (yes)
+    :get Clinical User info;
+    note left
+        from user_clinical:
+        * affiliation
+        * activity
+        * emergency_contact_name
+        * emergency_contact_phone
+        * emergency_contact_relation
+        * start_date
+        * finish_date
+        * hours
+    end note
+
+    if (Data found?) then (yes)
+        :Render View w/clinical user info;
+        |User|
+        :View info;
+        stop
+    else (no)
+        |System|
+        :Display error 'No data found'; 
+        stop
+    endif
+
+else (no)
+    |System|
+    :Show message 'please login again';
+    stop
+endif
+
+@enduml

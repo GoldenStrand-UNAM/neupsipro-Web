@@ -13,19 +13,56 @@
   "license": "ISC",
   "author": "GoldenStrand",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "Back/src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint"
+    "start": "nodemon Back/src/index.js",
+    "start:prod": "NODE_ENV=production nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
+    "lint": "eslint",
+    "prepare": "husky",
+    "dev:css": "tailwindcss -i ./front/src/styles/input.css -o ./front/public/css/output.css --watch"
+  },
+  "lint-staged": {
+    "*": "node scripts/check-names.js"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "@aws-sdk/client-s3": "^3.1031.0",
+    "@aws-sdk/s3-request-presigner": "^3.1031.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "csrf-csrf": "^4.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "express-session": "^1.19.0",
+    "file-type": "^16.5.4",
+    "flatpickr": "^4.6.13",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "mysql2": "^3.22.0",
+    "nodemon": "^3.1.14",
+    "session": "^0.1.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@eslint/css": "^1.0.0",
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.1.0",
+    "@tailwindcss/cli": "^4.2.2",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.2.0",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-security": "^4.0.0",
-    "globals": "^17.4.0"
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "jest": "^30.3.0",
+    "lint-staged": "^16.4.0",
+    "supertest": "^7.2.2",
+    "tailwindcss": "^4.2.2"
   }
 }

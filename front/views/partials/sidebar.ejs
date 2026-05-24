@@ -1,0 +1,76 @@
+<aside id="sidebar"
+    class="fixed h-full w-48 bg-[#0A2472] text-white flex flex-col pb-4
+    -translate-x-full md:translate-x-0 md:static md:flex transition-transform duration-300 z-20">
+
+    <button id="closeBtn" class="md:hidden mb-4 ">
+        <svg class="white-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+    </button>
+
+    <div class="items-center gap-2 text-white text-xl py-4 pl-4 w-maxrelative z-10 rounded-br-xl hidden md:flex">
+        <a href="/dashboard">
+            <button class="flex items-center gap-3 cursor-pointer">
+                <img src="/assets/enes-white-logo1.svg" class="h-24 shrink-0" alt="Logo">
+                <h1 class="font-semibold whitespace-nowrap ">Golondrina</h1> <br>
+            </button>
+        </a>
+    </div>
+    <br><br><br><br><br><br>
+    
+
+    <nav class="space-y-4 w-full pl-4">
+
+        <a href="/dashboard">
+            <button class="nav-button <%= activePage === 'home' ? 'active' : '' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+                <span class="nav-button__text">Inicio</span>
+            </button>
+        </a>
+
+        <a href="/forum">
+            <button class="nav-button <%= activePage === 'forum' ? 'active' : '' %>">
+                <svg class="white-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+                <span class="nav-button__text">Foro</span>
+            </button>
+        </a>
+
+        <a href="/users">
+            <button class="nav-button <%= activePage === 'users' ? 'active' : '' %>">
+                <svg class="white-icon shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <span class="nav-button__text">Usuarios</span>
+            </button>
+        </a>
+
+        <a href="/clinical">
+            <button class="nav-button <%= activePage === 'clinical' ? 'active' : '' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity-icon lucide-activity">
+                    <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+                </svg>
+                <span class="nav-button__text">Clínicos</span>
+            </button>
+        </a>
+    </nav>
+    <div class="w-full pl-4 mt-auto">
+        <a href="/dashboardClinical/view">
+            <button class="nav-button <%= activePage === 'panel' ? 'active' : '' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                </svg>
+                <span class="nav-button__text">Mi panel</span>
+            </button>
+        </a>
+    </div>
+</aside>
