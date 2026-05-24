@@ -27,6 +27,10 @@ function renderContributorsData (info) {
   const addBtn = document.getElementById('addPersonBtn');
   const template = document.getElementById('personTemplate');
 
+  container.querySelectorAll('.rounded-xl').forEach(card => {
+    card.remove();
+  });
+
   if (info.income?.contributors?.list?.length) {
 
     info.income.contributors.list.forEach(person => {
@@ -48,6 +52,8 @@ function renderContributorsData (info) {
 
   document.getElementById('totalSectionTwo').textContent =
     `$${info.income?.contributors?.total || 0}`;
+
+  updateTitles();
 }
 
 function renderExpensesData (info) {
@@ -122,7 +128,7 @@ function renderESCData (info) {
 
   const totalExpenses = info.extra?.totalExpenses || 0;
   const totalIncome = info.extra?.totalIncome || 0;
-  const familyExpenses = 
+  const familyExpenses =
     totalIncome > 0 ? (totalExpenses * 100) / totalIncome : 0;
 
   document.getElementById('familyExpenses').value =
