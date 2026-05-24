@@ -62,14 +62,21 @@ class userInfoDTO {
     this.age = userInfoDTO._calculateAge(userInfo.birthdate);
     this.pp = userInfo.profile_photo;
     this.schooling = userInfo.schooling;
-    this.unitEntryDate = userInfoDTO._formatDate(userInfo.unit_entry_date);
+    this.unitEntryDate = userInfoDTO._formatDate(userInfo.registration_date);
     this.neuroEntryDate = userInfoDTO._formatDate(userInfo.neuro_entry_date);
     this.amputationDate = userInfoDTO._formatDate(userInfo.amputation_date);
     this.protocol = userInfo.protocol;
   }
   static _calculateAge (birthdate) {
     if (!birthdate) return null;
-    const d = new Date(birthdate);
+    let d;
+    if (typeof birthdate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(birthdate)) {
+      const [day, month, year] = birthdate.split('/').map(Number);
+      d = new Date(year, month - 1, day);
+    } else {
+      d = new Date(birthdate);
+    }
+    if (isNaN(d.getTime())) return null;
     const now = new Date();
     let years = now.getFullYear() - d.getFullYear();
     let months = now.getMonth() - d.getMonth();
@@ -85,9 +92,16 @@ class userInfoDTO {
     }
     return { years, months, days };
   }
-  static _formatDate (d) {
-    if (!d) return null;
-    const date = new Date(d);
+  static _formatDate (rawDate) {
+    if (!rawDate) return null;
+    let date;
+    if (typeof rawDate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+      const [day, month, year] = rawDate.split('/').map(Number);
+      date = new Date(year, month - 1, day);
+    } else {
+      date = new Date(rawDate);
+    }
+    if (isNaN(date.getTime())) return null;
     const dd = String(date.getDate()).padStart(2, '0');
     const mm = String(date.getMonth() + 1).padStart(2, '0');
     const yyyy = date.getFullYear();
