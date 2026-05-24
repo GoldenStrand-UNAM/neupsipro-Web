@@ -20,8 +20,10 @@
         <%- include('../partials/header.ejs') %>
 
         <!-- Main -->
-        <main class="flex-1 p-6 pb-0 md:pl-0 overflow-hidden">
-            <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto space-y-6 mt-6">
+        <main class="flex-1 p-3 sm:p-4 md:p-6 pb-0 md:pl-0 overflow-hidden min-w-0">
+            <div class="w-full h-full bg-white rounded-2xl md:rounded-3xl
+                        p-3 sm:p-4 md:p-6
+                        overflow-y-auto space-y-6 mt-3 md:mt-6">
 
                 <!--Main Header-->
                 <div class="sticky top-0 z-30 bg-white pb-4">
@@ -43,7 +45,7 @@
                         <%- include('../partials/sections.ejs') %>
                     </div>
 
-                    <div class="grid md:grid-cols-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 pb-3">
                         <!--Step title-->
                         <div>
                             <h1 id="step-title" class="font-bold section_title"></h1>
@@ -53,18 +55,19 @@
                         <%- include('../partials/navButtons.ejs') %>
                     </div>
 
-                    <!-- Substep Title -->
-                    <h2 id="subStep-title" class="section_title pl-60"></h2>
-
                     <!-- Content -->
-                    <div class="grid md:grid-cols-5">
+                    <div class="flex flex-col lg:grid lg:grid-cols-5 gap-6">
 
                         <!-- Sidebar -->
                         <div id="sidebar-timeline" class="z-10">
                             <%- include('../partials/sectionsSidebar.ejs') %>
                         </div>
 
-                        <div id="dynamic-content" class="col-span-4">
+                        <div id="dynamic-content" class="md:col-span-4 min-w-0">
+                            <!-- Substep Title -->
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                <h2 id="subStep-title" class="section_title"></h2>
+                            </div>
 
                             <!-- FINANCIAL 2.1 -->
                             <div id="financial-section-1" class="financial-content hidden">

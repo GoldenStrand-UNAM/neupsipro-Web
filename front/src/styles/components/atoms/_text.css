@@ -15,10 +15,7 @@
     }
 
     .total {
-        @apply max-w-md;
         @apply flex justify-end;
-        @apply pt-6 pb-6 pr-12;
-        @apply col-span-2;
         @apply text-[#BA8700];
         @apply underline underline-offset-4;
     }
