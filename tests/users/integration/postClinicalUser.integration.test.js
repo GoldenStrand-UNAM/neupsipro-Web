@@ -74,7 +74,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
   test('creates clinical user successfully', async () => {
     mockExecute.mockResolvedValue({ idUser: 'c-001' });
 
-    const res = await request(app).post('/clinical/postUser').send(validBody());
+    const res = await request(app).post('/clinical/post').send(validBody());
 
     expect(res.status).toBe(201);
     expect(mockExecute).toHaveBeenCalled();
@@ -83,7 +83,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
   test('returns 400 when user is duplicated', async () => {
     mockExecute.mockRejectedValue(new Error('El usuario ya se encuentra registrado.'));
 
-    const res = await request(app).post('/clinical/postUser').send(validBody());
+    const res = await request(app).post('/clinical/post').send(validBody());
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('El usuario ya se encuentra registrado');
@@ -95,7 +95,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
     const body = validBody();
     body.startDate = 'fecha-invalida';
 
-    const res = await request(app).post('/clinical/postUser').send(body);
+    const res = await request(app).post('/clinical/post').send(body);
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('fecha de inicio');
@@ -107,7 +107,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
     const body = validBody();
     body.finishDate = 'no-es-fecha';
 
-    const res = await request(app).post('/clinical/postUser').send(body);
+    const res = await request(app).post('/clinical/post').send(body);
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('fecha de fin');
@@ -119,7 +119,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
     const body = validBody();
     body.firstName = '';
 
-    const res = await request(app).post('/clinical/postUser').send(body);
+    const res = await request(app).post('/clinical/post').send(body);
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBeDefined();
@@ -128,7 +128,7 @@ describe('INTEGRATION — POST /clinical/postUser', () => {
   test('redirects to login if session expired', async () => {
     mockAuthBehavior = 'unauthenticated';
 
-    const res = await request(app).post('/clinical/postUser').send(validBody());
+    const res = await request(app).post('/clinical/post').send(validBody());
 
     expect(res.status).toBe(302);
     expect(res.header.location).toBe('/auth/');
