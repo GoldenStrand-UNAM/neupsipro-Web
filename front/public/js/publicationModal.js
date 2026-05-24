@@ -2,12 +2,6 @@
 /* eslint-disable max-lines-per-function */
 document.addEventListener('DOMContentLoaded', () => {
 
-  const savedToast = sessionStorage.getItem('pendingToast');
-  if (savedToast) {
-    const { message, type } = JSON.parse(savedToast);
-    sessionStorage.removeItem('pendingToast');
-    showToast(message, type);
-  }
   const publications = document.querySelectorAll('[id^="p-"]');
   const publicationModal = document.getElementById('publicationContent');
   const publicationBox = document.getElementById('publicationBox');

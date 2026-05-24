@@ -159,3 +159,15 @@ function showToast (message, type = 'success') {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3500);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pending = sessionStorage.getItem('pendingToast');
+  if (!pending) return;
+  try {
+    const { message, type } = JSON.parse(pending);
+    sessionStorage.removeItem('pendingToast');
+    showToast(message, type);
+  } catch {
+    sessionStorage.removeItem('pendingToast');
+  }
+});
