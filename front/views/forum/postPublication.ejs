@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuPsi-Pro - Nueva Publicación</title>
+  <title>Golondrina - Nueva Publicación</title>
   <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
@@ -217,13 +217,16 @@
           type: 'success' 
         }));
         window.location.href = '/forum';
-      } else if (res.status === 429) {
-          showToast('Has alcanzado el límite de publicaciones. Intenta más tarde.', 'error');
-    } else {
-        showToast('Error al publicar', 'error');
-      }  
-    } catch (err) {
-      showToast('Error de conexión ', 'error');
+      } else {
+        const fallback =
+          res.status === 413 ? 'La imagen es demasiado grande (max 5mb)' :
+          res.status === 422 ? 'Datos inválidos' :
+          res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 
+          'Error al publicar';
+        showToast(data.error || fallback, 'error');
+      }
+    } catch (error) {
+      showToast('Error de red. Intenta de nuevo más tarde', 'error');
     }
   });
   

@@ -28,7 +28,6 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
   apiLimiter:        (req, res, next) => next(),
   publicationLimiter:(req, res, next) => next(),
   userLimiter:       (req, res, next) => next(),
-
 }));
 
 const mockExecuteAdd = jest.fn();

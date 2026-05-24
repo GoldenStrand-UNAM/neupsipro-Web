@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const recoverPassword = document.getElementById('recoverPassword');
   const popUp = document.getElementById('popUp');
   const closePopUp = document.getElementById('closePopUp');
+  if (!recoverPassword || !popUp || !closePopUp) return;
   recoverPassword.addEventListener('click', () => {
     popUp.showModal();
   });
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const userInput = document.getElementById('username');
   const usernameMessage = document.getElementById('usernameMessage');
+  if (!userInput || !usernameMessage) return;
   const maxLimit = 30;
   userInput.addEventListener('input', () => {
     const actualLength = userInput.value.length;
@@ -97,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const passwordInput = document.getElementById('password');
   const passwordMessage = document.getElementById('passwordMessage');
+  if (!passwordInput || !passwordMessage) return;
   const maxLimit = 30;
   passwordInput.addEventListener('input', () => {
     const actualLength = passwordInput.value.length;
@@ -112,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Show message when input fields are empty
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
+  if (!form) return;
   const errorMessage = document.getElementById('errorMessage');
 
   form.addEventListener('submit', (event) => {
@@ -155,3 +159,26 @@ function showToast (message, type = 'success') {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3500);
 }
+
+function formatDate(dateInput) {
+  return new Date(dateInput).toLocaleString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    year: 'numeric',
+    month: '2-digit',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+window.formatDate = formatDate;
+document.addEventListener('DOMContentLoaded', () => {
+  const pending = sessionStorage.getItem('pendingToast');
+  if (!pending) return;
+  try {
+    const { message, type } = JSON.parse(pending);
+    sessionStorage.removeItem('pendingToast');
+    showToast(message, type);
+  } catch {
+    sessionStorage.removeItem('pendingToast');
+  }
+});
