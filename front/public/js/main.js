@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Show message when input fields are empty
-// Manejo unificado de mensaje de error (front + back)
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
   if (!form) return;
