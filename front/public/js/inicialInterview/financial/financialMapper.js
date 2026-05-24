@@ -157,7 +157,9 @@ function renderESCData (info) {
   document.getElementById('socioeconomicLevel').textContent =
     info.socioeconomicLevel || '-';
 
-  window.calculateESCTotal?.();
+  setTimeout(() => {
+    window.calculateESCTotal?.();
+  }, 0);
 }
 
 function renderAMAIData (info) {
