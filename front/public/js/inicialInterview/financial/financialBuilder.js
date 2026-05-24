@@ -21,6 +21,34 @@ function getTextOrNull (id) {
     : value;
 }
 
+function getSpanNumberOrNull (id) {
+
+  // eslint-disable-next-line no-undef
+  const element = document.getElementById(id);
+
+  if (!element) return null;
+
+  const value = element.textContent.trim();
+
+  return value === ''
+    ? null
+    : Number(value);
+}
+
+function getSpanTextOrNull (id) {
+
+  // eslint-disable-next-line no-undef
+  const element = document.getElementById(id);
+
+  if (!element) return null;
+
+  const value = element.textContent.trim();
+
+  return value === ''
+    ? null
+    : value;
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEPS BUILDER -----------------------------
 
@@ -200,10 +228,10 @@ function buildESC () {
     },
 
     total:
-      getNumberOrNull('totalPuntuation'),
+      getSpanNumberOrNull('totalPuntuation'),
 
     level:
-      getTextOrNull('socioeconomicLevel'),
+      getSpanTextOrNull('socioeconomicLevel'),
   };
 }
 
@@ -233,10 +261,10 @@ function buildAMAI () {
       getNumberOrNull('hasBedroom'),
 
     total:
-      getNumberOrNull('totalPuntuation'),
+      getSpanNumberOrNull('totalPuntuation'),
 
     level:
-      getTextOrNull('socioeconomicLevel'),
+      getSpanTextOrNull('socioeconomicLevel'),
   };
 }
 
