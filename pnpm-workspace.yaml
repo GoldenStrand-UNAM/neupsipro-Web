@@ -1,5 +1,0 @@
-allowBuilds:
-  '@parcel/watcher': true
-  aws-sdk: true
-  bcrypt: true
-  unrs-resolver: true
