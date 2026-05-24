@@ -168,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmDeleteBtn.innerHTML = original;
     }
   });
-
   publications.forEach (publication => {
     publication.addEventListener('click', async (e) =>{
       const idModified = e.currentTarget.id;
