@@ -90,7 +90,7 @@ async function saveApplication (user, ctx) {
     }
 
     closeModal();
-    showToast(toast);
+    showToast('Aplicación creada con éxito', 'success');
 
     const addBtn = document.getElementById('btnCreateSession');
     addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
