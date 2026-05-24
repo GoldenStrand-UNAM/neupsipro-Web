@@ -1,0 +1,33 @@
+@startuml GU01_Activity
+
+title Create USer - Activity Diagram (NeuPsi-Pro)
+
+|User|
+start
+
+:Click\n**[+] (Create user)**;
+
+|System|
+if (Valid session) then (yes)
+    :"Create User" view;
+    repeat
+    |System|
+    :Show previously filled fields;
+    |User|
+    :Insert user info;
+    :Select **[Guardar]**;
+    |System|
+    backward:Message **Llene los**\n**campos requeridos** ;
+    repeat while (Filled required fields) is (no) not (yes)
+    :Save user;
+    :Message **Usuario**\n**guardado correctamente**;
+    :"Users" view;
+
+else (no)
+    |System|
+    :"Sign in" view;
+
+endif
+stop
+
+@enduml
