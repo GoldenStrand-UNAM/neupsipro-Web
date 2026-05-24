@@ -93,15 +93,15 @@
     </div>
 
     <!-- Total Expenses-->
-    <div class="grid grid-cols-3">
-        <div></div>
+    <div class="flex justify-end mt-6">
         <div class="total flex items-center gap-2">
-            <span class="font-bold">Total de Egresos: $</span>
-            <input
-                type="number"
-                id="totalExpenses"
-                readonly
-            >
+            <span class="font-bold whitespace-nowrap">
+                Total de Egresos:
+            </span>
+
+            <span id="totalExpenses" class="font-normal">
+                $0.00
+            </span>
         </div>
     </div>
 

@@ -104,17 +104,15 @@
     </div>
 
     <!-- Total Incomes-->
-    <div class="grid grid-cols-3">
-        <div></div>
-
+    <div class="flex justify-end mt-6">
         <div class="total flex items-center gap-2">
-            <span class="font-bold">Total de Ingresos: $</span>
+            <span class="font-bold whitespace-nowrap">
+                Total de Ingresos:
+            </span>
 
-            <input
-                type="number"
-                id="totalIncomes"
-                readonly
-            >
+            <span id="totalIncomes" class="font-normal">
+                $0.00
+            </span>
         </div>
     </div>
 
@@ -135,6 +133,10 @@
             });
     }
 
+    function setMoney(id, value) {
+        document.getElementById(id).textContent = `$${value.toFixed(2)}`;
+    }
+
     // Calculate totals
     function calculateTotal() {
 
@@ -147,10 +149,6 @@
 
         const section1 = financing + salaryAfter;
 
-        document.getElementById('totalSectionOne').textContent =
-            `$${section1.toFixed(2)}`;
-
-
         // SECTION 2
         let section2 = 0;
 
@@ -158,15 +156,13 @@
             .forEach(input => {
                 section2 += getValue(input);
             });
-
-        document.getElementById('totalSectionTwo').textContent =
-            `$${section2.toFixed(2)}`;
-
             
         // TOTAL
         const total = section1 + section2;
 
-        document.getElementById('totalIncomes').value = total;
+        setMoney('totalSectionOne', section1);
+        setMoney('totalSectionTwo', section2);
+        setMoney('totalIncomes', total);
     }
 
     // Add contributor
