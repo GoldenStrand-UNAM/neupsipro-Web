@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
     <script src="/js/main.js"></script>
 </head>
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -27,7 +28,7 @@
                     </div>
 
                     <div>
-                         <button onclick="window.location.href='/forum/post'" class="btn-mini w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
+                        <button id="btnPost" onclick="window.location.href='/forum/post'" class="btn-mini w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
                             <img src="/assets/publicar.svg" alt="" class="w-5 h-5 invert" />
                             Publicar
                         </button>
@@ -38,7 +39,7 @@
                 </div>
 
                 <!-- Posts -->
-                <div class="flex flex-col gap-5 mt-6 w-full max-w-3xl mx-auto px-4 sm:px-6 pb-6" >
+                <div id="postsContainer" class="flex flex-col gap-5 mt-6 w-full max-w-3xl mx-auto px-4 sm:px-6 pb-6">
 
                     <% if (posts && posts.length > 0) { %>
                         <% posts.forEach(post => { %>
@@ -107,7 +108,7 @@
                 </div>
                 <!-- Pagination -->
                 <% if (totalPages > 1) { %>
-                <div class="flex items-center justify-center gap-3 mt-8 mb-4 pt-4">
+                <div id="pagination" class="flex items-center justify-center gap-3 mt-8 mb-4 pt-4">
 
                     <!-- Before button -->
                     <a href="?page=<%= page - 1 %>&limit=<%= limit %>"
@@ -139,7 +140,16 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/publicationModal.js"></script>
+    <script src="/js/tutorial.js"></script>
+    <script>
+      const tutorialElements = {
+        1: null,              // intro 
+        2: '#btnPost',    // publish button
+        3: '#pagination',     // pagination
+      };
+    </script>
 </body>
 </html>

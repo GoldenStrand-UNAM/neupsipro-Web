@@ -764,3 +764,15 @@ ALTER TABLE user_clinical
     ADD COLUMN start_date DATE NOT NULL,
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
+
+ALTER TABLE tutorial DROP FOREIGN KEY fk_tutorial_module;
+DROP TABLE tutorial;
+
+CREATE TABLE tutorial (
+    id_tutorial  VARCHAR(36)   NOT NULL PRIMARY KEY,
+    page         VARCHAR(50)   NOT NULL,
+    step_order   INT           NOT NULL,
+    title        VARCHAR(100)  NOT NULL,
+    content      VARCHAR(300)  NOT NULL
+);
+
