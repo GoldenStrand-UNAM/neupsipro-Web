@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios - NeuPsi-Pro</title>
+    <title>Usuarios - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
@@ -128,7 +128,7 @@ function renderTable(users) {
         <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150">
             <td class="py-3 px-4 text-gray-500">${escapeHtml(u.reference_number)}</td>
             <td class="py-3 px-4 text-gray-800">${escapeHtml(u.fullName)}</td>
-            <td class="py-3 px-4 text-center">${getStatusBadge(u.neuroStatus)}</td>
+            <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
             <td class="py-3 px-4 text-center text-gray-600 text-sm">${
                 escapeHtml(u.protocol === 'Clinical' ? 'Clínico' : u.protocol === 'Research' ? 'Investigación' : '—')}</td> 
             <td class="py-3 px-4 flex justify-center">
@@ -202,10 +202,10 @@ searchInput.addEventListener("input", e => {
 
 function getStatusBadge(val) {
     const map = {
-        'Alta': { label: 'Alta', border: '#E03232', text: '#E03232', bg:'rgba(224,50,50,0.33)'},
-        'Stand by': { label: 'Stand By', border: '#1F893A', text: '#1F893A', bg:'rgba(31,137,58,0.33)'},
-        'Entrevista inicial pendiente': { label: 'Entrevista pendiente', border: '#938B2E', text:'#938B2E', bg: 'rgba(147,139,46,0.33)'},
-        'No ingreso': { label: 'No ingresó',border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)'},
+        'Discharged': { label: 'Alta',               border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' },
+        'Stand_by':   { label: 'Stand By',            border: '#1560BD', text: '#1560BD', bg: 'rgba(21,96,189,0.33)' },
+        'Active':     { label: 'Activo',              border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' },
+        'Declined':   { label: 'No ingresó',          border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)' },
     };
     const m = map[val];
     if (!m) return `<span class="text-gray-300 text-xs"> - </span>`;

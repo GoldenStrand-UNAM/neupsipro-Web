@@ -37,6 +37,10 @@ class LoginController {
     const wantsJson = req.headers.accept?.includes('application/json');
     try {
       const { username, password } = req.body;
+      if (typeof username === 'string' && username !== username.trim()) {
+        if (wantsJson) return res.status(401).json({ code: 'INVALID_CREDENTIALS' });
+        return res.render('auth/login.ejs', { error: 'Credenciales inválidas' });
+      }
       if (!username || !password) {
         if (wantsJson) return res.status(400).json({ code: 'EMPTY_FIELDS' });
         return res.render('auth/login.ejs', { error: 'El usuario y la contraseña son obligatorios' });

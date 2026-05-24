@@ -129,7 +129,7 @@ class ImpDashboardRepository extends DashboardRepository {
         ORDER BY ur.assignment_date DESC
         LIMIT 1
       ) AS schooling,
-      ui.unit_entry_date,
+      ui.registration_date,
       ui.neuro_entry_date,
       ui.amputation_date,
       ui.protocol,
