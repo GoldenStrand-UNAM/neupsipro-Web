@@ -864,3 +864,14 @@ CREATE TABLE rey_results (
     CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
  
+ALTER TABLE tutorial DROP FOREIGN KEY fk_tutorial_module;
+DROP TABLE tutorial;
+
+CREATE TABLE tutorial (
+    id_tutorial  VARCHAR(36)   NOT NULL PRIMARY KEY,
+    page         VARCHAR(50)   NOT NULL,
+    step_order   INT           NOT NULL,
+    title        VARCHAR(100)  NOT NULL,
+    content      VARCHAR(300)  NOT NULL
+);
+

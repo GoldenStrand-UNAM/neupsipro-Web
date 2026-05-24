@@ -39,7 +39,7 @@ class StandByDetailEntity {
     this.birthdate       = row.birthdate;
     this.profilePhoto = row.profile_photo;
     this.schooling       = row.schooling;
-    this.unitEntryDate   = row.unit_entry_date;
+    this.unitEntryDate   = row.registration_date;
     this.neuroEntryDate  = row.neuro_entry_date;
     this.amputationDate  = row.amputation_date;
     this.protocol        = row.protocol;
