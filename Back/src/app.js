@@ -226,6 +226,10 @@ const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
 
+const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
+
+app.use('/api/tutorial', tutorialRoutes());
+
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
     activePage: 'usuario',
