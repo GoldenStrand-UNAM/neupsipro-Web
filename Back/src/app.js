@@ -226,17 +226,14 @@ const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
 
-<<<<<<< HEAD
 // Applications
 
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase));
-=======
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
 app.use('/api/tutorial', tutorialRoutes());
->>>>>>> 51fb538b6bd1d19f492d4f1b4938fcc4183102a7
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
