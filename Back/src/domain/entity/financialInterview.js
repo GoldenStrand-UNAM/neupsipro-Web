@@ -223,6 +223,7 @@ class FinancialInterview {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
+      protesisBudget: FinancialInterview.numberOrNull(data.protesis_budget),
       totalIncome: FinancialInterview.numberOrNull(data.total_income),
       totalExpenses: FinancialInterview.numberOrNull(data.total_expenses),
 
@@ -362,6 +363,13 @@ class FinancialInterview {
 
       total: this.numberOrNull(data.total),
       socioeconomicLevel: this.textOrNull(data.level),
+    };
+  }
+
+  // Validate Results
+  static validateResults (data) {
+    return {
+      protesisBudget: this.numberOrNull(data.protesisBudget),
     };
   }
 }

@@ -68,6 +68,19 @@ class postFinancialInterviewUseCase {
       field !== 100);
   }
 
+  isResultsComplete (data) {
+
+    const requiredFields = [
+      data.protesisBudget,
+    ];
+
+    return requiredFields.every(field =>
+      field !== null &&
+      field !== undefined &&
+      field !== '' &&
+      field !== 100);
+  }
+
   // Financial Status
   async isFinancialComplete (id_user_relation) {
     const [rows] = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
@@ -97,6 +110,9 @@ class postFinancialInterviewUseCase {
       case 3:
         return FinancialInterview.validateAmai(body);
 
+      case 4:
+        return FinancialInterview.validateResults(body);
+
       default:
         throw new Error('Invalid section');
     }
@@ -121,6 +137,10 @@ class postFinancialInterviewUseCase {
 
       case 3:
         completed = this.isAmaiComplete(validatedData);
+        break;
+
+      case 4:
+        completed = this.isResultsComplete(validatedData);
         break;
     }
 
