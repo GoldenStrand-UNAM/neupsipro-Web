@@ -184,6 +184,10 @@ function renderAMAIData (info) {
 }
 
 function renderResultsData (info) {
+  // Notes
+  document.getElementById('notes').value =
+    info?.notes || '';
+
   // Protesis budget
   document.getElementById('protesisBudget').value =
     info?.protesisBudget || 0;

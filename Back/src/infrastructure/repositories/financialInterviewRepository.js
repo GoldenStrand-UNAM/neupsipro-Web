@@ -143,6 +143,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
   async fetchResults ({ id_user_relation }) {
     const [rows] = await db.query(
       `SELECT 
+                fs.notes,
                 fs.protesis_budget,
                 fs.total_income, 
                 fs.total_expenses,
@@ -346,10 +347,12 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
   async saveResults ({ connection, id_user_relation, data }) {
     await connection.query(
       `UPDATE financial_situation
-      SET protesis_budget = ?
+      SET protesis_budget = ?,
+          notes = ?
       WHERE id_user_relation = ?`,
       [
         data.protesisBudget,
+        data.notes,
 
         id_user_relation,
       ]
@@ -503,7 +506,6 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
           break;
 
         case 4:
-
           await this.saveResults({
             connection,
             id_user_relation,

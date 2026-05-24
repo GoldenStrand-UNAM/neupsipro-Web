@@ -223,6 +223,7 @@ class FinancialInterview {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
+      notes: FinancialInterview.textOrNull(data.notes),
       protesisBudget: FinancialInterview.numberOrNull(data.protesis_budget),
       totalIncome: FinancialInterview.numberOrNull(data.total_income),
       totalExpenses: FinancialInterview.numberOrNull(data.total_expenses),
@@ -273,7 +274,6 @@ class FinancialInterview {
 
   // Validate incomes
   static validateIncomes (data) {
-    console.log(data.incomes);
     return {
       incomeExtra: this.numberOrNull(data.incomes?.incomeExtra),
       financialType: this.textOrNull(data.incomes?.financialType),
@@ -370,6 +370,7 @@ class FinancialInterview {
   static validateResults (data) {
     return {
       protesisBudget: this.numberOrNull(data.protesisBudget),
+      notes: this.textOrNull(data.notes),
     };
   }
 }
