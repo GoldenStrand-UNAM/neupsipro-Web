@@ -143,6 +143,7 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
   async fetchResults ({ id_user_relation }) {
     const [rows] = await db.query(
       `SELECT 
+                fs.protesis_budget,
                 fs.total_income, 
                 fs.total_expenses,
                 g.socioeconomic_level AS socio_level_gov, 
@@ -341,6 +342,20 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     );
   }
 
+  // Save AMAI questtionarie substep
+  async saveResults ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `UPDATE financial_situation
+      SET protesis_budget = ?
+      WHERE id_user_relation = ?`,
+      [
+        data.protesisBudget,
+
+        id_user_relation,
+      ]
+    );
+  }
+
   // ----- Save Substeps Progress ---------------------------------------------
 
   // Update incomes and expenses progress
@@ -377,6 +392,20 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     await connection.query(
       `UPDATE financial_progress
       SET amai_completed = ?
+      WHERE id_user_relation = ?`,
+      [
+        completed,
+        id_user_relation,
+      ]
+    );
+  }
+
+  // Update financial step 4 progress
+  async updateResultsProgress ({ connection, id_user_relation, completed }) {
+
+    await connection.query(
+      `UPDATE financial_progress
+      SET results_completed = ?
       WHERE id_user_relation = ?`,
       [
         completed,
@@ -466,6 +495,22 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
           });
 
           await this.updateAMAIProgress({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 4:
+
+          await this.saveResults({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateResultsProgress({
             connection,
             id_user_relation,
             completed,

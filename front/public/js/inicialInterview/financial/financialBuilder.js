@@ -268,6 +268,17 @@ function buildAMAI () {
   };
 }
 
+// ----- RESULTS --------------------------------------------------------
+
+// Build AMAI substep
+function buildResults () {
+
+  return {
+    protesisBudget:
+      getNumberOrNull('protesisBudget'),
+  };
+}
+
 // ----------------------------------------------------------------------------
 // ------------------------------- MAIN BUILDER -------------------------------
 
@@ -283,6 +294,9 @@ function buildSection (section) {
 
     case 3:
       return buildAMAI();
+
+    case 4:
+      return buildResults();
 
     default:
       return {};

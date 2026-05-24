@@ -184,6 +184,9 @@ function renderAMAIData (info) {
 }
 
 function renderResultsData (info) {
+  // Protesis budget
+  document.getElementById('protesisBudget').value =
+    info?.protesisBudget || 0;
 
   // Incomes
   document.getElementById('totalIncomeR').textContent =

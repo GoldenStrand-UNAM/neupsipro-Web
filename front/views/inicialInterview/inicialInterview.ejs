@@ -325,11 +325,9 @@
         document.querySelectorAll('.timeline-step').forEach(step => {
             step.addEventListener('click', async () => {
                 
+                // Save current section before changing
                 const currentSection = window.financialData.current_section;
-                if(currentSection != 4){
-                    // Save current section before changing
-                    await saveSection(currentSection);
-                }
+                await saveSection(currentSection);
 
                 // Load new section
                 const section = Number(step.dataset.step);
@@ -381,10 +379,8 @@
 
                 let current = window.financialData.current_section;
 
-                if(current != 4){
-                    // Save current section before changing
-                    await saveSection(current);
-                }
+                // Save current section before changing
+                await saveSection(current);
 
                 current--;
 
