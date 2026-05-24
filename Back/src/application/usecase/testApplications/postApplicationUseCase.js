@@ -6,14 +6,7 @@ class postApplicationUseCase {
     this.impTestResultsRepository      = impTestResultsRepository;
   }
 
-<<<<<<< HEAD
   #validateInput (userRecord, application_name) {
-=======
-  async execute ({ id_user, application_name }) {
-    // 1. Verify user exists and retrieve their assigned protocol
-    const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
-
->>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
     if (!userRecord) {
       const err = new Error('User not found');
       err.status = 404;
@@ -38,11 +31,24 @@ class postApplicationUseCase {
   }
 
   async execute ({ id_user, application_name }) {
-    const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
+    const userRecord = await this.impTestApplicationsRepository
+      .fetchUserProtocol({ id_user });
+
     this.#validateInput(userRecord, application_name);
 
+    // Enforce maximum of 5 applications per user
+    const existingApps = await this.impTestApplicationsRepository
+      .fetchTestApplications({ id_user });
+
+    if (existingApps.length >= 5) {
+      const err = new Error('User has reached the maximum of 5 applications');
+      err.status = 422;
+      throw err;
+    }
+
     const { protocol } = userRecord;
-    const tests = await this.impTestApplicationsRepository.fetchProtocolTests({ protocol });
+    const tests = await this.impTestApplicationsRepository
+      .fetchProtocolTests({ protocol });
 
     if (!tests.length) {
       const err = new Error(`No tests found for protocol: ${protocol}`);
@@ -56,7 +62,11 @@ class postApplicationUseCase {
     });
 
     const testIds = tests.map(t => t.id_test);
-    await this.impTestResultsRepository.createResults(savedEntity.idApplication, id_user, testIds);
+    await this.impTestResultsRepository.createResults(
+      savedEntity.idApplication,
+      id_user,
+      testIds
+    );
 
     return new testApplicationDTO(savedEntity);
   }

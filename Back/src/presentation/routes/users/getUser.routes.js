@@ -65,7 +65,6 @@ module.exports = (authUseCase) => {
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
 
-<<<<<<< HEAD
   router.get(
     '/:id_user/applications/check-expiry',
     authMiddleware.verifyToken,
@@ -73,8 +72,6 @@ module.exports = (authUseCase) => {
     (req, res) => expiryController.checkExpiry(req, res)
   );
 
-=======
->>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
   router.get('/consultUser', (req, res) => {
     res.render('users/consultUser', {
       activePage: 'usuario',
@@ -83,11 +80,7 @@ module.exports = (authUseCase) => {
   });
 
   router.get(
-<<<<<<< HEAD
-    '/:id_user', authMiddleware.verifyToken,
-=======
     '/:id_user', authMiddleware.verifyToken, apiLimiter,
->>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
     permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
   );
 
