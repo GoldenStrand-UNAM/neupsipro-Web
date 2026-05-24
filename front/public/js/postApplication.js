@@ -1,5 +1,7 @@
 /* global createApplicationCard, _csrfToken*/
 
+const MAX_APPLICATIONS = 5;
+
 function setupModalControls (modal) {
   const inputEl = document.getElementById('inputAppName');
   const errorEl = document.getElementById('modalError');
@@ -39,6 +41,24 @@ function showToast (toast) {
   }, 3000);
 }
 
+// Shows a red toast when the application limit is reached
+function showLimitToast () {
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-red-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm';
+  toast.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+         stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0
+               2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898
+               0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+    </svg>
+    <span>Límite alcanzado — máximo 5 aplicaciones por usuario</span>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
 async function saveApplication (user, ctx) {
   const { inputAppName, closeModal, showModalError, toast } = ctx;
   const name = inputAppName.value.trim();
@@ -72,23 +92,19 @@ async function saveApplication (user, ctx) {
     closeModal();
     showToast(toast);
 
-<<<<<<< HEAD
     const addBtn = document.getElementById('btnCreateSession');
     addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
-      idApplication: json.data.idApplication,
+      idApplication:   json.data.idApplication,
       applicationName: json.data.applicationName,
-      status: json.data.status,
-      createdAt: json.data.createdAt,
+      status:          json.data.status,
+      createdAt:       json.data.createdAt,
     }, user.idUser));
-=======
-    try {
-      const response = await fetch(`/users/${user.idUser}/applications`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-          'x-csrf-token': '_csrfToken' },
-        body: JSON.stringify({ application_name: name }),
-      });
->>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
+
+    // Hide add button if limit is now reached
+    const existingCount = container.querySelectorAll('a').length;
+    if (existingCount >= MAX_APPLICATIONS) {
+      addBtn.style.display = 'none';
+    }
 
   } catch {
     showModalError('Error de red, intenta de nuevo');
@@ -109,8 +125,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const { openModal, closeModal, showModalError } = setupModalControls(modal);
 
+  // Hide add button on load if limit already reached
+  container.addEventListener('DOMSubtreeModified', () => {
+    const addBtn    = document.getElementById('btnCreateSession');
+    const cardCount = container.querySelectorAll('a').length;
+    if (addBtn) addBtn.style.display = cardCount >= MAX_APPLICATIONS ? 'none' : '';
+  });
+
   container.addEventListener('click', (e) => {
-    if (e.target.closest('#btnCreateSession')) openModal();
+    if (!e.target.closest('#btnCreateSession')) return;
+
+    // Count existing application cards — anchors only, not the add button
+    const existingCount = container.querySelectorAll('a').length;
+
+    if (existingCount >= MAX_APPLICATIONS) {
+      showLimitToast();
+      return;
+    }
+
+    openModal();
   });
 
   document.getElementById('btnSaveApp').addEventListener('click', () => {
