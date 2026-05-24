@@ -40,8 +40,7 @@ function buildConsultBody (test, dateLabel) {
       ${consultAreaRow('Prefrontal Anterior', areas.prefrontalBefore)}
       ${consultAreaRow('Dorsolateral', areas.dLateral)}
       ${consultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
-      ${consultDataRow('Notas', `<span class="text-base sm:text-lg text-gray-900 leading-relaxed break-words">${notes ? escapeHTML(notes) : '—'}</span>`)}
-      <div class="flex justify-end pt-4 border-t border-gray-200">
+      ${consultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      <div class="flex justify-end pt-4 border-t border-gray-200">
         <button id="btnCancelBANFE" class="btn-cancel">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
