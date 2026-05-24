@@ -159,3 +159,26 @@ function showToast (message, type = 'success') {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3500);
 }
+
+function formatDate(dateInput) {
+  return new Date(dateInput).toLocaleString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    year: 'numeric',
+    month: '2-digit',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+window.formatDate = formatDate;
+document.addEventListener('DOMContentLoaded', () => {
+  const pending = sessionStorage.getItem('pendingToast');
+  if (!pending) return;
+  try {
+    const { message, type } = JSON.parse(pending);
+    sessionStorage.removeItem('pendingToast');
+    showToast(message, type);
+  } catch {
+    sessionStorage.removeItem('pendingToast');
+  }
+});
