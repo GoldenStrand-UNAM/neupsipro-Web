@@ -9,7 +9,6 @@ class financialInterviewController {
   async saveFinancialInterview (req, res) {
 
     try {
-      console.log('params: ', req.params);
       const { step, subStep } = req.params;
       const refNumber = req.params.id_user;
 

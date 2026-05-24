@@ -274,8 +274,8 @@ function buildAMAI () {
 function buildResults () {
 
   return {
-    protesisBudget:
-      getNumberOrNull('protesisBudget'),
+    protesisBudget: getNumberOrNull('protesisBudget'),
+    notes: getTextOrNull('notes'),
   };
 }
 
