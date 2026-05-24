@@ -31,6 +31,7 @@ describe('postApplicationUseCase — Unit Tests', () => {
     beforeEach(() => {
         mockAppRepo = {
             fetchUserProtocol: jest.fn(),
+            fetchTestApplications: jest.fn().mockResolvedValue([]),
             fetchProtocolTests: jest.fn(),
             saveApplication: jest.fn(),
         };
@@ -147,6 +148,10 @@ describe('postApplicationUseCase — Unit Tests', () => {
             callOrder.push('fetchUserProtocol');
             return { protocol: 'Research' };
         });
+        mockAppRepo.fetchTestApplications.mockImplementation(async () => {
+            callOrder.push('fetchTestApplications');
+            return [];
+        });
         mockAppRepo.fetchProtocolTests.mockImplementation(async () => {
             callOrder.push('fetchProtocolTests');
             return fakeProtocolTests;
@@ -163,6 +168,7 @@ describe('postApplicationUseCase — Unit Tests', () => {
 
         expect(callOrder).toEqual([
             'fetchUserProtocol',
+            'fetchTestApplications',
             'fetchProtocolTests',
             'saveApplication',
             'createResults',
