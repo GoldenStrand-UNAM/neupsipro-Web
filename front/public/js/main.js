@@ -113,20 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Show message when input fields are empty
+// Manejo unificado de mensaje de error (front + back)
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
   if (!form) return;
-  const errorMessage = document.getElementById('errorMessage');
 
+  const errorMessage = document.getElementById('errorMessage');
+  const errorText = document.getElementById('errorText');
+  const userInput = document.getElementById('username');
+  const passInput = document.getElementById('password');
+
+  // submit validation for empty fields
   form.addEventListener('submit', (event) => {
-    const userValue = document.getElementById('username').value.trim();
-    const passValue = document.getElementById('password').value.trim();
+    const userValue = userInput.value.trim();
+    const passValue = passInput.value.trim();
 
     if (userValue === '' || passValue === '') {
       event.preventDefault();
+      errorText.textContent = 'Por favor, llena todos los campos.';
       errorMessage.style.display = 'block';
-    } else {
-      errorMessage.style.display = 'none';
     }
   });
 });
