@@ -1,5 +1,0 @@
-@layer components{
-    .logo-white{
-        @apply relative z-50 w-[400px] lg:w-[500px] mt-10 mb-4 bg-contain bg-center bg-no-repeat
-    }
-}
