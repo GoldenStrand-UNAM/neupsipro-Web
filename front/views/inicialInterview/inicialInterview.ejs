@@ -317,10 +317,15 @@
         // Listener for change substep
         document.querySelectorAll('.timeline-step').forEach(step => {
             step.addEventListener('click', async () => {
+                
+                const currentSection = window.financialData.current_section;
+                if(currentSection != 4){
+                    // Save current section before changing
+                    await saveSection(currentSection);
+                }
 
+                // Load new section
                 const section = Number(step.dataset.step);
-
-                // Update current section
                 await loadSection(section);
 
                 // update titles
@@ -345,23 +350,19 @@
 
                 let current = window.financialData.current_section;
 
-                // max section = 4
-                if (current < 4) {
+                await saveSection(current);
 
-                    await saveSection(current);
+                current++;
 
-                    current++;
+                await loadSection(current);
 
-                    await loadSection(current);
+                setSubStepTitle(window.financialData);
+                setFinancialContent(window.financialData);
 
-                    setSubStepTitle(window.financialData);
-                    setFinancialContent(window.financialData);
+                window.sidebarState.currentStep = current;
 
-                    window.sidebarState.currentStep = current;
-
-                    if (window.renderSidebar) {
-                        window.renderSidebar();
-                    }
+                if (window.renderSidebar) {
+                    window.renderSidebar();
                 }
             });
         });
@@ -373,23 +374,22 @@
 
                 let current = window.financialData.current_section;
 
-                // min section = 1
-                if (current > 1) {
-
+                if(current != 4){
+                    // Save current section before changing
                     await saveSection(current);
+                }
 
-                    current--;
+                current--;
 
-                    await loadSection(current);
+                await loadSection(current);
 
-                    setSubStepTitle(window.financialData);
-                    setFinancialContent(window.financialData);
+                setSubStepTitle(window.financialData);
+                setFinancialContent(window.financialData);
 
-                    window.sidebarState.currentStep = current;
+                window.sidebarState.currentStep = current;
 
-                    if (window.renderSidebar) {
-                        window.renderSidebar();
-                    }
+                if (window.renderSidebar) {
+                    window.renderSidebar();
                 }
             });
         });
