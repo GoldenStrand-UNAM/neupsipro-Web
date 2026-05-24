@@ -72,6 +72,7 @@ async function saveApplication (user, ctx) {
     closeModal();
     showToast(toast);
 
+<<<<<<< HEAD
     const addBtn = document.getElementById('btnCreateSession');
     addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
       idApplication: json.data.idApplication,
@@ -79,6 +80,15 @@ async function saveApplication (user, ctx) {
       status: json.data.status,
       createdAt: json.data.createdAt,
     }, user.idUser));
+=======
+    try {
+      const response = await fetch(`/users/${user.idUser}/applications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json',
+          'x-csrf-token': '_csrfToken' },
+        body: JSON.stringify({ application_name: name }),
+      });
+>>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
 
   } catch {
     showModalError('Error de red, intenta de nuevo');

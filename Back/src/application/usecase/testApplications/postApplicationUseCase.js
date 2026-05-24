@@ -6,7 +6,14 @@ class postApplicationUseCase {
     this.impTestResultsRepository      = impTestResultsRepository;
   }
 
+<<<<<<< HEAD
   #validateInput (userRecord, application_name) {
+=======
+  async execute ({ id_user, application_name }) {
+    // 1. Verify user exists and retrieve their assigned protocol
+    const userRecord = await this.impTestApplicationsRepository.fetchUserProtocol({ id_user });
+
+>>>>>>> 5efc3a6b5efb4b1d33d413406e64f47b944a037f
     if (!userRecord) {
       const err = new Error('User not found');
       err.status = 404;

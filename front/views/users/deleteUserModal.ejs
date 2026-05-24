@@ -105,6 +105,11 @@
                 throw new Error(data.error || 'Error al eliminar usuario');
             }
 
+            sessionStorage.setItem('pendingToast', JSON.stringify({
+            message: 'Usuario eliminado correctamente',
+            type: 'success'
+            }));
+
             window.location.href = '/users';
         } catch (err) {
             errorBox.textContent = err.message;

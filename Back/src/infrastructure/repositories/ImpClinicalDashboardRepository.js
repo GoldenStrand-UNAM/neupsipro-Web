@@ -74,7 +74,7 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
       FROM user_info ui
 	      JOIN users u ON u.id_user = ui.id_user
 	      JOIN user_relation ur ON ui.id_user = ur.id_user
-      WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND ui.state = 'Active';`,
+      WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND u.eliminated = '0'`,
       [idClinicalUser]
     );
     return users;
@@ -96,7 +96,7 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
           ORDER BY ur.assignment_date DESC
           LIMIT 1
         ) AS schooling,
-        ui.unit_entry_date,
+        ui.registration_date,
         ui.neuro_entry_date,
         ui.amputation_date,
         ui.protocol,

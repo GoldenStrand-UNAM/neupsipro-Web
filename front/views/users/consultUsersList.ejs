@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios - NeuPsi-Pro</title>
+    <title>Usuarios - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
 </head>
 <body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
@@ -23,12 +23,10 @@
                 <!--Title, search, signUser-->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h1 class="text-2xl font-bold text-[#1E1E1E]">Usuarios</h1>
-
-                    <!-- Hidden button to register new User -->
                     <div class="flex items-center gap-3">
+                        <a href="/user/post">
                         <button
-                            onclick="signUpUser()"
-                            class="btn-mini w-full sm:w-[260px] md:w-[306px] bg-[#C89B3C] hidden">
+                            class="btn-mini w-full sm:w-[260px] md:w-[306px] bg-[#C89B3C]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -36,6 +34,7 @@
                             </svg>
                             <span>Nuevo Usuario</span>
                         </button>
+                        </a>
 
                         <div class="search-input">
                             <input id="search-input"type="text" class="search-input_field" placeholder="Buscar"/>
@@ -89,6 +88,11 @@ const LIMIT       = 6;
 let searchQuery   = "";
 let debounceTimer;
 
+if (sessionStorage.getItem('usuarioGuardado') === 'true') {
+    showToast('Usuario guardado correctamente');
+    sessionStorage.removeItem('usuarioGuardado');
+}
+
 // = ====  Fetch===========
 async function fetchUsers() {
     const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
@@ -96,6 +100,10 @@ async function fetchUsers() {
         const res  = await fetch(`/api/users?${params}`);
         const data = await res.json();
 
+        if (res.status === 429) {
+            showMsg('Demasiadas solicitudes. Intenta de nuevo en unos minutos.', 'text-red-400');
+            return;
+        }
         if (!res.ok) {
             console.error("Server error:", data.error);
             showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
@@ -125,7 +133,7 @@ function renderTable(users) {
                 escapeHtml(u.protocol === 'Clinical' ? 'Clínico' : u.protocol === 'Research' ? 'Investigación' : '—')}</td> 
             <td class="py-3 px-4 flex justify-center">
                 <button
-                    onclick="consultar('${escapeHtml(u.id)}')"
+                    onclick="consult('${escapeHtml(u.id)}')"
                     class="btn-mini bg-[#3350A9]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -194,10 +202,10 @@ searchInput.addEventListener("input", e => {
 
 function getStatusBadge(val) {
     const map = {
-      'Discharged': { label: 'Alta', border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' },
-      'Stand_by': { label: 'Stand By', border: '#1560BD', text: '#1560BD', bg: 'rgba(21, 96, 189, 0.33)' },
-      'Active': { label: 'Activo', border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' },
-      'Declined': { label: 'No ingresó',border: '#95A5A6', text: '#7F8C8D', bg: 'rgba(149, 165, 166,0.33)' },
+        'Discharged': { label: 'Alta',               border: '#E03232', text: '#E03232', bg: 'rgba(224,50,50,0.33)' },
+        'Stand_by':   { label: 'Stand By',            border: '#1560BD', text: '#1560BD', bg: 'rgba(21,96,189,0.33)' },
+        'Active':     { label: 'Activo',              border: '#1F893A', text: '#1F893A', bg: 'rgba(31,137,58,0.33)' },
+        'Declined':   { label: 'No ingresó',          border: '#276076', text: '#276076', bg: 'rgba(39,96,118,0.33)' },
     };
     const m = map[val];
     if (!m) return `<span class="text-gray-300 text-xs"> - </span>`;
@@ -205,10 +213,9 @@ function getStatusBadge(val) {
 }
 
 
-function consultar(id) { 
+function consult(id) { 
     window.location.href = `/users/${id}`
  }
-function signUpUser()     { /* pendiente */ }
 
 fetchUsers();
 </script>
