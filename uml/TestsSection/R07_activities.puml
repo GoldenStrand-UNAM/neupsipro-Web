@@ -2,89 +2,89 @@
 
 title BANFE
 
-|Usuario|
+|User|
 start
-:Selecciona tarjeta de prueba BANFE;
+:Selects BANFE test card;
 
-|Sistema|
-if (¿Aplicación caducada?) then (sí)
-  :Muestra banner de caducidad\nSolo Consultar habilitado;
+|System|
+if (Is application expired?) then (yes)
+  :Shows expiry banner\nOnly Consult enabled;
   stop
 endif
 
-:Muestra modal de opciones;
+:Shows options modal;
 note right
-  Registrar: deshabilitado si ya calificada
-  Modificar: solo si calificada y activa
-  Consultar: solo si calificada
+  Register: disabled if already graded
+  Modify: only if graded and active
+  Consult: only if graded
 end note
 
-|Usuario|
-:Selecciona "Registrar resultados";
+|User|
+:Selects "Register results";
 
-|Sistema|
-:Muestra modal de registro\ncon 3 áreas de puntuación;
+|System|
+:Shows register modal\nwith 3 scoring areas;
 
-|Usuario|
-:Ingresa puntaje en un área;
+|User|
+:Enters score in an area;
 
-|Sistema|
-:Valida input en vivo;
-if (¿Input inválido?) then (sí)
-  :Muestra error por campo;
-  |Usuario|
-  :Corrige el campo;
-  |Sistema|
+|System|
+:Validates input in real time;
+if (Invalid input?) then (yes)
+  :Shows error per field;
+  |User|
+  :Corrects the field;
+  |System|
 endif
-:Muestra interpretación en vivo por área;
-:Actualiza puntaje total en vivo;
+:Shows live interpretation per area;
+:Updates total score in real time;
 
-|Usuario|
-:Ingresa notas (opcional);
+|User|
+:Enters notes (optional);
 
-|Sistema|
-:Actualiza contador de caracteres;
+|System|
+:Updates character counter;
 
-|Usuario|
-if (¿Desea guardar?) then (sí)
+|User|
+if (Wants to save?) then (yes)
 
-  |Sistema|
-  :Valida datos en cliente;
-  if (¿Datos válidos?) then (no)
-    :Muestra error por campo;
-    |Usuario|
-    :Corrige los datos;
-    |Sistema|
+  |System|
+  :Validates data client-side;
+  if (Valid data?) then (no)
+    :Shows error per field;
+    |User|
+    :Corrects the data;
+    |System|
   endif
 
-  :Envía datos al servidor;
+  :Sends data to server;
 
-  :Valida datos en servidor;
-  if (¿Validación ok?) then (no)
-    :Retorna error;
-    :Muestra error de API;
+  :Validates data server-side;
+  if (Validation ok?) then (no)
+    :Returns error;
+    :Shows API error;
     stop
   endif
 
-  :Verifica existencia del resultado;
-  if (¿Resultado encontrado?) then (no)
-    :Retorna error;
-    :Muestra error de API;
+  :Verifies result row existence;
+  if (Result found?) then (no)
+    :Returns error;
+    :Shows API error;
     stop
   endif
 
-  :Recalcula interpretaciones;
-  :Guarda resultados en base de datos;
-  :Actualiza estado de la prueba;
-  :Retorna confirmación;
+  :Recalculates interpretations;
+  :Saves results to database;
+  :Updates test status;
+  :Returns confirmation;
 
-  :Cierra modal;
-  :Actualiza badge de la tarjeta;
-  :Muestra mensaje de éxito;
+  :Closes modal;
+  :Updates card badge;
+  :Shows success message;
   stop
 
 else (no)
-  :Cierra modal;
+  :Closes modal;
   stop
 endif
 
