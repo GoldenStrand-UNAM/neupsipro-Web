@@ -122,7 +122,7 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
- // ================= BANFE  ==================
+  // ================= BANFE  ==================
 
   // Upserts into banfe_results
   // works for both first-time registration and modify.
@@ -172,9 +172,12 @@ class impTestResultsRepository extends resultRepository {
       ]
     );
 
-    // Return the saved row for DTO mapping
+    // Return the saved row together with the date just written to test_results
     const [rows] = await db.query(
-      'SELECT * FROM banfe_results WHERE id_results = ?',
+      `SELECT br.*, tr.date_applied
+       FROM banfe_results br
+       JOIN test_results tr ON br.id_results = tr.id_results
+       WHERE br.id_results = ?`,
       [id_results]
     );
     return rows[0];
@@ -194,8 +197,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0] ?? null;
   }
-
-
 
 }
 

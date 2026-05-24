@@ -1,4 +1,6 @@
 const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+
 const ImpProfileRepository = require('../../../infrastructure/repositories/ImpProfileRepository');
 const GetProfileUseCase = require('../../../application/usecase/users/getProfileUseCase');
 const ProfileController = require('../../controller/users/profile.controller');
@@ -17,6 +19,7 @@ module.exports = (_authUseCase) => {
   router.get(
     '/:userId',
     authMiddleware.verifyToken,
+    apiLimiter,
     (req, res) => profileController.getProfile(req, res)
   );
 

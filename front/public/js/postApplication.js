@@ -30,17 +30,8 @@ function setupModalControls (modal) {
   return { openModal, closeModal, showModalError };
 }
 
-function showToast (toast) {
-  toast.classList.remove('hidden');
-  toast.classList.add('flex');
-  setTimeout(() => {
-    toast.classList.add('hidden');
-    toast.classList.remove('flex');
-  }, 3000);
-}
-
 async function saveApplication (user, ctx) {
-  const { inputAppName, closeModal, showModalError, toast } = ctx;
+  const { inputAppName, closeModal, showModalError } = ctx;
   const name = inputAppName.value.trim();
 
   if (!name) {
@@ -70,7 +61,7 @@ async function saveApplication (user, ctx) {
     }
 
     closeModal();
-    showToast(toast);
+    showToast('Sesión creada con éxito');
 
     const addBtn = document.getElementById('btnCreateSession');
     addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
@@ -94,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modal        = document.getElementById('modalCreateApp');
   const inputAppName = document.getElementById('inputAppName');
-  const toast        = document.getElementById('toast');
   const container    = document.getElementById('logbookContainer');
 
   const { openModal, closeModal, showModalError } = setupModalControls(modal);
@@ -104,6 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnSaveApp').addEventListener('click', () => {
-    saveApplication(user, { inputAppName, closeModal, showModalError, toast });
+    saveApplication(user, { inputAppName, closeModal, showModalError });
   });
 });
