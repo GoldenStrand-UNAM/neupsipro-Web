@@ -22,10 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modalHTML = (dto) => {
     const publication = dto.publication[0];
-    const date = new Date(publication.date).toLocaleString('es-MX', {
-      year: 'numeric', month: '2-digit', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
+    const date = formatDate(publication.date);
+
     // This was changed from ejs to js by AI
     return `
     <div class="flex items-center sm:flex-row gap-4 p-6">
