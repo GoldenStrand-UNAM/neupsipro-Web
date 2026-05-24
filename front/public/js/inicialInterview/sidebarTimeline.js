@@ -36,7 +36,7 @@ function renderSidebar () {
     status.textContent = 'Pendiente';
 
     // Set as complete
-    if (sidebarState.completedSteps.includes(step)) {
+    if (window.sidebarState.completedSteps.includes(step)) {
       circle.className =
         'circle w-6 h-6 rounded-full flex items-center justify-center text-xs bg-gray-300 text-black';
 
@@ -44,7 +44,7 @@ function renderSidebar () {
     }
 
     // Set as Active
-    if (step === sidebarState.currentStep) {
+    if (step === window.sidebarState.currentStep) {
       circle.className =
         'circle w-6 h-6 rounded-full flex items-center justify-center text-xs bg-[#BA8700] text-white font-bold';
 
@@ -66,7 +66,7 @@ document.addEventListener('click', (e) => {
   const el = e.target.closest('#sidebar-timeline .subStep');
   if (!el) return;
 
-  sidebarState.currentStep = Number(el.dataset.step);
+  window.sidebarState.currentStep = Number(el.dataset.step);
 
   renderSidebar();
 });

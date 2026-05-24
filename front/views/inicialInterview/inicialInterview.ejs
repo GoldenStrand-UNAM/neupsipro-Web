@@ -219,11 +219,18 @@
                 }
 
                 window.financialData = data;
+
                 // update sections state
                 window.sectionsState = {
                     currentStep: data.current_step,
                     completedSteps: data.data.completedSteps,
                     subStep: data.current_section
+                };
+
+                // update sidebar state
+                window.sidebarState = {
+                    currentStep: data.current_section,
+                    completedSteps: data.data.completedSubSteps,
                 };
 
                 setSubStepTitle(data);
