@@ -168,7 +168,6 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
 
       return rows[0];
     } catch (error) {
-      console.log(error);
       await connection.query('ROLLBACK');
       throw error;
     } finally {
