@@ -142,18 +142,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputPass = document.getElementById('password');
   const errorMessage = document.getElementById('errorMessage');
 
-  function ocultarError () {
+  function hideError () {
     if (errorMessage) {
       errorMessage.style.display = 'none';
     }
   }
 
   if (inputUser) {
-    inputUser.addEventListener('focus', ocultarError);
+    inputUser.addEventListener('focus', hideError);
   }
 
   if (inputPass) {
-    inputPass.addEventListener('focus', ocultarError);
+    inputPass.addEventListener('focus', hideError);
   }
 });
 
