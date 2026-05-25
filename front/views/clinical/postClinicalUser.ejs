@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Usuario - NeuPsi-Pro</title>
+  <title>Registrar Usuario Clínico - Golondrina</title>
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
@@ -29,7 +29,7 @@
                 </svg>
               </button>
             </a>
-            <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
+            <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario Clínico</h1>
           </div>
           <div class="flex items-center gap-3">
             <button 
@@ -397,6 +397,7 @@
     const form = document.getElementById('formUser');
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
+    const userInput = document.getElementById('username');
 
     function escapeHTML(text) {
       return text
@@ -429,11 +430,26 @@
         sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
       } else {
-        showToast((data.error || 'Error desconocido'), 'error');
+        if (res.status === 409 && data.inUse === 'user') {
+          userInput.setCustomValidity("El nombre de usuario ya está en uso");
+          userInput.style.border = '2px solid red';
+          userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          userInput.reportValidity();
+        } else {
+          console.log(data.error);
+          showToast((data.error || 'Error desconocido'), 'error');
+        }
       }
       } catch (error) {
-      showToast('Error de conexión', 'error');
+        console.log(`Error de conexión: ${error}`);
+        showToast(`Error de conexión: ${error}`, 'error');
       }
+    });
+
+    userInput.addEventListener('input', () => {
+      userInput.setCustomValidity("");
+      userInput.style.border = '';
+      userInput.style.boxShadow = '';
     });
 
     function setupCounter(inputId, counterId) {
@@ -586,7 +602,7 @@
     setupCounter('email', 'charactersEmail');
     setupCounter('affiliation', 'charactersAffiliation');
     setupCounter('activity', 'charactersActivity');
-    setupCounter('userName', 'charactersUserName');
+    setupCounter('username', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('emergencyContactName', 'charactersEmergencyContactName');

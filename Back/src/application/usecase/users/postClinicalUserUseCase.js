@@ -1,8 +1,6 @@
 const ClinicalUser = require('../../../domain/entity/postClinicalUser');
 const ClinicalUserDTO = require('../../dto/postClinicalUserDTO');
-const Validation = require('../../../infrastructure/external/validations');
-
-const validation = new Validation();
+const validateUser = require('../../validations/postClinicalValidation');
 
 class PostClinicalUserUseCase {
   constructor (clinicalUserRepository, hashingService) {
@@ -10,67 +8,29 @@ class PostClinicalUserUseCase {
     this.hashingService = hashingService;
   }
 
-  async execute ({
-    idRole,
-    firstName,
-    lastnameP,
-    lastnameM,
-    birthdate,
-    email,
-    affiliation,
-    activity,
-    startDate,
-    finishDate,
-    hours,
-    username,
-    password,
-    emergencyContactName,
-    emergencyContactPhone,
-    emergencyContactRelation,
-  }) {
-    const fFirstName = validation.validate(firstName, 30, 'El nombre', true);
-    const fLastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
-    const fLastnameM = validation.validate(lastnameM, 30, 'El apellido materno', false);
-    const fBirthdate = validation.validateDate(birthdate, 'La fecha de nacimiento ', true);
-    const fEmail = validation.validate(email, 50, 'El email', false);
-    const fAffiliation = validation.validate(affiliation, 20, 'La afiliación', true);
-    const fActivity = validation.validate(activity, 20, 'La afiliación', true);
-    const fStartDate = validation.validateDate(startDate, 'La fecha de inicio', false);
-    const fFinishDate = validation.validateFutureDate(finishDate, 'La fecha de fin', false);
-    const fHours = validation.validateNumber(hours, 'Las horas', 9999, false);
-    validation.validate(username, 30, 'El nombre de usuario', true);
-    validation.validate(password, 30, 'La contraseña', true);
-    const fEmergencyName = validation.validate(emergencyContactName, 50, 'El nombre del contacto de emergencia', false);
-    const fEmergencyPhone = validation.validatePhone(emergencyContactPhone, 'El número del contacto de emergencia', false);
-    const fEmergencyRelation = validation.validate(emergencyContactRelation, 25, 'La relación del contacto de emergencia', false);
-    const passwordHash = await this.hashingService.hash(password);
+  async execute (user) {
+    const sanitizedUser = Object.fromEntries(Object.entries(user)
+      .filter(([key]) => key !== '__proto__' && key !== 'constructor')
+      .map(([key, value]) => {
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          return [key, trimmed.length === 0 ? null : trimmed];
+        }
+        return [key, value];
+      }));
 
+    // Use Case validation
+    const validatedUser = validateUser(sanitizedUser);
+    // Password hashing
+    const passwordHash = await this.hashingService.hash(user.password);
     // Entity validation
-    const clinicalUser = new ClinicalUser ({
-      idRole,
-      firstName: fFirstName,
-      lastnameP: fLastnameP,
-      lastnameM: fLastnameM,
-      birthdate: fBirthdate,
-      email: fEmail,
-      affiliation: fAffiliation,
-      activity: fActivity,
-      startDate: fStartDate,
-      finishDate: fFinishDate,
-      hours: fHours,
-      username,
-      passwordHash,
-      emergencyContactName: fEmergencyName,
-      emergencyContactPhone: fEmergencyPhone,
-      emergencyContactRelation: fEmergencyRelation,
-    });
+    const clinicalUser = new ClinicalUser (validatedUser);
 
     const duplicate = await this.clinicalUserRepository.checkDuplicate(clinicalUser);
-
-    if (duplicate) {
+    if (duplicate)
       throw new Error('El usuario ya se encuentra registrado.');
-    } else {
-      const saved = await this.clinicalUserRepository.postUser(clinicalUser);
+    else {
+      const saved = await this.clinicalUserRepository.postUser({ ...clinicalUser, passwordHash });
       // Map saved into clean DTO for the client
       return ClinicalUserDTO.fromEntity(saved);
     }
