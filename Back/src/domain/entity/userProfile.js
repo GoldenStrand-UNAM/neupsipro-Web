@@ -42,9 +42,22 @@ class userProfile {
   }
 
   _calculateAge (birthDate) {
-    if (!birthDate) return null;
+    if (!birthDate || String(birthDate).trim() === '') return null;
+
+    let normalizedDate = String(birthDate).trim();
+
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(normalizedDate)) {
+      const [day, month, year] = normalizedDate.split('/');
+      normalizedDate = `${year}-${month}-${day}`;
+    }
+
+    const birth = new Date(normalizedDate);
+
+    if (isNaN(birth.getTime())) {
+      return null;
+    }
+
     const today = new Date();
-    const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
 
