@@ -86,10 +86,10 @@ function populateUserInfo (user) {
   document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
 
   document.getElementById('prosthetist').textContent = user.prosthetist || 'N/A';
-  document.getElementById('neuroDate').textContent = user.neuroEntryDate
-    ? new Date(user.neuroEntryDate).toLocaleDateString() : 'N/A';
-  document.getElementById('amputationDate').textContent = user.amputationDate
-    ? new Date(user.amputationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('neuroDate').textContent = user.neuroEntryDate || 'N/A';
+
+  document.getElementById('amputationDate').textContent = user.amputationDate || 'N/A';
+
   document.getElementById('amputationLevel').textContent = user.amputationLevel || 'N/A';
   document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
@@ -116,7 +116,7 @@ function populateLogbook (user) {
   } else {
     if (user.assignedApplications && user.assignedApplications.length > 0) {
       user.assignedApplications.forEach(application => {
-        container.innerHTML += createApplicationCard(application);
+        container.innerHTML += createApplicationCard(application, user.idUser);
       });
     }
     container.innerHTML += createAddSessionCard();
@@ -162,6 +162,18 @@ function setupShowMoreToggle () {
     }
   });
 }
+
+(async function checkApplicationExpiry () {
+  const idUser = window.__USER_DATA__?.idUser;
+  if (!idUser) return;
+  try {
+    const res  = await fetch(`/users/${idUser}/applications/check-expiry`);
+    const json = await res.json();
+    if (!res.ok) { console.error('[checkExpiry]', json.error); return; }
+  } catch (err) {
+    console.error('[checkExpiry] fetch error:', err);
+  }
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;

@@ -17,6 +17,9 @@
 
 @import './components/organisms/_login-form.css';
 
+@import "./components/molecules/_testCard-molecules.css";
 
+
+@import "./components/organisms/_modal-tests.css";
 
 

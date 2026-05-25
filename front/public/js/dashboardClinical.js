@@ -144,7 +144,7 @@ function initUserInfoPanel (list) {
                            transition-all cursor-pointer">
                     ${list.map(ref => `
                       <option value="${escapeHtml(ref.idUser)}">
-                      ${escapeHtml(ref.firstName)} ${escapeHtml(ref.lastnameP)} ${escapeHtml(ref.lastnameM)} 
+                      ${escapeHtml(ref.firstName)} ${escapeHtml(ref.lastnameP)} ${escapeHtml(ref.lastnameM || '')} 
                       </option>`).join('')}
                 </select>
             </div>

@@ -34,20 +34,17 @@
         </div>
 
         <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end mt-6">
-            <button id="cancelEditContract" class="btn-mini bg-white text-gray-700 border border-gray-300
-               hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700
-               hover:brightness-100
-               w-full sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>  
-                <span>Cancelar</span>
-            </button>
-            <button id="confirmEditContract" class="btn-mini bg-[#3350A9] w-full sm:w-auto sm:min-w-[140px]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="white-icon-mini">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10.5 18.75 19.5 5.25" />
+            <button class="btn-cancel" id="cancelEditContract">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
-                <span>Guardar</span>
+                <span class="whitespace-nowrap">Cancelar</span>
+            </button>
+            <button class="btn-save" id="confirmEditContract">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
+                </svg>
+                <span class="whitespace-nowrap">Guardar</span>
             </button>
         </div>
     </div>
