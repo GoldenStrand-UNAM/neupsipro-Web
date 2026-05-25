@@ -524,6 +524,10 @@
     function resetFormBtn(){
       if (form) form.reset();
 
+      document.querySelectorAll('input[maxlength]').forEach(input => {
+        input.dispatchEvent(new Event('input'));
+      });
+
       const selects = document.querySelectorAll('select');
       selects.forEach(select => {
         select.classList.remove('text-black');
