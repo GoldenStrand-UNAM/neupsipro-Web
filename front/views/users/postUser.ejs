@@ -347,10 +347,10 @@
                 name="prosthetist"
                 id="prosthetist"
                 placeholder="Alejandra"
-                maxlength="30"
+                maxlength="20"
               >
               <span id="charactersProsthetist" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/30 
+                0/20 
               </span>
             </div>
           </div>
@@ -523,6 +523,10 @@
 
     function resetFormBtn(){
       if (form) form.reset();
+
+      document.querySelectorAll('input[maxlength]').forEach(input => {
+        input.dispatchEvent(new Event('input'));
+      });
 
       const selects = document.querySelectorAll('select');
       selects.forEach(select => {
