@@ -11,8 +11,9 @@ class profileController {
     try {
       const { userId } = req.params;
       const authenticatedUser = req.user;
-      const isValidIdFormat = /^u-[0-9]+$/.test(userId);
-      if (!isValidIdFormat) {
+      const isLegacyId = /^u-[0-9]+$/.test(userId);
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId);
+      if (!isLegacyId && !isUuid) {
         return res.status(400).json({
           success: false,
           message: 'Invalid user ID format',
@@ -50,7 +51,6 @@ class profileController {
           message: 'User not found',
         });
       }
-
       return res.status(500).json({
         success: false,
         message: 'Internal server error',
