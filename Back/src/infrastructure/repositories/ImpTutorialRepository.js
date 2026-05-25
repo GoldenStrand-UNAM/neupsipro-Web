@@ -3,7 +3,7 @@ const tutorialRepository = require('../../domain/repository/tutorialRepository')
 
 class ImpTutorialRepository extends tutorialRepository {
 
-  async getByPage(page) {
+  async getByPage (page) {
     const [rows] = await db.query(
       `SELECT step_order, title, content
        FROM tutorial

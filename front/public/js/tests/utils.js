@@ -13,7 +13,7 @@ function getVariant (status) {
     ['Por comenzar', 'neutral'],
     ['En proceso', 'warning'],
     ['Calificada', 'success'],
-    ['Entregada', 'success'],
+    ['Entregado', 'complete'],
     ['Caducada', 'fatal'],
   ]);
   return map.get(status) ?? 'neutral';
@@ -61,10 +61,9 @@ function updateTestCardStatus (dto) {
     ? (STATUS_LABEL[dto.status] ?? 'Por comenzar')
     : dto.status;
 
-  const variants = ['neutral', 'warning', 'success', 'fatal'];
-  const newVariant = getVariant(label);
-
   badge.querySelector('p').textContent = label;
+
+  const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
   variants.forEach(v => badge.classList.remove(`application-card__badge--${v}`));
   badge.classList.add(`application-card__badge--${newVariant}`);
 
