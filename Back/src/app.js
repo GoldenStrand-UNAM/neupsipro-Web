@@ -191,6 +191,10 @@ const userRoutes = require('./presentation/routes/users/getUser.routes');
 
 app.use('/users', userRoutes(authUseCase));
 
+const postClinicalUserRoutes = require('./presentation/routes/clinical/postClinicalUser.routes');
+
+app.use('/clinical', postClinicalUserRoutes(authUseCase));
+
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
 const postUserRoutes = require('./presentation/routes/users/postUser.routes');
