@@ -765,15 +765,6 @@ ALTER TABLE user_clinical
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
 
-<<<<<<< HEAD
-ALTER TABLE user_clinical
-    MODIFY COLUMN start_date varchar(50) NOT NULL,
-    MODIFY COLUMN finish_date varchar(50) NOT NULL,
-    MODIFY COLUMN emergency_contact_name VARCHAR(50) NULL,
-    MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
-    MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
-    MODIFY COLUMN hours INT NULL;
-=======
 
 -- ===========================================================
 -- Test changes
@@ -884,4 +875,11 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
->>>>>>> e82251732c1dbfb612d89f73e420a7b6785af335
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(50) NOT NULL,
+    MODIFY COLUMN finish_date varchar(50) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(50) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
+    MODIFY COLUMN hours INT NULL;
+
