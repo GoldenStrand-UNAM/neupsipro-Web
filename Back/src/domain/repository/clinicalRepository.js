@@ -11,5 +11,8 @@ class clinicalRepository {
   async fetchClinicalUsers () {
     throw new Error('fetchClinicalUsers() is not working/implemented');
   }
+  async postUser () {
+    throw new Error('postUser() is must be implemented');
+  }
 }
 module.exports = clinicalRepository;
