@@ -130,24 +130,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     return rows.map(row => new userClinicalSummary(row));
   }
 
-  async postUser ({
-    idRole,
-    firstName,
-    lastnameP,
-    lastnameM,
-    birthdate,
-    email,
-    affiliation,
-    activity,
-    startDate,
-    finishDate,
-    hours,
-    username,
-    password,
-    emergencyContactName,
-    emergencyContactPhone,
-    emergencyContactRelation,
-  }) {
+  async postUser (user) {
     const idUser = uuidv4();
     const connection = await db.getConnection();
 
@@ -157,53 +140,26 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       await connection.query(
         `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, idRole, username, firstName, lastnameP, lastnameM, birthdate, password, email]
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.password, user.email]
       );
 
       await connection.query(
         `INSERT INTO user_clinical (
-        id_user,
-        affiliation,
-        activity,
-        emergency_contact_name,
-        emergency_contact_phone,
-        emergency_contact_relation,
-        start_date,
-        finish_date,
-        hours)
+        id_user, affiliation, activity, emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+        start_date, finish_date, hours)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser,
-          affiliation,
-          activity,
-          emergencyContactName,
-          emergencyContactPhone,
-          emergencyContactRelation,
-          startDate,
-          finishDate,
-          hours]
+        [idUser, user.affiliation, user.activity, user.emergencyContactName, user.emergencyContactPhone,
+          user.emergencyContactRelation, user.startDate, user.finishDate, user.hours]
       );
 
       const [rows] = await connection.query(
         `SELECT 
-          u.id_role,
-          u.first_name, 
-          u.lastname_p, 
-          u.lastname_m,
-          u.birthdate,
-          u.email,
-          u.user_name,
-          u.password_hash,
-          uc.affiliation,
-          uc.activity,
-          uc.emergency_contact_name,
-          uc.emergency_contact_phone,
-          uc.emergency_contact_relation,
-          uc.start_date,
-          uc.finish_date,
-          uc.hours
-          FROM users u
-          LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
-          WHERE u.id_user = ?;`,
+        u.id_role, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.email, u.user_name, u.password_hash,
+        uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone, uc.emergency_contact_relation,
+        uc.start_date, uc.finish_date, uc.hours
+        FROM users u
+        LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
+        WHERE u.id_user = ?;`,
         [idUser]
       );
 
@@ -218,7 +174,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     }
   }
 
-  async checkDuplicate ({ firstName, lastnameP, lastnameM, birthdate }) {
+  async checkDuplicate (user) {
     const [rows] = await db.query (
       `SELECT *
           FROM users
@@ -228,7 +184,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
           AND (lastname_m = ? OR (? IS NULL AND lastname_m IS NULL))
           AND birthdate = ?
           AND eliminated = '0';`,
-      [firstName, lastnameP, lastnameM, lastnameM, birthdate]
+      [user.firstName, user.lastnameP, user.lastnameM, user.lastnameM, user.birthdate]
     );
     return rows[0];
   }

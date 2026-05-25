@@ -6,28 +6,20 @@ class PostClinicalUserController {
   async postClinicalUser (request, res) {
     try {
       // Extract query params
-      const { idRole = '3', firstName, lastnameP, lastnameM = null, birthdate, email = null, affiliation, activity, startDate, finishDate, hours = null, username, password, emergencyContactName = null, emergencyContactPhone = null, emergencyContactRelation = null } = request.body;
+      const user = { ...request.body };
 
-      const clinicalUser = await this.PostClinicalUserUseCase.execute({
-        idRole,
-        firstName,
-        lastnameP,
-        lastnameM,
-        birthdate,
-        email,
-        affiliation,
-        activity,
-        startDate,
-        finishDate,
-        hours,
-        username,
-        password,
-        emergencyContactName,
-        emergencyContactPhone,
-        emergencyContactRelation,
-      });
+      const clinicalUser = await this.PostClinicalUserUseCase.execute(user);
       return res.status(201).json(clinicalUser);
     } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+        return res.status(409).json({
+          inUse: 'user',
+        });
+      } if (error.code !== undefined || error.errno !== undefined) {
+        return res.status(409).json({
+          error: 'Error al registrar usuario.',
+        });
+      }
       return res.status(400).json({ error: error.message });
     }
   }
