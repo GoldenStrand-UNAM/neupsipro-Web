@@ -28,7 +28,11 @@
     }
 
     .application-card--success {
-        @apply bg-green-100;
+        @apply bg-[#002B79]/30; 
+    }
+
+    .application-card--complete {
+        @apply bg-[#002B79]/30;
     }
 
     .application-card--fatal {
@@ -55,9 +59,11 @@
     }
 
     .application-card__badge--success {
-        @apply bg-green-500;
+        @apply bg-[#002B79];
     }
-
+    .application-card__badge--complete {
+        @apply bg-[#002B79];
+    }
     .application-card__badge--fatal {
         @apply bg-red-500;
     }
