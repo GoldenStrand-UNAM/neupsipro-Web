@@ -164,7 +164,7 @@ function showToast (message, type = 'success') {
   setTimeout(() => toast.remove(), 3500);
 }
 
-function formatDate(dateInput) {
+function formatDate (dateInput) {
   return new Date(dateInput).toLocaleString('es-MX', {
     timeZone: 'America/Mexico_City',
     year: 'numeric',
