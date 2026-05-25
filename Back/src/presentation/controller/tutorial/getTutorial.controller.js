@@ -1,9 +1,9 @@
 class GetTutorialController {
-  constructor(getTutorialUseCase) {
+  constructor (getTutorialUseCase) {
     this.getTutorialUseCase = getTutorialUseCase;
   }
 
-  async getTutorial(req, res) {
+  async getTutorial (req, res) {
     try {
       const { page } = req.query;
       if (!page) return res.status(400).json({ error: 'Page requerida' });
