@@ -414,6 +414,42 @@
         counter.textContent = `${longitud}/${max}`;
       });
     }
+
+    form.addEventListener('submit', async (e) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      try {
+      const res = await fetch('/clinical/post', {
+        method: 'POST',
+        headers: { 'x-csrf-token': _csrfToken },
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        sessionStorage.setItem('savedUser', 'true');
+        window.location.href = '/clinical';
+      } else {
+        if (res.status === 409 && data.inUse === 'user') {
+          userInput.setCustomValidity("El nombre de usuario ya está en uso");
+          userInput.style.border = '2px solid red';
+          userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          userInput.reportValidity();
+        } else {
+          console.log(data.error);
+          showToast((data.error || 'Error desconocido'), 'error');
+        }
+      }
+      } catch (error) {
+        console.log(`Error de conexión: ${error}`);
+        showToast(`Error de conexión: ${error}`, 'error');
+      }
+    });
+    userInput.addEventListener('input', () => {
+      userInput.setCustomValidity("");
+      userInput.style.border = '';
+      userInput.style.boxShadow = '';
+    });
+    
     function validateDates(id){
       const inputFecha = document.getElementById(id);
       const today = new Date();
