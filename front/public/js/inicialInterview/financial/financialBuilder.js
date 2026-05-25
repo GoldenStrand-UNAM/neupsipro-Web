@@ -49,6 +49,19 @@ function getSpanTextOrNull (id) {
     : value;
 }
 
+function getSpanMoneyOrNull(id) {
+  const element = document.getElementById(id);
+
+  if (!element) return null;
+
+  const value = element.textContent
+    .replace('$', '')
+    .replace(/,/g, '')
+    .trim();
+
+  return value === '' ? null : Number(value);
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEPS BUILDER -----------------------------
 
@@ -72,7 +85,7 @@ function buildIncomes () {
       getNumberOrNull('salaryAfter'),
 
     totalIncomes:
-      getNumberOrNull('totalIncomes'),
+      getSpanMoneyOrNull('totalIncomes'),
   };
 }
 

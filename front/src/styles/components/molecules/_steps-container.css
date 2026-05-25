@@ -1,10 +1,10 @@
 @layer components {
 
     .step {
-        @apply flex-1 bg-white rounded-xl;
-        @apply p-4 min-h-28;
-        @apply shadow-md relative;
+        @apply block flex-1 bg-white rounded-xl;
+        @apply p-4 shadow-md relative;
         @apply transition-all duration-300 hover:shadow-lg;
+        @apply cursor-pointer;
     }
 
     .step-muted {
