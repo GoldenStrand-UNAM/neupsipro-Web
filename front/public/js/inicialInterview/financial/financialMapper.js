@@ -1,5 +1,15 @@
 /* eslint-disable no-undef */
 
+function formatMoney(value) {
+
+  const number = Number(value) || 0;
+
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 // Get info divided by section
 function renderIncomesData (info) {
 
@@ -16,10 +26,10 @@ function renderIncomesData (info) {
     info.income?.salary?.salaryAfterSickness || '';
 
   document.getElementById('totalSectionOne').textContent =
-    `$${info.income?.salary?.total || 0}`;
+    `$${formatMoney(info.income?.salary?.total || 0)}`;
 
   document.getElementById('totalIncomes').textContent =
-    `$${info.income?.totalIncome || 0}`;
+    `$${formatMoney(info.income?.totalIncome || 0)}`;
 }
 
 function renderContributorsData (info) {
@@ -51,7 +61,7 @@ function renderContributorsData (info) {
   }
 
   document.getElementById('totalSectionTwo').textContent =
-    `$${info.income?.contributors?.total || 0}`;
+    `$${formatMoney(info.income?.contributors?.total || 0)}`;
 
   updateTitles();
 }
@@ -93,7 +103,7 @@ function renderExpensesData (info) {
     expenses.othersExpenses || '';
 
   document.getElementById('totalExpenses').textContent =
-    `$${expenses.totalExpenses || 0}`;
+    `$${formatMoney(expenses.totalExpenses || 0)}`;
 }
 
 function setSelectValue (id, value) {
@@ -223,6 +233,7 @@ function renderFinancialData () {
   if (!financial) return;
 
   const info = financial.data;
+  console.log(info);
 
   document.getElementById('refNumber').textContent =
     info.refNumber || '-';

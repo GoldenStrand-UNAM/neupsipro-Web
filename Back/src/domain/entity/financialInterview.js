@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 class FinancialInterview {
-  constructor ({ refNumber, current_step, current_section, inicialProgress, financialProgress, data }) {
+  constructor ({ idUser, refNumber, current_step, current_section, inicialProgress, financialProgress, data }) {
+    this.idUser = idUser;
     this.refNumber = refNumber;
     this.current_step = current_step;
     this.current_section = current_section;
@@ -150,6 +151,7 @@ class FinancialInterview {
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
       refNumber: this.refNumber,
+      idUser: this.idUser,
     };
   }
 
@@ -193,6 +195,7 @@ class FinancialInterview {
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
+      idUser: this.idUser,
     };
   }
 
@@ -215,6 +218,7 @@ class FinancialInterview {
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
+      idUser: this.idUser,
     };
   }
 
@@ -241,6 +245,7 @@ class FinancialInterview {
       completedSteps: this.mapInicialProgress(inicialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
       refNumber: this.refNumber,
+      idUser: this.idUser,
     };
   }
 
