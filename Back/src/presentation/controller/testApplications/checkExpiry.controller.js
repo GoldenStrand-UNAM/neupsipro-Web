@@ -16,6 +16,7 @@ class checkExpiryController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
+      // eslint-disable-next-line no-console
       console.error('[checkExpiryController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
