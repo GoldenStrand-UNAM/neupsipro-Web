@@ -7,7 +7,8 @@ class GetClinicalUserDashboardController {
   getDashboardView (req, res) {
     try {
       res.locals.activePage = 'dashboard';
-      res.render('dashboard/dashboardClinical', { tutorialModule: 'clinicalDashboard' });
+      res.render('dashboard/dashboardClinical', {  activePage: 'panel', tutorialModule: 'clinicalDashboard' });
+
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
