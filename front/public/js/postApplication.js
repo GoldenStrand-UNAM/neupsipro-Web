@@ -32,13 +32,26 @@ function setupModalControls (modal) {
   return { openModal, closeModal, showModalError };
 }
 
-function showToast (toast) {
-  toast.classList.remove('hidden');
-  toast.classList.add('flex');
-  setTimeout(() => {
-    toast.classList.add('hidden');
-    toast.classList.remove('flex');
-  }, 3000);
+function showSuccessToast (msg) {
+  const el = document.createElement('div');
+  el.className = 'fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#002B7A] text-white px-5 py-3 rounded-xl shadow-lg text-sm';
+  el.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+         stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+    </svg>
+    <span>${msg}</span>
+  `;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function syncAddButton () {
+  const addBtn  = document.getElementById('btnCreateSession');
+  const logbook = document.getElementById('logbookContainer');
+  if (!addBtn || !logbook) return;
+  addBtn.style.display = logbook.querySelectorAll('a').length >= MAX_APPLICATIONS ? 'none' : '';
 }
 
 // Shows a red toast when the application limit is reached
@@ -60,7 +73,7 @@ function showLimitToast () {
 }
 
 async function saveApplication (user, ctx) {
-  const { inputAppName, closeModal, showModalError, toast } = ctx;
+  const { inputAppName, closeModal, showModalError } = ctx;
   const name = inputAppName.value.trim();
 
   if (!name) {
@@ -90,21 +103,17 @@ async function saveApplication (user, ctx) {
     }
 
     closeModal();
-    showToast('Aplicación creada con éxito', 'success');
+    showSuccessToast('Aplicación creada con éxito');
 
     const addBtn = document.getElementById('btnCreateSession');
     addBtn.insertAdjacentHTML('beforebegin', createApplicationCard({
-      idApplication:   json.data.idApplication,
+      idApplication: json.data.idApplication,
       applicationName: json.data.applicationName,
-      status:          json.data.status,
-      createdAt:       json.data.createdAt,
+      status: json.data.status,
+      createdAt: json.data.createdAt,
     }, user.idUser));
 
-    // Hide add button if limit is now reached
-    const existingCount = container.querySelectorAll('a').length;
-    if (existingCount >= MAX_APPLICATIONS) {
-      addBtn.style.display = 'none';
-    }
+    syncAddButton();
 
   } catch {
     showModalError('Error de red, intenta de nuevo');
@@ -120,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modal        = document.getElementById('modalCreateApp');
   const inputAppName = document.getElementById('inputAppName');
-  const toast        = document.getElementById('toast');
   const container    = document.getElementById('logbookContainer');
 
   const { openModal, closeModal, showModalError } = setupModalControls(modal);
@@ -147,6 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnSaveApp').addEventListener('click', () => {
-    saveApplication(user, { inputAppName, closeModal, showModalError, toast });
+    saveApplication(user, { inputAppName, closeModal, showModalError });
   });
 });

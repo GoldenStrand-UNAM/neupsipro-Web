@@ -1,5 +1,5 @@
 class tutorialRepository {
-  async getByPage(_page) {
+  async getByPage (_page) {
     throw new Error('getByPage() must be implemented');
   }
 }
