@@ -8,6 +8,8 @@ window.sectionsState = window.sectionsState || {
   subStep: 2,
 };
 
+console.log(window);
+
 const stepConfig = new Map([
   [1, 3],
   [2, 4],
@@ -121,3 +123,7 @@ function init () {
 
 window.addEventListener('load', init);
 window.renderSections = renderSections;
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('FINANCIAL:', window.financialData);
+});
