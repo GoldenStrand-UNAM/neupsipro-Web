@@ -28,7 +28,7 @@ class forumController {
 
       // Render forum view with data
       response.render ('forum/forum', {
-        activePage: 'forum',   tutorialModule: 'forum', 
+        activePage: 'forum',   tutorialModule: 'forum',
         posts,
         page,
         limit,

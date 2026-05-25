@@ -226,6 +226,11 @@ const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase));
 
+// Applications
+
+const testRoutes = require('./presentation/routes/applications/getTests.routes');
+
+app.use('/', testRoutes(authUseCase));
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
 app.use('/api/tutorial', tutorialRoutes());

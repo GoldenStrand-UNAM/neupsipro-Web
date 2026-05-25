@@ -1,8 +1,8 @@
 class GetTutorialUseCase {
-  constructor(tutorialRepository) {
+  constructor (tutorialRepository) {
     this.tutorialRepository = tutorialRepository;
   }
-  async execute(page) {
+  async execute (page) {
     return await this.tutorialRepository.getByPage(page);
   }
 }
