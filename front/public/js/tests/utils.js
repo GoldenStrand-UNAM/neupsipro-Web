@@ -63,6 +63,7 @@ function updateTestCardStatus (dto) {
 
   badge.querySelector('p').textContent = label;
 
+  const newVariant = getVariant(label);
   const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
   variants.forEach(v => badge.classList.remove(`application-card__badge--${v}`));
   badge.classList.add(`application-card__badge--${newVariant}`);
@@ -84,6 +85,6 @@ function updateTestCardStatus (dto) {
       testData.status = label;
       if (dto.dateApplied) testData.dateApplied = dto.dateApplied;
       card.dataset.test = JSON.stringify(testData);
-    } catch (_) { /* datos corruptos, se ignoran */ }
+    } catch { /* datos corruptos, se ignoran */}
   }
 }
