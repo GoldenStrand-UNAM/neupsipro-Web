@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
+
+                <!--Main Header-->
+                <div>
+                    <div class="flex items-center gap-4 mb-5">
+                        <a href="/users/<%= id_user %>">
+                            <button class="cursor-pointer pb">
+                                <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </button>
+                        </a>
+                        <h1 class="text-2xl font-bold text-[#1E1E1E]">
+                            Pruebas
+                        </h1>
+                    </div>
+                    
+                    <hr class="border-3 rounded-2xl border-[#002B7A]">
+                </div>
+
+                <!-- Expiry banner — hidden by default, shown by testList.js if application is Caducada -->
+                <div id="expiryBanner"
+                    class="hidden flex items-center gap-3 px-4 py-3 mb-4 mt-4
+                            rounded-xl bg-orange-50 border border-orange-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor"
+                    class="w-5 h-5 shrink-0 text-orange-500">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948
+                            3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949
+                            3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+                </svg>
+                <span class="text-sm text-orange-700">
+                    Esta aplicación ha caducado. Puedes consultar los resultados
+                    pero no registrar ni modificar pruebas.
+                    <strong>Crea una nueva aplicación para continuar.</strong>
+                </span>
+                </div>
+
+                <!-- Test cards container — populated by testList.js via API -->
+                <div id="testListContainer" class="grid grid-cols-1  gap-4 pt-2 pb-5 p-6 mt-6">
+
+                    <!-- Skeletons shown while fetch is in progress -->
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+                    <div class="test-card-skeleton animate-pulse bg-gray-100 rounded-3xl h-36"></div>
+
+                </div>
+
+                <!-- Inline error message — hidden by default -->
+                <p id="testListError" class="hidden text-sm text-red-500 mt-2"></p>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+
+    <!-- Pass server-side params to client without inline injection risk -->
+    <script>
+        window.__TEST_PAGE__ = {
+            idUser:        '<%- id_user %>',
+            idApplication: '<%- id_application %>'
+        };
+    </script>
+    
+    <!-- 1. Shared utilities — must load first -->
+    <script src="/js/tests/utils.js"></script>
+
+    <!-- 2. Test registry — must load before any modal -->
+    <script src="/js/tests/config/test.config.js"></script>
+
+    <script src="/js/tests/testList.js"></script>
+
+
+</body>
+</html>

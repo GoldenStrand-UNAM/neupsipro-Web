@@ -26,7 +26,8 @@ module.exports = (authUseCase) => {
     '/forum/post',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'writing'),
-    (req, res) => res.render('forum/postPublication', { activePage: 'forum' })
+    // added the tutorial module variable to identify the tutorial in the frontend
+    (req, res) => res.render('forum/postPublication', { activePage: 'forum', tutorialModule: 'postPublication' })
   );
 
   router.post(

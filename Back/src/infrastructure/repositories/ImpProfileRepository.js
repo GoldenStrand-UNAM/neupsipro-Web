@@ -39,7 +39,7 @@ class ImpProfileRepository extends profileRepository {
       lastNameM: row.lastname_m,
       profilePhoto: row.profile_photo,
       birthDate: row.birthdate,
-      unitEntryDate: row.unit_entry_date,
+      unitEntryDate: row.registration_date,
       neuroEntryDate: row.neuro_entry_date,
       neuroStatus: row.neuro_status,
       protocol: row.protocol,
