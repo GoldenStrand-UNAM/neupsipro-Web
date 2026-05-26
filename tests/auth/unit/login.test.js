@@ -9,7 +9,7 @@ describe('LoginUseCase Unit Test', () => {
         mockHashService = { compare: jest.fn() };
         mockJwtService = { generateToken: jest.fn() };
         mockCache = { getAttempts: jest.fn(), incrementAttempts: jest.fn(), clearAttempts: jest.fn() };
-        mockSessionRepo = { createSession: jest.fn() };
+        mockSessionRepo = { createSession: jest.fn(), deleteAllActiveSessions: jest.fn() };
 
         loginUseCase = new LoginUseCase(
             mockAuthRepo, mockHashService, mockJwtService, mockCache, mockSessionRepo
