@@ -147,6 +147,42 @@
               </select>
             </div>
           </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Teléfono
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="Camacho"
+                maxlength="30"
+              >
+              <span id="charactersPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Email
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="email"
+                id="email"
+                placeholder="Camacho"
+                maxlength="30"
+              >
+              <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/50 
+              </span>
+            </div>
+          </div>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
@@ -738,6 +774,8 @@
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');
+    setupCounter('phone', 'charactersPhone');
+    setupCounter('email', 'charactersEmail');
     validateDates('birthdate');
     validateDates('amputationDate');
     validateDates('neuroEntryDate');
