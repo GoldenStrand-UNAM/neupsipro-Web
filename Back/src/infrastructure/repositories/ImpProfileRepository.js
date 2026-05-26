@@ -11,7 +11,7 @@ class ImpProfileRepository extends profileRepository {
     const query = `
             SELECT
                 u.first_name, u.lastname_p, u.lastname_m, u.profile_photo, u.birthdate,
-                ui.unit_entry_date, ui.neuro_entry_date, ui.neuro_status, ui.protocol, ui.state, ui.stage, ui.prosthetist,
+                ui.registration_date, ui.neuro_entry_date, ui.neuro_status, ui.protocol, ui.state, ui.stage, ui.prosthetist,
                 ur.id_user_relation,
                 uc.first_name AS assigned_clinic_name,
                 (SELECT DATE(date_time)
@@ -39,7 +39,7 @@ class ImpProfileRepository extends profileRepository {
       lastNameM: row.lastname_m,
       profilePhoto: row.profile_photo,
       birthDate: row.birthdate,
-      unitEntryDate: row.registration_date,
+      registrationDate: row.registration_date,
       neuroEntryDate: row.neuro_entry_date,
       neuroStatus: row.neuro_status,
       protocol: row.protocol,

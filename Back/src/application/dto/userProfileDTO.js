@@ -12,7 +12,7 @@ class userProfileDTO {
     };
 
     this.clinicalInfo = {
-      unitEntryDate: this._safeFormatDate(userProfile.unitEntryDate),
+      registrationDate: this._safeFormatDate(userProfile.registrationDate),
       neuroEntryDate: this._safeFormatDate(userProfile.neuroEntryDate),
       neuroStatus: userProfile.neuroStatus,
       protocol: userProfile.protocol,
