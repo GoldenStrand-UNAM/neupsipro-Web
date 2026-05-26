@@ -150,7 +150,7 @@ const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
 
-const authMiddleware = new AuthMiddleware(jwtService, authService);
+const authMiddleware = new AuthMiddleware(jwtService, authService, sessionRepository);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
 const logoutUseCase = new LogoutUseCase(authRepository);
@@ -172,51 +172,51 @@ app.use((req, res, next) => {
 // Dasboards
 const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
 
-app.use('/dashboardClinical', dashRoutes(authUseCase));
+app.use('/dashboardClinical', dashRoutes(authUseCase, authMiddleware));
 
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
-app.use('/forum', forumRoutes(authUseCase));
+app.use('/forum', forumRoutes(authUseCase, authMiddleware));
 
 const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
 
-app.use('/publication', publicationRoutes(authUseCase));
+app.use('/publication', publicationRoutes(authUseCase, authMiddleware));
 
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
-app.use('/', usersRoutes(authUseCase));
+app.use('/', usersRoutes(authUseCase, authMiddleware));
 
 const userRoutes = require('./presentation/routes/users/getUser.routes');
 
-app.use('/users', userRoutes(authUseCase));
+app.use('/users', userRoutes(authUseCase, authMiddleware));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
 const postUserRoutes = require('./presentation/routes/users/postUser.routes');
 
-app.use('/user', postUserRoutes(authUseCase));
+app.use('/user', postUserRoutes(authUseCase, authMiddleware));
 
-app.use('/clinical', clinicalUserRoutes(authUseCase));
+app.use('/clinical', clinicalUserRoutes(authUseCase, authMiddleware));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
 
-app.use('/', clinicalRoutes(authUseCase));
+app.use('/', clinicalRoutes(authUseCase, authMiddleware));
 
 const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
 
-app.use('/', postPublicationRoutes(authUseCase));
+app.use('/', postPublicationRoutes(authUseCase, authMiddleware));
 
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
-app.use('/', dashboardRoutes(authUseCase));
+app.use('/', dashboardRoutes(authUseCase, authMiddleware));
 
 const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
 
-app.use('/', interventionRoutes(authUseCase));
+app.use('/', interventionRoutes(authUseCase, authMiddleware));
 const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
 
-app.use('/', getAllClinicalsRoutes(authUseCase));
+app.use('/', getAllClinicalsRoutes(authUseCase, authMiddleware));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
@@ -224,16 +224,16 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
-app.use('/api/profile', profileRoutes(authUseCase));
+app.use('/api/profile', profileRoutes(authUseCase, authMiddleware));
 
 // Applications
 
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
-app.use('/', testRoutes(authUseCase));
+app.use('/', testRoutes(authUseCase, authMiddleware));
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
-app.use('/api/tutorial', tutorialRoutes());
+app.use('/api/tutorial', tutorialRoutes(authMiddleware));
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {
