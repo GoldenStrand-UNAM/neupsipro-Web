@@ -39,7 +39,7 @@ class PostUserUseCase {
     neuroEntryDate,
     pairs,
     sex,
-    phone
+    phone,
   }) {
     const fpathology = validation.others(basePathology, otherPathology, 50, 'La etiología de amputación', true);
     const flevel = validation.others(amputationLevel, otherLevel, 'El nivel de amputación ', true);
@@ -62,7 +62,7 @@ class PostUserUseCase {
     const fAmputation = validation.validateDate(amputationDate, 'La fecha de amputación ', true);
     const fNeuroEntry = validation.validateDate(neuroEntryDate, 'La fecha de ingreso a neuropsicología ', false);
     const passwordHash = await this.hashingService.hash(password);
-    const fphone = validation.validate(phone, 16, 'El teléfono', 16);
+    const fphone = validation.validate(phone, 16, 'El teléfono', false);
 
     // Entity validation
     const user = new User ({
