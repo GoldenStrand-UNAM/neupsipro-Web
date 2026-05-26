@@ -147,6 +147,42 @@
               </select>
             </div>
           </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Teléfono
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="5574048122"
+                maxlength="16"
+              >
+              <span id="charactersPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/16 
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Email
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="email"
+                id="email"
+                placeholder="jorge.v@gmail.com"
+                maxlength="50"
+              >
+              <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/50 
+              </span>
+            </div>
+          </div>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
@@ -379,7 +415,7 @@
 
           <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Asignado <span style="color: #FF0404">*</span>
+              Colaborador asignado <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
               <select
@@ -395,7 +431,7 @@
 
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Usuario <span style="color: #FF0404">*</span>
+              Nombre de usuario <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
               <input
@@ -738,6 +774,8 @@
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');
+    setupCounter('phone', 'charactersPhone');
+    setupCounter('email', 'charactersEmail');
     validateDates('birthdate');
     validateDates('amputationDate');
     validateDates('neuroEntryDate');
