@@ -340,18 +340,17 @@
               Protesista <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
-              <input
+              <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
                 name="prosthetist"
                 id="prosthetist"
-                placeholder="Alejandra"
-                maxlength="20"
               >
-              <span id="charactersProsthetist" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
-              </span>
+                <option disabled selected hidden value="">Elige una opción</option>
+                <option value="CPO Alejandra Santos" class="text-black">CPO Alejandra Santos</option>
+                <option value="CPO Juan David Orozco" class="text-black">CPO Juan David Orozco</option>
+                <option value="CPO Melvin Arévalo" class="text-black">CPO Melvin Arévalo</option>
+              </select>
             </div>
           </div>
 
@@ -746,6 +745,7 @@
     changeDefaultColor('basePathology');
     changeDefaultColor('amputationLevel');
     changeDefaultColor('laterality');
+    changeDefaultColor('prosthetist');
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
