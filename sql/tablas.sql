@@ -875,3 +875,10 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(50) NOT NULL,
+    MODIFY COLUMN finish_date varchar(50) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(50) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
+    MODIFY COLUMN hours INT NULL;
