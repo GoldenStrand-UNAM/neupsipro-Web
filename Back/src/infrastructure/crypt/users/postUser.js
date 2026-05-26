@@ -11,6 +11,7 @@ function cryptUser (user) {
     ...first,
     ...second,
     ...third,
+    userName: user.userName,
     idRole: user.idRole,
     assigned: user.assigned,
     passwordHash: user.passwordHash,
@@ -18,15 +19,13 @@ function cryptUser (user) {
   };
 }
 
-function encryptFirst (user) {
-  const eUserName = crypt.encrypt(user.userName);
+function encryptFirst (user) {;
   const eFirstName = crypt.encrypt(user.firstName);
   const eLastnameP = crypt.encrypt(user.lastnameP);
   const eLastnameM = crypt.encrypt(user.lastnameM);
   const eBirthdate = crypt.encrypt(user.birthdate);
 
   return {
-    userName: eUserName,
     firstName: eFirstName,
     lastnameP: eLastnameP,
     lastnameM: eLastnameM,
