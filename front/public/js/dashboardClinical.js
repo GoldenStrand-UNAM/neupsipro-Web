@@ -172,7 +172,7 @@ async function loadUserInfoPanel (user) {
       return;
     }
     const ageStr = data.age
-      ? `${data.age.years} años · ${data.age.months} meses · ${data.age.days} días`
+      ? `${escapeHtml(data.age.years)} años · ${escapeHtml(data.age.months)} meses · ${data.age.days} días`
       : 'sin datos de edad';
 
     const protocolMap  = { Clinical: 'Clínico', Research: 'Investigación', Pending: 'Pendiente' };
