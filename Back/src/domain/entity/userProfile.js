@@ -10,7 +10,7 @@ class userProfile {
     lastNameM,
     profilePhoto,
     birthDate,
-    unitEntryDate,
+    registrationDate,
     neuroEntryDate,
     neuroStatus,
     protocol,
@@ -27,7 +27,7 @@ class userProfile {
     this.lastNameM = lastNameM;
     this.profilePhoto = profilePhoto;
     this.birthDate = birthDate;
-    this.unitEntryDate = unitEntryDate;
+    this.registrationDate = registrationDate;
     this.neuroEntryDate = neuroEntryDate;
     this.neuroStatus = neuroStatus;
     this.protocol = protocol;
