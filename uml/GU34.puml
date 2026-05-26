@@ -1,0 +1,67 @@
+@startuml ModifyProtocolSequence
+title Modify User Protocol - Sequence Diagram
+
+actor User as U
+participant "consultUser.ejs\n(Browser)" as View
+participant "protocolModal.ejs\n(JS)" as Modal
+participant "Express Router\n(getUser.Routes)" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "modifyProtocol\nController" as Ctrl
+participant "modifyProtocolUseCase" as UseCase
+participant "ImpUsers\nRepository" as Repo
+database "MySQL DB" as DB
+
+U -> View: Clicks "Protocolo" field
+activate View
+View -> Modal: Open modal
+activate Modal
+
+Modal -> Modal: Show options (Clinical, Research)
+Modal --> U: Display modal with form
+deactivate Modal
+
+U -> Modal: Selects new protocol
+activate Modal
+U -> Modal: Clicks "Guardar"
+Modal -> Modal: Validate selection not empty
+Modal -> Modal: Disable button, show "Guardando..."
+
+Modal -> Router: PATCH /users/:id_user/protocol
+activate Router
+Router -> Auth: verifyToken + requirePermission('writing')
+Auth --> Router: OK
+
+Router -> Ctrl: modifyProtocol(req, res)
+activate Ctrl
+Ctrl -> UseCase: execute({id_user, protocol})
+activate UseCase
+
+UseCase -> UseCase: Validate protocol enum\n(Clinical | Research)
+
+alt Validation fails (invalid protocol / user not found)
+  UseCase --> Ctrl: throw error
+  Ctrl --> Router: 400 { error }
+  Router --> Modal: error response
+  Modal --> U: Show error message
+else Valid request
+  UseCase -> Repo: editUserProtocol({id_user, protocol})
+  activate Repo
+  Repo -> DB: UPDATE user_info SET protocol = ?
+  DB --> Repo: affectedRows
+  Repo --> UseCase: updated user
+  deactivate Repo
+
+  UseCase --> Ctrl: UserDTO
+  deactivate UseCase
+  Ctrl --> Router: 200 OK + JSON
+  deactivate Ctrl
+  Router --> Modal: 200 OK
+  deactivate Router
+
+  Modal -> Modal: Show success toast
+  Modal -> View: window.location.reload()
+  deactivate Modal
+  View --> U: Refresh page with\nupdated protocol visible
+end
+
+@enduml
