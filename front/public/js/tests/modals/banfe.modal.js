@@ -169,6 +169,7 @@ function bindAreaUpdates (fields) {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
       if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
+      if (el.value.length > 5) el.value = el.value.slice(0, 5);
       errEl.classList.add('hidden');
       const n = Number(el.value);
       document.getElementById(interp).textContent = el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
