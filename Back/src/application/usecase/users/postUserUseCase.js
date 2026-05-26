@@ -1,6 +1,7 @@
 const User = require('../../../domain/entity/postUser');
 const UsersDTO = require('../../dto/postUsersDTO');
 const Validation = require('../../../infrastructure/external/validations');
+const crypt = require('../../../infrastructure/crypt/users/postUser');
 
 const validation = new Validation();
 
@@ -84,7 +85,9 @@ class PostUserUseCase {
       sex: fsex,
     });
 
-    const saved = await this.userRepository.postUser(user);
+    const cryptedUser = crypt(user);
+
+    const saved = await this.userRepository.postUser(cryptedUser);
 
     // Map saved into clean DTO for the client
     return UsersDTO.fromEntity(saved);
