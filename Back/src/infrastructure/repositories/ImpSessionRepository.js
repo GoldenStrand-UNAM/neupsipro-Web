@@ -34,5 +34,17 @@ class ImpSessionRepository {
       connection.release();
     }
   }
+
+  async isSessionActive (idSession) {
+    try {
+      const [rows] = await this.dbConnection.execute(
+        'SELECT id_session FROM sessions WHERE id_session = ? AND is_revoked = FALSE',
+        [idSession]
+      );
+      return rows.length > 0;
+    } catch (error) {
+      throw new Error('Error al verificar sesión', { cause: error });
+    }
+  }
 }
 module.exports = ImpSessionRepository;
