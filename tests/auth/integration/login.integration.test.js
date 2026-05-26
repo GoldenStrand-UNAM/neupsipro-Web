@@ -2,7 +2,7 @@ const request = require('supertest');
 const mockFindByUsername = jest.fn();
 const mockCompare = jest.fn();
 const mockGenerateToken = jest.fn();
-const mockCreateSession = jest.fn();
+const mockReplaceActiveSessions = jest.fn();
 /*
     This test is designed to run integration tests for login, the main features it tests are:
     - Basic flow that tests from login to home
@@ -28,7 +28,7 @@ jest.mock('../../../Back/src/infrastructure/external/jwt.service', () => {
 });
 
 jest.mock('../../../Back/src/infrastructure/repositories/ImpSessionRepository', () => {
-    return jest.fn().mockImplementation(() => ({ createSession: mockCreateSession, deleteAllActiveSessions: jest.fn() }));
+    return jest.fn().mockImplementation(() => ({ replaceActiveSessions: mockReplaceActiveSessions }));
 });
 
 const app = require('../../../Back/src/app');
@@ -49,7 +49,7 @@ describe('Login Integration Test', () => {
         });
         mockCompare.mockResolvedValue(true);
         mockGenerateToken.mockReturnValue('fake-token');
-        mockCreateSession.mockResolvedValue(123);
+        mockReplaceActiveSessions.mockResolvedValue(123);
 
         const response = await request(app)
             .post('/auth/login')
