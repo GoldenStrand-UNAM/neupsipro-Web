@@ -27,5 +27,16 @@ class ImpSessionRepository {
       throw new Error('Error al crear la sesión en la base de datos: ', { cause: error });
     }
   }
+
+  async deleteAllActiveSessions (userId) {
+    try {
+      await this.dbConnection.execute(
+        'DELETE FROM sessions WHERE id_user = ? AND is_revoked = FALSE',
+        [userId]
+      );
+    } catch (error) {
+      throw new Error('Error al eliminar sesiones activas', { cause: error });
+    }
+  }
 }
 module.exports = ImpSessionRepository;

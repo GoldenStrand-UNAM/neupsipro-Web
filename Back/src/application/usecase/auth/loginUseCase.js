@@ -44,6 +44,8 @@ class LoginUseCase {
       throw new Error ('Credenciales inválidas');
     }
 
+    await this.sessionRepository.deleteAllActiveSessions(userDto.idUser);
+
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 2);
 

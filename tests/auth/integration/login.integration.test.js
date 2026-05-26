@@ -28,7 +28,7 @@ jest.mock('../../../Back/src/infrastructure/external/jwt.service', () => {
 });
 
 jest.mock('../../../Back/src/infrastructure/repositories/ImpSessionRepository', () => {
-    return jest.fn().mockImplementation(() => ({ createSession: mockCreateSession }));
+    return jest.fn().mockImplementation(() => ({ createSession: mockCreateSession, deleteAllActiveSessions: jest.fn() }));
 });
 
 const app = require('../../../Back/src/app');
