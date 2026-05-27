@@ -9,6 +9,7 @@ const enumModality = { ONLINE: 'En línea', IN_PERSON: 'Presencial' };
 const enumLaterality = { LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra' };
 const enumPhase = { PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología' };
 const enumPairs = { YES: 'Sí asiste', NO: 'No asiste' };
+const enumProsthetist = { JUAN: 'CPO Juan David Orozco', ALEJANDRA: 'CPO Alejandra Santos', MELVIN: 'CPO Melvin Arévalo' };
 
 class PostUserUseCase {
   constructor (userRepository, hashingService) {
@@ -33,7 +34,6 @@ class PostUserUseCase {
     referenceNumber,
     amputationDate,
     amputationLevel,
-    otherLevel,
     laterality,
     prosthetist,
     neuroEntryDate,
@@ -42,7 +42,7 @@ class PostUserUseCase {
     phone,
   }) {
     const fpathology = validation.others(basePathology, otherPathology, 50, 'La etiología de amputación', true);
-    const flevel = validation.others(amputationLevel, otherLevel, 'El nivel de amputación ', true);
+    const flevel = validation.validate(amputationLevel, 30, 'El nivel de amputación ', true);
     validation.validate(userName, 30, 'El nombre de usuario', true);
     const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
     const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
@@ -52,7 +52,7 @@ class PostUserUseCase {
     validation.validate(assigned, 36, 'El clínico asignado', true);
     validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
     const freferenceNumber = validation.validate(referenceNumber, 10, 'El folio', true);
-    const fprosthetist = validation.validate(prosthetist, 20, 'El/la protesista', true);
+    const fprosthetist = validation.validateEnum(prosthetist, enumProsthetist);
     const fsex = validation.validateEnum(sex, enumSex);
     const fmodality = validation.validateEnum(modality, enumModality);
     const flaterality = validation.validateEnum(laterality, enumLaterality);
