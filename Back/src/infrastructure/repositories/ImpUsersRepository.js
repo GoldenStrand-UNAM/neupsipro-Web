@@ -176,7 +176,6 @@ class ImpUsersRepository extends usersRepository {
     }
   }
 
-  
   async editUser ({
     id_user,
     userName,
@@ -187,6 +186,7 @@ class ImpUsersRepository extends usersRepository {
     sex,
     email,
     phone,
+    passwordHash,
     profilePhoto,
     referenceNumber,
     phase,
@@ -204,14 +204,25 @@ class ImpUsersRepository extends usersRepository {
     try {
       await connection.query('START TRANSACTION');
   
+      // Update main user information
+      // COALESCE preserves current profile photo/password
       await connection.query(
         `UPDATE users
-            SET user_name = ?, first_name = ?, lastname_p = ?, lastname_m = ?,
-                email = ?, birthdate = ?, gender = ?, profile_photo = COALESCE(?, profile_photo)
+            SET user_name     = ?,
+                first_name    = ?,
+                lastname_p    = ?,
+                lastname_m    = ?,
+                email         = ?,
+                birthdate     = ?,
+                gender        = ?,
+                profile_photo = COALESCE(?, profile_photo),
+                password_hash = COALESCE(?, password_hash)
           WHERE id_user = ?`,
-        [userName, firstName, lastnameP, lastnameM, email, birthdate, sex, profilePhoto, id_user]
+        [userName, firstName, lastnameP, lastnameM, email, birthdate, sex,
+        profilePhoto, passwordHash, id_user]
       );
   
+      // Update clinical info table
       await connection.query(
         `UPDATE user_info
             SET neuro_status = ?, base_patology = ?, modality = ?, reference_number = ?,
@@ -222,6 +233,7 @@ class ImpUsersRepository extends usersRepository {
         amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, phone, id_user]
       );
   
+      // update assigned clinic 
       await connection.query(
         `UPDATE user_relation
             SET id_clinic_user = ?
@@ -232,7 +244,8 @@ class ImpUsersRepository extends usersRepository {
       const [rows] = await connection.query(
         `SELECT
           u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.profile_photo, u.gender,
-          ui.neuro_status, ui.base_patology, ui.modality, ui.reference_number, ui.amputation_date, ui.amputation_level, ui.laterality, ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
+          ui.neuro_status, ui.base_patology, ui.modality, ui.reference_number, ui.amputation_date, ui.amputation_level,
+          ui.laterality, ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
           ur.id_clinic_user
           FROM users u
           LEFT JOIN user_info ui ON ui.id_user = u.id_user
@@ -241,17 +254,19 @@ class ImpUsersRepository extends usersRepository {
         [id_user]
       );
   
+      // Confirm transasction
       await connection.query('COMMIT');
   
       return rows[0];
     } catch (error) {
+      // If any query fails, rollback the entire transaction
       await connection.query('ROLLBACK');
       throw error;
     } finally {
       connection.release();
     }
   }
-  
+
   async softDeleteUser ({ id_user }) {
     const [result] = await db.query(
       `UPDATE users 
@@ -287,29 +302,30 @@ class ImpUsersRepository extends usersRepository {
   async fetchUserForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
-          u.id_user,
-          u.user_name,
-          u.first_name,
-          u.lastname_p,
+          u.id_user, 
+          u.user_name, 
+          u.first_name, 
+          u.lastname_p, 
           u.lastname_m,
-          u.email,
-          u.birthdate,
-          u.gender,
+          u.email, 
+          u.birthdate, 
+          u.gender, 
           u.profile_photo,
           ui.neuro_status,
-          ui.base_patology,
-          ui.modality,
+          ui.base_patology, 
+          ui.modality, 
           ui.reference_number,
-          ui.amputation_date,
-          ui.amputation_level,
-          ui.laterality,
+          ui.amputation_date, 
+          ui.amputation_level, 
+          ui.laterality, 
           ui.prosthetist,
-          ui.neuro_entry_date,
-          ui.group_intervention,
+          ui.neuro_entry_date, 
+          ui.group_intervention, 
+          ui.phone,
           ur.id_clinic_user
         FROM users u
-        LEFT JOIN user_info ui      ON ui.id_user = u.id_user
-        LEFT JOIN user_relation ur  ON ur.id_user = u.id_user AND ur.type = 'assigned'
+        LEFT JOIN user_info ui     ON ui.id_user = u.id_user
+        LEFT JOIN user_relation ur ON ur.id_user = u.id_user AND ur.type = 'assigned'
       WHERE u.id_user = ? AND u.eliminated = 0`,
       [id_user]
     );
