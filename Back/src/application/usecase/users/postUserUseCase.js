@@ -5,7 +5,7 @@ const Validation = require('../../../infrastructure/external/validations');
 const validation = new Validation();
 
 const enumSex = { FEMENINE: 'Femenino', MASCULINE: 'Masculino', NOT_SPECIFIED: 'Sin especificar' };
-const enumModality = { ROTARY: 'Rotaria', IN_PERSON: 'Presencial' };
+const enumModality = { ONLINE: 'En línea', IN_PERSON: 'Presencial' };
 const enumLaterality = { LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra' };
 const enumPhase = { PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología' };
 const enumPairs = { YES: 'Sí asiste', NO: 'No asiste' };
