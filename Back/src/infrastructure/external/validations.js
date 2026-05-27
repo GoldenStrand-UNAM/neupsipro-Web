@@ -51,4 +51,27 @@ class validation {
     else
       return null;
   }
+
+  validatePhone (phone, label) {
+    if (phone) {
+      const regex = /^[\d\s+\-()]+$/;
+      if (!phone.match(regex)) {
+        throw new Error('El formato del teléfono es inválido. Solo se permite + - ( )');
+      }
+      if (phone.length < 8) throw new Error(`${label} es demasiado corto`);
+
+      return phone;
+    }
+  }
+
+  validateEmail (email, label) {
+    if (email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.match(regex)) {
+        throw new Error('El formato del email es inválido');
+      }
+      if (email.length < 7) throw new Error(`${label} es demasiado`);
+      return email;
+    }
+  }
 } module.exports = validation;
