@@ -16,8 +16,15 @@ class forumController {
       const { posts, total } = await this.getForumUseCase.execute({ page, limit });
       const totalPages = Math.ceil(total / limit);
 
-      const userId = request.user.userId;
-      const canEliminate = await this.authUseCase.checkPermission(userId, 'Forum', 'eliminate');
+      const userId = request.user?.userId ?? request.user?.id;
+      let canEliminate = false;
+      if (userId) {
+        try {
+          canEliminate = await this.authUseCase.checkPermission(userId, 'Forum', 'eliminate');
+        } catch {
+          canEliminate = false;
+        }
+      }
 
       response.render ('forum/forum', {
         activePage: 'forum',   tutorialModule: 'forum',
