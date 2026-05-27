@@ -40,7 +40,7 @@ function removeSkeletons () {
   document.querySelectorAll('.test-card-skeleton').forEach(el => el.remove());
 }
 
-// Updates badge text and variant class on a card after a successful save
+// Updates badge, card color, and cached test data after a successful save
 // eslint-disable-next-line no-unused-vars
 function updateTestCardStatus (dto) {
   const card = document.querySelector(`[data-id-results="${dto.idResults}"]`);
@@ -63,7 +63,28 @@ function updateTestCardStatus (dto) {
 
   badge.querySelector('p').textContent = label;
 
+  const newVariant = getVariant(label);
   const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
   variants.forEach(v => badge.classList.remove(`application-card__badge--${v}`));
-  badge.classList.add(`application-card__badge--${getVariant(label)}`);
+  badge.classList.add(`application-card__badge--${newVariant}`);
+
+  variants.forEach(v => card.classList.remove(`application-card--${v}`));
+  card.classList.add(`application-card--${newVariant}`);
+
+  if (dto.dateApplied) {
+    const dateEl = card.querySelector('.application-card__date');
+    if (dateEl) {
+      const formatted = new Date(dto.dateApplied).toLocaleDateString('es-MX');
+      dateEl.textContent = `Aplicada: ${formatted}`;
+    }
+  }
+
+  if (card.dataset.test) {
+    try {
+      const testData = JSON.parse(card.dataset.test);
+      testData.status = label;
+      if (dto.dateApplied) testData.dateApplied = dto.dateApplied;
+      card.dataset.test = JSON.stringify(testData);
+    } catch { /* datos corruptos, se ignoran */}
+  }
 }
