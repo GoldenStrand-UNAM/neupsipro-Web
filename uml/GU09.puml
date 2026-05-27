@@ -1,0 +1,93 @@
+@startuml EditUserSequence
+title Modify User - Sequence Diagram
+
+actor User as U
+participant "consultUser.ejs\n(Browser)" as View
+participant "editUserModal.ejs\n(JS)" as Modal
+participant "Express Router\n(getUser.Routes)" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "loadEditUser\nController" as LoadCtrl
+participant "editUser\nController" as EditCtrl
+participant "loadEditUserUseCase" as LoadUC
+participant "editUserUseCase" as EditUC
+participant "ImpUsers\nRepository" as Repo
+database "MySQL DB" as DB
+
+U -> View: Clicks "Editar" (kebab menu)
+activate View
+View -> Modal: Open modal
+activate Modal
+
+Modal -> Modal: Show loading state
+
+Modal -> Router: GET /users/:id_user/edit-data
+activate Router
+Router -> Auth: verifyToken + requirePermission('writing')
+Auth --> Router: OK
+Router -> LoadCtrl: loadEditUser(req, res)
+activate LoadCtrl
+LoadCtrl -> LoadUC: execute({id_user})
+activate LoadUC
+LoadUC -> Repo: fetchUserForEdit({id_user})
+activate Repo
+Repo -> DB: SELECT users + user_info + user_relation
+DB --> Repo: row
+Repo --> LoadUC: user data
+deactivate Repo
+LoadUC --> LoadCtrl: editable user data
+deactivate LoadUC
+LoadCtrl --> Router: 200 OK + JSON
+deactivate LoadCtrl
+Router --> Modal: user data
+deactivate Router
+
+Modal -> Modal: Populate form with current values
+Modal --> U: Display modal with pre-filled form
+deactivate Modal
+
+U -> Modal: Modifies fields
+activate Modal
+U -> Modal: Clicks "Guardar cambios"
+Modal -> Modal: Validate required fields
+Modal -> Modal: Disable button, show "Guardando..."
+
+Modal -> Router: PUT /users/:id_user
+activate Router
+Router -> Auth: verifyToken + requirePermission('writing')
+Auth --> Router: OK
+Router -> EditCtrl: editUser(req, res)
+activate EditCtrl
+EditCtrl -> EditUC: execute({id_user, ...fields})
+activate EditUC
+
+EditUC -> EditUC: Validate fields\n(text lengths, enums, dates)
+
+alt Validation fails (invalid data / user not found / duplicate userName or reference)
+  EditUC --> EditCtrl: throw error
+  EditCtrl --> Router: 400 { error }
+  Router --> Modal: error response
+  Modal --> U: Show error message
+else Valid request
+  EditUC -> Repo: editUser({id_user, ...fields})
+  activate Repo
+  Repo -> DB: UPDATE users SET ...
+  Repo -> DB: UPDATE user_info SET ...
+  Repo -> DB: UPDATE user_relation SET id_clinic_user
+  DB --> Repo: affectedRows
+  Repo --> EditUC: updated user
+  deactivate Repo
+
+  EditUC --> EditCtrl: UserDTO
+  deactivate EditUC
+  EditCtrl --> Router: 200 OK + JSON
+  deactivate EditCtrl
+  Router --> Modal: 200 OK
+  deactivate Router
+
+  Modal -> Modal: Show success toast
+  Modal -> View: window.location.reload()
+  deactivate Modal
+  View --> U: Refresh page with\nupdated user info visible
+end
+
+@enduml
