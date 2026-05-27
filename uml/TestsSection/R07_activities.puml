@@ -1,0 +1,91 @@
+@startuml diagrama de actividades BANFE
+
+title BANFE
+
+|User|
+start
+:Selects BANFE test card;
+
+|System|
+if (Is application expired?) then (yes)
+  :Shows expiry banner\nOnly Consult enabled;
+  stop
+endif
+
+:Shows options modal;
+note right
+  Register: disabled if already graded
+  Modify: only if graded and active
+  Consult: only if graded
+end note
+
+|User|
+:Selects "Register results";
+
+|System|
+:Shows register modal\nwith 3 scoring areas;
+
+|User|
+:Enters score in an area;
+
+|System|
+:Validates input in real time;
+if (Invalid input?) then (yes)
+  :Shows error per field;
+  |User|
+  :Corrects the field;
+  |System|
+endif
+:Shows live interpretation per area;
+:Updates total score in real time;
+
+|User|
+:Enters notes (optional);
+
+|System|
+:Updates character counter;
+
+|User|
+if (Wants to save?) then (yes)
+
+  |System|
+  :Validates data client-side;
+  if (Valid data?) then (no)
+    :Shows error per field;
+    |User|
+    :Corrects the data;
+    |System|
+  endif
+
+  :Sends data to server;
+
+  :Validates data server-side;
+  if (Validation ok?) then (no)
+    :Returns error;
+    :Shows API error;
+    stop
+  endif
+
+  :Verifies result row existence;
+  if (Result found?) then (no)
+    :Returns error;
+    :Shows API error;
+    stop
+  endif
+
+  :Recalculates interpretations;
+  :Saves results to database;
+  :Updates test status;
+  :Returns confirmation;
+
+  :Closes modal;
+  :Updates card badge;
+  :Shows success message;
+  stop
+
+else (no)
+  :Closes modal;
+  stop
+endif
+
+@enduml

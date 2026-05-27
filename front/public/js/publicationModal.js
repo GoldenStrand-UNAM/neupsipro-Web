@@ -1,11 +1,7 @@
+/* eslint-disable no-undef */
+/* eslint-disable max-lines-per-function */
 document.addEventListener('DOMContentLoaded', () => {
 
-  const savedToast = sessionStorage.getItem('pendingToast');
-  if (savedToast) {
-    const { message, type } = JSON.parse(savedToast);
-    sessionStorage.removeItem('pendingToast');
-    showToast(message, type);
-  }
   const publications = document.querySelectorAll('[id^="p-"]');
   const publicationModal = document.getElementById('publicationContent');
   const publicationBox = document.getElementById('publicationBox');
@@ -26,30 +22,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modalHTML = (dto) => {
     const publication = dto.publication[0];
-    const date = new Date(publication.date).toLocaleString('es-MX', {
-      year: 'numeric', month: '2-digit', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
+    const date = formatDate(publication.date);
+
     // This was changed from ejs to js by AI
     return `
     <div class="flex items-center sm:flex-row gap-4 p-6">
     ${publication.pp
     ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${publication.pp}">`
     : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
-                ${publication.firstName ? publication.firstName.charAt(0).toUpperCase() : '?'}
+                ${escapeHtml(publication.firstName) ? publication.firstName.charAt(0).toUpperCase() : '?'}
                </div>`
 }
         <div>
-            <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${publication.firstName}</p>
+            <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${escapeHtml(publication.firstName)}</p>
         </div>
         <div>
-            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 whitespace-nowrap">${date}</p>
+            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">${escapeHtml(date)}</p>
         </div>
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4 sm:py-2 justify-between">
-        ${publication.title
-    ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${publication.title}</p>
+        ${escapeHtml(publication.title)
+    ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${escapeHtml(publication.title)}</p>
     <button id="btnOpenDeletePost"
             class="p-1 hover:text-red-500 cursor-pointer"
             title="Eliminar publicación">
@@ -63,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4 min-w-0">
-        ${publication.content
-    ? `<p class="wrap-break-word min-w-0 w-full overflow-hidden text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+        ${escapeHtml(publication.content)
+    ? `<p class="wrap-break-word min-w-0 w-full overflow-hidden text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${escapeHtml(publication.content)}</p>`
     : ''
 }
     </div>
@@ -92,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </button>  
         <p class="font-['Roboto'] text-lg sm:text-2xl text-gray-500 whitespace-nowrap pt-2 px-2">${dto.comments}</p>
     </div>
-
-    <div class="input-div py-8 px-6">
+    <!-- Hidden button forfuture functionality -->
+    <div class="hidden input-div py-8 px-6">
         <input id="comment" type="text" name="comment" placeholder="Escribe un comentario..." class="input-base" maxlength="200">
         <small id="usernameMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
     </div>
@@ -108,12 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
                        </div>`
 }
                 <div>
-                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${interaction.firstName}</p>
+                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${escapeHtml(interaction.firstName)}</p>
                 </div>
             </div>
             <div class=" flex sm:flex-row gap-2 px-7 py-2">
-                ${interaction.content
-    ? `<p class= "break-words w-full text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
+                ${escapeHtml(interaction.content)
+    ? `<p class= "break-words w-full text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${escapeHtml(interaction.content)}</p>`
     : ''
 }
             </div>
@@ -174,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmDeleteBtn.innerHTML = original;
     }
   });
-
   publications.forEach (publication => {
     publication.addEventListener('click', async (e) =>{
       const idModified = e.currentTarget.id;
@@ -184,6 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const publication = await fetch(`/publication/${id}`);
         if (!publication.ok) throw new Error('Error al buscar publicación');
+        publicationModal.innerHTML =
+          `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada!</p>
+          `;
         const result = await publication.json();
         if (result.success) {
           publicationModal.innerHTML = modalHTML(result.dto);

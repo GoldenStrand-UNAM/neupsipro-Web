@@ -1,0 +1,56 @@
+@startuml Tutorial Sequence Diagram
+
+actor User
+participant "(EJS View)" as View
+participant "header.ejs" as Header
+participant "tutorial.js" as TutorialJS
+participant "Router\n(/api/tutorial)" as API
+participant "GetTutorialController" as Controller
+participant "GetTutorialUseCase" as UseCase
+participant "ImpTutorialRepository" as Repository
+database "MySQL\n(tutorial table)" as DB
+participant "Driver.js" as Driver
+
+User -> Header : clicks help button
+Header -> TutorialJS : startTutorial()
+
+TutorialJS -> TutorialJS : check window.driver?.js?.driver
+alt Driver.js not loaded
+    TutorialJS -> View : showToast('Driver.js error')
+end
+
+TutorialJS -> View : read document.body.dataset.module
+View --> TutorialJS : page (e.g. 'forum')
+
+alt page is undefined
+    TutorialJS -> View : showToast('No tutorial for this page')
+end
+
+TutorialJS -> API : GET /api/tutorial?page=forum
+API -> Controller : getTutorial(req, res)
+Controller -> Controller : validate req.query.page
+
+Controller -> UseCase : execute(page)
+UseCase -> Repository : getByPage(page)
+Repository -> DB : SELECT step_order, title, content\nWHERE page = ? ORDER BY step_order
+DB --> Repository : rows[]
+Repository --> UseCase : steps[]
+UseCase --> Controller : steps[]
+
+alt steps is empty
+    Controller --> TutorialJS : 200 []
+    TutorialJS -> View : showToast('No tutorial available')
+end
+
+Controller --> TutorialJS : 200 steps[]
+
+TutorialJS -> TutorialJS : read tutorialElements map\n(defined in each view)
+TutorialJS -> TutorialJS : filter steps whose element\nexists in the DOM
+TutorialJS -> TutorialJS : map steps to Driver.js format
+
+TutorialJS -> Driver : driver({ steps }).drive()
+Driver -> View : highlight element + show popover
+User -> Driver : navigate (next / prev / finish)
+Driver -> View : move to next step or close
+
+@enduml
