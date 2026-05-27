@@ -875,3 +875,5 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
+ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);
+

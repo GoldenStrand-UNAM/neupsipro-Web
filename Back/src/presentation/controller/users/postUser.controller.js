@@ -6,7 +6,7 @@ class PostUserController {
   async postUser (request, res) {
     try {
       // Extract query params
-      const { idRole = '2', userName, firstName, lastnameP, lastnameM = null, email = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, otherLevel, laterality, prosthetist, neuroEntryDate, pairs, sex, phone = null } = request.body;
+      const { idRole = '2', userName, firstName, lastnameP, lastnameM = null, email = null, birthdate, password, assigned, phase, basePathology, otherPathology, modality, referenceNumber, amputationDate, amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, sex, phone = null } = request.body;
       const profilePhoto = request.file ? request.file.s3Location : null;
 
       const user = await this.PostUserUseCase.execute({
@@ -27,7 +27,6 @@ class PostUserController {
         referenceNumber,
         amputationDate,
         amputationLevel,
-        otherLevel,
         laterality,
         prosthetist,
         neuroEntryDate,
