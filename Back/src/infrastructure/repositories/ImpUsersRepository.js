@@ -65,7 +65,7 @@ class ImpUsersRepository extends usersRepository {
     return rows.map(row => new userSummary(row));
   }
 
-  async countActivePatients  ({ page, limit }) {
+  async countActivePatients  () {
     const [rows] = await db.query(`SELECT COUNT(*) AS total
             FROM users u
             WHERE u.id_role = 2
