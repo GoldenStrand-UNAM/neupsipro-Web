@@ -1,0 +1,43 @@
+@startuml
+title View tests assigned to a user
+
+|User|
+start
+:Selects a user;
+
+|System|
+:Displays user profile;
+:Evaluates application statuses in the background;
+:Updates statuses in database;
+
+note right
+  Por comenzar: no tests graded
+  En proceso: at least one test graded
+  Completada: all tests graded
+  Caducada: incomplete tests past expiry threshold
+
+  Clinical: 3 months
+  Research: 6 months
+end note
+
+|User|
+:Selects an application;
+
+|System|
+:Fetches tests assigned to the application;
+
+if (Is application expired?) then (yes)
+  :Shows expiry banner;
+endif
+
+:Displays test cards with current status;
+
+note right
+  Por comenzar
+  En proceso
+  Calificada
+  Caducada
+end note
+
+stop
+@enduml
