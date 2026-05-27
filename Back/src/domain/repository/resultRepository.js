@@ -37,6 +37,36 @@ class resultRepository {
     throw new Error('fetchTestsWithDateByApplication() not implemented');
   }
 
+  //========= BANFE ========================
+  async saveBanfeResult ({
+    _id_results,
+    _score_orbit_frontal,    _inter_orbit_frontal,
+    _score_prefrontal_before, _inter_prefrontal_before,
+    _score_d_lateral,        _inter_d_lateral,
+    _score_total,
+  }) {
+    throw new Error('saveBanfeResult() not implemented');
+  }
+
+  async fetchBanfeResult ({ _id_results }) {
+    throw new Error('fetchBanfeResult() not implemented');
+  }
+
+  //========= BANFE ========================
+  async saveBanfeResult ({
+    _id_results,
+    _score_orbit_frontal,    _inter_orbit_frontal,
+    _score_prefrontal_before, _inter_prefrontal_before,
+    _score_d_lateral,        _inter_d_lateral,
+    _score_total,
+  }) {
+    throw new Error('saveBanfeResult() not implemented');
+  }
+
+  async fetchBanfeResult ({ _id_results }) {
+    throw new Error('fetchBanfeResult() not implemented');
+  }
+
 }
 
 module.exports = resultRepository;
