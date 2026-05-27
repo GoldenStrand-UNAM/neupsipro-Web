@@ -30,20 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ${publication.pp
     ? `<img class="w-15 h-15 rounded-full object-cover border-2 border-gray-100" src="${publication.pp}">`
     : `<div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium flex-shrink-0">
-                ${publication.firstName ? publication.firstName.charAt(0).toUpperCase() : '?'}
+                ${escapeHtml(publication.firstName) ? publication.firstName.charAt(0).toUpperCase() : '?'}
                </div>`
 }
         <div>
-            <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${publication.firstName}</p>
+            <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${escapeHtml(publication.firstName)}</p>
         </div>
         <div>
-            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">${date}</p>
+            <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">${escapeHtml(date)}</p>
         </div>
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4 sm:py-2 justify-between">
-        ${publication.title
-    ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${publication.title}</p>
+        ${escapeHtml(publication.title)
+    ? `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">${escapeHtml(publication.title)}</p>
     <button id="btnOpenDeletePost"
             class="p-1 hover:text-red-500 cursor-pointer"
             title="Eliminar publicación">
@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <div class="flex sm:flex-row gap-2 px-6 py-4 min-w-0">
-        ${publication.content
-    ? `<p class="wrap-break-word min-w-0 w-full overflow-hidden text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${publication.content}</p>`
+        ${escapeHtml(publication.content)
+    ? `<p class="wrap-break-word min-w-0 w-full overflow-hidden text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${escapeHtml(publication.content)}</p>`
     : ''
 }
     </div>
@@ -102,12 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
                        </div>`
 }
                 <div>
-                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${interaction.firstName}</p>
+                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight">${escapeHtml(interaction.firstName)}</p>
                 </div>
             </div>
             <div class=" flex sm:flex-row gap-2 px-7 py-2">
-                ${interaction.content
-    ? `<p class= "break-words w-full text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${interaction.content}</p>`
+                ${escapeHtml(interaction.content)
+    ? `<p class= "break-words w-full text-left font-['Roboto'] text-base sm:text-xl text-black font-regular leading-tight">${escapeHtml(interaction.content)}</p>`
     : ''
 }
             </div>

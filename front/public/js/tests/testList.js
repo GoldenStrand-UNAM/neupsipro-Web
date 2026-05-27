@@ -27,8 +27,9 @@
       <div class="application-card application-card--${variant} ${isClickable ? 'cursor-pointer' : ''}"
           data-id-results="${escapeHTML(test.idResults)}"
           data-id-test="${escapeHTML(String(test.idTest))}"
+          data-test='${testJson}'
           ${isClickable
-    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",{test:${testJson},applicationStatus:"${escapeHTML(applicationStatus)}"})'`
+    ? `onclick='openOptionsModal("${escapeHTML(idUser)}","${escapeHTML(idApplication)}",{test:JSON.parse(this.dataset.test),applicationStatus:"${escapeHTML(applicationStatus)}"})'`
     : ''}>
 
         <div class="application-card__badge application-card__badge--${variant}">
