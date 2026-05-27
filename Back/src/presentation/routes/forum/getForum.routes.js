@@ -11,7 +11,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const repository = new ImpForumRepository();
   const useCase = new GetForumUseCase(repository);
-  const controller = new ForumController(useCase);
+  const controller = new ForumController(useCase, authUseCase);
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
