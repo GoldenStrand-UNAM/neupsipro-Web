@@ -31,12 +31,12 @@
             </a>
             <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario Clínico</h1>
           </div>
-            <button onclick="resetFormBtn()" id="clearBtn" class="btn-clear">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              <span>Limpiar</span>
-            </button>
+          <button onclick="resetFormBtn()" id="clearBtn" class="btn-clear">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Limpiar</span>
+          </button>
         </div>
         <div> 
           <img src="/assets/Linear-determinate progress indicator.svg"  alt="Progress indicator" class="w-full">         
@@ -424,7 +424,9 @@
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
+
       const data = await res.json();
+
       if (res.ok) {
         sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
@@ -449,10 +451,25 @@
       userInput.style.border = '';
       userInput.style.boxShadow = '';
     });
-    
+
+    function setupCounter(inputId, counterId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+
+      if (!input || !counter) return;
+
+      const max = input.getAttribute('maxlength');
+
+      input.addEventListener('input', () => {
+        const longitud = input.value.length;
+        counter.textContent = `${longitud}/${max}`;
+      });
+    }
+
     function validateDates(id){
       const inputFecha = document.getElementById(id);
       const today = new Date();
+
       const fp = flatpickr(document.getElementById(id), {
         dateFormat: "d/m/Y",
         allowInput: true,
@@ -460,6 +477,7 @@
         minDate: "01/01/1900",
         disableMobile: true
       });
+
       inputFecha.addEventListener('input', (e) => {
         let v = e.target.value.replace(/\D/g, '');
         let finalValue = "";
@@ -476,12 +494,16 @@
           else if (v.length <= 4) finalValue = day + "/" + month;
           else finalValue = day + "/" + month + "/" + year;
         }
+
         e.target.value = finalValue;
+
       });
     }
+
     function validateFutureDates(id){
       const inputFecha = document.getElementById(id);
       const today = new Date();
+
       const fp = flatpickr(document.getElementById(id), {
         dateFormat: "d/m/Y",
         allowInput: true,
@@ -505,13 +527,18 @@
           else if (v.length <= 4) finalValue = day + "/" + month;
           else finalValue = day + "/" + month + "/" + year;
         }
+
         e.target.value = finalValue;
+
       });
     }
+
     function validatePhone(id) {
       const inputPhone = document.getElementById(id);
+
       inputPhone.addEventListener('input', (e) => {
         let v = e.target.value.replace(/[^0-9+]/g, '');
+
         if (v.includes('+')) {
           const hasPlus = v.startsWith('+');
           v = v.replace(/\+/g, '');
@@ -519,19 +546,25 @@
             v = '+' + v;
           }
         }
+
         e.target.value = v;
       });
     }
+
     function validateNumber(id) {
       const inputNumber = document.getElementById(id);
+
       inputNumber.addEventListener('input', (e) => {
         let v = e.target.value.replace(/[^0-9]/g, '');
+
         e.target.value = v;
       });
     }
+
     function validateMatch() {
       const val = passInput.value;
       const confVal = confirmInput.value;
+
       if (val === confVal) {
         document.getElementById('validation').textContent = "";
         confirmInput.setCustomValidity("");
