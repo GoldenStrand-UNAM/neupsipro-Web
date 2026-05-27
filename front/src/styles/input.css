@@ -28,10 +28,3 @@ body:has(#sidebar) {
   overscroll-behavior: none;
 }
 
-html:has(#loginForm),
-body:has(#loginForm) {
-  overflow: hidden;
-  overscroll-behavior: none;
-  height: 100%;
-}
-
