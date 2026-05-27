@@ -13,7 +13,7 @@ module.exports = (authUseCase) => {
 
   const repository = new ImpForumRepository();
   const useCase = new GetForumUseCase(repository);
-  const controller = new ForumController(useCase);
+  const controller = new ForumController(useCase, authUseCase);
 
   const jwtService = new JwtService();
   const authMiddleware = new AuthMiddleware(jwtService);
