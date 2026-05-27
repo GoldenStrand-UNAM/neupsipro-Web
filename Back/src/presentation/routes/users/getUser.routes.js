@@ -67,7 +67,7 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/:id_user/applications/check-expiry',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => expiryController.checkExpiry(req, res)
   );
