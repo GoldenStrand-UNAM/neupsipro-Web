@@ -1,0 +1,93 @@
+@startuml diagrama de actividades WAIS
+
+title WAIS
+
+|User|
+start
+:Selects WAIS test card;
+
+|System|
+if (Is application expired?) then (yes)
+  :Shows expiry banner\nOnly Consult enabled;
+  stop
+endif
+
+:Shows options modal\nRegister / Modify / Consult;
+
+|User|
+:Selects an option;
+
+if (Option selected?) then (Register)
+
+  |System|
+  :Shows register modal\nwith 4 scoring areas\n- Comprensión Verbal\n- Razonamiento Perceptual\n- Memoria de Trabajo\n- Velocidad de Procesamiento\nand CI Total;
+
+  |User|
+  :Enters score in an area or CI Total;
+
+  |System|
+  :Validates input in real time;
+  if (Invalid input?) then (yes)
+    :Shows error per field;
+    |User|
+    :Corrects the field;
+    |System|
+  endif
+  :Shows live interpretation per area and CI Total\n<=69 Discapacidad\n70-79 Limítrofe\n80-89 Promedio bajo\n90-109 Promedio\n110-119 Promedio alto\n120-129 Superior\n>=130 Alta capacidad intelectual;
+
+  |User|
+  :Enters notes (optional);
+
+  |System|
+  :Updates character counter;
+
+  |User|
+  if (Wants to save?) then (yes)
+
+    |System|
+    :Validates data client-side\n- 4 area scores and CI Total\n  present and non-negative\n- notes max 200 chars;
+    if (Valid data?) then (no)
+      :Shows error per field;
+      |User|
+      :Corrects the data;
+      |System|
+    endif
+
+    :Sends data to server;
+    stop
+
+  else (no)
+    :Closes modal;
+    stop
+  endif
+
+else (Modify)
+
+  |System|
+  :Fetches existing WAIS results;
+  :Opens modal with pre-filled data\nscores and interpretations loaded;
+
+  |User|
+  :Edits scores or notes;
+
+  |System|
+  :Shows live interpretation per area and CI Total;
+
+  |User|
+  if (Wants to save?) then (yes)
+    |System|
+    :Sends updated data to server;
+    :Recalculates interpretations server-side;
+    :Updates wais_results;
+    :Returns confirmation;
+    :Closes modal;
+    :Shows success message;
+    stop
+  else (no)
+    :Closes modal;
+    stop
+  endif
+
+endif
+
+@enduml
