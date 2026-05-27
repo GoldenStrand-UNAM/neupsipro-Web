@@ -52,19 +52,22 @@ class resultRepository {
     throw new Error('fetchBanfeResult() not implemented');
   }
 
-  //========= BANFE ========================
-  async saveBanfeResult ({
-    _id_results,
-    _score_orbit_frontal,    _inter_orbit_frontal,
-    _score_prefrontal_before, _inter_prefrontal_before,
-    _score_d_lateral,        _inter_d_lateral,
-    _score_total,
-  }) {
-    throw new Error('saveBanfeResult() not implemented');
+  //========= Wais ========================
+
+  async fetchWaisResult ({ _id_results }) {
+    throw new Error('fetchWaisResult() not implemented');
   }
 
-  async fetchBanfeResult ({ _id_results }) {
-    throw new Error('fetchBanfeResult() not implemented');
+  async saveWaisResult ({
+    _id_results,
+    _score_com_verbal,       _inter_com_verbal,
+    _score_razon_perceptual, _inter_razon_perceptual,
+    _score_mem_work,         _inter_mem_work,
+    _score_velo_proce,       _inter_velo_proce,
+    _score_total,
+    _notes,
+  }) {
+    throw new Error('saveWaisResult() not implemented');
   }
 
 }
