@@ -20,7 +20,6 @@ class postWaisController {
       const dto = await this.useCase.execute({
         id_user,
         id_application,
-        score_com_vocal: score_com_verbal,
         score_com_verbal,
         score_razon_perceptual,
         score_mem_work,
