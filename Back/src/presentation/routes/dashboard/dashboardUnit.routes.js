@@ -5,11 +5,9 @@ const ImpDashboardRepository = require('../../../infrastructure/repositories/Imp
 const GetDashboardSummaryUseCase = require('../../../application/usecase/dashboard/getDashboardUnitUseCase');
 const GetStandByDetailUseCase = require('../../../application/usecase/dashboard/getStandByDetailUseCase');
 const DashboardController = require('../../controller/dashboard/dashboardUnit.controller');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpDashboardRepository();
@@ -17,8 +15,6 @@ module.exports = (authUseCase) => {
   const standByDetailUseCase = new GetStandByDetailUseCase(repository);
   const controller = new DashboardController(summaryUseCase, standByDetailUseCase);
 
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(

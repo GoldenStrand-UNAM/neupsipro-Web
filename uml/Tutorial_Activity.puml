@@ -1,0 +1,40 @@
+@startuml Tutorial 
+
+title Tutorial 
+
+|User|
+start
+:Clicks help button;
+
+|System|
+:Validates session;
+
+if (Valid session?) then (no)
+    :Show error;
+    stop
+endif
+
+:Fetches tutorial steps\nfor current page;
+
+if (Steps found?) then (no)
+    :Show 'No tutorial available';
+    stop
+endif
+
+:Loads tutorial;
+
+|User|
+:Views highlighted element\nwith explanation;
+
+if (Continue?) then (next)
+    :Moves to next step;
+    note right
+        Repeats until
+        last step
+    end note
+else (finish)
+    :Closes tutorial;
+    stop
+endif
+
+@enduml
