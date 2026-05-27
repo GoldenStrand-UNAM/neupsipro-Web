@@ -1,8 +1,6 @@
 const UserSummaryDTO = require('../../dto/userSummaryDTO');
 const crypt = require('../../../infrastructure/crypt/users/getUserList');
 
-;
-
 /* Use case to fetch the folio + name of the active "usuarios" patients */
 class GetUsersListUseCase {
   constructor (userRepository) {
