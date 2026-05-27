@@ -292,13 +292,22 @@
                 id="amputationLevel"
               >
                 <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Transfemoral" class="text-black">Transfermoral</option>
-                <option value="Transtibial" class="text-black">Transtibial</option>
-                <option value="Desarticulado de cadera" class="text-black">Desarticulado de cadera</option>
-                <option value="Transradial" class="text-black">Transradial</option>
-                <option value="Transhumeral" class="text-black">Transhumeral</option>
-                <option value="Desarticulado de hombro" class="text-black">Desarticulado de hombro</option>
-                <option value="other" class="text-black">Otro</option>
+                <option value="Sin amputación" class="text-black">Sin amputación</option>
+                <option value="Debajo de la rodilla" class="text-black">Debajo de la rodilla</option>
+                <option value="Encima de la rodilla" class="text-black">Encima de la rodilla</option>
+                <option value="Debajo de la rodilla bilateral" class="text-black">Debajo de la rodilla bilateral</option>
+                <option value="Encima de la rodilla bilateral" class="text-black">Encima de la rodilla bilateral</option>
+                <option value="Encima + debajo de la rodilla" class="text-black">Encima + debajo de la rodilla</option>
+                <option value="Pie" class="text-black">Pie</option>
+                <option value="Ambos pies" class="text-black">Ambos pies</option>
+                <option value="Mano" class="text-black">Mano</option>
+                <option value="Ambas manos" class="text-black">Ambas manos</option>
+                <option value="Antebrazo + mano" class="text-black">Antebrazo + mano</option>
+                <option value="Ambos antebrazos + manos" class="text-black">Ambos antebrazos + manos</option>
+                <option value="Brazo completo" class="text-black">Brazo completo</option>
+                <option value="Ambos brazos completos" class="text-black">Ambos brazos completos</option>
+                <option value="Pierna completa" class="text-black">Pierna completa</option>
+                <option value="Ambas piernas completas" class="text-black">Ambas piernas completas</option>
               </select>
             </div>
           </div>
@@ -510,7 +519,6 @@
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
-    const level = document.getElementById('amputationLevel');
 
     function escapeHTML(text) {
       return text
@@ -554,10 +562,6 @@
 
     basePathology.addEventListener('change', () => {
         checkOther(basePathology, 'otherPathology', 'pathologyDiv'); 
-    });
-
-    level.addEventListener('change', () => {
-        checkOther(level, 'otherLevel', 'levelDiv'); 
     });
 
     form.addEventListener('submit', async (e) => {
