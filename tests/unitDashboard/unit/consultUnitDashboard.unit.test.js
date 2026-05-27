@@ -70,7 +70,10 @@ describe('getDashboardUnitUseCase', () => {
         dashboardRepository.fetchStandByList.mockResolvedValue([]);
         const result = await useCase.execute();
         expect(result).toEqual({
-        ageDistribution: { data: [], labels: [] },
+        ageDistribution: {
+            labels: ['0-17', '18-30', '31-50', '51-60', '61-80', '81+'],
+            data:   [0, 0, 0, 0, 0, 0]
+        },
         counts: {
             clinical: undefined,
             discharged: undefined,
@@ -91,9 +94,9 @@ describe('getDashboardUnitUseCase', () => {
         clinical: 0, research: 1, noProtocol: 0
     };
 
-    const fakeAge = [
-        { range: '18-29', total: 3 },
-        { range: '30-44', total: 5 }
+    const fakeAge  = [
+        18, 25, 30,         
+        31, 35, 40, 45, 50,  
     ];
 
     const fakeGender = [
@@ -124,8 +127,8 @@ describe('getDashboardUnitUseCase', () => {
             standBy: 4
         },
         ageDistribution: {
-            data: [3, 5],
-            labels: ["18-29", "30-44"]
+           labels: ['0-17', '18-30', '31-50', '51-60', '61-80', '81+'],
+            data:   [0, 3, 5, 0, 0, 0] 
         },
         genderDistribution: {
             items: [

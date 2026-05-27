@@ -7,13 +7,13 @@ class userProfileDTO {
     this.personalInfo = {
       fullName: `${userProfile.firstName} ${userProfile.lastNameP} ${userProfile.lastNameM}`.trim(),
       profilePhoto: userProfile.profilePhoto,
-      birthDate: userProfile.birthDate ? new Date(userProfile.birthDate).toISOString().split('T')[0] : null,
-      age: userProfile.age,
+      birthDate: this._safeFormatDate(userProfile.birthDate),
+      age: userProfile.age !== undefined ? userProfile.age : null,
     };
 
     this.clinicalInfo = {
-      unitEntryDate: userProfile.unitEntryDate ? new Date(userProfile.unitEntryDate).toISOString().split('T')[0] : null,
-      neuroEntryDate: userProfile.neuroEntryDate ? new Date(userProfile.neuroEntryDate).toISOString().split('T')[0] : null,
+      registrationDate: this._safeFormatDate(userProfile.registrationDate),
+      neuroEntryDate: this._safeFormatDate(userProfile.neuroEntryDate),
       neuroStatus: userProfile.neuroStatus,
       protocol: userProfile.protocol,
       state: userProfile.state,
@@ -40,6 +40,27 @@ class userProfileDTO {
     }
 
     return stage;
+  }
+
+  /**
+   * Helper method to safely convert a raw date value to YYYY-MM-DD
+   * without throwing more errors
+   */
+  _safeFormatDate (dateValue) {
+    if (!dateValue || String(dateValue).trim() === '') return null;
+
+    let normalizedDate = dateValue;
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue)) {
+      const [day, month, year] = dateValue.split('/');
+      normalizedDate = `${month}/${day}/${year}`;
+    }
+
+    const parsedDate = new Date(normalizedDate);
+    if (isNaN(parsedDate.getTime())) {
+      return null;
+    }
+
+    return parsedDate.toISOString().split('T')[0];
   }
 }
 

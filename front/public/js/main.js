@@ -135,6 +135,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Remove 'Por favor...' message if click on an input field
+document.addEventListener('DOMContentLoaded', () => {
+
+  const inputUser = document.getElementById('username');
+  const inputPass = document.getElementById('password');
+  const errorMessage = document.getElementById('errorMessage');
+
+  function hideError () {
+    if (errorMessage) {
+      errorMessage.style.display = 'none';
+    }
+  }
+
+  if (inputUser) {
+    inputUser.addEventListener('focus', hideError);
+  }
+
+  if (inputPass) {
+    inputPass.addEventListener('focus', hideError);
+  }
+});
+
 // Function to prevent XSS inyections
 function escapeHtml (str) {
   return String(str)
