@@ -1,151 +1,113 @@
-@startuml Post_REY
+@startuml Post_WAIS
 
 actor "Clinic User" as USR
 participant "getTests.ejs" as VEJS
-participant "rey.modal.js" as RMODAL
+participant "wais.modal.js" as BMODAL
 participant "options.modal.js" as OMODAL
 participant "testList.js" as TLIST
 participant "getTestsRoutes.js" as UROUTE
-participant "postREYController" as TCTRL
-participant "postREYUseCase" as UC_POST
+participant "postWAISController" as TCTRL
+participant "postWAISUseCase" as UC_POST
 participant "impTestResultsRepository" as RREPO
 database "DB" as DB
 
 == Abrir modal de opciones ==
 
-USR -> TLIST : Click [card REY]
+USR -> TLIST : Click [card WAIS]
 TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
-OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nRegistrar habilitado solo si status !== 'Calificada'\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
 
 USR -> OMODAL : Click [Registrar resultados]
 OMODAL -> OMODAL : closeModal()
-OMODAL -> RMODAL : config.openRegister(idUser, idApplication, test)\n→ openREYModal(idUser, idApplication, test, 'register')
-
-== Carga de escolaridad y edad al abrir modal ==
-
-RMODAL -> UROUTE : Promise.all([\n  GET /api/usuarios/:id_user/escolaridad,\n  GET /api/usuarios/:id_user/edad\n])
-UROUTE --> RMODAL : { schooling, years } + { age }
-
-RMODAL -> RMODAL : resolveEducationBlock(years)\nyears > 12 → '>12'\nyears <= 12 → '1-12'
-
-RMODAL -> RMODAL : resolveAgeRange(age)\n18-22 | 23-27 | 28-32 | ... | >77
-
-alt sin escolaridad o edad registrada
-    RMODAL --> USR : Banner amarillo:\n"No se pudieron cargar\nlos datos del paciente\nLos percentiles no se calcularán"
-end
-
-RMODAL --> USR : Modal de registro visible\nBanner: escolaridad + bloque + edad + rango\n6 inputs: score y tiempo por área\nPercentiles en vivo (read-only)
+OMODAL -> BMODAL : config.openRegister(idUser, idApplication, test)\n→ openWAISModal(idUser, idApplication, test, 'register')
+BMODAL --> USR : Modal de registro visible\n(4 inputs de área + CI Total manual + notas)
 
 == Interpretación en vivo ==
 
-USR -> RMODAL : Ingresa score o tiempo en cualquier área
-RMODAL -> RMODAL : strip non-digits/decimals
-
-alt sin educationBlock o ageRange
-    RMODAL --> USR : percentil: "Sin datos"
-end
-
-RMODAL -> RMODAL : resolveScorePercentile(score, educationBlock, ageRange, table)\n- obtiene columna de la tabla\n- si score >= máximo → percentil máximo\n- si score <= mínimo → percentil mínimo\n- si intermedio → interpolación lineal entre vecinos
-
-RMODAL -> RMODAL : resolveTimePercentile(time, age)\n- obtiene fila de TIME_TABLE por edad\n- tiempo menor = percentil mayor\n- interpola entre vecinos
-
-RMODAL --> USR : Percentiles en vivo por área\n(pc_rc, pc_time_rc, pc_mcp,\npc_time_mcp, pc_mlp, pc_time_mlp)
+USR -> BMODAL : Ingresa score en cualquier área
+BMODAL -> BMODAL : strip non-digits\ninterpretWAIS(score)\n≤69 → "Discapacidad"\n70-79 → "Limítrofe"\n80-89 → "Promedio bajo"\n90-109 → "Promedio"\n110-119 → "Promedio alto"\n120-129 → "Superior"\n130+ → "Alta capacidad intelectual"
+BMODAL --> USR : Interpretación en vivo por área\nCI Total sin interpretación\n(valor manual del clínico)
 
 == Validación de notas ==
 
-USR -> RMODAL : Ingresa notas
-RMODAL -> RMODAL : contador actualiza\ntextContent = len / 200
-RMODAL --> USR : Contador en rojo si len >= 200
+USR -> BMODAL : Ingresa notas
+BMODAL -> BMODAL : contador actualiza\ntextContent = len / 200
+BMODAL --> USR : Contador visible en rojo\nsi len >= 200
 
 == Guardar resultados ==
 
-USR -> RMODAL : Click [Guardar]
-RMODAL -> RMODAL : validate client-side\n- al menos un área con score\n- scores no negativos\n- tiempos no negativos\n- notas max 200 chars
+USR -> BMODAL : Click [Guardar]
+BMODAL -> BMODAL : validate client-side\n- 4 scores de área presentes y no negativos\n- CI Total presente y no negativo\n- notas max 200 chars
 
 alt Datos inválidos
-    RMODAL --> USR : showFieldError(msg)
+    BMODAL --> USR : showFieldError(msg) por área
 end
 
-RMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/3/resultados\n{ score_rc, time_rc,\n  score_mcp, time_mcp,\n  score_mlp, time_mlp, notes }
+BMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/2/resultados\n{ score_com_verbal, score_razon_perceptual,\n  score_mem_work, score_velo_proce,\n  score_total, notes }
 
-UROUTE -> TCTRL : reyController.postResult(req, res)
-TCTRL -> UC_POST : execute({ id_user, id_application,\nscore_rc, time_rc,\nscore_mcp, time_mcp,\nscore_mlp, time_mlp, notes })
+UROUTE -> TCTRL : waisController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application,\nscore_com_verbal, score_razon_perceptual,\nscore_mem_work, score_velo_proce,\nscore_total, notes })
 
 == Validaciones en Use Case ==
 
-UC_POST -> UC_POST : validateScores()\n- scores no negativos si presentes\n- tiempos no negativos si presentes\n- notas max 200 chars
+UC_POST -> UC_POST : #parseAreaScore()\npor cada área (4):\n- no vacío\n- es número\n- no negativo\n\n#parseTotal(score_total):\n- no vacío\n- es número\n- no negativo
 
-alt datos inválidos
-    UC_POST --> TCTRL : throw Error 422
-    TCTRL --> RMODAL : HTTP 422 { error }
-    RMODAL --> USR : showApiError(json.error)
+alt score inválido por área o total
+    UC_POST --> TCTRL : throw Error 422\n'fieldName must be a valid number'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
 end
 
-UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 3 })
-RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 3
+alt notes > 200 caracteres
+    UC_POST --> TCTRL : throw Error 422\n'notes must be 200 characters or less'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 2 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 2
 DB --> RREPO : { id_results, status } | []
 RREPO --> UC_POST : { idResults, status } | null
 
-alt result row not found
+alt result row not found (null)
     UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
-    TCTRL --> RMODAL : HTTP 404 { error }
-    RMODAL --> USR : showApiError(json.error)
+    TCTRL --> BMODAL : HTTP 404 { error }
+    BMODAL --> USR : showApiError(json.error)
 end
 
-== Cálculo server-side ==
+== Interpretación en Use Case ==
 
-UC_POST -> RREPO : fetchUserSchooling({ id_user })
-UC_POST -> RREPO : fetchUserAge({ id_user })
-RREPO --> UC_POST : schooling | null
-RREPO --> UC_POST : birthdate | null
-
-UC_POST -> UC_POST : calculateAge(birthdate)
-UC_POST -> UC_POST : resolveEducationBlock(schoolingYears)\nyears > 12 → '>12' | years <= 12 → '1-12'
-UC_POST -> UC_POST : resolveAgeRange(age)\n18-22 | 23-27 | ... | >77
-
-alt educationBlock o ageRange null
-    UC_POST --> TCTRL : throw Error 422\n'Cannot calculate REY percentiles:\nmissing age or schooling data'
-    TCTRL --> RMODAL : HTTP 422 { error }
-    RMODAL --> USR : showApiError(json.error)
-end
-
-UC_POST -> UC_POST : resolveScorePercentile(score_rc, educationBlock,\nageRange, REY_TABLE_RC) → pc_rc
-UC_POST -> UC_POST : resolveTimePercentile(time_rc, age) → pc_time_rc
-UC_POST -> UC_POST : resolveScorePercentile(score_mcp, educationBlock,\nageRange, REY_TABLE_MCP_MLP) → pc_mcp
-UC_POST -> UC_POST : resolveTimePercentile(time_mcp, age) → pc_time_mcp
-UC_POST -> UC_POST : resolveScorePercentile(score_mlp, educationBlock,\nageRange, REY_TABLE_MCP_MLP) → pc_mlp
-UC_POST -> UC_POST : resolveTimePercentile(time_mlp, age) → pc_time_mlp
+UC_POST -> UC_POST : resolveInterpretation(score) por área\n≤69 → "Discapacidad"\n70-79 → "Limítrofe"\n80-89 → "Promedio bajo"\n90-109 → "Promedio"\n110-119 → "Promedio alto"\n120-129 → "Superior"\n130+ → "Alta capacidad intelectual"\n\nCI Total: sin interpretación\n(valor ingresado por el clínico)
 
 note right
-  El servidor recalcula todos los percentiles
-  usando interpolación lineal — nunca confía
-  en los valores del cliente.
-  Scores y tiempos nulos se persisten como NULL.
+  El servidor recalcula la interpretación
+  por área para no confiar en el cliente.
+  CI Total se persiste tal como viene.
 end note
 
 == Persistencia ==
 
-UC_POST -> RREPO : saveREYResult({ id_results,\nscore_rc, pc_rc, time_rc, pc_time_rc,\nscore_mcp, pc_mcp, time_mcp, pc_time_mcp,\nscore_mlp, pc_mlp, time_mlp, pc_time_mlp,\nnotes })
+UC_POST -> RREPO : saveWAISResult({ id_results,\nscore_com_verbal, inter_com_verbal,\nscore_razon_perceptual, inter_razon_perceptual,\nscore_mem_work, inter_mem_work,\nscore_velo_proce, inter_velo_proce,\nscore_total, notes })
 
 RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
 DB --> RREPO : OK
 
-RREPO -> DB : INSERT INTO rey_results (...)\nVALUES (...)\nON DUPLICATE KEY UPDATE ...
+RREPO -> DB : INSERT INTO wais_results (...)\nVALUES (...)\nON DUPLICATE KEY UPDATE ...
 DB --> RREPO : OK
 
-RREPO -> DB : SELECT * FROM rey_results\nWHERE id_results = ?
+RREPO -> DB : SELECT * FROM wais_results\nWHERE id_results = ?
 DB --> RREPO : { saved row }
-RREPO --> UC_POST : raw rey_results row
+RREPO --> UC_POST : raw wais_results row
 
-UC_POST -> UC_POST : map row → ReyResultsDTO\n{ idResults, idTest, status: 3,\n  rc: { score, pc, time, pcTime },\n  mcp: { score, pc, time, pcTime },\n  mlp: { score, pc, time, pcTime },\n  notes }
-UC_POST --> TCTRL : ReyResultsDTO
-TCTRL --> RMODAL : HTTP 200 { data: ReyResultsDTO }
+UC_POST -> UC_POST : map row → WaisResultsDTO\n{ idResults, idTest, status: 3,\n  areas: { comVerbal, razonPerceptual,\n  memWork, veloProce },\n  scoreTotal, notes }
+UC_POST --> TCTRL : WaisResultsDTO
+TCTRL --> BMODAL : HTTP 200 { data: WaisResultsDTO }
 
 == Actualizar UI ==
 
-RMODAL -> RMODAL : closeModal()
-RMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
-RMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+BMODAL -> BMODAL : closeModal()
+BMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
+BMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
 VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
 
 @enduml
