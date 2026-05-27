@@ -5,7 +5,7 @@ const Validation = require('../../../infrastructure/external/validations');
 const validation = new Validation();
 
 const enumSex = { FEMENINE: 'Femenino', MASCULINE: 'Masculino', NOT_SPECIFIED: 'Sin especificar' };
-const enumModality = { ROTARY: 'Rotaria', IN_PERSON: 'Presencial' };
+const enumModality = { ONLINE: 'En línea', IN_PERSON: 'Presencial' };
 const enumLaterality = { LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra' };
 const enumPhase = { PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología' };
 const enumPairs = { YES: 'Sí asiste', NO: 'No asiste' };
@@ -21,6 +21,7 @@ class PostUserUseCase {
     firstName,
     lastnameP,
     lastnameM,
+    email,
     birthdate,
     password,
     assigned,
@@ -38,6 +39,7 @@ class PostUserUseCase {
     neuroEntryDate,
     pairs,
     sex,
+    phone,
   }) {
     const fpathology = validation.others(basePathology, otherPathology, 50, 'La etiología de amputación', true);
     const flevel = validation.others(amputationLevel, otherLevel, 'El nivel de amputación ', true);
@@ -45,6 +47,7 @@ class PostUserUseCase {
     const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
     const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
     const flastnameM = validation.validate(lastnameM, 30, 'EL apellido materno', false);
+    const femail = validation.validate(email, 50, 'El email', false);
     validation.validate(password, 30, 'La contraseña', true);
     validation.validate(assigned, 36, 'El clínico asignado', true);
     validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
@@ -59,6 +62,7 @@ class PostUserUseCase {
     const fAmputation = validation.validateDate(amputationDate, 'La fecha de amputación ', true);
     const fNeuroEntry = validation.validateDate(neuroEntryDate, 'La fecha de ingreso a neuropsicología ', false);
     const passwordHash = await this.hashingService.hash(password);
+    const fphone = validation.validate(phone, 16, 'El teléfono', false);
 
     // Entity validation
     const user = new User ({
@@ -67,6 +71,7 @@ class PostUserUseCase {
       firstName: ffirstName,
       lastnameP: flastnameP,
       lastnameM: flastnameM || null,
+      email: femail || null,
       birthdate: fBirthdate,
       passwordHash,
       assigned,
@@ -82,6 +87,7 @@ class PostUserUseCase {
       neuroEntryDate: fNeuroEntry || null,
       pairs: fpairs,
       sex: fsex,
+      phone: fphone || null,
     });
 
     const saved = await this.userRepository.postUser(user);
