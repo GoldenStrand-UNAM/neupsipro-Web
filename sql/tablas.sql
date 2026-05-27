@@ -706,7 +706,7 @@ CREATE TABLE user_clinical (
 );
 
 ALTER TABLE users 
-ADD COLUMN gender VARCHAR(108) DEFAULT 'Sin especificar'
+ADD COLUMN gender VARCHAR(108)
 NOT NULL AFTER birthdate;
 
 ALTER TABLE test_sessions RENAME TO test_applications;
