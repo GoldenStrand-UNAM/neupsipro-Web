@@ -1,9 +1,10 @@
 class AuthMiddleware {
-  constructor (jwtService, authService) {
+  constructor (jwtService, authService, sessionRepository) {
     this.jwtService = jwtService;
     this.authService = authService;
+    this.sessionRepository = sessionRepository;
   }
-  verifyToken = (req, res, next) => {
+  verifyToken = async (req, res, next) => {
     // if is phone the response should be json
     const wantsJson = req.headers.accept?.includes('application/json');
 
@@ -31,6 +32,10 @@ class AuthMiddleware {
         return fail('INVALID_SESSION');
       }
       const decoded = this.jwtService.verifyToken(token);
+
+      const isActive = await this.sessionRepository.isSessionActive(decoded.session);
+      if (!isActive) return fail('INVALID_SESSION');
+
       req.user = { userId: decoded.userId };
       next();
     } catch {
