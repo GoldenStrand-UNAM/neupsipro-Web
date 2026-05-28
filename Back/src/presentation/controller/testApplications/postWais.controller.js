@@ -34,7 +34,6 @@ class postWaisController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
-      console.error('[postWaisController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }

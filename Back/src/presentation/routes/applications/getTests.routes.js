@@ -96,5 +96,5 @@ module.exports = (authUseCase) => {
   );
 
   return router;
-  
+
 };
