@@ -567,15 +567,12 @@
     }
 
     function resetFormBtn(){
-      // En edit, "Restablecer" devuelve el form a los valores originales del usuario
-      // (form.reset() vuelve a los value="" de cada input en el HTML server-rendered)
       if (form) form.reset();
 
       document.querySelectorAll('input[maxlength]').forEach(input => {
         input.dispatchEvent(new Event('input'));
       });
 
-      // Refresca color de selects según su valor reseteado
       document.querySelectorAll('select').forEach(select => {
         if (select.value !== "") {
           select.classList.remove('text-gray-400');
@@ -695,7 +692,6 @@
 
       const max = input.getAttribute('maxlength');
 
-      // valor inicial (refleja los valores precargados del server)
       counter.textContent = `${input.value.length}/${max}`;
 
       input.addEventListener('input', () => {
@@ -745,7 +741,6 @@
       const val = passInput.value;
       const confVal = confirmInput.value;
 
-      // Ambos vacíos = no se cambia password → sin error
       if (val === '' && confVal === '') {
         document.getElementById('validation').textContent = "";
         confirmInput.setCustomValidity("");
