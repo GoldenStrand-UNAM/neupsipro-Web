@@ -818,7 +818,7 @@ CREATE TABLE wais_results (
     inter_total              VARCHAR(36),
     notes                    VARCHAR(200),
     CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
-);p
+);
 
 -- -----------------------------------------------------------
 -- MOCA
@@ -875,5 +875,12 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(50) NOT NULL,
+    MODIFY COLUMN finish_date varchar(50) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(50) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
+    MODIFY COLUMN hours INT NULL;
+    
 ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);
-
