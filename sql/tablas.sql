@@ -788,13 +788,13 @@ ADD COLUMN result_table VARCHAR(50) NOT NULL;
 CREATE TABLE banfe_results (
     id_banfe                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_results                  VARCHAR(36)  NOT NULL UNIQUE,
-    score_orbit_frontal         DECIMAL(5,2) NULL,
+    score_orbit_frontal         INT          NULL,
     inter_orbit_frontal         VARCHAR(36),
-    score_prefrontal_before     DECIMAL(5,2) NULL,
+    score_prefrontal_before     INT          NULL,
     inter_prefrontal_before     VARCHAR(36),
-    score_d_lateral             DECIMAL(5,2) NULL,
+    score_d_lateral             INT          NULL,
     inter_d_lateral             VARCHAR(36),
-    score_total                 DECIMAL(5,2) NULL,
+    score_total                 INT          NULL,
     notes                       VARCHAR(200),
     CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
@@ -806,19 +806,19 @@ CREATE TABLE banfe_results (
 CREATE TABLE wais_results (
     id_wais                  INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_results               VARCHAR(36)  NOT NULL UNIQUE,
-    score_com_verbal         DECIMAL(5,2) NULL,
+    score_com_verbal         INT          NULL,
     inter_com_verbal         VARCHAR(36),
-    score_razon_perceptual   DECIMAL(5,2) NULL,
+    score_razon_perceptual   INT          NULL,
     inter_razon_perceptual   VARCHAR(36),
-    score_mem_work           DECIMAL(5,2) NULL,
+    score_mem_work           INT          NULL,
     inter_mem_work           VARCHAR(36),
-    score_velo_proce         DECIMAL(5,2) NULL,
+    score_velo_proce         INT          NULL,
     inter_velo_proce         VARCHAR(36),
-    score_total              DECIMAL(5,2) NULL,
-    inter_total        VARCHAR(36),
-    notes                       VARCHAR(200),
+    score_total              INT          NULL,
+    inter_total              VARCHAR(36),
+    notes                    VARCHAR(200),
     CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
-);
+);p
 
 -- -----------------------------------------------------------
 -- MOCA
