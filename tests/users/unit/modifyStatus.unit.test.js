@@ -15,7 +15,6 @@ describe('modifyStatusUsecase', () => {
    });
 
    test('no status is sent', async() => {
-      userRepository.editUserState.mockRejectedValue(new Error("No se pudo actualizar el estatus del usuario"));
       const result = await useCase.execute({id_user:"u-001", state:""});
       expect(userRepository.editUserState).not.toHaveBeenCalled();
       expect(result).not.toEqual({id:"u-001", state: ""});
