@@ -2,6 +2,7 @@ const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
 const User = require('../../domain/entity/user');
+const crypt = require('../crypt/users/getUser');
 const { v4: uuidv4 } = require('uuid');
 
 class ImpUsersRepository extends usersRepository {
@@ -38,7 +39,8 @@ class ImpUsersRepository extends usersRepository {
       WHERE l.id_user = ?;`,
       [id_user]
     );
-    return userData.map(row => new User(row));
+    const uncrypted = userData.map(row => crypt(row));
+    return uncrypted.map(row => new User(row));
   }
 
   async fetchActivePatients ({ page, limit }) {
