@@ -1,4 +1,4 @@
-class getREYController {
+class getReyController {
 
   constructor (getREYResultUseCase) {
     this.useCase = getREYResultUseCase;
@@ -16,10 +16,10 @@ class getREYController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
-      console.error('[getREYController]', err);
+
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 }
 
-module.exports = getREYController;
+module.exports = getReyController;
