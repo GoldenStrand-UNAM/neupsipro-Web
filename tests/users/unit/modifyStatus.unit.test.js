@@ -8,10 +8,10 @@ describe('modifyStatusUsecase', () => {
    })
 
    test ('the status is changed correctly', async () => {
-      userRepository.editUserState.mockResolvedValue({id:"u-001", state: "Stand by"});
-      const result = await useCase.execute({id_user:"u-001", state:"Stand by"});
-      expect(userRepository.editUserState).toHaveBeenCalledWith({id_user:"u-001", state:"Stand by"});
-      expect(result).toEqual({id:"u-001", state: "Stand by"})
+      userRepository.editUserState.mockResolvedValue({id:"u-001", state: "Stand_by"});
+      const result = await useCase.execute({id_user:"u-001", state:"Stand_by"});
+      expect(userRepository.editUserState).toHaveBeenCalledWith({id_user:"u-001", state:"Stand_by"});
+      expect(result).toEqual({id:"u-001", state: "Stand_by"})
    });
 
    test('no status is sent', async() => {
