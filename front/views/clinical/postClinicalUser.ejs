@@ -20,7 +20,7 @@
 
     <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
       <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <a href="/clinical">
               <button class="cursor-pointer pb">
@@ -31,18 +31,12 @@
             </a>
             <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario Clínico</h1>
           </div>
-          <div class="flex items-center gap-3">
-            <button 
-              onclick="resetFormBtn()" 
-              class="flex items-center gap-2"
-              style="color: #FF0404"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              <span>Limpiar</span>
-            </button>
-          </div>
+          <button onclick="resetFormBtn()" id="clearBtn" class="btn-clear">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Limpiar</span>
+          </button>
         </div>
         <div> 
           <img src="/assets/Linear-determinate progress indicator.svg"  alt="Progress indicator" class="w-full">         
@@ -443,19 +437,25 @@
       userInput.style.border = '';
       userInput.style.boxShadow = '';
     });
+
     function setupCounter(inputId, counterId) {
       const input = document.getElementById(inputId);
       const counter = document.getElementById(counterId);
+
       if (!input || !counter) return;
+
       const max = input.getAttribute('maxlength');
+
       input.addEventListener('input', () => {
         const longitud = input.value.length;
         counter.textContent = `${longitud}/${max}`;
       });
     }
+
     function validateDates(id){
       const inputFecha = document.getElementById(id);
       const today = new Date();
+
       const fp = flatpickr(document.getElementById(id), {
         dateFormat: "d/m/Y",
         allowInput: true,
@@ -479,12 +479,16 @@
           else if (v.length <= 4) finalValue = day + "/" + month;
           else finalValue = day + "/" + month + "/" + year;
         }
+
         e.target.value = finalValue;
+
       });
     }
+
     function validateFutureDates(id){
       const inputFecha = document.getElementById(id);
       const today = new Date();
+
       const fp = flatpickr(document.getElementById(id), {
         dateFormat: "d/m/Y",
         allowInput: true,
@@ -508,13 +512,18 @@
           else if (v.length <= 4) finalValue = day + "/" + month;
           else finalValue = day + "/" + month + "/" + year;
         }
+
         e.target.value = finalValue;
+
       });
     }
+
     function validatePhone(id) {
       const inputPhone = document.getElementById(id);
+
       inputPhone.addEventListener('input', (e) => {
         let v = e.target.value.replace(/[^0-9+]/g, '');
+
         if (v.includes('+')) {
           const hasPlus = v.startsWith('+');
           v = v.replace(/\+/g, '');
@@ -522,19 +531,25 @@
             v = '+' + v;
           }
         }
+
         e.target.value = v;
       });
     }
+
     function validateNumber(id) {
       const inputNumber = document.getElementById(id);
+
       inputNumber.addEventListener('input', (e) => {
         let v = e.target.value.replace(/[^0-9]/g, '');
+
         e.target.value = v;
       });
     }
+
     function validateMatch() {
       const val = passInput.value;
       const confVal = confirmInput.value;
+
       if (val === confVal) {
         document.getElementById('validation').textContent = "";
         confirmInput.setCustomValidity("");
