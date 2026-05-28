@@ -33,55 +33,22 @@ class postWaisUseCase {
     return 'Discapacidad';
   }
 
-  /**
-   * Saves wais score, recalculates interpretation server-side,
-   * and updates the result row to status 3 (Calificada).
- */
-  async execute ({
-    id_user, id_application,
-    score_com_verbal, score_razon_perceptual,
-    score_mem_work, score_velo_proce,
-    score_total, notes,
-  }) {
-
-    // 1. Validate and parse each area score
-    const comVerbal      = this.#parseAreaScore(score_com_verbal,       'score_com_verbal');
-    const razonPerceptual = this.#parseAreaScore(score_razon_perceptual, 'score_razon_perceptual');
-    const memWork        = this.#parseAreaScore(score_mem_work,          'score_mem_work');
-    const veloProce      = this.#parseAreaScore(score_velo_proce,        'score_velo_proce');
-
-    const total          = this.#parseAreaScore(score_total, 'score_total');
-    const interTotal     = this.resolveInterpretation(total);
-
-    // 2. Validate notes length if provided
+  #validateNotes (notes) {
     if (notes && String(notes).length > 200) {
       const err = new Error('notes must be 200 characters or less');
       err.status = 422;
       throw err;
     }
+  }
 
-    // 3. Verify the result row exists for this user, session and test
-    const row = await this.impTestResultsRepository.fetchResultRow({
-      id_user,
-      id_application,
-      id_test: 2,
-    });
-
-    if (!row) {
-      const err = new Error('Test result row not found');
-      err.status = 404;
-      throw err;
-    }
-
-    // 4. Recalculate interpretations server-side — never trust the client
-    const interComVerbal      = this.resolveInterpretation(comVerbal);
-    const interRazonPerceptual = this.resolveInterpretation(razonPerceptual);
-    const interMemWork        = this.resolveInterpretation(memWork);
-    const interVeloProce      = this.resolveInterpretation(veloProce);
-
-    // 5. Persist the result
-    const saved = await this.impTestResultsRepository.saveWaisResult({
-      id_results: row.idResults,
+  #buildSavePayload ({
+    idResults, comVerbal, interComVerbal,
+    razonPerceptual, interRazonPerceptual,
+    memWork, interMemWork, veloProce, interVeloProce,
+    total, interTotal, notes,
+  }) {
+    return {
+      id_results: idResults,
       score_com_verbal: comVerbal,
       inter_com_verbal: interComVerbal,
       score_razon_perceptual: razonPerceptual,
@@ -93,11 +60,12 @@ class postWaisUseCase {
       score_total: total,
       inter_total: interTotal,
       notes: notes ?? null,
-    });
+    };
+  }
 
-    // 6. Map to DTO — never expose raw DB row across boundaries
+  #mapToDTO (idResults, saved) {
     return new waisResultsDTO({
-      idResults: row.idResults,
+      idResults,
       idTest: 2,
       status: 3,
       dateApplied: saved.date_applied ?? null,
@@ -111,6 +79,49 @@ class postWaisUseCase {
       interTotal: saved.inter_total,
       notes: saved.notes ?? null,
     });
+  }
+
+  async execute ({
+    id_user, id_application,
+    score_com_verbal, score_razon_perceptual,
+    score_mem_work, score_velo_proce,
+    score_total, notes,
+  }) {
+    const comVerbal       = this.#parseAreaScore(score_com_verbal,       'score_com_verbal');
+    const razonPerceptual = this.#parseAreaScore(score_razon_perceptual, 'score_razon_perceptual');
+    const memWork         = this.#parseAreaScore(score_mem_work,         'score_mem_work');
+    const veloProce       = this.#parseAreaScore(score_velo_proce,       'score_velo_proce');
+    const total           = this.#parseAreaScore(score_total,            'score_total');
+
+    this.#validateNotes(notes);
+
+    const row = await this.impTestResultsRepository.fetchResultRow({
+      id_user,
+      id_application,
+      id_test: 2,
+    });
+
+    if (!row) {
+      const err = new Error('Test result row not found');
+      err.status = 404;
+      throw err;
+    }
+
+    // recalculate server-side — never trust the client
+    const interComVerbal       = this.resolveInterpretation(comVerbal);
+    const interRazonPerceptual = this.resolveInterpretation(razonPerceptual);
+    const interMemWork         = this.resolveInterpretation(memWork);
+    const interVeloProce       = this.resolveInterpretation(veloProce);
+    const interTotal           = this.resolveInterpretation(total);
+
+    const saved = await this.impTestResultsRepository.saveWaisResult(this.#buildSavePayload({
+      idResults: row.idResults, comVerbal, interComVerbal,
+      razonPerceptual, interRazonPerceptual,
+      memWork, interMemWork, veloProce, interVeloProce,
+      total, interTotal, notes,
+    }));
+
+    return this.#mapToDTO(row.idResults, saved);
   }
 
 }
