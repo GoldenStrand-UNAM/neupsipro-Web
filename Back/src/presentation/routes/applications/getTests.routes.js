@@ -82,7 +82,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/1/results',
     authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    permissionsMiddleware.requirePermission('Tests', 'writing'),
     (req, res) => banfeController.postResult(req, res)
   );
 
@@ -97,7 +97,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/2/results',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    permissionsMiddleware.requirePermission('Tests', 'writing'),
     (req, res) => waisController.postResult(req, res)
   );
 
@@ -112,7 +112,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/3/results',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    permissionsMiddleware.requirePermission('Tests', 'writing'),
     (req, res) => reyController.postResult(req, res)
   );
 
