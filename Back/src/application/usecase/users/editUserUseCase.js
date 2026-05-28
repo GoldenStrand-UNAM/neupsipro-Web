@@ -103,8 +103,9 @@ class editUserUseCase {
       pairs: fpairs,
       sex: fsex,
     });
+
  
-    // delete old photo
+    // delete old photo from s3
     if (profilePhoto && oldPhoto && oldPhoto !== profilePhoto) {
       await deleteFromS3(oldPhoto);
     }

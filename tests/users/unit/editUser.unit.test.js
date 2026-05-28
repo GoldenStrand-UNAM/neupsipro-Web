@@ -60,7 +60,7 @@ describe('EditUserUseCase', () => {
     test('Must edit with success if user has all valid data', async () => {
         mockUserRepository.fetchUserForEdit.mockResolvedValue({
             id_user: '123',
-            profilePhoto: 'old_photo.jpg',
+            profile_photo: 'old_photo.jpg',
         });
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123', success: true});
 
@@ -78,7 +78,7 @@ describe('EditUserUseCase', () => {
 
         mockUserRepository.fetchUserForEdit.mockResolvedValue({
             id_user:'123',
-            profile_photo: 'old_photo.jpg',
+            profile_photo : 'old_photo.jpg',
         });
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123' });
 
