@@ -1,3 +1,5 @@
+const logger = require('../../../infrastructure/external/logger.service');
+
 class Logout {
   constructor (logoutUseCase, jwtService) {
     this.logoutUseCase = logoutUseCase;
@@ -6,6 +8,7 @@ class Logout {
 
   // function to handle logout request
   async logout (req, res) {
+    logger.debug('logout: inicio', { userId: req.user?.id, ip: req.ip });
     try {
       const token = req.cookies?.jwt_token;
       let sessionId = null;
@@ -34,6 +37,8 @@ class Logout {
       // Clear the cookie on the client side
       res.clearCookie('jwt_token');
 
+      logger.info('logout: éxito', { userId: req.user?.id, sessionId, ip: req.ip });
+
       // Check if the request expects a JSON response
       if (req.headers['content-type'] === 'application/json' || req.xhr || !req.accepts('html')) {
         return res.status(200).json({ message: 'Sesión cerrada correctamente' });
@@ -42,6 +47,7 @@ class Logout {
       // For non-JSON requests, redirect to the login page
       return res.redirect('/auth/');
     } catch (error) {
+      logger.error('logout: error', { error, userId: req.user?.id, ip: req.ip });
       return res.status(500).json({
         error: error.message,
       });

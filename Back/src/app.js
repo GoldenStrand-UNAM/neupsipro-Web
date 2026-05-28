@@ -6,6 +6,7 @@ const session = require('express-session');
 const { loginLimiter, generalLimiter, apiLimiter, publicationLimiter } = require('./infrastructure/external/rateLimiting');
 const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
+const requestLogger = require('./infrastructure/external/requestLogger.middleware');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.set('views', path.resolve(__dirname, '../../front/views'));
 app.use(express.static(path.join(__dirname, '..', '..', 'front', 'public')));
 
 app.use(cors());
+app.use(requestLogger);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());

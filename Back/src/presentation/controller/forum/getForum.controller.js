@@ -1,3 +1,4 @@
+const logger = require('../../../infrastructure/external/logger.service');
 
 // Controller function that handles HTTP request to get forum posts
 class forumController {
@@ -7,6 +8,8 @@ class forumController {
   }
 
   async getForum (request, response) {
+    const userId = request.user?.userId ?? request.user?.id;
+    logger.debug('getForum: inicio', { userId, query: request.query });
     try {
       let { page = 1, limit = 10 } = request.query;
 
@@ -16,7 +19,6 @@ class forumController {
       const { posts, total } = await this.getForumUseCase.execute({ page, limit });
       const totalPages = Math.ceil(total / limit);
 
-      const userId = request.user?.userId ?? request.user?.id;
       let canEliminate = false;
       if (userId) {
         try {
@@ -26,6 +28,7 @@ class forumController {
         }
       }
 
+      logger.info('getForum: éxito', { userId, page, limit, total });
       response.render ('forum/forum', {
         activePage: 'forum',   tutorialModule: 'forum',
         posts,
@@ -36,6 +39,7 @@ class forumController {
       });
 
     } catch (error) {
+      logger.error('getForum: error', { error, userId });
       response.status(500).json({ error: error.message });
     }
   }
