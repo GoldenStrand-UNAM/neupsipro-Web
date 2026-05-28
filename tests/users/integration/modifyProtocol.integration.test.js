@@ -57,6 +57,10 @@ describe('INTEGRATION — patch /users/:id_user/protocol', () => {
       { affectedRows: 1 },
       []
     ]);
+      db.query.mockResolvedValueOnce([
+    [{ id_user: '123', protocol: 'Clinical' }],
+    []
+  ]);
 
     const res = await request(app)
       .patch('/users/123/protocol')
@@ -76,7 +80,7 @@ describe('INTEGRATION — patch /users/:id_user/protocol', () => {
       .send({ protocol: 'Clinical' });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('(intermediate value) is not iterable');
+    expect(res.body.error).toBe('User not found');
   });
 
   test('must return 400 if protocol is missing in body', async () => {

@@ -1,4 +1,4 @@
-/*const ModifiyProtocolUseCase = require('../../../Back/src/application/usecase/users/modifyProtocolUseCase');
+const ModifiyProtocolUseCase = require('../../../Back/src/application/usecase/users/modifyProtocolUseCase');
 
 describe('ModifyProtocolUseCase Unit Tests', () => {
     let mockUserRepository;
@@ -34,4 +34,4 @@ describe('ModifyProtocolUseCase Unit Tests', () => {
     expect(mockUserRepository.editUserProtocol).toHaveBeenCalledWith(payload);
     expect(result).toBeDefined();
 });
-});*/
+});
