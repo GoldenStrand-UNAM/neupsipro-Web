@@ -84,13 +84,15 @@ const REY_TIME_TABLE = {
 };
 
 // ── Client-side helpers ───────────────────────────────────────────────────────
-// Mirror of server-side logic — used only for live display, never trusted.
+// Mirrors the server-side logic — only used for live preview, never trusted for scoring.
 
+// Returns '>12' or '1-12' based on years of schooling.
 function reyResolveEducationBlock (schoolingYears) {
   if (schoolingYears === null || schoolingYears === undefined) return null;
   return schoolingYears > 12 ? '>12' : '1-12';
 }
 
+// Maps age in years to its normative age group string (e.g. 25 → '23-27').
 function reyResolveAgeRange (age) {
   if (age === null || age === undefined) return null;
   if (age <= 22) return '18-22';
@@ -108,6 +110,7 @@ function reyResolveAgeRange (age) {
   return '>77';
 }
 
+// Maps age to the key used in the time table (used for children's norms).
 function reyResolveTimeAgeKey (age) {
   if (age === null || age === undefined) return null;
   if (age <= 5)  return '5';
@@ -123,152 +126,127 @@ function reyResolveTimeAgeKey (age) {
   return '15+';
 }
 
-// Linear interpolation for score percentile.
-// table format: { percentile: score } — higher percentile = higher score.
-function reyResolveScorePercentile (score, educationBlock, ageRange, table) {
+// Looks up the percentile for a score in the normative table.
+// Higher score → higher percentile. Interpolates between table entries.
+function reyResolveScorePercentile ({ score, educationBlock, ageRange, table }) {
   if (score === null || score === undefined || score === '') return null;
   if (!educationBlock || !ageRange) return null;
 
-  const column = table?.[educationBlock]?.[ageRange];
+  const edBlock = Reflect.get(table ?? {}, educationBlock);
+  const column  = edBlock ? Reflect.get(edBlock, ageRange) : null;
   if (!column) return null;
 
   const entries = Object.entries(column)
     .map(([p, v]) => ({ p: Number(p), v }))
     .sort((a, b) => b.p - a.p);
 
-  const maxEntry = entries[0];
-  const minEntry = entries[entries.length - 1];
+  if (score >= entries.at(0).v)  return entries.at(0).p;
+  if (score <= entries.at(-1).v) return entries.at(-1).p;
 
-  if (score >= maxEntry.v) return maxEntry.p;
-  if (score <= minEntry.v) return minEntry.p;
-
-  for (let i = 0; i < entries.length - 1; i++) {
-    const upper = entries[i];
-    const lower = entries[i + 1];
-    if (score <= upper.v && score >= lower.v) {
-      const percentile = upper.p +
-        ((score - upper.v) / (lower.v - upper.v)) * (lower.p - upper.p);
+  let prev = null;
+  for (const curr of entries) {
+    if (prev !== null && score <= prev.v && score >= curr.v) {
+      const percentile = prev.p + ((score - prev.v) / (curr.v - prev.v)) * (curr.p - prev.p);
       return Math.round(percentile);
     }
+    prev = curr;
   }
   return null;
 }
 
-// Linear interpolation for time percentile.
-// Lower time = higher percentile.
+// Looks up the percentile for a copy time. Faster time → higher percentile.
 function reyResolveTimePercentile (time, age) {
   if (time === null || time === undefined || time === '') return null;
 
   const ageKey = reyResolveTimeAgeKey(age);
   if (!ageKey) return null;
 
-  const column = REY_TIME_TABLE[ageKey];
+  const column = Reflect.get(REY_TIME_TABLE, ageKey);
   if (!column) return null;
 
   const entries = Object.entries(column)
     .map(([p, t]) => ({ p: Number(p), t }))
     .sort((a, b) => b.p - a.p);
 
-  const bestEntry  = entries[0];
-  const worstEntry = entries[entries.length - 1];
+  if (time <= entries.at(0).t)  return entries.at(0).p;
+  if (time >= entries.at(-1).t) return entries.at(-1).p;
 
-  if (time <= bestEntry.t)  return bestEntry.p;
-  if (time >= worstEntry.t) return worstEntry.p;
-
-  for (let i = 0; i < entries.length - 1; i++) {
-    const faster = entries[i];
-    const slower = entries[i + 1];
-    if (time >= faster.t && time <= slower.t) {
-      const percentile = faster.p +
-        ((time - faster.t) / (slower.t - faster.t)) * (slower.p - faster.p);
+  let prev = null;
+  for (const curr of entries) {
+    if (prev !== null && time >= prev.t && time <= curr.t) {
+      const percentile = prev.p + ((time - prev.t) / (curr.t - prev.t)) * (curr.p - prev.p);
       return Math.round(percentile);
     }
+    prev = curr;
   }
   return null;
 }
 
-// ── CONSULT REY VIEW ─────────────────────────────────────────────────────────────
-// Read-only view of a graded REY result.
-// Three independent areas: RC (copy), MCp (short-term), MLp (long-term).
+// ── Shared HTML helpers ───────────────────────────────────────────────────────
 
-function buildREYConsultHTML (test) {
-  const notes = test.notes ?? '';
-
-  const dateLabel = test.dateApplied
-    ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
-      day: 'numeric', month: 'long', year: 'numeric',
-    })
-    : '—';
-
-  // Reusable area section — score, percentile, time, time percentile
-  function areaSection (title, area) {
-    return `
-      <div class="flex flex-col gap-3 py-5 border-b border-gray-200">
-
-        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          ${title}
-        </h3>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-
-          <div class="flex flex-col gap-1">
-            <span class="text-xs text-gray-400">Puntuación</span>
-            <span class="text-base text-gray-900 font-medium">
-              ${area?.score ?? '—'}
-            </span>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <span class="text-xs text-gray-400">Percentil</span>
-            <span class="text-base text-gray-900 font-medium">
-              ${area?.pc ?? '—'}
-            </span>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <span class="text-xs text-gray-400">Tiempo (min)</span>
-            <span class="text-base text-gray-900 font-medium">
-              ${area?.time ?? '—'}
-            </span>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <span class="text-xs text-gray-400">Pc Tiempo</span>
-            <span class="text-base text-gray-900 font-medium">
-              ${area?.pcTime ?? '—'}
-            </span>
-          </div>
-
-        </div>
-      </div>`;
-  }
-
+// Title bar with the close (X) button, shared by both the consult and form views.
+function reyModalHeader (title) {
   return `
-    <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">REY</h2>
+        <h2 class="modal__title">${title}</h2>
         <button id="btnCloseREY" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
           </svg>
         </button>
-      </div>
+      </div>`;
+}
 
+// ── CONSULT REY VIEW ──────────────────────────────────────────────────────────
+// Read-only view shown when opening a completed REY result.
+
+// One read-only block showing score, percentile, time, and time percentile for an area.
+function reyAreaSection (title, area) {
+  return `
+      <div class="flex flex-col gap-3 py-5 border-b border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          ${title}
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-gray-400">Puntuación</span>
+            <span class="text-base text-gray-900 font-medium">${area?.score ?? '—'}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-gray-400">Percentil</span>
+            <span class="text-base text-gray-900 font-medium">${area?.pc ?? '—'}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-gray-400">Tiempo (min)</span>
+            <span class="text-base text-gray-900 font-medium">${area?.time ?? '—'}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-gray-400">Pc Tiempo</span>
+            <span class="text-base text-gray-900 font-medium">${area?.pcTime ?? '—'}</span>
+          </div>
+        </div>
+      </div>`;
+}
+
+// Full read-only modal — date, the three areas, and notes.
+function buildREYConsultHTML (test) {
+  const notes     = test.notes ?? '';
+  const dateLabel = test.dateApplied
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '—';
+  return `
+    <div class="modal">
+      ${reyModalHeader('REY')}
       <div class="modal__body flex flex-col">
-
-        <!-- Fecha -->
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                     gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
           <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Fecha:</span>
           <span class="text-base sm:text-lg text-gray-900">${dateLabel}</span>
         </div>
-
-        ${areaSection('R-C — Copia',               test.rc)}
-        ${areaSection('R-MCp — Memoria Corto Plazo', test.mcp)}
-        ${areaSection('R-MLp — Memoria Largo Plazo', test.mlp)}
-
-        <!-- Notas -->
+        ${reyAreaSection('R-C — Copia',                test.rc)}
+        ${reyAreaSection('R-MCp — Memoria Corto Plazo', test.mcp)}
+        ${reyAreaSection('R-MLp — Memoria Largo Plazo', test.mlp)}
         <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                     gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
           <span class="sm:w-40 shrink-0 text-gray-400 text-lg sm:text-base">Notas:</span>
@@ -276,8 +254,6 @@ function buildREYConsultHTML (test) {
             ${notes ? escapeHTML(notes) : '—'}
           </span>
         </div>
-
-        <!-- Actions -->
         <div class="flex justify-end pt-4 border-t border-gray-200">
           <button id="btnCancelREY"
             class="flex items-center gap-3 px-6 py-3
@@ -291,28 +267,21 @@ function buildREYConsultHTML (test) {
             Cerrar
           </button>
         </div>
-
       </div>
     </div>`;
 }
 
-// ── Modify and register view  ────────────────────────────────────────────────────────────────
-// Each area has: score input, percentile display, time input, time percentile display.
-// Percentiles are calculated live — never entered by the clinician.
+// ── FORM HTML ─────────────────────────────────────────────────────────────────
+// Form used for both registering and modifying a REY result.
 
-function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
-  const title        = mode === 'register' ? 'Registrar' : 'Modificar';
-  const hasSchooling = schoolingData !== null;
-  const hasAge       = ageData !== null;
-  const hasBoth      = hasSchooling && hasAge;
-
-  // Info banner — shows schooling block and age range
-  const infoBanner = hasBoth ? `
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
-                bg-blue-50 border border-blue-200">
+// Blue info banner if schooling + age are available; yellow warning otherwise.
+// Percentile preview only works when both values are present.
+function reyInfoBanner (schoolingData, ageData, prefill) {
+  if (schoolingData !== null && ageData !== null) {
+    return `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50 border border-blue-200">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke-width="1.5" stroke="currentColor"
-           class="w-5 h-5 shrink-0 text-blue-500">
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 text-blue-500">
         <path stroke-linecap="round" stroke-linejoin="round"
               d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
       </svg>
@@ -323,16 +292,15 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
           Bloque: ${schoolingData.years > 12 ? '>12' : '1-12'}
         </span>
         <span class="text-xs text-blue-500">
-          Edad: ${ageData.age} años —
-          Rango: ${prefill.ageRange ?? '—'}
+          Edad: ${ageData.age} años — Rango: ${prefill.ageRange ?? '—'}
         </span>
       </div>
-    </div>` : `
-    <div class="flex items-center gap-3 px-4 py-3 rounded-xl
-                bg-yellow-50 border border-yellow-200">
+    </div>`;
+  }
+  return `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-50 border border-yellow-200">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke-width="1.5" stroke="currentColor"
-           class="w-5 h-5 shrink-0 text-yellow-500">
+           stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 text-yellow-500">
         <path stroke-linecap="round" stroke-linejoin="round"
               d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948
                  3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949
@@ -342,19 +310,11 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
         Sin datos de escolaridad o edad — los percentiles no se calcularán en vivo
       </span>
     </div>`;
+}
 
-  // Reusable area row — score + pc + time + pc_time
-  function areaRow (title, scoreId, pcId, timeId, pcTimeId, errorId, prefillArea) {
-    return `
-      <div class="flex flex-col gap-2">
-
-        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-          ${title}
-        </h3>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-
-          <!-- Score -->
+// Score input — required, must be between 0 and 100, max 5 characters.
+function reyScoreField ({ scoreId, errorId, prefillArea }) {
+  return `
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Puntuación <span class="text-red-500">*</span></label>
             <input
@@ -370,20 +330,12 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
             <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
-          </div>
+          </div>`;
+}
 
-          <!-- Percentile — read-only, computed live -->
-          <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Percentil</label>
-            <div class="w-full h-[40px] flex items-center
-                        border border-gray-300 rounded-lg px-3 bg-gray-50">
-              <span id="${pcId}" class="text-sm text-gray-800">
-                ${prefillArea.pc ?? '—'}
-              </span>
-            </div>
-          </div>
-
-          <!-- Time -->
+// Time input — required, 0-100 minutes, allows one decimal place.
+function reyTimeField ({ timeId, prefillArea }) {
+  return `
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Tiempo (min) <span class="text-red-500">*</span></label>
             <input
@@ -399,58 +351,38 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
-          </div>
+          </div>`;
+}
 
-          <!-- Time percentile — read-only, computed live -->
+// One editable area row: score input → live percentile | time input → live time percentile.
+function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillArea }) {
+  return `
+      <div class="flex flex-col gap-2">
+        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">${title}</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          ${reyScoreField({ scoreId, errorId, prefillArea })}
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Percentil</label>
+            <div class="w-full h-[40px] flex items-center
+                        border border-gray-300 rounded-lg px-3 bg-gray-50">
+              <span id="${pcId}" class="text-sm text-gray-800">${prefillArea.pc ?? '—'}</span>
+            </div>
+          </div>
+          ${reyTimeField({ timeId, prefillArea })}
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Pc Tiempo</label>
             <div class="w-full h-[40px] flex items-center
                         border border-gray-300 rounded-lg px-3 bg-gray-50">
-              <span id="${pcTimeId}" class="text-sm text-gray-800">
-                ${prefillArea.pcTime ?? '—'}
-              </span>
+              <span id="${pcTimeId}" class="text-sm text-gray-800">${prefillArea.pcTime ?? '—'}</span>
             </div>
           </div>
-
         </div>
       </div>`;
-  }
+}
 
+// Notes textarea with character counter, error message slot, and Cancel / Save buttons.
+function reyFormActions (prefill) {
   return `
-    <div class="modal">
-      <div class="modal__header">
-        <h2 class="modal__title">REY — ${title}</h2>
-        <button id="btnCloseREY" class="modal__close" aria-label="Cerrar modal">
-          <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
-               fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal__body flex flex-col gap-4">
-
-        ${infoBanner}
-
-        ${areaRow(
-    'R-C — Copia',
-    'inputRC_Score', 'displayRC_Pc', 'inputRC_Time', 'displayRC_PcTime', 'errorRC',
-    prefill.rc
-  )}
-
-        ${areaRow(
-    'R-MCp — Memoria Corto Plazo',
-    'inputMCP_Score', 'displayMCP_Pc', 'inputMCP_Time', 'displayMCP_PcTime', 'errorMCP',
-    prefill.mcp
-  )}
-
-        ${areaRow(
-    'R-MLp — Memoria Largo Plazo',
-    'inputMLP_Score', 'displayMLP_Pc', 'inputMLP_Time', 'displayMLP_PcTime', 'errorMLP',
-    prefill.mlp
-  )}
-
-        <!-- Notes -->
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Notas</label>
           <textarea
@@ -466,12 +398,8 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
             ${prefill.notes.length} / 200
           </p>
         </div>
-
         <p id="reyApiError" class="text-xs text-red-500 hidden"></p>
-
-        <!-- Actions -->
         <div class="flex gap-3">
-
           <button id="btnCancelREY"
             class="flex-1 flex items-center justify-center gap-3
                    px-4 py-3 border border-gray-300 rounded-2xl
@@ -483,7 +411,6 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
             </svg>
             <span class="whitespace-nowrap">Cancelar</span>
           </button>
-
           <button id="btnSaveREY"
             class="flex-1 flex items-center justify-center gap-3
                    px-4 py-3 rounded-2xl bg-[#3350A9] text-white
@@ -497,273 +424,265 @@ function buildREYFormHTML (mode, prefill, schoolingData, ageData) {
             </svg>
             <span class="whitespace-nowrap">Guardar</span>
           </button>
+        </div>`;
+}
 
-        </div>
+// Assembles the full register / modify form from the individual pieces above.
+function buildREYFormHTML ({ mode, prefill, schoolingData, ageData }) {
+  const title = mode === 'register' ? 'Registrar' : 'Modificar';
+  return `
+    <div class="modal">
+      ${reyModalHeader(`REY — ${title}`)}
+      <div class="modal__body flex flex-col gap-4">
+        ${reyInfoBanner(schoolingData, ageData, prefill)}
+        ${reyAreaRow({ title: 'R-C — Copia',
+    scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
+    timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
+    errorId: 'errorRC', prefillArea: prefill.rc })}
+        ${reyAreaRow({ title: 'R-MCp — Memoria Corto Plazo',
+    scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
+    timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
+    errorId: 'errorMCP', prefillArea: prefill.mcp })}
+        ${reyAreaRow({ title: 'R-MLp — Memoria Largo Plazo',
+    scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
+    timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
+    errorId: 'errorMLP', prefillArea: prefill.mlp })}
+        ${reyFormActions(prefill)}
       </div>
     </div>`;
 }
 
-// ── Modal Listeners ───────────────────────────────────────────────────────────
-// Wires up live percentile calculation per area, notes counter,
-// validation, and the save fetch for register/modify modes.
-// educationBlock and age are passed in to mirror server-side logic.
+// ── Areas config ──────────────────────────────────────────────────────────────
+// IDs and API keys for the three test areas: R-C, R-MCp, R-MLp.
 
-function bindREYFormListeners (idUser, idApplication, educationBlock, ageRange, age, closeModal) {
+const REY_AREAS = [
+  {
+    scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
+    timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
+    errorId: 'errorRC', scoreKey: 'score_rc', timeKey: 'time_rc',
+    table: REY_TABLE_RC,
+  },
+  {
+    scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
+    timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
+    errorId: 'errorMCP', scoreKey: 'score_mcp', timeKey: 'time_mcp',
+    table: REY_TABLE_MCP_MLP,
+  },
+  {
+    scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
+    timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
+    errorId: 'errorMLP', scoreKey: 'score_mlp', timeKey: 'time_mlp',
+    table: REY_TABLE_MCP_MLP,
+  },
+];
 
-  const notesInput = document.getElementById('inputREYNotes');
-  const notesCount = document.getElementById('reyNotesCount');
-  const apiError   = document.getElementById('reyApiError');
+// ── Listeners ─────────────────────────────────────────────────────────────────
 
-  // Area field definitions — score input, pc display, time input, pc_time display
-  const areas = [
-    {
-      scoreId: 'inputRC_Score',
-      pcId: 'displayRC_Pc',
-      timeId: 'inputRC_Time',
-      pcTimeId: 'displayRC_PcTime',
-      errorId: 'errorRC',
-      scoreKey: 'score_rc',
-      timeKey: 'time_rc',
-      table: REY_TABLE_RC,
-    },
-    {
-      scoreId: 'inputMCP_Score',
-      pcId: 'displayMCP_Pc',
-      timeId: 'inputMCP_Time',
-      pcTimeId: 'displayMCP_PcTime',
-      errorId: 'errorMCP',
-      scoreKey: 'score_mcp',
-      timeKey: 'time_mcp',
-      table: REY_TABLE_MCP_MLP,
-    },
-    {
-      scoreId: 'inputMLP_Score',
-      pcId: 'displayMLP_Pc',
-      timeId: 'inputMLP_Time',
-      pcTimeId: 'displayMLP_PcTime',
-      errorId: 'errorMLP',
-      scoreKey: 'score_mlp',
-      timeKey: 'time_mlp',
-      table: REY_TABLE_MCP_MLP,
-    },
-  ];
-
-  // ── Notes counter ──────────────────────────────────────────────────────────
-
+// Updates the character counter below the notes field as the user types.
+function reySetupNotesCounter (notesInput, notesCount) {
   notesInput.addEventListener('input', () => {
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 200`;
     notesCount.classList.toggle('text-red-500', len >= 200);
     notesCount.classList.toggle('text-gray-400', len < 200);
   });
+}
 
-  // ── Live percentile per area ───────────────────────────────────────────────
-
+// Wires live percentile preview for each area — updates as the clinician types.
+function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
   areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, table }) => {
-
-    // Score → percentile
     document.getElementById(scoreId).addEventListener('input', () => {
       const el    = document.getElementById(scoreId);
       const errEl = document.getElementById(errorId);
       errEl.classList.add('hidden');
-
       const score = Number(el.value);
       if (el.value.trim() === '' || isNaN(score) || score < 0) {
         document.getElementById(pcId).textContent = '—';
         return;
       }
-
-      const pc = reyResolveScorePercentile(score, educationBlock, ageRange, table);
+      const pc = reyResolveScorePercentile({ score, educationBlock, ageRange, table });
       document.getElementById(pcId).textContent = pc ?? '—';
     });
 
-    // Time → time percentile
     document.getElementById(timeId).addEventListener('input', () => {
       const el   = document.getElementById(timeId);
       const time = Number(el.value);
-
       if (el.value.trim() === '' || isNaN(time) || time < 0) {
         document.getElementById(pcTimeId).textContent = '—';
         return;
       }
-
       const pcTime = reyResolveTimePercentile(time, age);
       document.getElementById(pcTimeId).textContent = pcTime ?? '—';
     });
   });
+}
 
-  // ── Save ───────────────────────────────────────────────────────────────────
+// Validates all area fields — score and time are both required and must be 0-100.
+// Fills the body object with valid values; returns false if anything is wrong.
+function reyValidateAreas (areas, body) {
+  let valid = true;
+  areas.forEach(({ scoreId, timeId, errorId, scoreKey, timeKey }) => {
+    const scoreEl  = document.getElementById(scoreId);
+    const timeEl   = document.getElementById(timeId);
+    const errEl    = document.getElementById(errorId);
+    const scoreVal = scoreEl.value.trim();
+    const timeVal  = timeEl.value.trim();
 
-  document.getElementById('btnSaveREY').addEventListener('click', async () => {
-    apiError.classList.add('hidden');
+    errEl.textContent = '';
+    errEl.classList.add('hidden');
 
-    let valid  = true;
-    const body = {};
-
-    // Validate and collect all area values — score and time are required and must be non-negative
-    areas.forEach(({ scoreId, timeId, errorId, scoreKey, timeKey }) => {
-      const scoreEl = document.getElementById(scoreId);
-      const timeEl  = document.getElementById(timeId);
-      const errEl   = document.getElementById(errorId);
-
-      const scoreVal = scoreEl.value.trim();
-      const timeVal  = timeEl.value.trim();
-
-      errEl.textContent = '';
-      errEl.classList.add('hidden');
-
-      if (scoreVal === '' || timeVal === '') {
-        errEl.textContent = 'Puntuación y Tiempo son requeridos';
+    if (scoreVal === '' || timeVal === '') {
+      errEl.textContent = 'Puntuación y Tiempo son requeridos';
+      errEl.classList.remove('hidden');
+      valid = false;
+    } else {
+      const scoreN = Number(scoreVal);
+      if (isNaN(scoreN) || scoreN < 0 || scoreN > 100) {
+        errEl.textContent = 'Puntuación debe estar entre 0 y 100';
         errEl.classList.remove('hidden');
         valid = false;
       } else {
-        const scoreN = Number(scoreVal);
-        if (isNaN(scoreN) || scoreN < 0 || scoreN > 100) {
-          errEl.textContent = 'Puntuación debe estar entre 0 y 100';
+        Reflect.set(body, scoreKey, scoreN);
+      }
+      const timeN = Number(timeVal);
+      if (isNaN(timeN) || timeN < 0 || timeN > 100) {
+        if (!errEl.textContent) {
+          errEl.textContent = 'Tiempo debe estar entre 0 y 100';
           errEl.classList.remove('hidden');
-          valid = false;
-        } else {
-          body[scoreKey] = scoreN;
         }
-
-        const timeN = Number(timeVal);
-        if (isNaN(timeN) || timeN < 0 || timeN > 100) {
-          if (!errEl.textContent) {
-            errEl.textContent = 'Tiempo debe estar entre 0 y 100';
-            errEl.classList.remove('hidden');
-          }
-          valid = false;
-        } else {
-          body[timeKey] = timeN;
-        }
+        valid = false;
+      } else {
+        Reflect.set(body, timeKey, timeN);
       }
-    });
-
-    if (!valid) return;
-
-    body.notes = notesInput.value.trim() || null;
-
-    const config = TEST_REGISTRY[3];
-
-    try {
-      const res = await fetch(config.endpoint(idUser, idApplication), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
-        // Send raw scores and times — server calculates all percentiles
-        body: JSON.stringify(body),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok) {
-        apiError.textContent = json.error || 'Error al guardar el resultado';
-        apiError.classList.remove('hidden');
-        return;
-      }
-
-      updateTestCardStatus(json.data);
-      closeModal();
-      showToast('Resultado guardado con éxito');
-
-    } catch (_err) {
-      apiError.textContent = 'No se pudo conectar con el servidor';
-      apiError.classList.remove('hidden');
-      // eslint-disable-next-line no-console
-      console.error('[REY] post error:', _err);
     }
+  });
+  return valid;
+}
+
+// Sends the result to the server. Shows an error message if something fails.
+async function reySubmitResult ({ idUser, idApplication, body, apiError, closeModal }) {
+  const config = TEST_REGISTRY[3];
+  try {
+    const res  = await fetch(config.endpoint(idUser, idApplication), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      apiError.textContent = json.error || 'Error al guardar el resultado';
+      apiError.classList.remove('hidden');
+      return;
+    }
+    updateTestCardStatus(json.data);
+    closeModal();
+    showToast('Resultado guardado con éxito');
+  } catch (_err) {
+    apiError.textContent = 'No se pudo conectar con el servidor';
+    apiError.classList.remove('hidden');
+    // eslint-disable-next-line no-console
+    console.error('[REY] post error:', _err);
+  }
+}
+
+// Validates the form then sends the data to the server.
+async function reyHandleSave ({ areas, notesInput, apiError, idUser, idApplication, closeModal }) {
+  apiError.classList.add('hidden');
+  const body  = {};
+  const valid = reyValidateAreas(areas, body);
+  if (!valid) return;
+  body.notes = notesInput.value.trim() || null;
+  await reySubmitResult({ idUser, idApplication, body, apiError, closeModal });
+}
+
+// Wires up all interactive behavior: notes counter, live percentiles, and save button.
+function bindREYFormListeners ({ idUser, idApplication, educationBlock, ageRange, age, closeModal }) {
+  const notesInput = document.getElementById('inputREYNotes');
+  const notesCount = document.getElementById('reyNotesCount');
+  const apiError   = document.getElementById('reyApiError');
+
+  reySetupNotesCounter(notesInput, notesCount);
+  reySetupAreaListeners({ areas: REY_AREAS, educationBlock, ageRange, age });
+
+  document.getElementById('btnSaveREY').addEventListener('click', () => {
+    reyHandleSave({ areas: REY_AREAS, notesInput, apiError, idUser, idApplication, closeModal });
   });
 }
 
-// ── CLOSE AND OPEN MODAL LOGIC ──────────────────────────────────────────────────────────────
-// Fetches schooling, age, and existing result (modify/consult) before rendering.
-// All three fetches run in parallel via Promise.all for performance.
+// ── Open modal ────────────────────────────────────────────────────────────────
 
-// eslint-disable-next-line no-unused-vars
-async function openREYModal (idUser, idApplication, test, mode) {
-  const existing = document.getElementById('modalREY');
-  if (existing) existing.remove();
+// Builds the initial form values — empty when registering, filled from the saved result when modifying.
+function reyBuildPrefill (isReadable, fetchedTest, ageRange) {
+  function area (a) {
+    return {
+      score: isReadable ? (a?.score  ?? '') : '',
+      pc: isReadable ? (a?.pc     ?? '—') : '—',
+      time: isReadable ? (a?.time   ?? '') : '',
+      pcTime: isReadable ? (a?.pcTime ?? '—') : '—',
+    };
+  }
+  return {
+    rc: area(fetchedTest.rc),
+    mcp: area(fetchedTest.mcp),
+    mlp: area(fetchedTest.mlp),
+    notes: isReadable ? (fetchedTest.notes ?? '') : '',
+    ageRange: ageRange ?? '—',
+  };
+}
 
-  const isConsult = mode === 'consult';
-  const isModify  = mode === 'modify';
-
-  // ── Fetch schooling, age, and existing result in parallel ─────────────────
-
+// Fetches schooling, age, and (if needed) the existing result in parallel before showing the modal.
+async function reyFetchModalData ({ idUser, idApplication, isModify, isConsult, test }) {
   let schoolingData = null;
   let ageData       = null;
   let fetchedTest   = test;
 
   const fetches = [
-    // Schooling
     fetch(`/api/users/${idUser}/schooling`)
       .then(r => r.json())
       .then(json => { schoolingData = json; })
       .catch(() => { schoolingData = null; }),
-
-    // Age
     fetch(`/api/users/${idUser}/age`)
       .then(r => r.json())
       .then(json => { ageData = json; })
       .catch(() => { ageData = null; }),
   ];
 
-  // Existing result — only needed for modify/consult
   if (isModify || isConsult) {
     fetches.push(fetch(`/api/users/${idUser}/applications/${idApplication}/tests/3/results/${test.idResults}`)
       .then(r => r.json())
-      .then(json => {
-        if (json.data) fetchedTest = { ...test, ...json.data };
-      })
-      .catch(() => {
-        showToast('No se pudo conectar con el servidor');
-      }));
+      .then(json => { if (json.data) fetchedTest = { ...test, ...json.data }; })
+      .catch(() => { showToast('No se pudo conectar con el servidor'); }));
   }
 
   await Promise.all(fetches);
+  return { schoolingData, ageData, fetchedTest };
+}
 
-  // ── Resolve education block and age range for live display ────────────────
+// Entry point — fetches data, builds the right view (consult / form), and mounts the modal.
+// eslint-disable-next-line no-unused-vars
+async function openREYModal ({ idUser, idApplication, test, mode }) {
+  const existing = document.getElementById('modalREY');
+  if (existing) existing.remove();
+
+  const isConsult = mode === 'consult';
+  const isModify  = mode === 'modify';
+
+  const { schoolingData, ageData, fetchedTest } =
+    await reyFetchModalData({ idUser, idApplication, isModify, isConsult, test });
 
   const educationBlock = reyResolveEducationBlock(schoolingData?.years ?? null);
   const ageRange       = reyResolveAgeRange(ageData?.age ?? null);
   const age            = ageData?.age ?? null;
-
-  // ── Build prefill from fetched data ──────────────────────────────────────
-
-  const isReadable = isModify || isConsult;
-  const prefill = {
-    rc: {
-      score: isReadable ? (fetchedTest.rc?.score  ?? '') : '',
-      pc: isReadable ? (fetchedTest.rc?.pc     ?? '—') : '—',
-      time: isReadable ? (fetchedTest.rc?.time   ?? '') : '',
-      pcTime: isReadable ? (fetchedTest.rc?.pcTime ?? '—') : '—',
-    },
-    mcp: {
-      score: isReadable ? (fetchedTest.mcp?.score  ?? '') : '',
-      pc: isReadable ? (fetchedTest.mcp?.pc     ?? '—') : '—',
-      time: isReadable ? (fetchedTest.mcp?.time   ?? '') : '',
-      pcTime: isReadable ? (fetchedTest.mcp?.pcTime ?? '—') : '—',
-    },
-    mlp: {
-      score: isReadable ? (fetchedTest.mlp?.score  ?? '') : '',
-      pc: isReadable ? (fetchedTest.mlp?.pc     ?? '—') : '—',
-      time: isReadable ? (fetchedTest.mlp?.time   ?? '') : '',
-      pcTime: isReadable ? (fetchedTest.mlp?.pcTime ?? '—') : '—',
-    },
-    notes: isReadable ? (fetchedTest.notes ?? '') : '',
-    ageRange: ageRange ?? '—',
-  };
-
-  // ── Render ────────────────────────────────────────────────────────────────
+  const prefill        = reyBuildPrefill(isModify || isConsult, fetchedTest, ageRange);
 
   const modal = document.createElement('div');
   modal.id        = 'modalREY';
   modal.className = 'modal-overlay';
   modal.innerHTML = isConsult
     ? buildREYConsultHTML(fetchedTest)
-    : buildREYFormHTML(mode, prefill, schoolingData, ageData);
+    : buildREYFormHTML({ mode, prefill, schoolingData, ageData });
 
   document.body.appendChild(modal);
-
-  // ── Shared close logic ────────────────────────────────────────────────────
 
   function closeModal () { modal.remove(); }
 
@@ -771,9 +690,7 @@ async function openREYModal (idUser, idApplication, test, mode) {
   document.getElementById('btnCancelREY').addEventListener('click', closeModal);
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-  // ── Form listeners only on register / modify ──────────────────────────────
-
   if (!isConsult) {
-    bindREYFormListeners(idUser, idApplication, educationBlock, ageRange, age, closeModal);
+    bindREYFormListeners({ idUser, idApplication, educationBlock, ageRange, age, closeModal });
   }
 }
