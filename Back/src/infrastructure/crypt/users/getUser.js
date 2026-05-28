@@ -9,6 +9,7 @@ function uncryptUser (user) {
     neuro_status: crypt.decrypt(user.neuro_status),
     base_patology: crypt.decrypt(user.base_patology),
     notes: crypt.decrypt(user.notes),
+    modality: crypt.decrypt(user.modality),
     attendance: crypt.decrypt(user.attendance),
     reference_number: crypt.decrypt(user.reference_number),
     amputation_date: crypt.decrypt(user.amputation_date),
