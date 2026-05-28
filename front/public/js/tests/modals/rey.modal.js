@@ -277,7 +277,9 @@ function buildREYConsultHTML (test) {
 // Blue info banner if schooling + age are available; yellow warning otherwise.
 // Percentile preview only works when both values are present.
 function reyInfoBanner (schoolingData, ageData, prefill) {
-  if (schoolingData !== null && ageData !== null) {
+  const hasAge      = ageData?.age != null;
+  const hasSchooling = schoolingData?.years != null;
+  if (hasAge && hasSchooling) {
     return `
     <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50 border border-blue-200">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -496,7 +498,7 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
       const errEl = document.getElementById(errorId);
       errEl.classList.add('hidden');
       const score = Number(el.value);
-      if (el.value.trim() === '' || isNaN(score) || score < 0) {
+      if (el.value.trim() === '' || isNaN(score) || score < 0 || score > 100) {
         document.getElementById(pcId).textContent = '—';
         return;
       }
@@ -507,7 +509,7 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
     document.getElementById(timeId).addEventListener('input', () => {
       const el   = document.getElementById(timeId);
       const time = Number(el.value);
-      if (el.value.trim() === '' || isNaN(time) || time < 0) {
+      if (el.value.trim() === '' || isNaN(time) || time < 0 || time > 100) {
         document.getElementById(pcTimeId).textContent = '—';
         return;
       }
