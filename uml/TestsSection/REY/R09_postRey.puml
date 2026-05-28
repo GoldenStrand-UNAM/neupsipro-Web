@@ -1,0 +1,151 @@
+@startuml Post_REY
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "rey.modal.js" as RMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "postREYController" as TCTRL
+participant "postREYUseCase" as UC_POST
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card REY]
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nRegistrar habilitado solo si status !== 'Calificada'\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
+
+USR -> OMODAL : Click [Registrar resultados]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> RMODAL : config.openRegister(idUser, idApplication, test)\n→ openREYModal(idUser, idApplication, test, 'register')
+
+== Carga de escolaridad y edad al abrir modal ==
+
+RMODAL -> UROUTE : Promise.all([\n  GET /api/usuarios/:id_user/escolaridad,\n  GET /api/usuarios/:id_user/edad\n])
+UROUTE --> RMODAL : { schooling, years } + { age }
+
+RMODAL -> RMODAL : resolveEducationBlock(years)\nyears > 12 → '>12'\nyears <= 12 → '1-12'
+
+RMODAL -> RMODAL : resolveAgeRange(age)\n18-22 | 23-27 | 28-32 | ... | >77
+
+alt sin escolaridad o edad registrada
+    RMODAL --> USR : Banner amarillo:\n"No se pudieron cargar\nlos datos del paciente\nLos percentiles no se calcularán"
+end
+
+RMODAL --> USR : Modal de registro visible\nBanner: escolaridad + bloque + edad + rango\n6 inputs: score y tiempo por área\nPercentiles en vivo (read-only)
+
+== Interpretación en vivo ==
+
+USR -> RMODAL : Ingresa score o tiempo en cualquier área
+RMODAL -> RMODAL : strip non-digits/decimals
+
+alt sin educationBlock o ageRange
+    RMODAL --> USR : percentil: "Sin datos"
+end
+
+RMODAL -> RMODAL : resolveScorePercentile(score, educationBlock, ageRange, table)\n- obtiene columna de la tabla\n- si score >= máximo → percentil máximo\n- si score <= mínimo → percentil mínimo\n- si intermedio → interpolación lineal entre vecinos
+
+RMODAL -> RMODAL : resolveTimePercentile(time, age)\n- obtiene fila de TIME_TABLE por edad\n- tiempo menor = percentil mayor\n- interpola entre vecinos
+
+RMODAL --> USR : Percentiles en vivo por área\n(pc_rc, pc_time_rc, pc_mcp,\npc_time_mcp, pc_mlp, pc_time_mlp)
+
+== Validación de notas ==
+
+USR -> RMODAL : Ingresa notas
+RMODAL -> RMODAL : contador actualiza\ntextContent = len / 200
+RMODAL --> USR : Contador en rojo si len >= 200
+
+== Guardar resultados ==
+
+USR -> RMODAL : Click [Guardar]
+RMODAL -> RMODAL : validate client-side\n- al menos un área con score\n- scores no negativos\n- tiempos no negativos\n- notas max 200 chars
+
+alt Datos inválidos
+    RMODAL --> USR : showFieldError(msg)
+end
+
+RMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/3/resultados\n{ score_rc, time_rc,\n  score_mcp, time_mcp,\n  score_mlp, time_mlp, notes }
+
+UROUTE -> TCTRL : reyController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application,\nscore_rc, time_rc,\nscore_mcp, time_mcp,\nscore_mlp, time_mlp, notes })
+
+== Validaciones en Use Case ==
+
+UC_POST -> UC_POST : validateScores()\n- scores no negativos si presentes\n- tiempos no negativos si presentes\n- notas max 200 chars
+
+alt datos inválidos
+    UC_POST --> TCTRL : throw Error 422
+    TCTRL --> RMODAL : HTTP 422 { error }
+    RMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 3 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 3
+DB --> RREPO : { id_results, status } | []
+RREPO --> UC_POST : { idResults, status } | null
+
+alt result row not found
+    UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
+    TCTRL --> RMODAL : HTTP 404 { error }
+    RMODAL --> USR : showApiError(json.error)
+end
+
+== Cálculo server-side ==
+
+UC_POST -> RREPO : fetchUserSchooling({ id_user })
+UC_POST -> RREPO : fetchUserAge({ id_user })
+RREPO --> UC_POST : schooling | null
+RREPO --> UC_POST : birthdate | null
+
+UC_POST -> UC_POST : calculateAge(birthdate)
+UC_POST -> UC_POST : resolveEducationBlock(schoolingYears)\nyears > 12 → '>12' | years <= 12 → '1-12'
+UC_POST -> UC_POST : resolveAgeRange(age)\n18-22 | 23-27 | ... | >77
+
+alt educationBlock o ageRange null
+    UC_POST --> TCTRL : throw Error 422\n'Cannot calculate REY percentiles:\nmissing age or schooling data'
+    TCTRL --> RMODAL : HTTP 422 { error }
+    RMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> UC_POST : resolveScorePercentile(score_rc, educationBlock,\nageRange, REY_TABLE_RC) → pc_rc
+UC_POST -> UC_POST : resolveTimePercentile(time_rc, age) → pc_time_rc
+UC_POST -> UC_POST : resolveScorePercentile(score_mcp, educationBlock,\nageRange, REY_TABLE_MCP_MLP) → pc_mcp
+UC_POST -> UC_POST : resolveTimePercentile(time_mcp, age) → pc_time_mcp
+UC_POST -> UC_POST : resolveScorePercentile(score_mlp, educationBlock,\nageRange, REY_TABLE_MCP_MLP) → pc_mlp
+UC_POST -> UC_POST : resolveTimePercentile(time_mlp, age) → pc_time_mlp
+
+note right
+  El servidor recalcula todos los percentiles
+  usando interpolación lineal — nunca confía
+  en los valores del cliente.
+  Scores y tiempos nulos se persisten como NULL.
+end note
+
+== Persistencia ==
+
+UC_POST -> RREPO : saveREYResult({ id_results,\nscore_rc, pc_rc, time_rc, pc_time_rc,\nscore_mcp, pc_mcp, time_mcp, pc_time_mcp,\nscore_mlp, pc_mlp, time_mlp, pc_time_mlp,\nnotes })
+
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO rey_results (...)\nVALUES (...)\nON DUPLICATE KEY UPDATE ...
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM rey_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw rey_results row
+
+UC_POST -> UC_POST : map row → ReyResultsDTO\n{ idResults, idTest, status: 3,\n  rc: { score, pc, time, pcTime },\n  mcp: { score, pc, time, pcTime },\n  mlp: { score, pc, time, pcTime },\n  notes }
+UC_POST --> TCTRL : ReyResultsDTO
+TCTRL --> RMODAL : HTTP 200 { data: ReyResultsDTO }
+
+== Actualizar UI ==
+
+RMODAL -> RMODAL : closeModal()
+RMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
+RMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
+
+@enduml
