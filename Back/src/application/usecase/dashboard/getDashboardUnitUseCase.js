@@ -1,6 +1,5 @@
 const { DashboardSummaryDTO } = require('../../dto/dashboardUnitDTO');
-const AgeBucketEntity = require('../../../domain/entity/dashboardUnitEntity').AgeBucketEntity;
-
+const { AgeBucketEntity } = require('../../../domain/entity/dashboardUnitEntity');
 
 // Ages buckets for the age distribution
 const AGE_BUCKETS = [
