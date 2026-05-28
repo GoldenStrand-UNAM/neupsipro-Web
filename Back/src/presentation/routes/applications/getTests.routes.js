@@ -25,8 +25,8 @@ const getWaisResultController     = require('../../controller/testApplications/g
 const postReyUseCase    = require('../../../application/usecase/testApplications/postReyUseCase');
 const postReyController = require('../../controller/testApplications/postRey.controller');
 
-const getReyResultUseCase  = require('../../../application/usecase/testApplications/getReyUseCase');
-const getReyController     = require('../../controller/testApplications/getRey.controller');
+const getReyResultUseCase       = require('../../../application/usecase/testApplications/getReyUseCase');
+const getReyResultController    = require('../../controller/testApplications/getRey.controller');
 
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -55,13 +55,12 @@ module.exports = (authUseCase, authMiddleware) => {
   const getWaisUseCase    = new getWaisResultUseCase(testResultsRepo);
   const getWaisController = new getWaisResultController(getWaisUseCase);
 
-  //Rey
+  //REY
+  const reyUseCase    = new postReyUseCase(testResultsRepo);
+  const reyController = new postReyController(reyUseCase);
 
-  const postReyUseCase    = require('../../../application/usecase/testApplications/postReyUseCase');
-  const postReyController = require('../../controller/testApplications/postRey.controller');
-
-  const getReyResultUseCase  = require('../../../application/usecase/testApplications/getReyUseCase');
-  const getReyController     = require('../../controller/testApplications/getRey.controller');
+  const getReyUseCase    = new getReyResultUseCase(testResultsRepo);
+  const getReyController = new getReyResultController(getReyUseCase);
 
   // Only manage the render
   router.get(
@@ -109,12 +108,11 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getWaisController.getResult(req, res)
   );
 
-  
   // ======================== REY ===============================
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/3/results',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('tests', 'consultation'),
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => reyController.postResult(req, res)
   );
 
@@ -122,10 +120,10 @@ module.exports = (authUseCase, authMiddleware) => {
     '/api/users/:id_user/applications/:id_application/tests/3/results/:id_results',
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
-    (req, res) => getREYCtrl.getResult(req, res)
+    (req, res) => getReyController.getResult(req, res)
   );
 
-    // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
+  // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
 
   router.get(
     '/api/users/:id_user/schooling',

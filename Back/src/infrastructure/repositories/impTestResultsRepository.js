@@ -287,7 +287,6 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
-
   // ================= REY ==================
 
   // Fetch existing REY result by id_results for modify/consult prefill
@@ -363,7 +362,7 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-    // ================= schooling and age ==================
+  // ================= schooling and age ==================
 
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
