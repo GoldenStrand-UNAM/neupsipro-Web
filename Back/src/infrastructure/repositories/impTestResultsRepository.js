@@ -287,6 +287,110 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
+
+  // ================= REY ==================
+
+  // Fetch existing REY result by id_results for modify/consult prefill
+  async fetchREYResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT rr.*,
+            tr.status,
+            tr.date_applied
+     FROM rey_results rr
+     JOIN test_results tr ON rr.id_results = tr.id_results
+     WHERE rr.id_results = ?
+     LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // Upserts into rey_results — works for register and modify.
+  // Also updates test_results.status and date_applied.
+  async saveREYResult ({
+    id_results,
+    score_rc,  pc_rc,  time_rc,  pc_time_rc,
+    score_mcp, pc_mcp, time_mcp, pc_time_mcp,
+    score_mlp, pc_mlp, time_mlp, pc_time_mlp,
+    notes,
+  }) {
+  // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+      [id_results]
+    );
+
+    // ON DUPLICATE KEY covers the modify flow (row already exists)
+    await db.query(
+      `INSERT INTO rey_results
+       (id_results,
+        score_rc,  pc_rc,  time_rc,  pc_time_rc,
+        score_mcp, pc_mcp, time_mcp, pc_time_mcp,
+        score_mlp, pc_mlp, time_mlp, pc_time_mlp,
+        notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+        score_rc      = VALUES(score_rc),
+        pc_rc         = VALUES(pc_rc),
+        time_rc       = VALUES(time_rc),
+        pc_time_rc    = VALUES(pc_time_rc),
+        score_mcp     = VALUES(score_mcp),
+        pc_mcp        = VALUES(pc_mcp),
+        time_mcp      = VALUES(time_mcp),
+        pc_time_mcp   = VALUES(pc_time_mcp),
+        score_mlp     = VALUES(score_mlp),
+        pc_mlp        = VALUES(pc_mlp),
+        time_mlp      = VALUES(time_mlp),
+        pc_time_mlp   = VALUES(pc_time_mlp),
+        notes         = VALUES(notes)`,
+      [
+        id_results,
+        score_rc  ?? null, pc_rc  ?? null, time_rc  ?? null, pc_time_rc  ?? null,
+        score_mcp ?? null, pc_mcp ?? null, time_mcp ?? null, pc_time_mcp ?? null,
+        score_mlp ?? null, pc_mlp ?? null, time_mlp ?? null, pc_time_mlp ?? null,
+        notes     ?? null,
+      ]
+    );
+
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM rey_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
+
+    // ================= schooling and age ==================
+
+  // Fetch schooling level for a user from their initial interview.
+  // Used by MOCA use case to determine if +2 bonus applies.
+  // Use by REY to determine the percentil
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling
+       FROM initial_interview ii
+       INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
+       WHERE ur.id_user = ?
+       LIMIT 1`,
+      [id_user]
+    );
+    return rows.length ? rows[0].schooling : null;
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT birthdate
+       FROM users
+       WHERE id_user = ?`,
+      [id_user]
+    );
+    return rows.length ? rows[0].birthdate : null;
+  }
+
 }
 
 module.exports = impTestResultsRepository;
