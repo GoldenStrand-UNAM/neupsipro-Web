@@ -89,7 +89,7 @@ class resultRepository {
     throw new Error('saveREYResult() not implemented');
   }
 
-    // ========= MOCA & REY ========================
+  // ========= MOCA & REY ========================
 
   // Fetch schooling level for a user from their initial interview.
   async fetchUserSchooling ({ _id_user }) {
@@ -100,7 +100,6 @@ class resultRepository {
   async fetchUserAge ({ _id_user }) {
     throw new Error('fetchUserAge() not implemented');
   }
-  
 
 }
 
