@@ -1,6 +1,15 @@
 const ReyResultsDTO = require('../../dto/reyDTO');
 const { REY_TABLE_RC, REY_TABLE_MCP_MLP, TIME_TABLE } = require('../constants/reyTables');
 
+const SCHOOLING_YEARS_MAP = new Map([
+  ['Sin escolaridad', 0],
+  ['Primaria', 6],
+  ['Secundaria', 9],
+  ['Bachillerato', 12],
+  ['Licenciatura', 16],
+  ['Posgrado', 18],
+]);
+
 class postREYUseCase {
 
   constructor (impTestResultsRepository) {
@@ -9,37 +18,25 @@ class postREYUseCase {
 
   // ── Age helpers ─────────────────────────────────────────────────────────────
 
-  // Calculates age in years from a birthdate string.
   #calculateAge (birthdate) {
     if (!birthdate) return null;
     const today = new Date();
     const birth = new Date(birthdate);
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age -= 1;
     return age;
   }
 
-  // Maps schooling label to years of education.
   #resolveSchoolingYears (schooling) {
-    const map = {
-      'Sin escolaridad': 0,
-      'Primaria': 6,
-      'Secundaria': 9,
-      'Bachillerato': 12,
-      'Licenciatura': 16,
-      'Posgrado': 18,
-    };
-    return map[schooling] ?? null;
+    return SCHOOLING_YEARS_MAP.has(schooling) ? SCHOOLING_YEARS_MAP.get(schooling) : null;
   }
 
-  // Returns '>12' or '1-12' education block.
   #resolveEducationBlock (schoolingYears) {
     if (schoolingYears === null) return null;
     return schoolingYears > 12 ? '>12' : '1-12';
   }
 
-  // Maps age to normative age range string.
   #resolveAgeRange (age) {
     if (age === null) return null;
     if (age <= 22) return '18-22';
@@ -57,7 +54,6 @@ class postREYUseCase {
     return '>77';
   }
 
-  // Maps age to TIME_TABLE key string.
   #resolveTimeAgeKey (age) {
     if (age === null) return null;
     if (age <= 5)  return '5';
@@ -75,84 +71,58 @@ class postREYUseCase {
 
   // ── Interpolation ───────────────────────────────────────────────────────────
 
-  // Resolves percentile for a score using linear interpolation.
   // Table format: { percentile: score } — higher percentile = higher score.
-  // Returns null if score or table is missing.
-  #resolveScorePercentile (score, educationBlock, ageRange, table) {
+  #resolveScorePercentile ({ score, educationBlock, ageRange, table }) {
     if (score === null || score === undefined) return null;
     if (!educationBlock || !ageRange)          return null;
 
-    const column = table?.[educationBlock]?.[ageRange];
+    const edBlock = Reflect.get(table ?? {}, educationBlock);
+    const column  = edBlock ? Reflect.get(edBlock, ageRange) : null;
     if (!column) return null;
 
-    // Sort entries descending by percentile (highest first)
     const entries = Object.entries(column)
       .map(([p, v]) => ({ p: Number(p), v }))
       .sort((a, b) => b.p - a.p);
 
-    const maxEntry = entries[0];
-    const minEntry = entries[entries.length - 1];
+    if (score >= entries.at(0).v)  return entries.at(0).p;
+    if (score <= entries.at(-1).v) return entries.at(-1).p;
 
-    // Score above or equal to max score → max percentile
-    if (score >= maxEntry.v) return maxEntry.p;
-
-    // Score below or equal to min score → min percentile
-    if (score <= minEntry.v) return minEntry.p;
-
-    // Find the two neighbors surrounding the score
-    // entries are sorted descending by percentile so scores are descending too
-    for (let i = 0; i < entries.length - 1; i++) {
-      const upper = entries[i];     // higher percentile, higher score
-      const lower = entries[i + 1]; // lower percentile, lower score
-
-      if (score <= upper.v && score >= lower.v) {
-        // Linear interpolation
-        const percentile = upper.p +
-          ((score - upper.v) / (lower.v - upper.v)) * (lower.p - upper.p);
+    let prev = null;
+    for (const curr of entries) {
+      if (prev !== null && score <= prev.v && score >= curr.v) {
+        const percentile = prev.p + ((score - prev.v) / (curr.v - prev.v)) * (curr.p - prev.p);
         return Math.round(percentile);
       }
+      prev = curr;
     }
 
     return null;
   }
 
-  // Resolves percentile for a time using linear interpolation.
   // Table format: { percentile: time } — lower time = higher percentile.
-  // Returns null if time or table is missing.
   #resolveTimePercentile (time, age) {
     if (time === null || time === undefined) return null;
 
     const ageKey = this.#resolveTimeAgeKey(age);
     if (!ageKey) return null;
 
-    const column = TIME_TABLE[ageKey];
+    const column = Reflect.get(TIME_TABLE, ageKey);
     if (!column) return null;
 
-    // Sort entries descending by percentile (highest first = lowest time)
     const entries = Object.entries(column)
       .map(([p, t]) => ({ p: Number(p), t }))
       .sort((a, b) => b.p - a.p);
 
-    const bestEntry  = entries[0];                    // highest percentile, lowest time
-    const worstEntry = entries[entries.length - 1];   // lowest percentile, highest time
+    if (time <= entries.at(0).t)  return entries.at(0).p;
+    if (time >= entries.at(-1).t) return entries.at(-1).p;
 
-    // Time faster than best → best percentile
-    if (time <= bestEntry.t)  return bestEntry.p;
-
-    // Time slower than worst → worst percentile
-    if (time >= worstEntry.t) return worstEntry.p;
-
-    // Find neighbors — entries sorted desc by percentile means asc by time
-    for (let i = 0; i < entries.length - 1; i++) {
-      const faster = entries[i];     // higher percentile, lower time
-      const slower = entries[i + 1]; // lower percentile, higher time
-
-      if (time >= faster.t && time <= slower.t) {
-        // Linear interpolation — time inverse: more time = less percentile
-        const percentile = faster.p +
-          ((time - faster.t) / (slower.t - faster.t)) * (slower.p - faster.p);
+    let prev = null;
+    for (const curr of entries) {
+      if (prev !== null && time >= prev.t && time <= curr.t) {
+        const percentile = prev.p + ((time - prev.t) / (curr.t - prev.t)) * (curr.p - prev.p);
         return Math.round(percentile);
       }
+      prev = curr;
     }
 
     return null;
@@ -171,17 +141,7 @@ class postREYUseCase {
     return parsed;
   }
 
-  // ── Execute ─────────────────────────────────────────────────────────────────
-
-  async execute ({
-    id_user, id_application,
-    score_rc,  time_rc,
-    score_mcp, time_mcp,
-    score_mlp, time_mlp,
-    notes,
-  }) {
-
-    // 1. Parse and validate all scores and times — all optional
+  #validateAndParseScores ({ score_rc, time_rc, score_mcp, time_mcp, score_mlp, time_mlp, notes }) {
     const scoreRC  = this.#parseOptionalScore(score_rc,  'score_rc');
     const timeRC   = this.#parseOptionalScore(time_rc,   'time_rc');
     const scoreMCP = this.#parseOptionalScore(score_mcp, 'score_mcp');
@@ -189,65 +149,70 @@ class postREYUseCase {
     const scoreMLP = this.#parseOptionalScore(score_mlp, 'score_mlp');
     const timeMLP  = this.#parseOptionalScore(time_mlp,  'time_mlp');
 
-    // 2. Validate notes length if provided
     if (notes && String(notes).length > 200) {
       const err = new Error('notes must be 200 characters or less');
       err.status = 422;
       throw err;
     }
 
-    // 3. Verify result row exists
-    const row = await this.impTestResultsRepository.fetchResultRow({
-      id_user,
-      id_application,
-      id_test: 3,
-    });
+    return { scoreRC, timeRC, scoreMCP, timeMCP, scoreMLP, timeMLP };
+  }
 
+  async #fetchAndResolveContext ({ id_user, id_application }) {
+    const row = await this.impTestResultsRepository.fetchResultRow({ id_user, id_application, id_test: 3 });
     if (!row) {
       const err = new Error('Test result row not found');
       err.status = 404;
       throw err;
     }
 
-    // 4. Fetch schooling and age server-side — never trust the client
-    const schooling = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
-    const birthdate = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
+    const birthdate      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    const schoolingYears = this.#resolveSchoolingYears(schooling);
+    const age            = this.#calculateAge(birthdate);
+    const educationBlock = this.#resolveEducationBlock(schoolingYears);
+    const ageRange       = this.#resolveAgeRange(age);
 
-    const schoolingYears   = this.#resolveSchoolingYears(schooling);
-    const age              = this.#calculateAge(birthdate);
-    const educationBlock   = this.#resolveEducationBlock(schoolingYears);
-    const ageRange         = this.#resolveAgeRange(age);
-
-    // 5. Both are required to calculate percentiles
     if (!educationBlock || !ageRange) {
       const err = new Error('Cannot calculate REY percentiles: missing age or schooling data');
       err.status = 422;
       throw err;
     }
 
-    // 6. Calculate all percentiles server-side via interpolation
-    const pcRC      = this.#resolveScorePercentile(scoreRC,  educationBlock, ageRange, REY_TABLE_RC);
-    const pcTimeRC  = this.#resolveTimePercentile(timeRC,  age);
-    const pcMCP     = this.#resolveScorePercentile(scoreMCP, educationBlock, ageRange, REY_TABLE_MCP_MLP);
-    const pcTimeMCP = this.#resolveTimePercentile(timeMCP, age);
-    const pcMLP     = this.#resolveScorePercentile(scoreMLP, educationBlock, ageRange, REY_TABLE_MCP_MLP);
-    const pcTimeMLP = this.#resolveTimePercentile(timeMLP, age);
+    return { row, age, educationBlock, ageRange };
+  }
 
-    // 7. Persist
+  #calculatePercentiles ({ scoreRC, timeRC, scoreMCP, timeMCP, scoreMLP, timeMLP, educationBlock, ageRange, age }) {
+    return {
+      pcRC: this.#resolveScorePercentile({ score: scoreRC,  educationBlock, ageRange, table: REY_TABLE_RC }),
+      pcTimeRC: this.#resolveTimePercentile(timeRC,  age),
+      pcMCP: this.#resolveScorePercentile({ score: scoreMCP, educationBlock, ageRange, table: REY_TABLE_MCP_MLP }),
+      pcTimeMCP: this.#resolveTimePercentile(timeMCP, age),
+      pcMLP: this.#resolveScorePercentile({ score: scoreMLP, educationBlock, ageRange, table: REY_TABLE_MCP_MLP }),
+      pcTimeMLP: this.#resolveTimePercentile(timeMLP, age),
+    };
+  }
+
+  // ── Execute ─────────────────────────────────────────────────────────────────
+
+  async execute ({ id_user, id_application, score_rc, time_rc, score_mcp, time_mcp, score_mlp, time_mlp, notes }) {
+    const scores  = this.#validateAndParseScores({ score_rc, time_rc, score_mcp, time_mcp, score_mlp, time_mlp, notes });
+    const context = await this.#fetchAndResolveContext({ id_user, id_application });
+    const pcs     = this.#calculatePercentiles({ ...scores, ...context });
+
     const saved = await this.impTestResultsRepository.saveREYResult({
-      id_results: row.idResults,
-      score_rc: scoreRC,  pc_rc: pcRC,
-      time_rc: timeRC,   pc_time_rc: pcTimeRC,
-      score_mcp: scoreMCP, pc_mcp: pcMCP,
-      time_mcp: timeMCP,  pc_time_mcp: pcTimeMCP,
-      score_mlp: scoreMLP, pc_mlp: pcMLP,
-      time_mlp: timeMLP,  pc_time_mlp: pcTimeMLP,
+      id_results: context.row.idResults,
+      score_rc: scores.scoreRC,   pc_rc: pcs.pcRC,
+      time_rc: scores.timeRC,    pc_time_rc: pcs.pcTimeRC,
+      score_mcp: scores.scoreMCP,  pc_mcp: pcs.pcMCP,
+      time_mcp: scores.timeMCP,   pc_time_mcp: pcs.pcTimeMCP,
+      score_mlp: scores.scoreMLP,  pc_mlp: pcs.pcMLP,
+      time_mlp: scores.timeMLP,   pc_time_mlp: pcs.pcTimeMLP,
       notes: notes ?? null,
     });
 
-    // 8. Map to DTO
     return new ReyResultsDTO({
-      idResults: row.idResults,
+      idResults: context.row.idResults,
       idTest: 3,
       status: 3,
       dateApplied: saved.date_applied ?? null,
