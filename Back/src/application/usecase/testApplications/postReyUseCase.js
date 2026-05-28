@@ -133,8 +133,8 @@ class postREYUseCase {
   #parseOptionalScore (value, fieldName) {
     if (value === undefined || value === null || value === '') return null;
     const parsed = Number(value);
-    if (!Number.isFinite(parsed) || parsed < 0) {
-      const err = new Error(`${fieldName} must be a non-negative number`);
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+      const err = new Error(`${fieldName} must be a number between 0 and 100`);
       err.status = 422;
       throw err;
     }
