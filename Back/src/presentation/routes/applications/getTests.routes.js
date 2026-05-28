@@ -70,7 +70,7 @@ module.exports = (authUseCase, authMiddleware) => {
   const getReyUseCase    = new getReyResultUseCase(testResultsRepo);
   const getReyController = new getReyResultController(getReyUseCase);
 
-    //Moca
+  //Moca
   const MocaUseCase    = new postMocaUseCase(testResultsRepo);
   const MocaController = new postMocaController(MocaUseCase);
 
@@ -138,7 +138,7 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getReyController.getResult(req, res)
   );
 
-    // ======================== Moca ===============================
+  // ======================== Moca ===============================
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/4/results',
     authMiddleware.verifyToken,

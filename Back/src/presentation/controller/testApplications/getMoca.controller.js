@@ -23,4 +23,3 @@ class getMocaController {
 }
 
 module.exports = getMocaController;
-

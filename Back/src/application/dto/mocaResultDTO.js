@@ -19,4 +19,3 @@ class MocaResultsDTO {
 }
 
 module.exports = MocaResultsDTO;
-
