@@ -14,8 +14,8 @@ class postWaisUseCase {
       err.status = 422;
       throw err;
     }
-    if (parsed < 0) {
-      const err = new Error(`${fieldName} must be a non-negative number`);
+    if (parsed < 0 || parsed > 300) {
+      const err = new Error(`${fieldName} must be between 0 and 300`);
       err.status = 422;
       throw err;
     }

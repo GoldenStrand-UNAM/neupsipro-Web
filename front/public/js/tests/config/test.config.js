@@ -16,4 +16,18 @@ const TEST_REGISTRY = {
       `/api/users/${idUser}/applications/${idApplication}/tests/1/results`,
   },
 
+    //WAIS
+
+  2: {
+    name: 'WAIS',
+    openRegister: (idUser, idApplication, test) =>
+      openWAISModal(idUser, idApplication, test, 'register'),
+    openModify: (idUser, idApplication, test) =>
+      openWAISModal(idUser, idApplication, test, 'modify'),
+    openConsult: (idUser, idApplication, test) =>
+      openWAISModal(idUser, idApplication, test, 'consult'),
+    endpoint: (idUser, idApplication) =>
+      `/api/users/${idUser}/applications/${idApplication}/tests/2/results`,
+  },
+
 };
