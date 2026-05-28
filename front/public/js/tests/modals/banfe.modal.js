@@ -9,7 +9,7 @@ function interpretBANFE (score) {
   return 'Normal alto';
 }
 
-function consultAreaRow (label, area) {
+function banfeConsultAreaRow (label, area) {
   return `
     <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                 gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
@@ -21,7 +21,7 @@ function consultAreaRow (label, area) {
     </div>`;
 }
 
-function consultDataRow (label, content) {
+function banfeConsultDataRow (label, content) {
   return `
     <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr]
                 gap-y-2 sm:gap-x-6 py-5 border-b border-gray-200 items-start">
@@ -30,17 +30,17 @@ function consultDataRow (label, content) {
     </div>`;
 }
 
-function buildConsultBody (test, dateLabel) {
+function buildBANFEConsultBody (test, dateLabel) {
   const areas = test.areas ?? {};
   const notes = test.notes ?? '';
   return `
     <div class="modal__body flex flex-col">
-      ${consultDataRow('Fecha', `<span class="text-base sm:text-lg text-gray-900">${dateLabel}</span>`)}
-      ${consultAreaRow('Orbito Frontal', areas.orbitFrontal)}
-      ${consultAreaRow('Prefrontal Anterior', areas.prefrontalBefore)}
-      ${consultAreaRow('Dorsolateral', areas.dLateral)}
-      ${consultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
-      ${consultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      <div class="flex justify-end pt-4 border-t border-gray-200">
+      ${banfeConsultDataRow('Fecha', `<span class="text-base sm:text-lg text-gray-900">${dateLabel}</span>`)}
+      ${banfeConsultAreaRow('Orbito Frontal', areas.orbitFrontal)}
+      ${banfeConsultAreaRow('Prefrontal Anterior', areas.prefrontalBefore)}
+      ${banfeConsultAreaRow('Dorsolateral', areas.dLateral)}
+      ${banfeConsultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
+      ${banfeConsultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      <div class="flex justify-end pt-4 border-t border-gray-200">
         <button id="btnCancelBANFE" class="btn-cancel">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
@@ -65,11 +65,11 @@ function buildConsultHTML (test) {
           </svg>
         </button>
       </div>
-      ${buildConsultBody(test, dateLabel)}
+      ${buildBANFEConsultBody(test, dateLabel)}
     </div>`;
 }
 
-function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
+function banfeFormAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
   return `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1">
@@ -88,7 +88,7 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
     </div>`;
 }
 
-function buildFormActions () {
+function buildBANFEFormActions () {
   return `
     <div class="flex justify-end gap-3">
       <button id="btnCancelBANFE" class="btn-cancel">
@@ -119,9 +119,9 @@ function buildFormHTML (mode, prefill) {
         </button>
       </div>
       <div class="modal__body flex flex-col gap-6">
-        ${formAreaRow({ label: 'Orbito Frontal',      inputId: 'inputOrbitFrontal',     interpId: 'interpOrbitFrontal',     errorId: 'errorOrbitFrontal',     prefillArea: prefill.orbitFrontal })}
-        ${formAreaRow({ label: 'Prefrontal Anterior', inputId: 'inputPrefrontalBefore', interpId: 'interpPrefrontalBefore', errorId: 'errorPrefrontalBefore', prefillArea: prefill.prefrontalBefore })}
-        ${formAreaRow({ label: 'Dorsolateral',        inputId: 'inputDLateral',         interpId: 'interpDLateral',         errorId: 'errorDLateral',         prefillArea: prefill.dLateral })}
+        ${banfeFormAreaRow({ label: 'Orbito Frontal',      inputId: 'inputOrbitFrontal',     interpId: 'interpOrbitFrontal',     errorId: 'errorOrbitFrontal',     prefillArea: prefill.orbitFrontal })}
+        ${banfeFormAreaRow({ label: 'Prefrontal Anterior', inputId: 'inputPrefrontalBefore', interpId: 'interpPrefrontalBefore', errorId: 'errorPrefrontalBefore', prefillArea: prefill.prefrontalBefore })}
+        ${banfeFormAreaRow({ label: 'Dorsolateral',        inputId: 'inputDLateral',         interpId: 'interpDLateral',         errorId: 'errorDLateral',         prefillArea: prefill.dLateral })}
         <div class="flex flex-col gap-1">
           <label class="text-2xl font-regular">Puntaje Total</label>
           <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
@@ -136,7 +136,7 @@ function buildFormHTML (mode, prefill) {
           <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">${prefill.notes.length} / 200</p>
         </div>
         <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
-        ${buildFormActions()}
+        ${buildBANFEFormActions()}
       </div>
     </div>`;
 }
@@ -163,7 +163,7 @@ function updateTotal (fields) {
     ? values.reduce((acc, v) => acc + Number(v), 0) : '—';
 }
 
-function bindAreaUpdates (fields) {
+function banfeBindAreaUpdates (fields) {
   fields.forEach(({ input, interp, error }) => {
     document.getElementById(input).addEventListener('input', () => {
       const el    = document.getElementById(input);
@@ -178,7 +178,7 @@ function bindAreaUpdates (fields) {
   });
 }
 
-async function handleSave (endpoint, fields, ctx) {
+async function banfeHandleSave (endpoint, fields, ctx) {
   const { notesInput, apiError, closeModal } = ctx;
   apiError.classList.add('hidden');
   let valid = true;
@@ -225,10 +225,10 @@ function bindFormListeners (idUser, idApplication, closeModal) {
   const apiError   = document.getElementById('banfeApiError');
   const endpoint   = TEST_REGISTRY[1].endpoint(idUser, idApplication);
   bindNotesCounter(notesInput);
-  bindAreaUpdates(BANFE_FIELDS);
+  banfeBindAreaUpdates(BANFE_FIELDS);
   document.getElementById('btnSaveBANFE').addEventListener(
     'click',
-    () => handleSave(endpoint, BANFE_FIELDS, { notesInput, apiError, closeModal })
+    () => banfeHandleSave(endpoint, BANFE_FIELDS, { notesInput, apiError, closeModal })
   );
 }
 
@@ -249,7 +249,7 @@ async function fetchBANFEResult (idUser, idApplication, idResults) {
   }
 }
 
-function buildPrefill (fetchedTest, needsData) {
+function buildBANFEPrefill (fetchedTest, needsData) {
   const areas = needsData ? (fetchedTest.areas ?? {}) : {};
   const notes = needsData ? (fetchedTest.notes ?? '') : '';
   return {
@@ -272,7 +272,7 @@ async function openBANFEModal (idUser, idApplication, { test, mode }) {
     if (!data) return;
     fetchedTest = { ...test, ...data };
   }
-  const prefill = buildPrefill(fetchedTest, needsData);
+  const prefill = buildBANFEPrefill(fetchedTest, needsData);
   const modal = document.createElement('div');
   modal.id        = 'modalBANFE';
   modal.className = 'modal-overlay';
