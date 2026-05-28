@@ -46,7 +46,8 @@
     "mysql2": "^3.22.0",
     "nodemon": "^3.1.14",
     "session": "^0.1.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
