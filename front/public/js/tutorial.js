@@ -1,5 +1,4 @@
 
-
 function lockScroll () {
   document.querySelectorAll('*').forEach(el => {
     const cs = window.getComputedStyle(el);
@@ -53,14 +52,14 @@ async function startTutorial () {
         if (element) {
           element.scrollIntoView({ behavior: 'instant', block: 'center' });
         }
-          lockScroll();
-        },
-        onDeselected: () => {
-          unlockScroll();
-        },
-        onDestroyed: () => {
-          unlockScroll();
-        },
+        lockScroll();
+      },
+      onDeselected: () => {
+        unlockScroll();
+      },
+      onDestroyed: () => {
+        unlockScroll();
+      },
       steps: steps
         .filter(s => !elements[s.step_order] || document.querySelector(elements[s.step_order]))
         .map(s => ({

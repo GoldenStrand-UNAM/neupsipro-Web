@@ -28,6 +28,14 @@ const postReyController = require('../../controller/testApplications/postRey.con
 const getReyResultUseCase       = require('../../../application/usecase/testApplications/getReyUseCase');
 const getReyResultController    = require('../../controller/testApplications/getRey.controller');
 
+//Moca
+
+const postMocaUseCase    = require('../../../application/usecase/testApplications/postMocaUseCase');
+const postMocaController = require('../../controller/testApplications/postMoca.controller');
+
+const getMocaResultUseCase        = require('../../../application/usecase/testApplications/getMocaUseCase');
+const getMocaResultController     = require('../../controller/testApplications/getMoca.controller');
+
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
@@ -61,6 +69,13 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getReyUseCase    = new getReyResultUseCase(testResultsRepo);
   const getReyController = new getReyResultController(getReyUseCase);
+
+  //Moca
+  const MocaUseCase    = new postMocaUseCase(testResultsRepo);
+  const MocaController = new postMocaController(MocaUseCase);
+
+  const getMocaUseCase    = new getMocaResultUseCase(testResultsRepo);
+  const getMocaController = new getMocaResultController(getMocaUseCase);
 
   // Only manage the render
   router.get(
@@ -123,7 +138,22 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getReyController.getResult(req, res)
   );
 
-  // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
+  // ======================== Moca ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/4/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => MocaController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/4/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getMocaController.getResult(req, res)
+  );
+
+  // ======================== AUXILIARY ENDPOINTS FOR Moca & REY ===============================
 
   router.get(
     '/api/users/:id_user/schooling',
