@@ -198,8 +198,7 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
-  
-// ================= Wais ==================
+  // ================= Wais ==================
 
   // post Wais
   async saveWaisResult ({
@@ -276,9 +275,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0] ?? null;
   }
-
-
-
 
 }
 
