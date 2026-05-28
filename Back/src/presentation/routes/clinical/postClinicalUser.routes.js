@@ -4,13 +4,11 @@ const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting')
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const PostClinicalUserUseCase = require('../../../application/usecase/clinical/postClinicalUserUseCase');
 const postClinicalUserController = require('../../controller/clinical/postClinicalUser.controller');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 const HashingService = require('../../../infrastructure/external/hashing.service');
 const upload = require('../../../infrastructure/external/multer.service');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
 
   const router = express.Router();
 
@@ -19,15 +17,13 @@ module.exports = (authUseCase) => {
   const useCase = new PostClinicalUserUseCase(repository, hashingService);
   const controller = new postClinicalUserController(useCase);
 
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(
     '/postUser',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    permissionsMiddleware.requirePermission('clinical', 'writing'),
     (req, res) => controller.postUser(req, res)
   );
 
@@ -35,7 +31,7 @@ module.exports = (authUseCase) => {
     '/post',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'writing'),
+    permissionsMiddleware.requirePermission('clinical', 'writing'),
     upload.none(),
     (req, res) => controller.postClinicalUser(req, res)
   );
