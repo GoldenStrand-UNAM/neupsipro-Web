@@ -36,7 +36,6 @@ const ImpClinicRepository = require('../../../infrastructure/repositories/ImpCli
 
 const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
 const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
- 
 
 module.exports = (authUseCase) => {
 
