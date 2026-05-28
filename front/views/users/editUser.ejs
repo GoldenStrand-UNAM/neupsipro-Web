@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modificar Usuario - NeuPsi-Pro</title>
+  <link rel="stylesheet" href="/css/output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+  <script src="/js/main.js"></script>
+
+  <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <%- include('../partials/header') %>
+
+    <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
+      <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <a href="/users/<%= usuario.idUser %>">
+              <button class="cursor-pointer pb">
+                <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </button>
+            </a>
+            <h1 class="text-2xl font-bold text-[#1E1E1E]">Modificar Usuario</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <button 
+              onclick="resetFormBtn()" 
+              class="flex items-center gap-2"
+              style="color: #FF0404"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Limpiar</span>
+            </button>
+          </div>
+        </div>
+        <div> 
+          <img src="/assets/Linear-determinate progress indicator.svg"  alt="Progress indicator" class="w-full">         
+        </div>
+
+        <form id="formUser" class="px-6 pt-6 pb-0 flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">      
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Nombre(s) <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="firstName"
+                id="firstName"
+                placeholder="Juan Carlos"
+                maxlength="30"
+                value="<%= usuario.firstName || '' %>"
+              >
+              <span id="charactersNames" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">      
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Apellido paterno <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="lastnameP"
+                id="lastnameP"
+                placeholder="Hernández"
+                maxlength="30"
+                value="<%= usuario.lastnameP || '' %>"
+              >
+              <span id="charactersLastnameP" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Apellido materno
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="lastnameM"
+                id="lastnameM"
+                placeholder="Camacho"
+                maxlength="30"
+                value="<%= usuario.lastnameM || '' %>"
+              >
+              <span id="charactersLastnameM" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Fecha de nacimiento <span style="color: #FF0404">*</span>
+            </label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input 
+                required
+                type="text" 
+                id="birthdate" 
+                name="birthdate"
+                placeholder="DD/MM/AAAA"
+                class="datetime-local input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.birthdate || '' %>"
+              >
+              <div class="absolute right-3 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Sexo <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.sex ? 'text-black' : 'text-gray-400' %>"
+                name="sex"
+                id="sex"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Masculino"       class="text-black" <%= usuario.sex === 'Masculino'       ? 'selected' : '' %>>Masculino</option>
+                <option value="Femenino"        class="text-black" <%= usuario.sex === 'Femenino'        ? 'selected' : '' %>>Femenino</option>
+                <option value="Sin especificar" class="text-black" <%= usuario.sex === 'Sin especificar' ? 'selected' : '' %>>Sin especificar</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Teléfono
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="5574048122"
+                maxlength="16"
+                value="<%= usuario.phone || '' %>"
+              >
+              <span id="charactersPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/16 
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Email
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="email"
+                id="email"
+                placeholder="jorge.v@gmail.com"
+                maxlength="50"
+                value="<%= usuario.email || '' %>"
+              >
+              <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/50 
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Folio <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="referenceNumber"
+                id="referenceNumber"
+                placeholder="000X - XXX"
+                maxlength="10"
+                value="<%= usuario.referenceNumber || '' %>"
+              >
+              <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/10 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Modalidad <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.modality ? 'text-black' : 'text-gray-400' %>"
+                name="modality"
+                id="modality"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Presencial" class="text-black" <%= usuario.modality === 'Presencial' ? 'selected' : '' %>>Presencial</option>
+                <option value="En línea"   class="text-black" <%= usuario.modality === 'En línea'   ? 'selected' : '' %>>En línea</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Ingreso a neuropsicología 
+            </label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input 
+                type="text" 
+                id="neuroEntryDate" 
+                name="neuroEntryDate"
+                placeholder="DD/MM/AAAA"
+                class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.neuroEntryDate || '' %>"
+              >
+              <div class="absolute right-3 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Pares <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.pairs ? 'text-black' : 'text-gray-400' %>"
+                name="pairs"
+                id="pairs"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Sí asiste" class="text-black" <%= usuario.pairs === 'Sí asiste' ? 'selected' : '' %>>Sí</option>
+                <option value="No asiste" class="text-black" <%= usuario.pairs === 'No asiste' ? 'selected' : '' %>>No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Fecha de amputación <span style="color: #FF0404">*</span>
+            </label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input 
+                required
+                type="text" 
+                id="amputationDate" 
+                name="amputationDate"
+                placeholder="DD/MM/AAAA"
+                class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.amputationDate || '' %>"
+              >
+              <div class="absolute right-3 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <%
+            const pathologyOptions = ['Diabetes Mellitus 1','Diabetes Mellitus 2','Congénito','Cáncer','Osteomielitis','Traumática'];
+            const isOtherPathology = usuario.basePathology && !pathologyOptions.includes(usuario.basePathology);
+          %>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Etiología de amputación <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.basePathology ? 'text-black' : 'text-gray-400' %>"
+                name="basePathology"
+                id="basePathology"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Diabetes Mellitus 1" class="text-black" <%= usuario.basePathology === 'Diabetes Mellitus 1' ? 'selected' : '' %>>Diabetes Mellitus 1</option>
+                <option value="Diabetes Mellitus 2" class="text-black" <%= usuario.basePathology === 'Diabetes Mellitus 2' ? 'selected' : '' %>>Diabetes Mellitus 2</option>
+                <option value="Congénito"           class="text-black" <%= usuario.basePathology === 'Congénito'           ? 'selected' : '' %>>Congénito</option>
+                <option value="Cáncer"              class="text-black" <%= usuario.basePathology === 'Cáncer'              ? 'selected' : '' %>>Cáncer</option>
+                <option value="Osteomielitis"       class="text-black" <%= usuario.basePathology === 'Osteomielitis'       ? 'selected' : '' %>>Osteomielitis</option>
+                <option value="Traumática"          class="text-black" <%= usuario.basePathology === 'Traumática'          ? 'selected' : '' %>>Traumática</option>
+                <option value="other"               class="text-black" <%= isOtherPathology                                ? 'selected' : '' %>>Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="pathologyDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full <%= isOtherPathology ? '' : 'hidden' %>">
+            <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
+            <div class="inputs w-full relative flex items-center">
+              <input type="text" id="otherPathology" name="otherPathology" 
+                placeholder="Escribe la etiología"
+                maxlength = "50"
+                value="<%= isOtherPathology ? usuario.basePathology : '' %>"
+                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
+                <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/50 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Nivel de amputación <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.amputationLevel ? 'text-black' : 'text-gray-400' %>"
+                name="amputationLevel"
+                id="amputationLevel"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Sin amputación"                 class="text-black" <%= usuario.amputationLevel === 'Sin amputación'                 ? 'selected' : '' %>>Sin amputación</option>
+                <option value="Debajo de la rodilla"           class="text-black" <%= usuario.amputationLevel === 'Debajo de la rodilla'           ? 'selected' : '' %>>Debajo de la rodilla</option>
+                <option value="Encima de la rodilla"           class="text-black" <%= usuario.amputationLevel === 'Encima de la rodilla'           ? 'selected' : '' %>>Encima de la rodilla</option>
+                <option value="Debajo de la rodilla bilateral" class="text-black" <%= usuario.amputationLevel === 'Debajo de la rodilla bilateral' ? 'selected' : '' %>>Debajo de la rodilla bilateral</option>
+                <option value="Encima de la rodilla bilateral" class="text-black" <%= usuario.amputationLevel === 'Encima de la rodilla bilateral' ? 'selected' : '' %>>Encima de la rodilla bilateral</option>
+                <option value="Encima + debajo de la rodilla"  class="text-black" <%= usuario.amputationLevel === 'Encima + debajo de la rodilla'  ? 'selected' : '' %>>Encima + debajo de la rodilla</option>
+                <option value="Pie"                            class="text-black" <%= usuario.amputationLevel === 'Pie'                            ? 'selected' : '' %>>Pie</option>
+                <option value="Ambos pies"                     class="text-black" <%= usuario.amputationLevel === 'Ambos pies'                     ? 'selected' : '' %>>Ambos pies</option>
+                <option value="Mano"                           class="text-black" <%= usuario.amputationLevel === 'Mano'                           ? 'selected' : '' %>>Mano</option>
+                <option value="Ambas manos"                    class="text-black" <%= usuario.amputationLevel === 'Ambas manos'                    ? 'selected' : '' %>>Ambas manos</option>
+                <option value="Antebrazo + mano"               class="text-black" <%= usuario.amputationLevel === 'Antebrazo + mano'               ? 'selected' : '' %>>Antebrazo + mano</option>
+                <option value="Ambos antebrazos + manos"       class="text-black" <%= usuario.amputationLevel === 'Ambos antebrazos + manos'       ? 'selected' : '' %>>Ambos antebrazos + manos</option>
+                <option value="Brazo completo"                 class="text-black" <%= usuario.amputationLevel === 'Brazo completo'                 ? 'selected' : '' %>>Brazo completo</option>
+                <option value="Ambos brazos completos"         class="text-black" <%= usuario.amputationLevel === 'Ambos brazos completos'         ? 'selected' : '' %>>Ambos brazos completos</option>
+                <option value="Pierna completa"                class="text-black" <%= usuario.amputationLevel === 'Pierna completa'                ? 'selected' : '' %>>Pierna completa</option>
+                <option value="Ambas piernas completas"        class="text-black" <%= usuario.amputationLevel === 'Ambas piernas completas'        ? 'selected' : '' %>>Ambas piernas completas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Lateralidad <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.laterality ? 'text-black' : 'text-gray-400' %>"
+                name="laterality"
+                id="laterality"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Zurda"       class="text-black" <%= usuario.laterality === 'Zurda'       ? 'selected' : '' %>>Zurda</option>
+                <option value="Diestra"     class="text-black" <%= usuario.laterality === 'Diestra'     ? 'selected' : '' %>>Diestra</option>
+                <option value="Ambidiestra" class="text-black" <%= usuario.laterality === 'Ambidiestra' ? 'selected' : '' %>>Ambidiestra</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Protesista <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.prosthetist ? 'text-black' : 'text-gray-400' %>"
+                name="prosthetist"
+                id="prosthetist"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="CPO Alejandra Santos"  class="text-black" <%= usuario.prosthetist === 'CPO Alejandra Santos'  ? 'selected' : '' %>>CPO Alejandra Santos</option>
+                <option value="CPO Juan David Orozco" class="text-black" <%= usuario.prosthetist === 'CPO Juan David Orozco' ? 'selected' : '' %>>CPO Juan David Orozco</option>
+                <option value="CPO Melvin Arévalo"    class="text-black" <%= usuario.prosthetist === 'CPO Melvin Arévalo'    ? 'selected' : '' %>>CPO Melvin Arévalo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Fase <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.phase ? 'text-black' : 'text-gray-400' %>"
+                name="phase"
+                id="phase"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Preprotésico"            class="text-black" <%= usuario.phase === 'Preprotésico'            ? 'selected' : '' %>>Preprotésico</option>
+                <option value="Protésico"               class="text-black" <%= usuario.phase === 'Protésico'               ? 'selected' : '' %>>Protésico</option>
+                <option value="Postprotésico"           class="text-black" <%= usuario.phase === 'Postprotésico'           ? 'selected' : '' %>>Postprotésico</option>
+                <option value="Adaptación al ejercicio" class="text-black" <%= usuario.phase === 'Adaptación al ejercicio' ? 'selected' : '' %>>Adaptación al ejercicio</option>
+                <option value="Alta"                    class="text-black" <%= usuario.phase === 'Alta'                    ? 'selected' : '' %>>Alta</option>
+                <option value="Baja de neuropsicología" class="text-black" <%= usuario.phase === 'Baja de neuropsicología' ? 'selected' : '' %>>Baja de neuropsicología</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Colaborador asignado <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.idClinicUser ? 'text-black' : 'text-gray-400' %>"
+                name="assigned"
+                id="assigned"
+                data-current="<%= usuario.idClinicUser || '' %>"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Nombre de usuario <span style="color: #FF0404">*</span>
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="userName"
+                id="userName"
+                placeholder="Nombre de usuario"
+                maxlength="30"
+                value="<%= usuario.userName || '' %>"
+              >
+              <span id="charactersUserName" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Contraseña
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Dejar vacío para conservar la actual"
+                maxlength="30"
+              >
+              <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Confirma contraseña
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Repite la nueva contraseña"
+                maxlength="30"
+              >
+              <span id="charactersConfirmPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/30 
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row w-full">
+            <div class="sm:block sm:w-1/4 shrink-0"></div>
+            <div class="flex flex-row w-full justify-between px-4">
+              <button type="button" id="showPw" style="color: #0600b7" class="text-sm"><span id="showHide">Mostrar</span> Contraseña</button>
+              <div id="validation" style="color: #ff1f0b" class="text-sm"></div>
+            </div>
+          </div>
+
+          <div class="file-upload mt-2 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="file-upload-label sm:w-1/4 sm:text-right shrink-0 text-black text-base">
+              Foto de perfil
+            </label>
+            <div class="file-upload-dropzone" id="dropzone">
+              <div id="filePreview" class="<%= usuario.photo ? 'flex' : 'hidden' %> flex-col items-center gap-2">
+                <img id="previewImg" src="<%= usuario.photo || '' %>" class="w-16 h-16 object-cover rounded-md border">
+                <span id="previewName" class="text-[10px] text-gray-600 text-center break-all"><%= usuario.photo ? 'Foto actual' : '' %></span>
+              </div>
+              <div id="emptyState" class="<%= usuario.photo ? 'hidden' : 'flex' %> flex-col items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="file-upload-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="file-upload-text">Haz clic o arrastra una imagen aquí</span>
+              </div>
+              <input type="file" name="profilePhoto" accept="image/jpeg,image/png,image/webp" class="file-upload-input" id="fileInput">
+            </div>
+          </div>
+          <div class="mb-8 flex justify-center md:justify-end pt-2">
+            <button class="btn-mini bg-[#3350A9]">
+              <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>
+              <span>Guardar cambios</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/sidebar.js"></script>
+
+  <script>
+    window.__CSRF_TOKEN__ = "<%= csrfToken %>";
+    window.__USER_ID__    = "<%= usuario.idUser %>";
+  </script>
+  </body>
+
+  <script>
+    const form = document.getElementById('formUser');
+    const dropzone = document.querySelector('.file-upload-dropzone');
+    const fileInput = document.querySelector('.file-upload-input');
+    const filePreview = document.getElementById('filePreview');
+    const emptyState  = document.getElementById('emptyState');
+    const previewImg  = document.getElementById('previewImg');
+    const previewName = document.getElementById('previewName');
+    const passInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+    const basePathology = document.getElementById('basePathology');
+
+    function escapeHTML(text) {
+      return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+    }
+
+    function resetFormBtn(){
+      // En edit, "Restablecer" devuelve el form a los valores originales del usuario
+      // (form.reset() vuelve a los value="" de cada input en el HTML server-rendered)
+      if (form) form.reset();
+
+      document.querySelectorAll('input[maxlength]').forEach(input => {
+        input.dispatchEvent(new Event('input'));
+      });
+
+      // Refresca color de selects según su valor reseteado
+      document.querySelectorAll('select').forEach(select => {
+        if (select.value !== "") {
+          select.classList.remove('text-gray-400');
+          select.classList.add('text-black');
+        } else {
+          select.classList.remove('text-black');
+          select.classList.add('text-gray-400');
+        }
+      });
+
+      showToast('Cambios restablecidos');
+    }
+
+    function checkOther(select, otherSelect, div) {
+      const otherInput = document.getElementById(otherSelect);
+      const changeDiv = document.getElementById(div);
+      if (select.value === 'other') {
+          changeDiv.classList.remove('hidden');
+          otherInput.required = true;
+      } else {
+          changeDiv.classList.add('hidden');
+          otherInput.required = false;
+          otherInput.value = "";
+      }
+    }
+
+    basePathology.addEventListener('change', () => {
+        checkOther(basePathology, 'otherPathology', 'pathologyDiv'); 
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+      const res = await fetch(`/users/${window.__USER_ID__}/edit`, {
+        method: 'POST',
+        headers: { 'x-csrf-token': window.__CSRF_TOKEN__ },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        sessionStorage.setItem('usuarioModificado', 'true');
+        window.location.href = `/users/${window.__USER_ID__}`;
+      } else if (res.status === 429) {
+          showToast('Has alcanzado el límite de operaciones. Intenta más tarde.', 'error');
+      }else {
+        showToast((data.error || 'Error desconocido'), 'error');
+      }
+      } catch (error) {
+      showToast('Error de conexión');
+      }
+    });
+
+    async function fetchUsers() {
+      const params = new URLSearchParams({ search: "", page: 1, limit: 10 });
+      try {
+        const res  = await fetch(`/api/usuarios-clinicos?${params}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.error("Server error:", data.error);
+          return;
+        }
+
+        selectClinicUsers(data.users);
+      } catch (err) {
+        console.error("Network error:", err);
+      }
+    } 
+
+    function selectClinicUsers(users) {
+      const assigned = document.getElementById("assigned");
+      if (!users.length) return;
+
+      const currentId = assigned.dataset.current;
+
+      const usersHtml = users.map(u => `
+          <option value="${escapeHTML(u.id)}" class="text-black" ${u.id === currentId ? 'selected' : ''}>${escapeHTML(u.fullName)}</option>
+      `).join("");
+
+      assigned.insertAdjacentHTML('beforeend', usersHtml);
+
+      if (assigned.value !== '') {
+        assigned.classList.remove('text-gray-400');
+        assigned.classList.add('text-black');
+      }
+    }
+
+    dropzone.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { // 5mb
+        showToast('Imagen demasiado pesada', 'error');
+        fileInput.value = '';
+        return;
+      }
+      previewImg.src = URL.createObjectURL(file);
+      previewName.textContent = escapeHTML(file.name);
+      filePreview.classList.remove('hidden'); 
+      filePreview.classList.add('flex');
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    });
+
+    function setupCounter(inputId, counterId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+
+      if (!input || !counter) return;
+
+      const max = input.getAttribute('maxlength');
+
+      // valor inicial (refleja los valores precargados del server)
+      counter.textContent = `${input.value.length}/${max}`;
+
+      input.addEventListener('input', () => {
+        const longitud = input.value.length;
+        counter.textContent = `${longitud}/${max}`;
+      });
+    }
+
+    function validateDates(id){
+      const inputFecha = document.getElementById(id);
+      const today = new Date();
+
+      const fp = flatpickr(document.getElementById(id), {
+        dateFormat: "d/m/Y",
+        allowInput: true,
+        maxDate: "today",
+        minDate: "01/01/1900",
+        disableMobile: true
+      });
+
+      inputFecha.addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        let finalValue = "";
+        const actualYear = new Date().getFullYear();
+
+        if (v.length > 0) {
+          let day = v.substring(0, 2);
+          let month = v.substring(2, 4);
+          let year = v.substring(4, 8);
+
+          if (parseInt(day) > 31) day = "31";
+          if (parseInt(month) > 12) month = "12";
+          if (parseInt(year) > 2026) year = actualYear;
+          if (parseInt(year) < 1900 && v.length == 8) year = 1900;
+
+          if (v.length <= 2) finalValue = day;
+          else if (v.length <= 4) finalValue = day + "/" + month;
+          else finalValue = day + "/" + month + "/" + year;
+        }
+
+        e.target.value = finalValue;
+
+      });
+    }
+
+    function validateMatch() {
+      const val = passInput.value;
+      const confVal = confirmInput.value;
+
+      // Ambos vacíos = no se cambia password → sin error
+      if (val === '' && confVal === '') {
+        document.getElementById('validation').textContent = "";
+        confirmInput.setCustomValidity("");
+        return;
+      }
+
+      if (val === confVal) {
+        document.getElementById('validation').textContent = "";
+        confirmInput.setCustomValidity("");
+      } else {
+        document.getElementById('validation').textContent = "Las contraseñas no coinciden";
+        confirmInput.setCustomValidity("Las contraseñas no coinciden");
+      }
+    }
+    
+    passInput.addEventListener('input', validateMatch);
+    confirmInput.addEventListener('input', validateMatch);
+
+    const showBtn = document.getElementById('showPw');
+    if (showBtn) {
+      showBtn.addEventListener('click', () => {
+        const type = passInput.type === 'password' ? 'text' : 'password';
+        passInput.type = type;
+        confirmInput.type = type;
+                
+        const label = document.getElementById('showHide');
+        if (label) label.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+      });
+    }
+
+    function changeDefaultColor(id) {
+      const inputSelect = document.getElementById(id);
+
+      inputSelect.addEventListener('change', function() {
+        if (this.value !== "") {
+          this.classList.remove('text-gray-400');
+          this.classList.add('text-black');
+        } else {
+          this.classList.remove('text-black');
+          this.classList.add('text-gray-400');
+        }
+      });
+    }
+
+    fetchUsers();
+    setupCounter('firstName', 'charactersNames');
+    setupCounter('lastnameP', 'charactersLastnameP');
+    setupCounter('lastnameM', 'charactersLastnameM');
+    setupCounter('userName', 'charactersUserName');
+    setupCounter('password', 'charactersPassword');
+    setupCounter('otherPathology', 'charactersOtherPathology');
+    setupCounter('confirmPassword', 'charactersConfirmPassword');
+    setupCounter('referenceNumber', 'charactersReferenceNumber');
+    setupCounter('prosthetist', 'charactersProsthetist');
+    setupCounter('phone', 'charactersPhone');
+    setupCounter('email', 'charactersEmail');
+    validateDates('birthdate');
+    validateDates('amputationDate');
+    validateDates('neuroEntryDate');
+    changeDefaultColor('sex');
+    changeDefaultColor('modality');
+    changeDefaultColor('basePathology');
+    changeDefaultColor('amputationLevel');
+    changeDefaultColor('laterality');
+    changeDefaultColor('prosthetist');
+    changeDefaultColor('phase');
+    changeDefaultColor('assigned');
+    changeDefaultColor('pairs');
+  </script>
+</html>
