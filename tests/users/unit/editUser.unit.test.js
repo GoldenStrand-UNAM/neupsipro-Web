@@ -78,7 +78,7 @@ describe('EditUserUseCase', () => {
 
         mockUserRepository.fetchUserForEdit.mockResolvedValue({
             id_user:'123',
-            profile_photo: 'old_photo.jpg',
+            profilePhoto: 'old_photo.jpg',
         });
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123' });
 
@@ -161,6 +161,10 @@ describe('EditUserController', () => {
 });
 
 describe('Domain Entity - User', () => {
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
     const mockRawData = {
         id_user: 1,
         profile_photo: 'avatar.png',
@@ -184,7 +188,7 @@ describe('Domain Entity - User', () => {
     });
 
     test('Must calculate correctly the birthdate on large text format', () => {
-        jest.useFakeTimers().setSystemTime(new Date('2026-05-15'));
+        jest.useFakeTimers().setSystemTime(new Date(2026, 4, 15));
 
         const userEntity = new User(mockRawData);
 
