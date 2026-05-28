@@ -83,12 +83,14 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
+
   async postUser ({
     idRole,
     userName,
     firstName,
     lastnameP,
     lastnameM,
+    email,
     birthdate,
     passwordHash,
     assigned,
@@ -104,6 +106,7 @@ class ImpUsersRepository extends usersRepository {
     neuroEntryDate,
     pairs,
     sex,
+    phone,
   }) {
     const idUser = uuidv4();
     const idRelation = uuidv4();
@@ -113,9 +116,9 @@ class ImpUsersRepository extends usersRepository {
       await connection.query('START TRANSACTION');
 
       await connection.query(
-        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, profile_photo, birthdate, password_hash, gender)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, idRole, userName, firstName, lastnameP, lastnameM, profilePhoto, birthdate, passwordHash, sex]
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, email, profile_photo, birthdate, password_hash, gender)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, idRole, userName, firstName, lastnameP, lastnameM, email, profilePhoto, birthdate, passwordHash, sex]
       );
 
       await connection.query(
@@ -131,9 +134,10 @@ class ImpUsersRepository extends usersRepository {
         neuro_entry_date,
         amputation_date,
         amputation_level,
-        group_intervention
+        group_intervention,
+        phone
         )
-      VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [idUser,
           phase,
           basePathology,
@@ -144,7 +148,8 @@ class ImpUsersRepository extends usersRepository {
           neuroEntryDate,
           amputationDate,
           amputationLevel,
-          pairs]
+          pairs,
+          phone]
       );
 
       await connection.query(
