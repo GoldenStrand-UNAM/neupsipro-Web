@@ -1,0 +1,48 @@
+@startuml Profile Screen Tutorial Flow
+skinparam ArchimateBackgroundColor #FFFFFF
+skinparam ActivityBackgroundColor #F5F5F5
+skinparam ActivityBorderColor #3F51B5
+
+start
+
+:User navigates to Profile Screen;
+:LaunchedEffect fetches Profile data;
+
+if (State is Loading?) then (yes)
+    :Show CircularProgressIndicator;
+    stop
+elseif (State has Error?) then (yes)
+    :Show Error Text;
+    stop
+else (no (Data Loaded))
+    :Render Profile Screen Content;
+    note right: isShowcasing = false
+    
+    repeat
+        :User browses profile normally;
+        backward:User clicks 'Cerrar sesión' or uses cards;
+    repeat while (User clicks 'HelpOutline' Button?) is (no) not (yes)
+    
+    :Set **isShowcasing = true**;
+    :LaunchedEffect triggers;
+    :Animate scroll LazyColumn to index 1;
+    :ShowcaseLayout intercept touches and displays Greeting msg;
+    
+    repeat
+        :User taps screen;
+        :ShowcaseLayout highlights next target index;
+        note left
+            Index 1: ClinicalInfoCard
+            Index 2: AppointmentCard
+            Index 3: Staff Info Box
+        end note
+    repeat while (More showcase items left?) is (yes) not (no)
+    
+    :onFinish callback triggered;
+    :Set **isShowcasing = false**;
+    :Coroutine scrolls LazyColumn back to top (index 0);
+    :Return to normal profile view;
+    
+    stop
+endif
+@enduml

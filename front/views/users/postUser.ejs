@@ -6,8 +6,9 @@
   <title>Registrar Usuario - NeuPsi-Pro</title>
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
 </head>
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row ...">
   <script src="/js/main.js"></script>
 
   <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
@@ -32,7 +33,7 @@
             <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
           </div>
           <div class="flex items-center gap-3">
-            <button 
+            <button id="btnClear"
               onclick="resetFormBtn()" 
               class="flex items-center gap-2"
               style="color: #FF0404"
@@ -147,6 +148,42 @@
               </select>
             </div>
           </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Teléfono
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="5574048122"
+                maxlength="16"
+              >
+              <span id="charactersPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/16 
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+              Email
+            </label>
+            <div class="inputs w-full relative flex items-center">
+              <input
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                type="text"
+                name="email"
+                id="email"
+                placeholder="jorge.v@gmail.com"
+                maxlength="50"
+              >
+              <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                0/50 
+              </span>
+            </div>
+          </div>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
@@ -181,7 +218,7 @@
               >
                 <option disabled selected hidden value="">Elige una opción</option>
                 <option value="Presencial" class="text-black">Presencial</option>
-                <option value="Rotaria" class="text-black">Rotaria</option>
+                <option value="En línea" class="text-black">En línea</option>
               </select>
             </div>
           </div>
@@ -292,27 +329,23 @@
                 id="amputationLevel"
               >
                 <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Transfemoral" class="text-black">Transfermoral</option>
-                <option value="Transtibial" class="text-black">Transtibial</option>
-                <option value="Desarticulado de cadera" class="text-black">Desarticulado de cadera</option>
-                <option value="Transradial" class="text-black">Transradial</option>
-                <option value="Transhumeral" class="text-black">Transhumeral</option>
-                <option value="Desarticulado de hombro" class="text-black">Desarticulado de hombro</option>
-                <option value="other" class="text-black">Otro</option>
+                <option value="Sin amputación" class="text-black">Sin amputación</option>
+                <option value="Debajo de la rodilla" class="text-black">Debajo de la rodilla</option>
+                <option value="Encima de la rodilla" class="text-black">Encima de la rodilla</option>
+                <option value="Debajo de la rodilla bilateral" class="text-black">Debajo de la rodilla bilateral</option>
+                <option value="Encima de la rodilla bilateral" class="text-black">Encima de la rodilla bilateral</option>
+                <option value="Encima + debajo de la rodilla" class="text-black">Encima + debajo de la rodilla</option>
+                <option value="Pie" class="text-black">Pie</option>
+                <option value="Ambos pies" class="text-black">Ambos pies</option>
+                <option value="Mano" class="text-black">Mano</option>
+                <option value="Ambas manos" class="text-black">Ambas manos</option>
+                <option value="Antebrazo + mano" class="text-black">Antebrazo + mano</option>
+                <option value="Ambos antebrazos + manos" class="text-black">Ambos antebrazos + manos</option>
+                <option value="Brazo completo" class="text-black">Brazo completo</option>
+                <option value="Ambos brazos completos" class="text-black">Ambos brazos completos</option>
+                <option value="Pierna completa" class="text-black">Pierna completa</option>
+                <option value="Ambas piernas completas" class="text-black">Ambas piernas completas</option>
               </select>
-            </div>
-          </div>
-
-          <div id="levelDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
-            <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
-            <div class="inputs w-full relative flex items-center">
-              <input type="text" id="otherLevel" name="otherLevel" 
-                placeholder="Escribe el nivel"
-                maxlength = "20"
-                class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
-                <span id="charactersOtherLevel" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
-              </span>
             </div>
           </div>
 
@@ -340,18 +373,17 @@
               Protesista <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
-              <input
+              <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
                 name="prosthetist"
                 id="prosthetist"
-                placeholder="Alejandra"
-                maxlength="20"
               >
-              <span id="charactersProsthetist" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
-              </span>
+                <option disabled selected hidden value="">Elige una opción</option>
+                <option value="CPO Alejandra Santos" class="text-black">CPO Alejandra Santos</option>
+                <option value="CPO Juan David Orozco" class="text-black">CPO Juan David Orozco</option>
+                <option value="CPO Melvin Arévalo" class="text-black">CPO Melvin Arévalo</option>
+              </select>
             </div>
           </div>
 
@@ -480,7 +512,7 @@
             </div>
           </div>
           <div class="mb-8 flex justify-center md:justify-end pt-2">
-            <button class="btn-mini bg-[#3350A9]">
+            <button id="btnSave" class="btn-mini bg-[#3350A9]">
               <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>
@@ -493,7 +525,17 @@
   </div>
 
   <script src="/js/sidebar.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+  <script>
+    const tutorialElements = {
+      1: null,         
+      2: '#firstName', 
+      3: '#dropzone',  
+      4: '#btnClear',  
+      5: '#btnSave',  
+    };
+  </script>
+  <script src="/js/tutorial.js"></script>
   <script>
     window.__CSRF_TOKEN__ = "<%= csrfToken %>";
   </script>
@@ -510,7 +552,6 @@
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
-    const level = document.getElementById('amputationLevel');
 
     function escapeHTML(text) {
       return text
@@ -554,10 +595,6 @@
 
     basePathology.addEventListener('change', () => {
         checkOther(basePathology, 'otherPathology', 'pathologyDiv'); 
-    });
-
-    level.addEventListener('change', () => {
-        checkOther(level, 'otherLevel', 'levelDiv'); 
     });
 
     form.addEventListener('submit', async (e) => {
@@ -734,10 +771,11 @@
     setupCounter('userName', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('otherPathology', 'charactersOtherPathology');
-    setupCounter('otherLevel', 'charactersOtherLevel');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');
+    setupCounter('phone', 'charactersPhone');
+    setupCounter('email', 'charactersEmail');
     validateDates('birthdate');
     validateDates('amputationDate');
     validateDates('neuroEntryDate');
@@ -746,6 +784,7 @@
     changeDefaultColor('basePathology');
     changeDefaultColor('amputationLevel');
     changeDefaultColor('laterality');
+    changeDefaultColor('prosthetist');
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
