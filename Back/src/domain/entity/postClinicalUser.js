@@ -31,7 +31,7 @@ class ClinicalUser {
 
       if ((inputDate < now || year > param.limit) && param.future)
         throw new Error(`${param.label} debe ser válida, desde hoy hasta antes de 2100`);
-      else if ((inputDate >= now || year < param.limit) && !param.future)
+      else if ((inputDate > now || year < param.limit) && !param.future)
         throw new Error(`${param.label} debe ser válida, anterior a hoy y después de 1900`);
     }
   }
