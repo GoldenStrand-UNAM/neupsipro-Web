@@ -6,13 +6,11 @@ const GetPublicationUseCase =  require('../../../application/usecase/forum/getPu
 const InteractionRepository = require('../../../infrastructure/repositories/ImpInteractionRepository');
 const PublicationRepository = require('../../../infrastructure/repositories/ImpForumRepository');
 const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 const DeletePublicationUseCase    = require('../../../application/usecase/forum/deletePublicationUseCase');
 const DeletePublicationController = require('../../controller/forum/deletePublication.controller');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   // Calls all of the repositories, implementations, usecases and controllers
@@ -22,9 +20,6 @@ module.exports = (authUseCase) => {
   const useCasePublication = new GetPublicationUseCase(repository, intRepository, userRepository);
   const controller = new PublicationController(useCasePublication);
 
-  // Required for auth
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   // Requiered for delete

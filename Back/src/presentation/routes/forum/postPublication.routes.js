@@ -7,19 +7,15 @@ const s3UploadMiddleware = require('../../../infrastructure/external/s3.middlewa
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 const { apiLimiter , publicationLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpForumRepository();
   const useCase = new RegPublicationUseCase(repository);
   const controller = new PostPublicationController(useCase);
 
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(
