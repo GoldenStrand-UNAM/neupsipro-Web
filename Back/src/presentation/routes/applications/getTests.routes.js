@@ -12,6 +12,14 @@ const postBanfeController = require('../../controller/testApplications/postBanfe
 const getBanfeResultUseCase    = require('../../../application/usecase/testApplications/getBanfeUseCase');
 const getBanfeResultController = require('../../controller/testApplications/getBanfe.controller');
 
+//Wais
+
+const postWaisUseCase    = require('../../../application/usecase/testApplications/postWaisUseCase');
+const postWaisController = require('../../controller/testApplications/postWais.controller');
+
+const getWaisResultUseCase        = require('../../../application/usecase/testApplications/getWaisUseCase');
+const getWaisResultController     = require('../../controller/testApplications/getWais.controller');
+
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
@@ -26,10 +34,18 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
+  //Banfe
   const banfeUseCase    = new postBanfeUseCase(testResultsRepo);
   const banfeController = new postBanfeController(banfeUseCase);
   const getBanfeUseCase    = new getBanfeResultUseCase(testResultsRepo);
   const getBanfeController = new getBanfeResultController(getBanfeUseCase);
+
+  //Wais
+  const waisUseCase    = new postWaisUseCase(testResultsRepo);
+  const waisController = new postWaisController(waisUseCase);
+
+  const getWaisUseCase    = new getWaisResultUseCase(testResultsRepo);
+  const getWaisController = new getWaisResultController(getWaisUseCase);
 
   // Only manage the render
   router.get(
@@ -62,5 +78,21 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getBanfeController.getResult(req, res)
   );
 
+  // ======================== WAIS ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/2/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => waisController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/2/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getWaisController.getResult(req, res)
+  );
+
   return router;
+
 };
