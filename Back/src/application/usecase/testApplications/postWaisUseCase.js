@@ -80,7 +80,7 @@ class postWaisUseCase {
     const interVeloProce      = this.resolveInterpretation(veloProce);
 
     // 5. Persist the result
-    const saved = await this.impTestResultsRepository.savewaisResult({
+    const saved = await this.impTestResultsRepository.saveWaisResult({
       id_results: row.idResults,
       score_com_verbal: comVerbal,
       inter_com_verbal: interComVerbal,
