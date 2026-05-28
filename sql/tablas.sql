@@ -818,7 +818,7 @@ CREATE TABLE wais_results (
     inter_total              VARCHAR(36),
     notes                    VARCHAR(200),
     CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
-);p
+);
 
 -- -----------------------------------------------------------
 -- MOCA
