@@ -198,6 +198,95 @@ class impTestResultsRepository extends resultRepository {
     return rows[0] ?? null;
   }
 
+  // ================= Wais ==================
+
+  // post Wais
+  async saveWaisResult ({
+    id_results,
+    score_com_verbal,       inter_com_verbal,
+    score_razon_perceptual, inter_razon_perceptual,
+    score_mem_work,         inter_mem_work,
+    score_velo_proce,       inter_velo_proce,
+    score_total,            inter_total,
+    notes,
+  }) {
+
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      await conn.query(
+        `INSERT INTO wais_results
+          (id_results,
+            score_com_verbal,       inter_com_verbal,
+            score_razon_perceptual, inter_razon_perceptual,
+            score_mem_work,         inter_mem_work,
+            score_velo_proce,       inter_velo_proce,
+            score_total,            inter_total,
+            notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            score_com_verbal       = VALUES(score_com_verbal),
+            inter_com_verbal       = VALUES(inter_com_verbal),
+            score_razon_perceptual = VALUES(score_razon_perceptual),
+            inter_razon_perceptual = VALUES(inter_razon_perceptual),
+            score_mem_work         = VALUES(score_mem_work),
+            inter_mem_work         = VALUES(inter_mem_work),
+            score_velo_proce       = VALUES(score_velo_proce),
+            inter_velo_proce       = VALUES(inter_velo_proce),
+            score_total            = VALUES(score_total),
+            inter_total            = VALUES(inter_total),
+            notes                  = VALUES(notes)`,
+        [
+          id_results,
+          score_com_verbal,       inter_com_verbal,
+          score_razon_perceptual, inter_razon_perceptual,
+          score_mem_work,         inter_mem_work,
+          score_velo_proce,       inter_velo_proce,
+          score_total,            inter_total,
+          notes,
+        ]
+      );
+
+      await conn.query(
+        `UPDATE test_results
+        SET status       = 3,
+            date_applied = CURDATE()
+        WHERE id_results = ?`,
+        [id_results]
+      );
+
+      await conn.commit();
+
+      const [rows] = await conn.query(
+        'SELECT * FROM wais_results WHERE id_results = ?',
+        [id_results]
+      );
+      return rows[0];
+
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
+  // get Wais
+  async fetchWaisResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT wr.*,
+              tr.status,
+              tr.date_applied
+      FROM wais_results wr
+      JOIN test_results tr ON wr.id_results = tr.id_results
+      WHERE wr.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
 }
 
 module.exports = impTestResultsRepository;
