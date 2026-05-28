@@ -1,4 +1,4 @@
-/* global openBANFEModal */
+/* global openBANFEModal, openWAISModal */
 // eslint-disable-next-line no-unused-vars
 const TEST_REGISTRY = {
 
@@ -16,16 +16,16 @@ const TEST_REGISTRY = {
       `/api/users/${idUser}/applications/${idApplication}/tests/1/results`,
   },
 
-    //WAIS
+  //WAIS
 
   2: {
     name: 'WAIS',
     openRegister: (idUser, idApplication, test) =>
-      openWAISModal(idUser, idApplication, test, 'register'),
+      openWAISModal(idUser, idApplication, { test, mode: 'register' }),
     openModify: (idUser, idApplication, test) =>
-      openWAISModal(idUser, idApplication, test, 'modify'),
+      openWAISModal(idUser, idApplication, { test, mode: 'modify' }),
     openConsult: (idUser, idApplication, test) =>
-      openWAISModal(idUser, idApplication, test, 'consult'),
+      openWAISModal(idUser, idApplication, { test, mode: 'consult' }),
     endpoint: (idUser, idApplication) =>
       `/api/users/${idUser}/applications/${idApplication}/tests/2/results`,
   },
