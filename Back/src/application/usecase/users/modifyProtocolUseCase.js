@@ -15,9 +15,7 @@ class modifyProtocolUseCase {
     if (!user || user.length === 0) {
       throw new Error('User not found');
     }
-    if (!protocol) {
-      throw new Error('Protocol is required');
-    }
+
 
     const updated =
       await this.userRepository.editUserProtocol({
