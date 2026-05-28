@@ -16,7 +16,6 @@ class getWaisController {
       if (err.status && err.message) {
         return res.status(err.status).json({ error: err.message });
       }
-      console.error('[getWaisController]', err);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
