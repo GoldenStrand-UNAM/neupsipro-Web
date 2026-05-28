@@ -3,14 +3,10 @@ const Crypt = require('../crypt');
 const crypt = new Crypt();
 
 function cryptUser (user) {
-  const first = encryptFirst(user);
-  const second = encryptSecond(user);
-  const third = encryptThird(user);
+  const encrypted = encrypt(user);
 
   return {
-    ...first,
-    ...second,
-    ...third,
+    ...encrypted,
     userName: user.userName,
     idRole: user.idRole,
     assigned: user.assigned,
@@ -19,51 +15,23 @@ function cryptUser (user) {
   };
 }
 
-function encryptFirst (user) {;
-  const eFirstName = crypt.encrypt(user.firstName);
-  const eLastnameP = crypt.encrypt(user.lastnameP);
-  const eLastnameM = crypt.encrypt(user.lastnameM);
-  const eBirthdate = crypt.encrypt(user.birthdate);
-
+function encrypt (user) {;
   return {
-    firstName: eFirstName,
-    lastnameP: eLastnameP,
-    lastnameM: eLastnameM,
-    birthdate: eBirthdate,
-  };
-}
-
-function encryptSecond (user) {
-  const ePhase = crypt.encrypt(user.phase);
-  const eBasePathology = crypt.encrypt(user.basePathology);
-  const eModality = crypt.encrypt(user.modality);
-  const eReferenceNumber = crypt.encrypt(user.referenceNumber);
-  const eLaterality = crypt.encrypt(user.laterality);
-
-  return {
-    phase: ePhase,
-    basePathology: eBasePathology,
-    modality: eModality,
-    referenceNumber: eReferenceNumber,
-    laterality: eLaterality,
-  };
-}
-
-function encryptThird (user) {
-  const eProsthetist = crypt.encrypt(user.prosthetist);
-  const eNeuroEntryDate = crypt.encrypt(user.neuroEntryDate);
-  const eAmputationDate = crypt.encrypt(user.amputationDate);
-  const eAmputationLevel = crypt.encrypt(user.amputationLevel);
-  const ePairs = crypt.encrypt(user.pairs);
-  const eSex = crypt.encrypt(user.sex);
-
-  return {
-    prosthetist: eProsthetist,
-    neuroEntryDate: eNeuroEntryDate,
-    amputationDate: eAmputationDate,
-    amputationLevel: eAmputationLevel,
-    pairs: ePairs,
-    sex: eSex,
+    firstName: crypt.encrypt(user.firstName),
+    lastnameP: crypt.encrypt(user.lastnameP),
+    lastnameM: crypt.encrypt(user.lastnameM),
+    birthdate: crypt.encrypt(user.birthdate),
+    phase: crypt.encrypt(user.phase),
+    basePathology: crypt.encrypt(user.basePathology),
+    modality: crypt.encrypt(user.modality),
+    referenceNumber: crypt.encrypt(user.referenceNumber),
+    laterality: crypt.encrypt(user.laterality),
+    prosthetist: crypt.encrypt(user.prosthetist),
+    neuroEntryDate: crypt.encrypt(user.neuroEntryDate),
+    amputationDate: crypt.encrypt(user.amputationDate),
+    amputationLevel: crypt.encrypt(user.amputationLevel),
+    pairs: crypt.encrypt(user.pairs),
+    sex: crypt.encrypt(user.sex),
   };
 }
 

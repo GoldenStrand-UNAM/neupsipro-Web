@@ -3,7 +3,6 @@ const Crypt = require('../crypt');
 const crypt = new Crypt();
 
 function uncryptUser (user) {
-  const ureferenceNumber = crypt.decrypt(user.referenceNumber);
   const ufirstName = crypt.decrypt(user.firstName);
   const uLastnameP = crypt.decrypt(user.lastNameP);
   const uLastnameM = crypt.decrypt(user.lastNameM);
@@ -11,8 +10,8 @@ function uncryptUser (user) {
 
   return {
     ...user,
-    referenceNumber: ureferenceNumber,
-    fullName,
+    referenceNumber: crypt.decrypt(user.referenceNumber),
+    fullName: fullName,
   };
 }
 
