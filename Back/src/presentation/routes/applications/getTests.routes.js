@@ -159,10 +159,11 @@ module.exports = (authUseCase, authMiddleware) => {
         .then(birthdate => {
           if (!birthdate) return res.status(200).json({ age: null });
           const today = new Date();
-          const birth = new Date(birthdate);
+          const parts = String(birthdate).split(/[-\/]/).map(Number);
+          const birth = new Date(parts[0], parts[1] - 1, parts[2]);
           let years = today.getFullYear() - birth.getFullYear();
           const m = today.getMonth() - birth.getMonth();
-          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years--;
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;
           res.status(200).json({ age: years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
