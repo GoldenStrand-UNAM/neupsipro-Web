@@ -34,6 +34,10 @@ const ClinicsController = require('../../controller/clinical/getListClinics.cont
 const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
 const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 
+const modifyStateUseCase = require('../../../application/usecase/users/modifyStateUseCase');
+const ModifyStateController = require('../../controller/users/modifyStatus.controller');
+ 
+
 module.exports = (authUseCase) => {
 
   const usersRepository    = new UsersRepository();
@@ -64,6 +68,10 @@ module.exports = (authUseCase) => {
   const clinicRepository = new ImpClinicRepository();
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
+
+  const stateUseCase    = new modifyStateUseCase(usersRepository);
+  const stateController = new ModifyStateController(stateUseCase);
+ 
 
   router.get(
     '/:id_user/applications/check-expiry',
@@ -115,5 +123,12 @@ module.exports = (authUseCase) => {
     (req, res) => deleteController.deleteUser(req, res)
   );
 
+  router.patch(
+    '/:id_user/state',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => stateController.modifyState(req, res)
+  );
+ 
   return router;
 };
