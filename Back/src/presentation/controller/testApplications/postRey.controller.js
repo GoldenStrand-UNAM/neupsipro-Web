@@ -1,4 +1,4 @@
-class postREYController {
+class postReyController {
 
   constructor (postREYUseCase) {
     this.useCase = postREYUseCase;
@@ -36,4 +36,4 @@ class postREYController {
   }
 }
 
-module.exports = postREYController;
+module.exports = postReyController;

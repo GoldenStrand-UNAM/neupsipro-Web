@@ -20,6 +20,14 @@ const postWaisController = require('../../controller/testApplications/postWais.c
 const getWaisResultUseCase        = require('../../../application/usecase/testApplications/getWaisUseCase');
 const getWaisResultController     = require('../../controller/testApplications/getWais.controller');
 
+//Rey
+
+const postReyUseCase    = require('../../../application/usecase/testApplications/postReyUseCase');
+const postReyController = require('../../controller/testApplications/postRey.controller');
+
+const getReyResultUseCase  = require('../../../application/usecase/testApplications/getReyUseCase');
+const getReyController     = require('../../controller/testApplications/getRey.controller');
+
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
@@ -46,6 +54,14 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getWaisUseCase    = new getWaisResultUseCase(testResultsRepo);
   const getWaisController = new getWaisResultController(getWaisUseCase);
+
+  //Rey
+
+  const postReyUseCase    = require('../../../application/usecase/testApplications/postReyUseCase');
+  const postReyController = require('../../controller/testApplications/postRey.controller');
+
+  const getReyResultUseCase  = require('../../../application/usecase/testApplications/getReyUseCase');
+  const getReyController     = require('../../controller/testApplications/getRey.controller');
 
   // Only manage the render
   router.get(
@@ -91,6 +107,68 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getWaisController.getResult(req, res)
+  );
+
+  
+  // ======================== REY ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/3/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('tests', 'consultation'),
+    (req, res) => reyController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/3/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getREYCtrl.getResult(req, res)
+  );
+
+    // ======================== AUXILIARY ENDPOINTS FOR MOCA & REY ===============================
+
+  router.get(
+    '/api/users/:id_user/schooling',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => {
+      const { id_user } = req.params;
+      testResultsRepo.fetchUserSchooling({ id_user })
+        .then(schooling => {
+          const map = {
+            'Sin schooling': 0,
+            'Primaria': 6,
+            'Secundaria': 9,
+            'Bachillerato': 12,
+            'Licenciatura': 16,
+            'Posgrado': 18,
+          };
+          const years = map[schooling] ?? null;
+          res.status(200).json({ schooling, years });
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+    }
+  );
+
+  // GET REY age for modal
+  router.get(
+    '/api/users/:id_user/age',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => {
+      const { id_user } = req.params;
+      testResultsRepo.fetchUserAge({ id_user })
+        .then(birthdate => {
+          if (!birthdate) return res.status(200).json({ age: null });
+          const today = new Date();
+          const birth = new Date(birthdate);
+          let years = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years--;
+          res.status(200).json({ age: years });
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+    }
   );
 
   return router;
