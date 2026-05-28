@@ -10,8 +10,8 @@ class GetUsersListUseCase {
   async execute ({ search, page = 1, limit = 10 }) {
     const [users, total] = await Promise.all([
       // Run queries in parallel
-      this.userRepository.fetchActivePatients ({ search, page, limit }),
-      this.userRepository.countActivePatients ({ search }),
+      this.userRepository.fetchActivePatients ({ page, limit }),
+      this.userRepository.countActivePatients (),
     ]);
 
     const filteredUsers = users
