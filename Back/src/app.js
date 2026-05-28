@@ -193,7 +193,7 @@ app.use('/users', userRoutes(authUseCase, authMiddleware));
 
 const postClinicalUserRoutes = require('./presentation/routes/clinical/postClinicalUser.routes');
 
-app.use('/clinical', postClinicalUserRoutes(authUseCase));
+app.use('/clinical', postClinicalUserRoutes(authUseCase, authMiddleware));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
