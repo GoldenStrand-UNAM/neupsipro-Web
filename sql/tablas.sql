@@ -882,3 +882,5 @@ ALTER TABLE user_clinical
     MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
     MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
     MODIFY COLUMN hours INT NULL;
+    
+ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);

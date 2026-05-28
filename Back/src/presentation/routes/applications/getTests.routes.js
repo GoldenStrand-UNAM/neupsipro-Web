@@ -13,19 +13,17 @@ const getBanfeResultUseCase    = require('../../../application/usecase/testAppli
 const getBanfeResultController = require('../../controller/testApplications/getBanfe.controller');
 
 //AUTH & PERMISSIONS
-const JwtService            = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware        = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const testResultsRepo = new impTestResultsRepository();
   const useCase         = new getTestsByApplicationUseCase(testResultsRepo);
   const controller      = new getTestsByApplicationController(useCase);
 
-  const jwtService            = new JwtService();
-  const authMiddleware        = new AuthMiddleware(jwtService);
+  //AUTH & PERMISSIONS MIDDLEWARE
+
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   const banfeUseCase    = new postBanfeUseCase(testResultsRepo);
