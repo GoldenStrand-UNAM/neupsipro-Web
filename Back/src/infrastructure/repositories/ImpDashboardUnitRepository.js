@@ -45,9 +45,8 @@ class ImpDashboardRepository extends DashboardRepository {
     return new DashboardCountsEntity(rows[0] || {});
   }
 
-
-async fetchAgeDistribution () {
-  const [rows] = await db.query(`
+  async fetchAgeDistribution () {
+    const [rows] = await db.query(`
     SELECT TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) AS age
     FROM users u
     JOIN user_info ui ON ui.id_user = u.id_user
@@ -56,8 +55,8 @@ async fetchAgeDistribution () {
       AND u.birthdate IS NOT NULL
       AND (ui.state IS NULL OR ui.state <> 'Declined')
   `);
-  return rows.map(r => Number(r.age));
-}
+    return rows.map(r => Number(r.age));
+  }
 
   // Counts patients by gender
   async fetchGenderDistribution () {
