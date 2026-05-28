@@ -27,7 +27,7 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
-    (req, res) => res.render('users/postUser', { activePage: 'users' })
+    (req, res) => res.render('users/postUser', { activePage: 'users', tutorialModule: 'postUser'  })
   );
 
   router.post(
