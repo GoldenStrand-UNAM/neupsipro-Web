@@ -293,10 +293,10 @@ function buildPrefill (fetchedTest, needsData) {
   const notes = needsData ? (fetchedTest.notes  ?? '') : '';
   const entry = (area) => ({ score: area?.score ?? '', interp: area?.interpretation ?? '—' });
   return {
-    comVerbal:       entry(areas.comVerbal),
+    comVerbal: entry(areas.comVerbal),
     razonPerceptual: entry(areas.razonPerceptual),
-    memWork:         entry(areas.memWork),
-    veloProce:       entry(areas.veloProce),
+    memWork: entry(areas.memWork),
+    veloProce: entry(areas.veloProce),
     ciTotal: {
       score: needsData ? (fetchedTest.scoreTotal ?? '') : '',
       interp: needsData ? (fetchedTest.interTotal ?? '—') : '—',
