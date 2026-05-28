@@ -47,7 +47,7 @@ class LoginUseCase {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 2);
 
-    const idSession = await this.sessionRepository.createSession({
+    const idSession = await this.sessionRepository.replaceActiveSessions({
       userId: userDto.idUser,
       ipAddress,
       userAgent,
