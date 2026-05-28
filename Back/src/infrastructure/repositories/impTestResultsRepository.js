@@ -360,7 +360,7 @@ class impTestResultsRepository extends resultRepository {
       [id_results]
     );
     return rows[0];
-    
+
   }
 
   // ================= MOCA ==================
@@ -409,7 +409,6 @@ class impTestResultsRepository extends resultRepository {
     );
     return rows[0];
   }
-
 
   // ================= schooling and age ==================
 
