@@ -17,11 +17,12 @@ class ImpSessionRepository {
         [userId]
       );
 
-      await connection.execute(`
+      await connection.execute(
+        `
             INSERT INTO sessions
             (id_session, id_user, ip_address, user_agent, expires_at, is_revoked, created_at, last_activity_at)
             VALUES (?, ?, ?, ?, ?, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-      [idSession, userId, ipAddress, userAgent, expiresAt]
+        [idSession, userId, ipAddress, userAgent, expiresAt]
       );
 
       await connection.commit();
