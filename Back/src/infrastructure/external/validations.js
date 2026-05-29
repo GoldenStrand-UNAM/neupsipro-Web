@@ -12,14 +12,14 @@ class validation {
 
   validate (param, requiredLength, label, required) {
 
-  const value = String(param).trim();
+    const value = String(param).trim();
 
-  const emojiRegex =
+    const emojiRegex =
   /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
 
-  if (emojiRegex.test(value)) {
-    throw new Error(`${label} no puede contener emojis`);
-  }
+    if (emojiRegex.test(value)) {
+      throw new Error(`${label} no puede contener emojis`);
+    }
     if (param) {
       if (param.trim().length > requiredLength) {
         throw new Error(`${label} no puede superar los ${requiredLength} caracteres`);
@@ -59,5 +59,47 @@ class validation {
       throw new Error(`${label} ' debe llenarse`);
     else
       return null;
+  }
+  validatePhone (value, label, required) {
+    if (!value || String(value).trim().length === 0) {
+      if (required) throw new Error(`${label} debe llenarse`);
+      return null;
+    }
+
+    const phoneStr = String(value).trim();
+
+    if (phoneStr.length > 20) {
+      throw new Error(`${label} no puede superar los 20 caracteres`);
+    }
+    if (phoneStr.length < 8) {
+      throw new Error(`${label} debe tener al menos 8 caracteres`);
+    }
+
+    const phoneRegex = /^\+?[0-9() -]+$/;
+    if (phoneRegex.test(phoneStr)) {
+      return phoneStr;
+    }
+
+    throw new Error(`${label} solo debe contener números y + - ( )`);
+  }
+
+  validateEmail (value, label, required) {
+    if (!value || String(value).trim().length === 0) {
+      if (required) throw new Error(`${label} debe llenarse`);
+      return null;
+    }
+
+    const emailStr = String(value).trim();
+
+    if (emailStr.length > 50) {
+      throw new Error(`${label} no puede superar los 50 caracteres`);
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(emailStr)) {
+      return emailStr;
+    }
+
+    throw new Error(`${label} debe tener un formato de correo electrónico válido (ejemplo@correo.com)`);
   }
 } module.exports = validation;
