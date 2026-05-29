@@ -130,10 +130,12 @@ function buildFormHTML (mode, prefill) {
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-2xl font-regular">Notas</label>
-          <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">${prefill.notes.length} / 200</p>
+          <div class="relative">
+            <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none pb-5"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <p id="banfeNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+          </div>
         </div>
         <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
         ${buildBANFEFormActions()}

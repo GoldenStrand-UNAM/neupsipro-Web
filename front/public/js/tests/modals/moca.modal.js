@@ -219,18 +219,20 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
         <!-- Notes -->
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Notas</label>
-          <textarea
-            id="inputMOCANotes"
-            rows="2"
-            maxlength="200"
-            placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="mocaNotesCount" class="text-xs text-gray-400 text-right">
-            ${prefill.notes.length} / 200
-          </p>
+          <div class="relative">
+            <textarea
+              id="inputMOCANotes"
+              rows="2"
+              maxlength="200"
+              placeholder="Observaciones"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition resize-none pb-5"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <p id="mocaNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
+              ${prefill.notes.length} / 200
+            </p>
+          </div>
         </div>
 
         <p id="mocaApiError" class="text-xs text-red-500 hidden"></p>
