@@ -8,6 +8,9 @@ class RegPublicationUseCase {
   }
 
   async execute ({ id_usuario, titulo, contenido, image }) {
+    if (contenido && contenido.length > 500) {
+      throw new Error('El contenido no puede superar los 500 caracteres');
+    }
     // Entity validation
     const publication = new Publication ({
       id_usuario,
