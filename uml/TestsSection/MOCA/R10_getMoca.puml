@@ -1,0 +1,76 @@
+@startuml Get_MOCA
+
+actor "Clinic User" as USR
+participant "moca.modal.js" as MMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getMOCAController" as TCTRL
+participant "getMOCAResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card MOCA]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nModificar y Consultar habilitados\n(test.status === 'Calificada')
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> MMODAL : config.openModify() o config.openConsult()\n→ openMOCAModal(idUser, idApplication, test, mode)
+
+MMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/\naplicaciones/:id_application/\npruebas/4/resultados/:id_results
+UROUTE -> TCTRL : getMOCAController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchMOCAResult({ id_results })
+RREPO -> DB : SELECT mr.*,\n       tr.status,\n       tr.date_applied\nFROM moca_results mr\nJOIN test_results tr ON mr.id_results = tr.id_results\nWHERE mr.id_results = ?
+DB --> RREPO : { moca row } | null
+
+alt result not found (null)
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'MOCA result not found'
+    TCTRL --> MMODAL : HTTP 404 { error }
+    MMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw moca_results row
+UC_GET -> UC_GET : map row → MocaResultsDTO\n{ idResults, idTest, status,\n  dateApplied, score,\n  interpretation, notes }
+UC_GET --> TCTRL : MocaResultsDTO
+TCTRL --> MMODAL : HTTP 200 { data: MocaResultsDTO }
+
+== Fetch escolaridad para modify ==
+
+alt mode === 'modify'
+    MMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/escolaridad
+    UROUTE -> RREPO : fetchUserSchooling({ id_user })
+    RREPO -> DB : SELECT ii.schooling ...\nWHERE ur.id_user = ?
+    DB --> RREPO : { schooling } | []
+    UROUTE --> MMODAL : HTTP 200 { schooling, years }
+end
+
+== Renderizar modal ==
+
+MMODAL -> MMODAL : merge fetchedTest = { ...test, ...json.data }
+
+alt mode === 'consult'
+    MMODAL -> MMODAL : buildConsultHTML(fetchedTest)\ncampos solo lectura\nfecha, score, interpretación, notas
+    MMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    MMODAL -> MMODAL : buildFormHTML('modify', prefill, schoolingYears)\ninputs con valores precargados\nbanner escolaridad visible
+    MMODAL --> USR : Modal modificar visible\ninputs editables con datos existentes\n[Cancelar] [Guardar]
+end
+
+note right of MMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_MOCA desde
+  "Guardar resultados"
+end note
+
+@enduml
