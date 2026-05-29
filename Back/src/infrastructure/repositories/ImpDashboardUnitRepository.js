@@ -1,5 +1,8 @@
 const db = require('../database/database');
 const DashboardRepository = require('../../domain/repository/dashboardUnitRepository');
+const crypt = require('../crypt/dashboard/dashboardUnitUsers');
+const crypt2 = require('../crypt/dashboard/dashboardClinicalUsersInfo');
+
 const {
   DashboardCountsEntity,
   AgeBucketEntity,
@@ -98,7 +101,8 @@ class ImpDashboardRepository extends DashboardRepository {
         AND ui.state = 'Stand_by'
       ORDER BY ui.reference_number ASC;
     `);
-    return rows.map(r => r.reference_number);
+    const uncrypted = rows.map(row => crypt(row));
+    return uncrypted.map(r => r.reference_number);
   }
 
   // Returns full detail of one standBy user
@@ -107,7 +111,9 @@ class ImpDashboardRepository extends DashboardRepository {
     SELECT
       u.id_user,
       ui.reference_number,
-      CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
+      u.first_name,
+      u.lastname_p,
+      u.lastname_m,
       u.birthdate,
       u.profile_photo, 
       (
@@ -141,7 +147,8 @@ class ImpDashboardRepository extends DashboardRepository {
   `, [referenceNumber]);
 
     if (!rows.length) return null;
-    return new StandByDetailEntity(rows[0]);
+    const uncrypt = rows.map(row => crypt2(row));
+    return new StandByDetailEntity(uncrypt[0]);
   }
 }
 
