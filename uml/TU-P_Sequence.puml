@@ -1,0 +1,55 @@
+@startuml Profile Screen Showcase Sequence
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor User
+box "Presentation Layer (UI)" #E8EAF6
+    participant "ProfileScreen\n(Composable)" as Screen
+    participant "LazyListState\n(Scroll Controller)" as ScrollState
+    participant "ShowcaseLayout\n(Library View)" as Showcase
+    participant "HeaderIconButton\n(Help Button)" as HelpBtn
+end box
+
+box "Domain & Data Layers" #F5F5F5
+    participant "ProfileViewModel" as VM
+end box
+
+== Initial Screen Load ==
+User -> Screen ++ : Opens Screen
+Screen -> VM ++ : getProfile(userId)
+VM --> Screen -- : Emits state.user data
+Screen -> Screen : Render Header and LazyColumn
+
+== Triggering the Guided Tutorial ==
+User -> HelpBtn ++ : Taps Help Icon
+HelpBtn -> Screen : onClick()
+deactivate HelpBtn
+Screen -> Screen : Update local state:\nisShowcasing = true
+
+== Auto-Scrolling & Highlight Chain ==
+activate Screen
+Screen -> ScrollState ++ : LaunchedEffect(isShowcasing) triggers\nanimateScrollToItem(index = 1)
+ScrollState --> Screen -- : Scroll animation complete
+
+Screen -> Showcase ++ : Display full-screen overlay with Greeting message
+User -> Showcase : Taps anywhere on screen
+Showcase -> Showcase : Highlight Target 1 (ClinicalInfoCard)
+
+User -> Showcase : Taps anywhere on screen
+Showcase -> Showcase : Highlight Target 2 (AppointmentCard)
+
+User -> Showcase : Taps anywhere on screen
+Showcase -> Showcase : Highlight Target 3 (Staff Member Box)
+
+User -> Showcase : Taps final step
+Showcase -> Screen : onFinish() callback triggered
+deactivate Showcase
+
+== Clean up & Reset ==
+Screen -> Screen : Update local state:\nisShowcasing = false
+Screen -> ScrollState ++ : CoroutineScope launches\nscrollToItem(0)
+ScrollState --> Screen -- : Back to top position
+deactivate Screen
+
+@enduml

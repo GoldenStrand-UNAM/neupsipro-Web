@@ -52,19 +52,53 @@ class resultRepository {
     throw new Error('fetchBanfeResult() not implemented');
   }
 
-  //========= BANFE ========================
-  async saveBanfeResult ({
-    _id_results,
-    _score_orbit_frontal,    _inter_orbit_frontal,
-    _score_prefrontal_before, _inter_prefrontal_before,
-    _score_d_lateral,        _inter_d_lateral,
-    _score_total,
-  }) {
-    throw new Error('saveBanfeResult() not implemented');
+  //========= Wais ========================
+
+  async fetchWaisResult ({ _id_results }) {
+    throw new Error('fetchWaisResult() not implemented');
   }
 
-  async fetchBanfeResult ({ _id_results }) {
-    throw new Error('fetchBanfeResult() not implemented');
+  async saveWaisResult ({
+    _id_results,
+    _score_com_verbal,       _inter_com_verbal,
+    _score_razon_perceptual, _inter_razon_perceptual,
+    _score_mem_work,         _inter_mem_work,
+    _score_velo_proce,       _inter_velo_proce,
+    _score_total,
+    _notes,
+  }) {
+    throw new Error('saveWaisResult() not implemented');
+  }
+
+  //========= REY ========================
+
+  // Fetch existing REY result for modify/consult prefill
+  async fetchREYResult ({ _id_results }) {
+    throw new Error('fetchREYResult() not implemented');
+  }
+
+  // Upsert REY scores, percentiles, times and notes into rey_results.
+  // Also updates test_results.status and date_applied.
+  async saveREYResult ({
+    _id_results,
+    _score_rc,  _pc_rc,  _time_rc,  _pc_time_rc,
+    _score_mcp, _pc_mcp, _time_mcp, _pc_time_mcp,
+    _score_mlp, _pc_mlp, _time_mlp, _pc_time_mlp,
+    _notes,
+  }) {
+    throw new Error('saveREYResult() not implemented');
+  }
+
+  // ========= MOCA & REY ========================
+
+  // Fetch schooling level for a user from their initial interview.
+  async fetchUserSchooling ({ _id_user }) {
+    throw new Error('fetchUserSchooling() not implemented');
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ _id_user }) {
+    throw new Error('fetchUserAge() not implemented');
   }
 
 }

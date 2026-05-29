@@ -7,13 +7,11 @@ const addSessionUseCase = require('../../../application/usecase/interventions/ad
 const deleteLastSessionUseCase = require('../../../application/usecase/interventions/deleteLastSessionUseCase');
 const InterventionController = require('../../controller/interventions/intervention.controller');
 
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repo = new ImpInterventionRepository();
@@ -23,8 +21,6 @@ module.exports = (authUseCase) => {
   const DeleteLastSession = new deleteLastSessionUseCase(repo);
   const controller = new InterventionController(intervention, updateNeuroContract, Session, DeleteLastSession);
 
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(

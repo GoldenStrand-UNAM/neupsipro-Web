@@ -1,8 +1,6 @@
 const express = require('express');
 const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 const GetMenuClinicalUsersController = require('../../controller/dashboard/getMenuClinicalUsers.controller');
 const GetClinicalUserDashboardController = require('../../controller/dashboard/getClinicalUserDashboard.controller');
@@ -14,10 +12,8 @@ const ClinicalDashboardRepository = require('../../../infrastructure/repositorie
 const AppointmentRepository = require('../../../infrastructure/repositories/ImpAppointmentRepository');
 const ClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
   const clinicalDashboardRepository = new ClinicalDashboardRepository();
   const appointmentRepository = new AppointmentRepository();
