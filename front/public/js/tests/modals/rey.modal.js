@@ -321,11 +321,10 @@ function reyScoreField ({ scoreId, errorId, prefillArea }) {
             <label class="text-sm font-medium text-gray-700">Puntuación <span class="text-red-500">*</span></label>
             <input
               id="${scoreId}"
-              type="number"
-              min="0"
-              max="100"
+              type="text"
+              inputmode="decimal"
               required
-              oninput="if(this.value.length>5)this.value=this.value.slice(0,5)"
+              oninput="this.value=this.value.replace(/[^0-9.]/g,'').replace(/(\\..*)\\./,'$1').slice(0,5);var n=parseFloat(this.value);if(!isNaN(n)&&n>100)this.value='100';"
               placeholder="Score"
               value="${escapeHTML(String(prefillArea.score))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
@@ -336,28 +335,27 @@ function reyScoreField ({ scoreId, errorId, prefillArea }) {
 }
 
 // Time input — required, 0-100 minutes, allows one decimal place.
-function reyTimeField ({ timeId, prefillArea }) {
+function reyTimeField ({ timeId, timeErrorId, prefillArea }) {
   return `
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Tiempo (min) <span class="text-red-500">*</span></label>
             <input
               id="${timeId}"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
+              type="text"
+              inputmode="decimal"
               required
-              oninput="if(this.value.length>5)this.value=this.value.slice(0,5)"
+              oninput="this.value=this.value.replace(/[^0-9.]/g,'').replace(/(\\..*)\\./,'$1').slice(0,5);var n=parseFloat(this.value);if(!isNaN(n)&&n>100)this.value='100';"
               placeholder="Tiempo"
               value="${escapeHTML(String(prefillArea.time))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
+            <p id="${timeErrorId}" class="text-xs text-red-500 hidden"></p>
           </div>`;
 }
 
 // One editable area row: score input → live percentile | time input → live time percentile.
-function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillArea }) {
+function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, timeErrorId, prefillArea }) {
   return `
       <div class="flex flex-col gap-2">
         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">${title}</h3>
@@ -370,7 +368,7 @@ function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillA
               <span id="${pcId}" class="text-sm text-gray-800">${prefillArea.pc ?? '—'}</span>
             </div>
           </div>
-          ${reyTimeField({ timeId, prefillArea })}
+          ${reyTimeField({ timeId, timeErrorId, prefillArea })}
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Pc Tiempo</label>
             <div class="w-full h-[40px] flex items-center
@@ -434,15 +432,15 @@ function buildREYFormHTML ({ mode, prefill, schoolingData, ageData }) {
         ${reyAreaRow({ title: 'R-C — Copia',
     scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
     timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
-    errorId: 'errorRC', prefillArea: prefill.rc })}
+    errorId: 'errorRC', timeErrorId: 'errorRC_Time', prefillArea: prefill.rc })}
         ${reyAreaRow({ title: 'R-MCp — Memoria Corto Plazo',
     scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
     timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
-    errorId: 'errorMCP', prefillArea: prefill.mcp })}
+    errorId: 'errorMCP', timeErrorId: 'errorMCP_Time', prefillArea: prefill.mcp })}
         ${reyAreaRow({ title: 'R-MLp — Memoria Largo Plazo',
     scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
     timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
-    errorId: 'errorMLP', prefillArea: prefill.mlp })}
+    errorId: 'errorMLP', timeErrorId: 'errorMLP_Time', prefillArea: prefill.mlp })}
         ${reyFormActions(prefill)}
       </div>
     </div>`;
@@ -455,19 +453,19 @@ const REY_AREAS = [
   {
     scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
     timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
-    errorId: 'errorRC', scoreKey: 'score_rc', timeKey: 'time_rc',
+    errorId: 'errorRC', timeErrorId: 'errorRC_Time', scoreKey: 'score_rc', timeKey: 'time_rc',
     table: REY_TABLE_RC,
   },
   {
     scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
     timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
-    errorId: 'errorMCP', scoreKey: 'score_mcp', timeKey: 'time_mcp',
+    errorId: 'errorMCP', timeErrorId: 'errorMCP_Time', scoreKey: 'score_mcp', timeKey: 'time_mcp',
     table: REY_TABLE_MCP_MLP,
   },
   {
     scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
     timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
-    errorId: 'errorMLP', scoreKey: 'score_mlp', timeKey: 'time_mlp',
+    errorId: 'errorMLP', timeErrorId: 'errorMLP_Time', scoreKey: 'score_mlp', timeKey: 'time_mlp',
     table: REY_TABLE_MCP_MLP,
   },
 ];
@@ -486,11 +484,10 @@ function reySetupNotesCounter (notesInput, notesCount) {
 
 // Wires live percentile preview for each area — updates as the clinician types.
 function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
-  areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, table }) => {
+  areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, timeErrorId, table }) => {
     document.getElementById(scoreId).addEventListener('input', () => {
       const el    = document.getElementById(scoreId);
-      const errEl = document.getElementById(errorId);
-      errEl.classList.add('hidden');
+      document.getElementById(errorId).classList.add('hidden');
       const score = Number(el.value);
       if (el.value.trim() === '' || isNaN(score) || score < 0 || score > 100) {
         document.getElementById(pcId).textContent = '—';
@@ -502,6 +499,7 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
 
     document.getElementById(timeId).addEventListener('input', () => {
       const el   = document.getElementById(timeId);
+      document.getElementById(timeErrorId).classList.add('hidden');
       const time = Number(el.value);
       if (el.value.trim() === '' || isNaN(time) || time < 0 || time > 100) {
         document.getElementById(pcTimeId).textContent = '—';
@@ -517,35 +515,43 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
 // Fills the body object with valid values; returns false if anything is wrong.
 function reyValidateAreas (areas, body) {
   let valid = true;
-  areas.forEach(({ scoreId, timeId, errorId, scoreKey, timeKey }) => {
+  areas.forEach(({ scoreId, timeId, errorId, timeErrorId, scoreKey, timeKey }) => {
     const scoreEl  = document.getElementById(scoreId);
     const timeEl   = document.getElementById(timeId);
-    const errEl    = document.getElementById(errorId);
+    const scoreErr = document.getElementById(errorId);
+    const timeErr  = document.getElementById(timeErrorId);
     const scoreVal = scoreEl.value.trim();
     const timeVal  = timeEl.value.trim();
 
-    errEl.textContent = '';
-    errEl.classList.add('hidden');
+    scoreErr.textContent = '';
+    scoreErr.classList.add('hidden');
+    timeErr.textContent = '';
+    timeErr.classList.add('hidden');
 
-    if (scoreVal === '' || timeVal === '') {
-      errEl.textContent = 'Puntuación y Tiempo son requeridos';
-      errEl.classList.remove('hidden');
+    if (scoreVal === '') {
+      scoreErr.textContent = 'Puntuación es requerida';
+      scoreErr.classList.remove('hidden');
       valid = false;
     } else {
       const scoreN = Number(scoreVal);
       if (isNaN(scoreN) || scoreN < 0 || scoreN > 100) {
-        errEl.textContent = 'Puntuación debe estar entre 0 y 100';
-        errEl.classList.remove('hidden');
+        scoreErr.textContent = 'Puntuación debe estar entre 0 y 100';
+        scoreErr.classList.remove('hidden');
         valid = false;
       } else {
         Reflect.set(body, scoreKey, scoreN);
       }
+    }
+
+    if (timeVal === '') {
+      timeErr.textContent = 'Tiempo es requerido';
+      timeErr.classList.remove('hidden');
+      valid = false;
+    } else {
       const timeN = Number(timeVal);
       if (isNaN(timeN) || timeN < 0 || timeN > 100) {
-        if (!errEl.textContent) {
-          errEl.textContent = 'Tiempo debe estar entre 0 y 100';
-          errEl.classList.remove('hidden');
-        }
+        timeErr.textContent = 'Tiempo debe estar entre 0 y 100';
+        timeErr.classList.remove('hidden');
         valid = false;
       } else {
         Reflect.set(body, timeKey, timeN);
