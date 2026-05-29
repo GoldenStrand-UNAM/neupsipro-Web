@@ -401,6 +401,10 @@
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const userInput = document.getElementById('username');
+    const nameInput = document.getElementById('firstName');
+    const lastamePInput = document.getElementById('lastnameP');
+    const lastameMInput = document.getElementById('lastnameM');
+    const birthdateInput = document.getElementById('birthdate');
     function escapeHTML(text) {
       return text
       .replaceAll("&", "&amp;")
@@ -447,6 +451,18 @@
           userInput.reportValidity();
         } else {
           showToast((data.error || 'Error desconocido'), 'error');
+          if (data.error === 'El usuario ya se encuentra registrado.') {
+            lastamePInput.style.border = '2px solid red';
+            lastamePInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+            lastameMInput.style.border = '2px solid red';
+            lastameMInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+            birthdateInput.style.border = '2px solid red';
+            birthdateInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+            nameInput.setCustomValidity("Usuario registrado, cambia un campo");
+            nameInput.style.border = '2px solid red';
+            nameInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+            nameInput.reportValidity();
+          }
         }
       }
       } catch (error) {
@@ -457,6 +473,18 @@
       userInput.setCustomValidity("");
       userInput.style.border = '';
       userInput.style.boxShadow = '';
+    });
+
+    const duplicateInputs = [nameInput, lastamePInput, lastameMInput, birthdateInput];
+
+    duplicateInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        nameInput.setCustomValidity("");
+        duplicateInputs.forEach(inp => {
+          inp.style.border = '';
+          inp.style.boxShadow = '';
+        });
+      });
     });
 
     function setupCounter(inputId, counterId) {
