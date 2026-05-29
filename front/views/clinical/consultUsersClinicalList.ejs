@@ -71,6 +71,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="medidor-fantasma" class="invisible absolute top-0 left-0 pointer-events-none" style="width: 100%;">
+                    <table><tbody id="tabla-fantasma"></tbody></table>
+                </div>
 
                 <div id="pagination" class="flex items-center justify-center gap-3 py-3"></div>
 
@@ -103,8 +106,19 @@
                 .replace(/'/g, "&#039;");
         }
 
+        function obtenerLimitePaginacion() {
+            const contenedor = document.getElementById('clinicalTable');
+            const altoContenedor = contenedor.clientHeight; 
+            const altoDisponibleParaFilas = altoContenedor - 45; 
+            const altoFila = 70;
+            const totalFilas = Math.floor(altoDisponibleParaFilas / altoFila);
+            return totalFilas > 0 ? totalFilas : 1;
+        }
+
+
         let currentPage   = 1;
-        const LIMIT       = 6;
+        const LIMIT       = obtenerLimitePaginacion();
+        console.log(LIMIT);
         let searchQuery   = "";
         let debounceTimer;
 

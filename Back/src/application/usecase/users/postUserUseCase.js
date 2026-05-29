@@ -47,7 +47,7 @@ class PostUserUseCase {
     const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
     const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
     const flastnameM = validation.validate(lastnameM, 30, 'EL apellido materno', false);
-    const femail = validation.validateEmail(email, 'El email', false );
+    const femail = validation.validateEmail(email, 'El email', false);
     validation.validate(password, 30, 'La contraseña', true);
     validation.validate(assigned, 36, 'El clínico asignado', true);
     validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
