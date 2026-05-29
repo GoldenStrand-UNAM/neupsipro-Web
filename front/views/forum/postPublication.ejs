@@ -165,15 +165,16 @@
 
   function limitContent(content) {
     const limit = 500;
+    let text = content.innerText.replace(/\r\n/g, '\n');
 
-    if (content.innerText.length > limit) {
-        content.innerText = content.innerText.substring(0, limit);
-        window.getSelection().selectAllChildren(content);
-        window.getSelection().collapseToEnd();
+    if (text.length > limit) {
+      content.innerText = text.substring(0, limit);
+      window.getSelection().selectAllChildren(content);
+      window.getSelection().collapseToEnd();
     }
     const counter = document.getElementById('charCount');
     if (counter) counter.innerText = `${content.innerText.length}/${limit}`;
-}
+  }
 
   // Clean forms
   clearBtn.addEventListener('click', () => {
@@ -200,19 +201,26 @@
   });
 
   //  Submit
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const content = editor.innerText.trim();
+  const content = editor.innerText.replace(/\r\n/g, '\n').trim();
 
-    if (!content) {
-        showToast('El contenido es obligatorio', 'error');
-        return;
-    }
+  if (!content) {
+    showToast('El contenido es obligatorio', 'error');
+    return;
+  }
 
-    hiddenInput.value = editor.innerText;
+  if (content.length > 500) {
+    showToast('El contenido no puede superar los 500 caracteres', 'error');
+    return;
+  }
 
-    const formData = new FormData(form);
+  hiddenInput.value = content.slice(0, 500);
+  console.log('length enviada:', hiddenInput.value.length);
+
+  const formData = new FormData(form);
+  formData.set('contenido', hiddenInput.value); 
 
     try {
       const res = await fetch('/forum/post', {
