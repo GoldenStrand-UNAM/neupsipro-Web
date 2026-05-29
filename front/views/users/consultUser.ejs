@@ -319,14 +319,17 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Nombre de la Aplicación
                                     </label>
-                                    <input
+                                    <div class="search-input w-full relative">
+                                        <input
                                         id="inputAppName"
                                         type="text"
                                         maxlength="20"
                                         placeholder=""
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"
-                                    />
-                                    <p class="text-xs text-gray-400 mt-1">Max 20 caracteres</p>
+                                        />
+                                        <span id="nameCount" class="absolute bottom-0 right-2 text-xs text-gray-500"> 0/20 </span>
+                                    </div>
+                                    
                                     <!-- Inline error -->
                                     <p id="modalError" class="text-xs text-red-500 mt-1 hidden"></p>
                                 </div>
@@ -440,6 +443,15 @@
             }
         };
 
+        const nameCount = document.getElementById('nameCount');
+        const inputAppName = document.getElementById('inputAppName');
+
+        inputAppName.addEventListener('input', () => {
+            const max = 20;
+            const length = inputAppName.value.length;
+            nameCount.innerText = `${length}/${max}`;
+        });
+
         const _statusMap = {
             "Por comenzar": "neutral",
 
@@ -461,7 +473,6 @@
 
         function createApplicationCard(application, idUser) {
             const colors = getStatusStyle(application.status);
-
             const dateFormatted = application.createdAt
                 ? new Date(application.createdAt).toLocaleDateString('es-MX')
                 : 'Fecha no disponible';
