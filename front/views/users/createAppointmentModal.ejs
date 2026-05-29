@@ -41,8 +41,8 @@
                         placeholder="Ej. Evaluación inicial"
                         class="search-input_field"
                     />
+                    <span id="motiveCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/50 </span>
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Máx. 50 caracteres</p>
             </div>
             <p id="appointmentError" class="text-sm text-red-500 hidden"></p>
         </div>
@@ -74,6 +74,7 @@
     const btnCancel = document.getElementById('cancelAppointment');
     const btnConfirm = document.getElementById('confirmAppointment');
     const errorBox = document.getElementById('appointmentError');
+    const motiveCount = document.getElementById('motiveCount');
 
     const inputDate = document.getElementById('appointmentDateTime');
     const selectClinic = document.getElementById('appointmentClinic');
@@ -132,6 +133,23 @@
         inputIssue.value = '';
         hideError();
     }
+    function resetFormMotive() {
+    form.reset();
+        editor.innerHTML = '';
+        hiddenInput.value = '';
+        filePreview.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        previewImg.src = '';
+
+        motiveCount.innerText = '0/50';
+        document.getElementById('charCount').innerText = '0/500';
+    }  
+
+    appointmentIssue.addEventListener('input', () => {
+        const max = 50;
+        const length = appointmentIssue.value.length;
+        motiveCount.innerText = `${length}/${max}`;
+    });
 
     btnOpen?.addEventListener('click', () => {
         modal.classList.remove('hidden');
