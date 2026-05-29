@@ -106,19 +106,22 @@
                 .replace(/'/g, "&#039;");
         }
 
-        function obtenerLimitePaginacion() {
-            const contenedor = document.getElementById('clinicalTable');
-            const altoContenedor = contenedor.clientHeight; 
-            const altoDisponibleParaFilas = altoContenedor - 45; 
-            const altoFila = 70;
-            const totalFilas = Math.floor(altoDisponibleParaFilas / altoFila);
-            return totalFilas > 0 ? totalFilas : 1;
+        function paginationLimit() {
+            const container = document.getElementById('clinicalTable');
+            const containerHeight = container.clientHeight; 
+            const availableSpace = containerHeight - 45; 
+            const rowHeight = 67;
+            const totalRows = Math.floor(availableSpace / rowHeight);
+            return totalRows > 0 ? totalRows : 1;
         }
 
+        window.addEventListener('resize', () => {
+            LIMIT       = paginationLimit();
+            fetchUsers();
+        });
 
         let currentPage   = 1;
-        const LIMIT       = obtenerLimitePaginacion();
-        console.log(LIMIT);
+        let LIMIT       = paginationLimit();
         let searchQuery   = "";
         let debounceTimer;
 

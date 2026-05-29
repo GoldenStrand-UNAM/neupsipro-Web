@@ -52,7 +52,7 @@
                 </div>
 
                 <!-- Table -->
-                <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
+                <div id="usersSpace" class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
                 <table id="usersTable" class="w-full border-collapse text-sm md:text-base ">
                     <thead>
                         <tr class="border-b-2 border-gray-200 table-fixed">
@@ -96,8 +96,22 @@
 
 const MAX_SEARCH_LENGTH = 50;
 
+function paginationLimit() {
+    const container = document.getElementById('usersSpace');
+    const containerHeight = container.clientHeight; 
+    const availableSpace = containerHeight - 45; 
+    const rowHeight = 67;
+    const totalRows = Math.floor(availableSpace / rowHeight);
+    return totalRows > 0 ? totalRows : 1;
+}
+
+window.addEventListener('resize', () => {
+    LIMIT       = paginationLimit();
+    fetchUsers();
+});
+
 let currentPage   = 1;
-const LIMIT       = 6;
+let LIMIT       = paginationLimit();
 let searchQuery   = "";
 let debounceTimer;
 
