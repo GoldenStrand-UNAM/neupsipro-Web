@@ -36,7 +36,6 @@ const modifyStateUseCase = require('../../../application/usecase/users/modifySta
 const ModifyStateController = require('../../controller/users/modifyStatus.controller');
  
 
-module.exports = (authUseCase) => {
 const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
