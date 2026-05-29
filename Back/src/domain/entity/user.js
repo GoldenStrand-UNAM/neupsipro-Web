@@ -6,6 +6,7 @@ class User {
     this.name = [data.first_name, data.lastname_p, data.lastname_m]
       .filter(Boolean)
       .join(' ');
+    this.email = data.email;
     this.age = this.calculateAge(data.birthdate);
     this.registrationDate = data.registration_date;
     this.phase = data.neuro_status;
@@ -23,6 +24,7 @@ class User {
     this.groupIntervention = data.group_intervention;
     this.initialInterview = this.getStatus(data.initial_interview);
     this.protocol = this.setProtocol(data.protocol);
+    this.phone = data.phone;
   }
 
   calculateAge (birthdate) {

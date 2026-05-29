@@ -1,0 +1,141 @@
+@startuml EditUserSequence
+title Edit User - Sequence Diagram
+
+actor User as U
+participant "consultUser.ejs\n(Browser)" as ConsultView
+participant "editUser.ejs\n(Browser)" as EditView
+participant "Express Router\n(getUser.Routes)" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "File Pipeline\n(multer/validate/s3)" as FilePipeline
+participant "renderEditUser\nController" as RenderCtrl
+participant "editUser\nController" as EditCtrl
+participant "loadEditUserUseCase" as LoadUC
+participant "editUserUseCase" as EditUC
+participant "HashingService" as Hash
+participant "ImpUsers\nRepository" as Repo
+participant "AWS S3" as S3
+database "MySQL DB" as DB
+
+
+U -> ConsultView: Clicks "Editar" 
+activate ConsultView
+ConsultView -> Router: GET /users/:id_user/edit
+deactivate ConsultView
+activate Router
+
+Router -> Auth: verifyToken + requirePermission
+Auth --> Router: OK
+
+Router -> RenderCtrl: renderEditUser(req, res)
+activate RenderCtrl
+RenderCtrl -> LoadUC: execute({id_user})
+activate LoadUC
+
+LoadUC -> Repo: fetchUserForEdit({id_user})
+activate Repo
+Repo -> DB: SELECT users + user_info + user_relation
+DB --> Repo: row
+Repo --> LoadUC: user data
+deactivate Repo
+
+LoadUC -> S3: getPresignedUrl(profile_photo)
+S3 --> LoadUC: signed URL
+
+LoadUC --> RenderCtrl: usuario (formatted for EJS)
+deactivate LoadUC
+
+RenderCtrl --> Router: render editUser.ejs
+deactivate RenderCtrl
+Router --> EditView: HTML with pre-filled values
+deactivate Router
+activate EditView
+EditView --> U: Form ready
+
+
+U -> EditView: Modifies fields\n(optional: new photo, new password)
+U -> EditView: Clicks "Guardar cambios"
+
+EditView -> Router: POST /users/:id_user/edit\n(multipart/form-data)
+activate Router
+
+Router -> Auth: verifyToken + requirePermission
+Auth --> Router: OK
+
+Router -> FilePipeline: multer + validateImage + s3Upload
+activate FilePipeline
+
+alt Invalid image (wrong MIME or >5MB)
+  FilePipeline --> EditView: 500 { error }
+  deactivate FilePipeline
+  deactivate Router
+  EditView --> U: Error toast
+
+else Valid request
+  FilePipeline -> S3: uploadToS3 (if file present)
+  S3 --> FilePipeline: location URL
+  FilePipeline -> EditCtrl: editUser(req, res)
+  deactivate FilePipeline
+  activate EditCtrl
+
+  EditCtrl -> EditUC: execute({...fields, password,\nprofilePhoto})
+  activate EditUC
+
+  EditUC -> EditUC: Validate fields (enums, dates, lengths)
+
+  opt Password provided
+    EditUC -> Hash: hash(password)
+    Hash --> EditUC: passwordHash
+  end
+
+  EditUC -> Repo: fetchUserForEdit({id_user})
+  activate Repo
+  Repo -> DB: SELECT (to get oldPhoto)
+  DB --> Repo: row
+  Repo --> EditUC: current user
+  deactivate Repo
+
+  alt User not found
+    EditUC --> EditCtrl: throw 404
+    EditCtrl --> EditView: 404 { error }
+    deactivate EditUC
+    deactivate EditCtrl
+    deactivate Router
+    EditView --> U: Error toast
+
+  else User exists
+    EditUC -> Repo: editUser({...passwordHash, profilePhoto})
+    activate Repo
+    Repo -> DB: BEGIN TRANSACTION
+    Repo -> DB: UPDATE users\n
+    Repo -> DB: UPDATE user_info
+    Repo -> DB: UPDATE user_relation
+    Repo -> DB: COMMIT
+    DB --> Repo: updated row
+    Repo --> EditUC: saved
+    deactivate Repo
+
+    opt New photo uploaded and old photo existed
+      EditUC -> S3: deleteFromS3(oldPhoto)
+      S3 --> EditUC: deleted
+    end
+
+    EditUC --> EditCtrl: saved
+    deactivate EditUC
+
+    alt Duplicate folio or userName
+      EditCtrl --> EditView: 409 "Usuario duplicado"
+      deactivate EditCtrl
+      deactivate Router
+      EditView --> U: Error toast
+
+    else Success
+      EditCtrl --> EditView: 200 OK + user JSON
+      deactivate EditCtrl
+      deactivate Router
+      EditView -> ConsultView: Redirect to /users/:id_user
+      EditView --> U: Success toast\n"Usuario actualizado correctamente"
+    end
+  end
+end
+
+@enduml

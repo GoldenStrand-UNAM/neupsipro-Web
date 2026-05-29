@@ -1,12 +1,10 @@
 const express = require('express');
-const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+const { apiLimiter , userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const router = express.Router();
 
 const UserController = require('../../controller/users/getUser.controller');
 const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const impTestApplicationsRepository = require('../../../infrastructure/repositories/impTestApplicationRepository');
@@ -39,14 +37,24 @@ const ModifyStateController = require('../../controller/users/modifyStatus.contr
  
 
 module.exports = (authUseCase) => {
+const upload = require('../../../infrastructure/external/multer.service');
+const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
+const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
+const HashingService  = require('../../../infrastructure/external/hashing.service');
+ 
+const loadEditUserUseCase = require('../../../application/usecase/users/loadEditUserUseCase');
+const editUserUseCase = require('../../../application/usecase/users/editUserUseCase');
+const editUserController = require('../../controller/users/editUser.controller');
+const loadEditUserController = require('../../controller/users/loadEditUser.controller');
+
+
+module.exports = (authUseCase, authMiddleware) => {
 
   const usersRepository    = new UsersRepository();
   const testAppRepository  = new impTestApplicationsRepository();
   const appointmentRepository = new ImpAppointmentRepository();
   const useCase            = new GetUserUseCase(usersRepository, testAppRepository, appointmentRepository);
   const controller = new UserController(useCase);
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   const testResultsRepository  = new impTestResultsRepository();
@@ -72,10 +80,15 @@ module.exports = (authUseCase) => {
   const stateUseCase    = new modifyStateUseCase(usersRepository);
   const stateController = new ModifyStateController(stateUseCase);
  
+  const hashingService  = new HashingService();
+  const loadEditUser = new loadEditUserUseCase(usersRepository);
+  const editUseCase = new editUserUseCase(usersRepository, hashingService);
+  const loadEditController = new loadEditUserController(loadEditUser);
+  const editController = new editUserController(editUseCase);
 
   router.get(
     '/:id_user/applications/check-expiry',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => expiryController.checkExpiry(req, res)
   );
@@ -121,6 +134,25 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
+  );
+  
+  router.get(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => loadEditController.renderEditUser(req, res)
+  );
+ 
+  router.post(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    userLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    upload.single('profilePhoto'),
+    validateImageMiddleware,
+    s3UploadMiddleware,
+    (req, res) => editController.editUser(req, res)
   );
 
   router.patch(

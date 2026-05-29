@@ -39,9 +39,8 @@ describe('createUserUseCase',()=>{
         referenceNumber:'REF001',
         amputationDate:'01/01/2023',
         amputationLevel:'Rodilla',
-        otherLevel:null,
         laterality:'Diestra',
-        prosthetist:'Carlos',
+        prosthetist:'CPO Juan David Orozco',
         neuroEntryDate:'01/01/2024',
         pairs:'Sí asiste',
         sex:'Masculino'

@@ -122,6 +122,322 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
+  // ================= BANFE  ==================
+
+  // Upserts into banfe_results
+  // works for both first-time registration and modify.
+  // Also updates status from test_results
+
+  // Post BANFE
+  async saveBanfeResult ({
+    id_results,
+    score_orbit_frontal,  inter_orbit_frontal,
+    score_prefrontal_before, inter_prefrontal_before,
+    score_d_lateral,      inter_d_lateral,
+    score_total, notes,
+  }) {
+  // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+      [id_results]
+    );
+
+    // ON DUPLICATE KEY covers the case where a row already exists (modify flow)
+    await db.query(
+      `INSERT INTO banfe_results
+       (id_results,
+        score_orbit_frontal,    inter_orbit_frontal,
+        score_prefrontal_before, inter_prefrontal_before,
+        score_d_lateral,        inter_d_lateral,
+        score_total, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+        score_orbit_frontal     = VALUES(score_orbit_frontal),
+        inter_orbit_frontal     = VALUES(inter_orbit_frontal),
+        score_prefrontal_before = VALUES(score_prefrontal_before),
+        inter_prefrontal_before = VALUES(inter_prefrontal_before),
+        score_d_lateral         = VALUES(score_d_lateral),
+        inter_d_lateral         = VALUES(inter_d_lateral),
+        score_total             = VALUES(score_total),
+        notes                   = VALUES(notes)`,
+      [
+        id_results,
+        score_orbit_frontal,    inter_orbit_frontal,
+        score_prefrontal_before, inter_prefrontal_before,
+        score_d_lateral,        inter_d_lateral,
+        score_total,            notes,
+      ]
+    );
+
+    // Return the saved row together with the date just written to test_results
+    const [rows] = await db.query(
+      `SELECT br.*, tr.date_applied
+       FROM banfe_results br
+       JOIN test_results tr ON br.id_results = tr.id_results
+       WHERE br.id_results = ?`,
+      [id_results]
+    );
+    return rows[0];
+  }
+
+  // CONSULT BANFE
+  async fetchBanfeResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT br.*,
+              tr.status,
+              tr.date_applied
+      FROM banfe_results br
+      JOIN test_results tr ON br.id_results = tr.id_results
+      WHERE br.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // ================= Wais ==================
+
+  // post Wais
+  async saveWaisResult ({
+    id_results,
+    score_com_verbal,       inter_com_verbal,
+    score_razon_perceptual, inter_razon_perceptual,
+    score_mem_work,         inter_mem_work,
+    score_velo_proce,       inter_velo_proce,
+    score_total,            inter_total,
+    notes,
+  }) {
+
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      await conn.query(
+        `INSERT INTO wais_results
+          (id_results,
+            score_com_verbal,       inter_com_verbal,
+            score_razon_perceptual, inter_razon_perceptual,
+            score_mem_work,         inter_mem_work,
+            score_velo_proce,       inter_velo_proce,
+            score_total,            inter_total,
+            notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            score_com_verbal       = VALUES(score_com_verbal),
+            inter_com_verbal       = VALUES(inter_com_verbal),
+            score_razon_perceptual = VALUES(score_razon_perceptual),
+            inter_razon_perceptual = VALUES(inter_razon_perceptual),
+            score_mem_work         = VALUES(score_mem_work),
+            inter_mem_work         = VALUES(inter_mem_work),
+            score_velo_proce       = VALUES(score_velo_proce),
+            inter_velo_proce       = VALUES(inter_velo_proce),
+            score_total            = VALUES(score_total),
+            inter_total            = VALUES(inter_total),
+            notes                  = VALUES(notes)`,
+        [
+          id_results,
+          score_com_verbal,       inter_com_verbal,
+          score_razon_perceptual, inter_razon_perceptual,
+          score_mem_work,         inter_mem_work,
+          score_velo_proce,       inter_velo_proce,
+          score_total,            inter_total,
+          notes,
+        ]
+      );
+
+      await conn.query(
+        `UPDATE test_results
+        SET status       = 3,
+            date_applied = CURDATE()
+        WHERE id_results = ?`,
+        [id_results]
+      );
+
+      await conn.commit();
+
+      const [rows] = await conn.query(
+        'SELECT * FROM wais_results WHERE id_results = ?',
+        [id_results]
+      );
+      return rows[0];
+
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
+  // get Wais
+  async fetchWaisResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT wr.*,
+              tr.status,
+              tr.date_applied
+      FROM wais_results wr
+      JOIN test_results tr ON wr.id_results = tr.id_results
+      WHERE wr.id_results = ?
+      LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // ================= REY ==================
+
+  // Fetch existing REY result by id_results for modify/consult prefill
+  async fetchREYResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT rr.*,
+            tr.status,
+            tr.date_applied
+     FROM rey_results rr
+     JOIN test_results tr ON rr.id_results = tr.id_results
+     WHERE rr.id_results = ?
+     LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // Upserts into rey_results — works for register and modify.
+  // Also updates test_results.status and date_applied.
+  async saveREYResult ({
+    id_results,
+    score_rc,  pc_rc,  time_rc,  pc_time_rc,
+    score_mcp, pc_mcp, time_mcp, pc_time_mcp,
+    score_mlp, pc_mlp, time_mlp, pc_time_mlp,
+    notes,
+  }) {
+  // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+      [id_results]
+    );
+
+    // ON DUPLICATE KEY covers the modify flow (row already exists)
+    await db.query(
+      `INSERT INTO rey_results
+       (id_results,
+        score_rc,  pc_rc,  time_rc,  pc_time_rc,
+        score_mcp, pc_mcp, time_mcp, pc_time_mcp,
+        score_mlp, pc_mlp, time_mlp, pc_time_mlp,
+        notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+        score_rc      = VALUES(score_rc),
+        pc_rc         = VALUES(pc_rc),
+        time_rc       = VALUES(time_rc),
+        pc_time_rc    = VALUES(pc_time_rc),
+        score_mcp     = VALUES(score_mcp),
+        pc_mcp        = VALUES(pc_mcp),
+        time_mcp      = VALUES(time_mcp),
+        pc_time_mcp   = VALUES(pc_time_mcp),
+        score_mlp     = VALUES(score_mlp),
+        pc_mlp        = VALUES(pc_mlp),
+        time_mlp      = VALUES(time_mlp),
+        pc_time_mlp   = VALUES(pc_time_mlp),
+        notes         = VALUES(notes)`,
+      [
+        id_results,
+        score_rc  ?? null, pc_rc  ?? null, time_rc  ?? null, pc_time_rc  ?? null,
+        score_mcp ?? null, pc_mcp ?? null, time_mcp ?? null, pc_time_mcp ?? null,
+        score_mlp ?? null, pc_mlp ?? null, time_mlp ?? null, pc_time_mlp ?? null,
+        notes     ?? null,
+      ]
+    );
+
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM rey_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+
+  }
+
+  // ================= MOCA ==================
+
+  // Fetch existing MOCA result by id_results for modify/consult prefill
+  async fetchMocaResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT mr.*,
+            tr.status,
+            tr.date_applied
+     FROM moca_results mr
+     JOIN test_results tr ON mr.id_results = tr.id_results
+     WHERE mr.id_results = ?
+     LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // Upserts into moca_results — works for register and modify.
+  async saveMocaResult ({ id_results, score, interpretation, notes }) {
+
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+      [id_results]
+    );
+
+    await db.query(
+      `INSERT INTO moca_results
+       (id_results, score, interpretation, notes)
+     VALUES (?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       score          = VALUES(score),
+       interpretation = VALUES(interpretation),
+       notes          = VALUES(notes)`,
+      [id_results, score, interpretation, notes]
+    );
+
+    const [rows] = await db.query(
+      'SELECT * FROM moca_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
+
+  // ================= schooling and age ==================
+
+  // Fetch schooling level for a user from their initial interview.
+  // Used by MOCA use case to determine if +2 bonus applies.
+  // Use by REY to determine the percentil
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling
+       FROM initial_interview ii
+       INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
+       WHERE ur.id_user = ?
+       LIMIT 1`,
+      [id_user]
+    );
+    return rows.length ? rows[0].schooling : null;
+  }
+
+  // Fetch birthdate of user.
+  async fetchUserAge ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT birthdate
+       FROM users
+       WHERE id_user = ?`,
+      [id_user]
+    );
+    return rows.length ? rows[0].birthdate : null;
+  }
+
 }
 
 module.exports = impTestResultsRepository;
