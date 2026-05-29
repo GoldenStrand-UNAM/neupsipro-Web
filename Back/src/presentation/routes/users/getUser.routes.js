@@ -32,6 +32,9 @@ const ClinicsController = require('../../controller/clinical/getListClinics.cont
 const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
 const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 
+const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
+const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
 
   const usersRepository    = new UsersRepository();
@@ -60,6 +63,9 @@ module.exports = (authUseCase, authMiddleware) => {
   const clinicRepository = new ImpClinicRepository();
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
+
+  const protocolUseCase = new modifyProtocolUseCase(usersRepository);
+  const protocolController = new modifyProtocolController(protocolUseCase);
 
   router.get(
     '/:id_user/applications/check-expiry',
@@ -110,6 +116,14 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
   );
+
+  router.patch(
+    '/:id_user/protocol',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => protocolController.modifyProtocol(req, res)
+  );
+
 
   return router;
 };
