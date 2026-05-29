@@ -32,6 +32,8 @@ const ClinicsController = require('../../controller/clinical/getListClinics.cont
 const ListClinicsUseCase = require('../../../application/usecase/clinical/listClinicsUseCase');
 const ImpClinicRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 
+const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
+const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
 const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
@@ -72,6 +74,8 @@ module.exports = (authUseCase, authMiddleware) => {
   const listClinicsUseCase = new ListClinicsUseCase(clinicRepository);
   const clinicsController = new ClinicsController(listClinicsUseCase);
 
+  const protocolUseCase = new modifyProtocolUseCase(usersRepository);
+  const protocolController = new modifyProtocolController(protocolUseCase);
   const hashingService  = new HashingService();
   const loadEditUser = new loadEditUserUseCase(usersRepository);
   const editUseCase = new editUserUseCase(usersRepository, hashingService);
@@ -146,6 +150,14 @@ module.exports = (authUseCase, authMiddleware) => {
     s3UploadMiddleware,
     (req, res) => editController.editUser(req, res)
   );
+
+  router.patch(
+    '/:id_user/protocol',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => protocolController.modifyProtocol(req, res)
+  );
+
 
   return router;
 };
