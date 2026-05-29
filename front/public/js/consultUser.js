@@ -125,6 +125,27 @@ function populateLogbook (user) {
   }
 }
 
+// Max applications allowed per user
+const MAX_APPLICATIONS_UI = 5;
+
+// When the limit is reached, swap the "Nueva aplicación" button for a disabled placeholder. 
+function enforceApplicationLimit (container) {
+  const addBtn = document.getElementById('btnCreateSession');
+  if (!addBtn) return;
+
+  const cardCount = container.querySelectorAll('a').length;
+  if (cardCount < MAX_APPLICATIONS_UI) return;
+
+  addBtn.outerHTML = `
+    <div class="flex flex-col items-center justify-center gap-3 rounded-3xl p-6 w-full border-2 border-dashed border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed select-none">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+      </svg>
+      <span class="text-sm font-medium">Límite de 5 alcanzado</span>
+    </div>
+  `;
+}
+
 function setupShowMoreToggle () {
   const btnShowMore = document.getElementById('btnShowMore');
   const textShowMore = document.getElementById('textShowMore');
@@ -194,6 +215,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   populateLogbook(user);
+
+  const logbook = document.getElementById('logbookContainer');
+  if (logbook) {
+    enforceApplicationLimit(logbook);
+    new MutationObserver(() => enforceApplicationLimit(logbook))
+      .observe(logbook, { childList: true });
+  }
 
   setupShowMoreToggle();
 });
