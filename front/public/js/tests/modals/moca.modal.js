@@ -251,19 +251,14 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
             <span class="whitespace-nowrap">Cancelar</span>
           </button>
 
-          <button id="btnSaveMOCA"
-            class="flex-1 flex items-center justify-center gap-3
-                   px-4 py-3 rounded-2xl bg-[#3350A9] text-white
-                   font-regular hover:bg-[#2a4190] transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+          <button id="btnSaveMOCA" class="btn-save">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="none" stroke="currentColor" stroke-width="1.5"
+                    d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
             </svg>
             <span class="whitespace-nowrap">Guardar</span>
           </button>
+
 
         </div>
       </div>
