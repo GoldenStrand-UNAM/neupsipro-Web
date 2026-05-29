@@ -47,6 +47,10 @@ class usersRepository {
   }
   async editUserProtocol ({ _id_user, _protocol }) {
     throw new Error('editUserProtocol() must be implemented');
+    throw new Error('Most be implemented');
+  }
+  async fetchUserForEdit ({ _id_user }) {
+    throw new Error('fetchUserForEdit() must be implemented');
   }
 }
 module.exports = usersRepository;

@@ -20,7 +20,7 @@ class ImpForumRepository extends forumRepository {
                 p.content,
                 p.image,
                 p.time_and_date,
-                CONCAT(u.first_name, ' ', u.lastname_p, ' ', u.lastname_m) AS full_name,
+                CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
                 u.profile_photo
             FROM publication p
             INNER JOIN users u 
