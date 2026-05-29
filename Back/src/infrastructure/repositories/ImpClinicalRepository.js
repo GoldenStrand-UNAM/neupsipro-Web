@@ -107,8 +107,10 @@ WHERE ur.id_clinic_user = ?
 LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
-    FROM user_relation ur
-    WHERE ur.id_clinic_user = ?;
+      FROM user_relation ur
+      INNER JOIN users p ON ur.id_user = p.id_user
+      WHERE ur.id_clinic_user = ?
+        AND p.eliminated = 0;
   `, [id_user]);
 
     const totalPages = Math.ceil(total / limit);
