@@ -141,7 +141,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       await connection.query(
         `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.password, user.email]
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.passwordHash, user.email]
       );
 
       await connection.query(
