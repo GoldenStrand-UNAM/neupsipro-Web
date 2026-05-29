@@ -17,7 +17,8 @@
                     Link del contrato clínico
                 </label>
                 <div class="search-input">
-                    <input id="editContractLinkInput" type="url" placeholder="https://drive.google.com/..." class="search-input_field" maxlength="500" />
+                    <input id="editContractLinkInput" type="url" placeholder="https://drive.google.com/..." class="search-input_field" maxlength="250" />
+                    <span id="charContractLink" class="text-xs text-gray-400 block text-right mt-1">0/250</span>
                 </div>
             </div>
 
@@ -27,6 +28,7 @@
                 </label>
                 <textarea id="editNeuropsychInput" rows="5" maxlength="2000" placeholder="Descripción del perfil neuropsicológico..."
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+                    <span id="charNeuroProfile" class="text-xs text-gray-400 block text-right mt-1">0/2000</span>
             </div>
 
             <p class="text-xs text-gray-400">Deja los campos vacíos para borrar su contenido.</p>
@@ -68,12 +70,28 @@
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
     function hideError()    { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
 
+    setupCounter('editContractLinkInput', 'charContractLink');
+    setupCounter('editNeuropsychInput', 'charNeuroProfile');
+
     function openModal() {
         hideError();
         inputLink.value = data.contractLink || '';
         inputProfile.value = data.neuroProfile || '';
+        inputLink.dispatchEvent(new Event('input'));
+        inputProfile.dispatchEvent(new Event('input'));
         modal.classList.remove('hidden');
     }
+
+    function setupCounter(inputId, counterId) {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        const max = input.getAttribute('maxlength');
+        input.addEventListener('input', () => {
+            counter.textContent = `${input.value.length}/${max}`;
+        });
+    }
+
 
     btnOpenContract?.addEventListener('click', openModal);
     btnOpenProfile?.addEventListener('click', openModal);
