@@ -9,6 +9,16 @@ class modifyProtocolController {
       const { id_user } = req.params;
       const { protocol } = req.body;
 
+      const VALID_PROTOCOLS = ['Clinical', 'Research'];
+
+      if (!protocol) {
+        return res.status(400).json({ error: 'protocol is required' });
+      }
+
+      if (!VALID_PROTOCOLS.includes(protocol)) {
+        return res.status(400).json({ error: `Protocolo inválido. Debe ser: ${VALID_PROTOCOLS.join(' o ')}` });
+      }
+
       const updated = await this.modifyProtocolUseCase.execute({
         id_user,
         protocol,
