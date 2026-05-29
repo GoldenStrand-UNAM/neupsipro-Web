@@ -1,0 +1,31 @@
+@startuml diagrama de actividades REY
+
+title REY
+
+|User|
+start
+:Opens REY test card;
+:Selects an option\nRegister / Modify / Consult;
+
+if (Option selected?) then (Consult)
+  |System|
+  :Fetches and displays existing results;
+  |User|
+  :Exits;
+  stop
+else (Register or Modify)
+  :Enters scores and times per area\nR-C, R-MCp, R-MLp;
+  |System|
+  :Calculates live percentiles\nusing normative tables\nby education block and age range;
+  |User|
+  if (Wants to save?) then (yes)
+    |System|
+    :Saves results;
+    stop
+  else (no)
+    :Exits;
+    stop
+  endif
+endif
+
+@enduml

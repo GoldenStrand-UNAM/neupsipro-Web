@@ -1,0 +1,32 @@
+@startuml diagrama de actividades BANFE
+
+title BANFE
+
+|User|
+start
+:Opens BANFE test card;
+:Selects an option\nRegister / Modify / Consult;
+
+if (Option selected?) then (Consult)
+  |System|
+  :Fetches and displays existing results;
+  |User|
+  :Exits;
+  stop
+else (Register or Modify)
+  :Enters scores and notes;
+  |System|
+  :Shows live interpretation per area;
+  :Updates total score in real time;
+  |User|
+  if (Wants to save?) then (yes)
+    |System|
+    :Saves results;
+    stop
+  else (no)
+    :Exits;
+    stop
+  endif
+endif
+
+@enduml
