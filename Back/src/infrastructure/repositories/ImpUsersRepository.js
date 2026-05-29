@@ -83,7 +83,6 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
-
   async postUser ({
     idRole,
     userName,
@@ -180,7 +179,7 @@ class ImpUsersRepository extends usersRepository {
       connection.release();
     }
   }
-
+  
   async editUser ({
     id_user,
     userName,
@@ -272,38 +271,7 @@ class ImpUsersRepository extends usersRepository {
     }
   }
 
-  async softDeleteUser ({ id_user }) {
-    const [result] = await db.query(
-      `UPDATE users 
-        SET eliminated = 1 
-      WHERE id_user = ? 
-        AND eliminated = 0`,
-      [id_user]
-    );
-    return result.affectedRows > 0;
-  }
-  async editUserState ({ id_user, state }) {
-    const [result] = await db.query(
-      `UPDATE user_info 
-          SET state = ?
-        WHERE id_user = ?`,
-      [state, id_user]
-    );
   
-    if (result.affectedRows === 0) {
-      throw new Error('No se pudo actualizar el estatus del usuario');
-    }
-  
-    const [rows] = await db.query(
-      `SELECT id_user, state
-        FROM user_info 
-        WHERE id_user = ?`,
-      [id_user]
-    );
-  
-    return rows[0];
-  }
-
   async fetchUserForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
@@ -336,6 +304,39 @@ class ImpUsersRepository extends usersRepository {
     );
   
     return rows[0] || null;
+  }
+
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
+  }
+
+  async editUserProtocol ({ id_user, protocol }) {
+    const [result] = await db.query(
+      `UPDATE user_info 
+          SET protocol = ?
+        WHERE id_user = ?`,
+      [protocol, id_user]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('No se pudo actualizar el protocolo del usuario');
+    }
+
+    const [rows] = await db.query(
+      `SELECT id_user, protocol
+        FROM user_info 
+        WHERE id_user = ?`,
+      [id_user]
+    );
+
+    return rows[0];
   }
 }
 module.exports = ImpUsersRepository;
