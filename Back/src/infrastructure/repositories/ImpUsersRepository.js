@@ -271,6 +271,40 @@ class ImpUsersRepository extends usersRepository {
     }
   }
 
+  
+  async fetchUserForEdit ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT 
+          u.id_user, 
+          u.user_name, 
+          u.first_name, 
+          u.lastname_p, 
+          u.lastname_m,
+          u.email, 
+          u.birthdate, 
+          u.gender, 
+          u.profile_photo,
+          ui.neuro_status,
+          ui.base_patology, 
+          ui.modality, 
+          ui.reference_number,
+          ui.amputation_date, 
+          ui.amputation_level, 
+          ui.laterality, 
+          ui.prosthetist,
+          ui.neuro_entry_date, 
+          ui.group_intervention, 
+          ui.phone,
+          ur.id_clinic_user
+        FROM users u
+        LEFT JOIN user_info ui     ON ui.id_user = u.id_user
+        LEFT JOIN user_relation ur ON ur.id_user = u.id_user AND ur.type = 'assigned'
+      WHERE u.id_user = ? AND u.eliminated = 0`,
+      [id_user]
+    );
+  
+    return rows[0] || null;
+  }
 
   async softDeleteUser ({ id_user }) {
     const [result] = await db.query(
