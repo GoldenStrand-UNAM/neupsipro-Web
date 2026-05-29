@@ -11,13 +11,13 @@ class clinicalDashboardDTO {
 
 class numberUsersWithClinicalDTO {
   constructor (numbers) {
-    this.total = numbers.total_users;
-    this.discharged = numbers.discharged;
-    this.inIntervention = numbers.in_intervention;
-    this.standBy = numbers.stand_by;
-    this.clinical = numbers.clinical;
-    this.research = numbers.research;
-    this.noProtocol = numbers.no_protocol;
+    this.total = numbers.total_users || 0;
+    this.discharged = numbers.discharged || 0;
+    this.inIntervention = numbers.in_intervention || 0;
+    this.standBy = numbers.stand_by || 0;
+    this.clinical = numbers.clinical || 0;
+    this.research = numbers.research || 0;
+    this.noProtocol = numbers.no_protocol || 0;
   }
 }
 
