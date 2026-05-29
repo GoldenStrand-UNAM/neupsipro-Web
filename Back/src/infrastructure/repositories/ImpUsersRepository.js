@@ -39,6 +39,7 @@ class ImpUsersRepository extends usersRepository {
       WHERE l.id_user = ?;`,
       [id_user]
     );
+    if (!userData || userData.legth === 0) return userData.map(row => new User(row));
     const uncrypted = userData.map(row => crypt(row));
     return uncrypted.map(row => new User(row));
   }
