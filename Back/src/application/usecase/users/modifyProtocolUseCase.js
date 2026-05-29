@@ -15,6 +15,10 @@ class modifyProtocolUseCase {
     if (!user || user.length === 0) {
       throw new Error('User not found');
     }
+    const VALID_PROTOCOLS = ['Clinical', 'Research'];
+    if (!VALID_PROTOCOLS.includes(protocol)) {
+      throw new Error(`Invalid protocol. Must be one of: ${VALID_PROTOCOLS.join(', ')}`);
+    }
 
 
     const updated =
