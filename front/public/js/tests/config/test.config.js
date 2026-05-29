@@ -48,4 +48,18 @@ const TEST_REGISTRY = {
       `/api/users/${idUser}/age`,
   },
 
+    // NIHS
+
+  5: {
+    name: 'NIH',
+    openRegister: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'register'),
+    openModify: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'modify'),
+    openConsult: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'consult'),
+    endpoint: (idUser, idApplication) =>
+      `/api/users/${idUser}/applications/${idApplication}/tests/5/results`,
+  },
+
 };
