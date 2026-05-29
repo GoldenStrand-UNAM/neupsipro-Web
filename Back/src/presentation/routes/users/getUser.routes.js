@@ -165,6 +165,7 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => stateController.modifyState(req, res)
   );
  
+  router.patch(
     '/:id_user/protocol',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
