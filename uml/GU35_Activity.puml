@@ -1,0 +1,19 @@
+@startuml ModifyStateActivity
+title Modify User Status - Activity Diagram
+
+start
+:Consult user;
+:Click on "Estatus" field;
+:System shows modal with status options;
+:Select new status (Activo / En espera / Alta / Rechazado);
+
+if (Confirm change?) then (yes)
+  :Update status;
+  :Show confirmation;
+else (no)
+  :Close modal;
+endif
+
+stop
+
+@enduml

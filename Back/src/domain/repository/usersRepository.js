@@ -39,7 +39,11 @@ class usersRepository {
   async softDeleteUser ({ _id_user }) {
     throw new Error('softDeleteUser() must be implemented');
   }
+  async editUserState ({ _id_user, _state }) {
+    throw new Error('editUserState() must be implemented');
+  }
   async editUser (payload) {
+    throw new Error('editUser() must be implemented');
     throw new Error('Must be implemented');
   }
   async fetchUserSnapshot ({ id_user }) {
