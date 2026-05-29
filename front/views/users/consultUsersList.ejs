@@ -101,9 +101,9 @@ const LIMIT       = 6;
 let searchQuery   = "";
 let debounceTimer;
 
-if (sessionStorage.getItem('usuarioGuardado') === 'true') {
+if (sessionStorage.getItem('userSaved') === 'true') {
     showToast('Usuario guardado correctamente');
-    sessionStorage.removeItem('usuarioGuardado');
+    sessionStorage.removeItem('userSaved');
 }
 
 // = ====  Fetch===========

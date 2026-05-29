@@ -613,10 +613,7 @@
       const data = await res.json();
 
       if (res.ok) {
-        sessionStorage.setItem('pendingToast', JSON.stringify({
-          message: 'Usuario modificado correctamente',
-          type: 'success'
-        }));
+        sessionStorage.setItem('modifiedUser', 'true');
         window.location.href = `/users/${window.__USER_ID__}`;
       }
       else if (res.status === 429) {
