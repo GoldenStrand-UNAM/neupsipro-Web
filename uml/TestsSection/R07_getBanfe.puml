@@ -1,0 +1,67 @@
+@startuml Get_BANFE
+
+actor "Clinic User" as USR
+participant "banfe.modal.js" as BMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getBANFEController" as TCTRL
+participant "getBANFEResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card BANFE]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nModificar y Consultar habilitados\n(test.status === 'Calificada')
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> BMODAL : config.openModify() o config.openConsult()\n→ openBANFEModal(idUser, idApplication, test, mode)
+
+BMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/\naplicaciones/:id_application/\npruebas/1/resultados/:id_results
+
+UROUTE -> TCTRL : getBANFEController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchBANFEResult({ id_results })
+RREPO -> DB : SELECT br.*,\n       tr.status,\n       tr.date_applied\nFROM banfe_results br\nJOIN test_results tr ON br.id_results = tr.id_results\nWHERE br.id_results = ?
+DB --> RREPO : { banfe row } | null
+
+alt result not found (null)
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'BANFE result not found'
+    TCTRL --> BMODAL : HTTP 404 { error }
+    BMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw banfe_results row
+UC_GET -> UC_GET : map row → BanfeResultsDTO\n{ idResults, idTest, status,\n  dateApplied, areas: { orbitFrontal,\n  prefrontalBefore, dLateral },\n  scoreTotal, notes }
+UC_GET --> TCTRL : BanfeResultsDTO
+TCTRL --> BMODAL : HTTP 200 { data: BanfeResultsDTO }
+
+== Renderizar modal ==
+
+BMODAL -> BMODAL : merge fetchedTest = { ...test, ...json.data }\nconstruye prefill desde fetchedTest.areas
+
+alt mode === 'consult'
+    BMODAL -> BMODAL : buildConsultHTML(fetchedTest)\ncampos solo lectura\nfecha, 3 áreas, total, notas
+    BMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    BMODAL -> BMODAL : buildFormHTML('modify', prefill)\ninputs con valores precargados
+    BMODAL --> USR : Modal modificar visible\ninputs editables con datos existentes\n[Cancelar] [Guardar]
+end
+
+note right of BMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_BANFE desde
+  "Guardar resultados"
+end note
+
+@enduml

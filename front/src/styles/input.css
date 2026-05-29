@@ -22,4 +22,9 @@
 
 @import "./components/organisms/_modal-tests.css";
 
+html:has(#sidebar),
+body:has(#sidebar) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 

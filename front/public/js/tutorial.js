@@ -1,4 +1,21 @@
-/* global showToast, tutorialElements */
+
+function lockScroll () {
+  document.querySelectorAll('*').forEach(el => {
+    const cs = window.getComputedStyle(el);
+    if (cs.overflowY === 'auto' || cs.overflowY === 'scroll' ||
+        cs.overflow  === 'auto' || cs.overflow  === 'scroll') {
+      el.dataset.scrollLock = el.style.overflowY || '';
+      el.style.overflowY = 'hidden';
+    }
+  });
+}
+
+function unlockScroll () {
+  document.querySelectorAll('[data-scroll-lock]').forEach(el => {
+    el.style.overflowY = el.dataset.scrollLock || '';
+    delete el.dataset.scrollLock;
+  });
+}
 
 // eslint-disable-next-line no-unused-vars
 async function startTutorial () {
@@ -31,6 +48,18 @@ async function startTutorial () {
       nextBtnText: 'Siguiente',
       prevBtnText: 'Anterior',
       doneBtnText: 'Finalizar',
+      onHighlightStarted: (element) => {
+        if (element) {
+          element.scrollIntoView({ behavior: 'instant', block: 'center' });
+        }
+        lockScroll();
+      },
+      onDeselected: () => {
+        unlockScroll();
+      },
+      onDestroyed: () => {
+        unlockScroll();
+      },
       steps: steps
         .filter(s => !elements[s.step_order] || document.querySelector(elements[s.step_order]))
         .map(s => ({

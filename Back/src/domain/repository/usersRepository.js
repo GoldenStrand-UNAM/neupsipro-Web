@@ -37,6 +37,11 @@ class usersRepository {
   }
   async editUserState ({ _id_user, _state }) {
     throw new Error('editUserState() must be implemented');
+  async editUser (payload) {
+    throw new Error('Most be implemented');
+  }
+  async fetchUserForEdit ({ _id_user }) {
+    throw new Error('fetchUserForEdit() must be implemented');
   }
 }
 module.exports = usersRepository;
