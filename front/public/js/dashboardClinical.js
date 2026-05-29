@@ -259,7 +259,7 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     <h2 class="text-base font-bold text-gray-700 mb-3">Hoy:</h2>
       ${listToday.map (ref => `
         <p class="text-gray-500 italic"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
             ${escapeHtml(ref.issue)}
           </span>
         </p>
@@ -273,7 +273,7 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     <h2 class="text-base font-bold text-gray-700 mb-3">Mañana:</h2>
       ${listTomorrow.map (ref => `
         <p class="text-regular text-gray-500"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
             ${escapeHtml(ref.issue)}
           </span>
         </p>
@@ -286,8 +286,8 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     otherContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Próximas:</h2>
       ${listOther.map (ref => `
-        <p class="relative group text-gray-500 italic hover:-translate-y-0.5 hover: hover:brightness-[1.02]"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+        <p class="relative group text-gray-500 italic"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
             ${escapeHtml(ref.issue)}
           </span>
         </p>
