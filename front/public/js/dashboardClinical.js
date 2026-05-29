@@ -211,9 +211,12 @@ async function loadUserInfoPanel (user) {
                             <p class="font-bold text-gray-800 truncate">${escapeHtml(data.fullName)}</p>
                             <p class="text-xs text-gray-500 mt-0.5">${escapeHtml(ageStr)}</p>
                         </div>
-                        <span class="text-[10px] uppercase tracking-wider font-bold text-[#3350A9] bg-white border border-[#3350A9]/30 rounded px-2 py-0.5">
-                            ${escapeHtml(data.referenceNumber)}
-                        </span>
+                        <div class="flex items-center gap-1">
+                          <span class="text-sm text-gray-500 font-medium">Folio: </span>
+                          <span class="text-[10px] uppercase tracking-wider font-bold text-[#3350A9] bg-white border border-[#3350A9]/30 rounded px-2 py-0.5">
+                              ${escapeHtml(data.referenceNumber)}
+                          </span>
+                      </div>
                     </div>
 
                     <!-- Info rows -->
