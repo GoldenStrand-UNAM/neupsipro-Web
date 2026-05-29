@@ -461,18 +461,16 @@ class impTestResultsRepository extends resultRepository {
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
   // Use by REY to determine the percentil
-  async fetchUserSchooling ({ id_user }) {
-    const [rows] = await db.query(
-      `SELECT ii.schooling
-       FROM initial_interview ii
-       INNER JOIN user_relation ur ON ii.id_user_relation = ur.id_user_relation
-       WHERE ur.id_user = ?
-       LIMIT 1`,
-      [id_user]
-    );
-    return rows.length ? rows[0].schooling : null;
-  }
-
+async fetchUserSchooling ({ id_user }) {
+  const [rows] = await db.query(
+    `SELECT schooling
+     FROM user_info
+     WHERE id_user = ?
+     LIMIT 1`,
+    [id_user]
+  );
+  return rows.length ? rows[0].schooling : null;
+}
   // Fetch birthdate of user.
   async fetchUserAge ({ id_user }) {
     const [rows] = await db.query(
