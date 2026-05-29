@@ -35,5 +35,11 @@ class usersRepository {
   async softDeleteUser ({ _id_user }) {
     throw new Error('softDeleteUser() must be implemented');
   }
+  async editUser (payload) {
+    throw new Error('Most be implemented');
+  }
+  async fetchUserForEdit ({ _id_user }) {
+    throw new Error('fetchUserForEdit() must be implemented');
+  }
 }
 module.exports = usersRepository;
