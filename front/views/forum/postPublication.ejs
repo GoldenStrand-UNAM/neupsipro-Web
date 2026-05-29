@@ -251,4 +251,21 @@ form.addEventListener('submit', async (e) => {
   });
   
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const editorBody = document.querySelector('.editor-body');
+
+    editorBody.addEventListener('paste', (e) => {
+        e.preventDefault();
+
+        let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+
+        document.execCommand('insertText', false, text);
+    });
+
+    editorBody.addEventListener('drop', (e) => {
+        e.preventDefault();
+    });
+});
+</script>
 </html>
