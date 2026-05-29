@@ -887,3 +887,10 @@ ALTER TABLE user_clinical
     MODIFY COLUMN hours INT NULL;
     
 ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);
+
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(80) NOT NULL,
+    MODIFY COLUMN finish_date varchar(80) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(160) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(88) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(115) NULL;

@@ -84,31 +84,29 @@ class ImpClinicalRepository extends clinicalRepository {
   WHERE u.id_user = ?;`, [id_user]);
     if(!clinicalData || clinicalData.length === 0)
       return clinicalData.map(row => new Clinical(row));
-    const uncrypted = clinicalData.map(row => uncrypt.uncryptClinical(row));
-    console.log(clinicalData);
-    console.log(uncrypted);
-    return uncrypted;
+    return clinicalData.map(row => new Clinical(uncrypt.uncryptClinical(row)));
   }
 
   async fetchPatientsAssigned ({ id_user, page, limit }) {
     // Calculate offset for pagination
     const offset = (page - 1) * limit;
 
-    const [patientsData] = await db.query (`SELECT 
-    p.id_user,
-    p.first_name, 
-    p.lastname_p, 
-    p.lastname_m,
-    ui.state,
-    ui.reference_number,
-    ur.assignment_date,
-    ur.type
-FROM user_relation ur
-INNER JOIN users p ON ur.id_user = p.id_user
-LEFT JOIN user_info ui ON p.id_user = ui.id_user
-WHERE ur.id_clinic_user = ? 
-  AND p.eliminated = 0 
-LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
+    const [patientsData] = await db.query (`
+    SELECT 
+      p.id_user,
+      p.first_name, 
+      p.lastname_p, 
+      p.lastname_m,
+      ui.state,
+      ui.reference_number,
+      ur.assignment_date,
+      ur.type
+    FROM user_relation ur
+    INNER JOIN users p ON ur.id_user = p.id_user
+    LEFT JOIN user_info ui ON p.id_user = ui.id_user
+    WHERE ur.id_clinic_user = ? 
+      AND p.eliminated = 0 
+    LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
     FROM user_relation ur
@@ -117,8 +115,17 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
 
     const totalPages = Math.ceil(total / limit);
 
+    const toReturn = {};
+      
+    if (!patientsData && patientsData.length === 0)
+      return {
+        patients: patientsData.map(row => new ClinicalPatient(row)),
+        totalPages,
+        page,
+      };
+    const uncrypted = patientsData.map(row => uncrypt.uncryptPatients(row));
     return {
-      patients: patientsData.map(row => new ClinicalPatient(row)),
+      patients: uncrypted.map(row => new ClinicalPatient(row)),
       totalPages,
       page,
     };
@@ -180,21 +187,6 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     } finally {
       connection.release();
     }
-  }
-
-  async checkDuplicate (user) {
-    const [rows] = await db.query (
-      `SELECT *
-          FROM users
-          WHERE id_role = '3'
-          AND first_name = ?
-          AND lastname_p = ?
-          AND (lastname_m = ? OR (? IS NULL AND lastname_m IS NULL))
-          AND birthdate = ?
-          AND eliminated = '0';`,
-      [user.firstName, user.lastnameP, user.lastnameM, user.lastnameM, user.birthdate]
-    );
-    return rows[0];
   }
 }
 module.exports = ImpClinicalRepository;
