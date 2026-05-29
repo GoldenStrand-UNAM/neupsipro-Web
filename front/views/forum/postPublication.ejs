@@ -134,6 +134,7 @@
   const previewName = document.getElementById('previewName');
   const titleInput = document.getElementById('titleInput');
   const titleCount = document.getElementById('titleCount');
+  const btnPublish = document.getElementById('btnPublish')
 
   // Xss Injection Prevention
   function escapeHTML(text) {
@@ -221,7 +222,11 @@
         body: formData,
       });
 
+      btnPublish.querySelector('span').textContent = 'Cargando...';
+
       const data = await res.json();
+
+
 
       if (res.ok) {
         sessionStorage.setItem('pendingToast', JSON.stringify({ 
