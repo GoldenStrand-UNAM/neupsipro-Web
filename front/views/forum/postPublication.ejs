@@ -241,6 +241,7 @@
           res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 
           'Error al publicar';
         showToast(data.error || fallback, 'error');
+        btnSave.querySelector('span').textContent = 'Guardar';
       }
     } catch (error) {
       showToast('Error de red. Intenta de nuevo más tarde', 'error');

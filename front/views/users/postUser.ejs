@@ -548,6 +548,7 @@
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
+    const btnSave = document.getElementById('btnSave');
 
     function escapeHTML(text) {
       return text
@@ -604,18 +605,23 @@
         body: formData,
       });
 
+      btnSave.querySelector('span').textContent = 'Cargando...';
       const data = await res.json();
+      console.log(res.status);
 
       if (res.ok) {
         sessionStorage.setItem('userSaved', 'true');
         window.location.href = '/users';
       } else if (res.status === 429) {
           showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
+          btnSave.querySelector('span').textContent = 'Guardar';
       }else {
         showToast((data.error || 'Error desconocido'), 'error');
+        btnSave.querySelector('span').textContent = 'Guardar';
       }
       } catch (error) {
       showToast('Error de conexión');
+      btnSave.querySelector('span').textContent = 'Guardar';
       }
     });
 
