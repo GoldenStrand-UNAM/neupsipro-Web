@@ -64,13 +64,15 @@ class ImpAppointmentRepository extends appointmentRepository {
   async deleteUpcomingByUser ({ id_user }) {
     //  Find the upcoming appointment id and its user_relation id
     const [rows] = await db.query(
-      `SELECT a.id_appointment
-        FROM appointment a
-        JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
-        WHERE ur.id_user = ?
-          AND ur.type = 'appointment'
-          AND a.date_time >= NOW()
-        LIMIT 1`,
+      `SELECT 
+    ur.id_user_relation,
+    a.id_appointment    
+FROM user_relation ur
+LEFT JOIN appointment a ON ur.id_user_relation = a.id_user_relation 
+WHERE ur.id_user = '580e303e-41b9-4fb7-b276-66e7a74eb8bb'
+  AND ur.type = 'appointment'
+ORDER BY a.date_time ASC
+LIMIT 1;`,
       [id_user]
     );
 
@@ -78,7 +80,7 @@ class ImpAppointmentRepository extends appointmentRepository {
       return false;
     }
 
-    const { id_appointment } = rows[0];
+    const { id_user_relation, id_appointment } = rows[0];
 
     // Delete the appointment
     await db.query(
@@ -86,6 +88,7 @@ class ImpAppointmentRepository extends appointmentRepository {
       [id_appointment]
     );
 
+    await db.query('Delete from user_relation where id_user_relation = ? AND type = \'appointment\'', [id_user_relation]);
     return true;
   }
   async fecthAppointmentWithClinical ({ idClinicalUser }) {
