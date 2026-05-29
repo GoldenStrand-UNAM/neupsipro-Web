@@ -294,7 +294,7 @@ function reyInfoBanner (schoolingData, ageData, prefill) {
                  0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981
                  0 0 0 6.75 15.75v-1.5"/>
       </svg>
-      <div class="flex flex-col">
+      <div class="flex flex-col flex-1">
         <span class="text-sm font-medium text-blue-700">
           Escolaridad: ${escapeHTML(schoolingData.schooling)}
           (${schoolingData.years} años) —
@@ -304,6 +304,14 @@ function reyInfoBanner (schoolingData, ageData, prefill) {
           Edad: ${ageData.age} años — Rango: ${prefill.ageRange ?? '—'}
         </span>
       </div>
+      <a href="/assets/rey_interpretacion.pdf" target="_blank" rel="noopener"
+         title="Ver tabla de interpretaciones" class="shrink-0 text-blue-700 hover:text-blue-900 transition-colors">
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/>
+        </svg>
+      </a>
     </div>`;
   }
   return `
