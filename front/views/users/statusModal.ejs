@@ -88,6 +88,13 @@
     const user   = window.__USER_DATA__ || {};
     const idUser = user.idUser;
 
+    const displayToEnum = {
+        'Active':     'Active',
+        'Stand_by':   'Stand_by',
+        'Declined':   'Declined',
+        'Discharged': 'Discharged',
+    };
+
     function showError (msg) {
         errorBox.textContent = msg;
         errorBox.classList.remove('hidden');
