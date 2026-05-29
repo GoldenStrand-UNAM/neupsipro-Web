@@ -14,7 +14,7 @@ class Clinical {
     this.endDate = this.formatDate(data.finish_date);
     this.hours = data.hours;
   }
-    
+
   formatDate (rawDate) {
     if (!rawDate) return null;
     let date;
