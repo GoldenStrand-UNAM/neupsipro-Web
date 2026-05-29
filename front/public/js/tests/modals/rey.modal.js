@@ -477,8 +477,6 @@ function reySetupNotesCounter (notesInput, notesCount) {
   notesInput.addEventListener('input', () => {
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 200`;
-    notesCount.classList.toggle('text-red-500', len >= 200);
-    notesCount.classList.toggle('text-gray-400', len < 200);
   });
 }
 
