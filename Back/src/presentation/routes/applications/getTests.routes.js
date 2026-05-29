@@ -155,7 +155,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/5/results',
     authMiddleware.verifyToken,
-    permissionsMiddleware.requirePermission('Tests', 'writing'),
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => nihController.postResult(req, res)
   );
 
