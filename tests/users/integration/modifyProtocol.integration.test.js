@@ -91,7 +91,7 @@ describe('INTEGRATION — patch /users/:id_user/protocol', () => {
       .send({});
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe('(intermediate value) is not iterable'); 
+    expect(res.body.error).toBe('protocol is required');
   });
 
   test('must return 401 if not authenticated', async () => {
