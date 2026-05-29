@@ -137,6 +137,11 @@ async function fetchUsers() {
             return;
         }
 
+        if ((!data.users || data.users.length === 0) && currentPage > 1) {
+            currentPage--;
+            return fetchUsers();
+        }
+
         renderTable(data.users);
         renderPagination(data.totalPages, data.page);
 
