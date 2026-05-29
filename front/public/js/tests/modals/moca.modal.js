@@ -40,7 +40,7 @@ function buildMOCAConsultHTML (test) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">MoCA</h2>
+        <h2 class="modal__title">MOCA</h2>
         <button id="btnCloseMOCA" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -163,7 +163,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">MoCA — ${title}</h2>
+        <h2 class="modal__title">MOCA — ${title}</h2>
         <button id="btnCloseMOCA" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
