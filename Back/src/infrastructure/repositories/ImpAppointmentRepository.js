@@ -69,7 +69,7 @@ class ImpAppointmentRepository extends appointmentRepository {
     a.id_appointment    
 FROM user_relation ur
 LEFT JOIN appointment a ON ur.id_user_relation = a.id_user_relation 
-WHERE ur.id_user = '580e303e-41b9-4fb7-b276-66e7a74eb8bb'
+WHERE ur.id_user = ?
   AND ur.type = 'appointment'
 ORDER BY a.date_time ASC
 LIMIT 1;`,
