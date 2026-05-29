@@ -1,4 +1,5 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
+/* global buildModalFormActions, buildModalConsultActions, setModalSaveBusy */
 
 // ── Normative tables (client-side mirror for live display) ───────────────────
 // These are read-only copies — server always recalculates on save.
@@ -254,19 +255,7 @@ function buildREYConsultHTML (test) {
             ${notes ? escapeHTML(notes) : '—'}
           </span>
         </div>
-        <div class="flex justify-end pt-4 border-t border-gray-200">
-          <button id="btnCancelREY"
-            class="flex items-center gap-3 px-6 py-3
-                   border border-gray-300 rounded-2xl
-                   text-base hover:bg-gray-50 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-            Cerrar
-          </button>
-        </div>
+        ${buildModalConsultActions({ cancelId: 'btnCancelREY', label: 'Cerrar' })}
       </div>
     </div>`;
 }
@@ -401,26 +390,7 @@ function reyFormActions (prefill) {
           </div>
         </div>
         <p id="reyApiError" class="text-xs text-red-500 hidden"></p>
-        <div class="flex gap-3">
-          <button id="btnCancelREY"
-            class="flex-1 flex items-center justify-center gap-3
-                   px-4 py-3 border border-gray-300 rounded-2xl
-                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-            <span class="whitespace-nowrap">Cancelar</span>
-          </button>
-          <button id="btnSaveREY" class="btn-save">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-              <path fill="none" stroke="currentColor" stroke-width="1.5"
-                    d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
-            </svg>
-            <span class="whitespace-nowrap">Guardar</span>
-          </button>
-        </div>`;
+        ${buildModalFormActions({ cancelId: 'btnCancelREY', saveId: 'btnSaveREY' })}`;
 }
 
 // Assembles the full register / modify form from the individual pieces above.
@@ -564,6 +534,7 @@ function reyValidateAreas (areas, body) {
 // Sends the result to the server. Shows an error message if something fails.
 async function reySubmitResult ({ idUser, idApplication, body, apiError, closeModal }) {
   const config = TEST_REGISTRY[3];
+  setModalSaveBusy('btnSaveREY', true);
   try {
     const res  = await fetch(config.endpoint(idUser, idApplication), {
       method: 'POST',
@@ -584,6 +555,8 @@ async function reySubmitResult ({ idUser, idApplication, body, apiError, closeMo
     apiError.classList.remove('hidden');
     // eslint-disable-next-line no-console
     console.error('[REY] post error:', _err);
+  } finally {
+    setModalSaveBusy('btnSaveREY', false);
   }
 }
 
