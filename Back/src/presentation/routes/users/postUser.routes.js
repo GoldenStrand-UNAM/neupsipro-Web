@@ -4,8 +4,6 @@ const { apiLimiter , userLimiter } = require('../../../infrastructure/external/r
 const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
 const PostUserUseCase = require('../../../application/usecase/users/postUserUseCase');
 const postUserController = require('../../controller/users/postUser.controller');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 const HashingService = require('../../../infrastructure/external/hashing.service');
 
@@ -13,7 +11,7 @@ const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
 
   const router = express.Router();
 
@@ -22,8 +20,6 @@ module.exports = (authUseCase) => {
   const useCase = new PostUserUseCase(repository, hashingService);
   const controller = new postUserController(useCase);
 
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(
@@ -31,7 +27,7 @@ module.exports = (authUseCase) => {
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
-    (req, res) => res.render('users/postUser', { activePage: 'users' })
+    (req, res) => res.render('users/postUser', { activePage: 'users', tutorialModule: 'postUser'  })
   );
 
   router.post(

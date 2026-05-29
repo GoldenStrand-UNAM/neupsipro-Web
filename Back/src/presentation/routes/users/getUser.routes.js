@@ -5,8 +5,6 @@ const router = express.Router();
 
 const UserController = require('../../controller/users/getUser.controller');
 const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const impTestApplicationsRepository = require('../../../infrastructure/repositories/impTestApplicationRepository');
@@ -37,15 +35,13 @@ const ImpClinicRepository = require('../../../infrastructure/repositories/ImpCli
 const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
 const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
 
   const usersRepository    = new UsersRepository();
   const testAppRepository  = new impTestApplicationsRepository();
   const appointmentRepository = new ImpAppointmentRepository();
   const useCase            = new GetUserUseCase(usersRepository, testAppRepository, appointmentRepository);
   const controller = new UserController(useCase);
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   const testResultsRepository  = new impTestResultsRepository();
@@ -73,7 +69,7 @@ module.exports = (authUseCase) => {
 
   router.get(
     '/:id_user/applications/check-expiry',
-    authMiddleware.verifyToken,
+    authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => expiryController.checkExpiry(req, res)
   );

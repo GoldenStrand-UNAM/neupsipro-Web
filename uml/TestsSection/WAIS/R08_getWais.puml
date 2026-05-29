@@ -1,0 +1,67 @@
+@startuml Get_WAIS
+
+actor "Clinic User" as USR
+participant "wais.modal.js" as BMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getWAISController" as TCTRL
+participant "getWAISResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card WAIS]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nModificar y Consultar habilitados\n(test.status === 'Calificada')
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> BMODAL : config.openModify() o config.openConsult()\n→ openWAISModal(idUser, idApplication, test, mode)
+
+BMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/\naplicaciones/:id_application/\npruebas/2/resultados/:id_results
+
+UROUTE -> TCTRL : getWAISController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchWAISResult({ id_results })
+RREPO -> DB : SELECT wr.*,\n       tr.status,\n       tr.date_applied\nFROM wais_results wr\nJOIN test_results tr ON wr.id_results = tr.id_results\nWHERE wr.id_results = ?
+DB --> RREPO : { wais row } | null
+
+alt result not found (null)
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'WAIS result not found'
+    TCTRL --> BMODAL : HTTP 404 { error }
+    BMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw wais_results row
+UC_GET -> UC_GET : map row → WaisResultsDTO\n{ idResults, idTest, status,\n  dateApplied,\n  areas: { comVerbal, razonPerceptual,\n  memWork, veloProce },\n  scoreTotal, notes }
+UC_GET --> TCTRL : WaisResultsDTO
+TCTRL --> BMODAL : HTTP 200 { data: WaisResultsDTO }
+
+== Renderizar modal ==
+
+BMODAL -> BMODAL : merge fetchedTest = { ...test, ...json.data }\nconstruye prefill desde fetchedTest.areas
+
+alt mode === 'consult'
+    BMODAL -> BMODAL : buildConsultHTML(fetchedTest)\ncampos solo lectura\nfecha, 4 áreas, CI Total, notas
+    BMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    BMODAL -> BMODAL : buildFormHTML('modify', prefill)\ninputs con valores precargados
+    BMODAL --> USR : Modal modificar visible\ninputs editables con datos existentes\n[Cancelar] [Guardar]
+end
+
+note right of BMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_WAIS desde
+  "Guardar resultados"
+end note
+
+@enduml

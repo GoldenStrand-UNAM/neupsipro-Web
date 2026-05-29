@@ -29,7 +29,9 @@
 
                     <div>
                         <button id="btnPost" onclick="window.location.href='/forum/post'" class="btn-mini w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
-                            <img src="/assets/publicar.svg" alt="" class="w-5 h-5 invert" />
+                            <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
+                            </svg>
                             Publicar
                         </button>
                     </div>
@@ -91,7 +93,7 @@
                             <!-- Actions -->
                             <div class="flex justify-end mt-4 pt-3 border-t border-gray-100">
 
-                                <button class="flex items-center gap-1.5 text-s text-black hover:text-[#002B7A] transition-colors" onclick="window.location.href = '/construction'">
+                                <button class="flex items-center gap-1.5 text-s text-black hover:text-[#002B7A] transition-colors hidden" onclick="window.location.href = '/construction'">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
@@ -142,6 +144,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <script src="/js/sidebar.js"></script>
+    <script>window._canEliminate = <%- canEliminate %>;</script>
     <script src="/js/publicationModal.js"></script>
     <script src="/js/tutorial.js"></script>
     <script>
