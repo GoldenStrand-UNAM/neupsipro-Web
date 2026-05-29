@@ -40,6 +40,7 @@ function formatAppointmentDate (dateString) {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
+    timeZone: 'UTC'
   });
 }
 
@@ -97,6 +98,7 @@ function populateUserInfo (user) {
   document.getElementById('nextApt').textContent = user.nextAppointment
     ? formatAppointmentDate(user.nextAppointment.dateTime)
     : 'Sin cita programada';  document.getElementById('protocol').textContent = user.protocol || 'N/A';
+    console.log(formatAppointmentDate(user.nextAppointment));
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 
