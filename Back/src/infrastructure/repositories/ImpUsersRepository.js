@@ -190,5 +190,27 @@ class ImpUsersRepository extends usersRepository {
     );
     return result.affectedRows > 0;
   }
+
+  async editUserProtocol ({ id_user, protocol }) {
+    const [result] = await db.query(
+      `UPDATE user_info 
+          SET protocol = ?
+        WHERE id_user = ?`,
+      [protocol, id_user]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('No se pudo actualizar el protocolo del usuario');
+    }
+
+    const [rows] = await db.query(
+      `SELECT id_user, protocol
+        FROM user_info 
+        WHERE id_user = ?`,
+      [id_user]
+    );
+
+    return rows[0];
+  }
 }
 module.exports = ImpUsersRepository;
