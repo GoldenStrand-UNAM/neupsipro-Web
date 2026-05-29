@@ -3,7 +3,8 @@ const clinicalRepository = require('../../domain/repository/clinicalRepository')
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
 const ClinicalPatient = require('../../domain/entity/clinicalPatient');
-const Uncrypt = require('../crypt/clinical/getClinicals'); // 1. Importas la clase
+const Uncrypt = require('../crypt/clinical/getClinicals');
+// 1. Importas la clase
 const uncrypt = new Uncrypt();
 const { v4: uuidv4 } = require('uuid');
 
@@ -40,12 +41,10 @@ class ImpClinicalRepository extends clinicalRepository {
   }
 
   async countActivePatients () {
-    const [rows] = await db.query (
-      `SELECT COUNT(*) AS total
+    const [rows] = await db.query (`SELECT COUNT(*) AS total
             FROM users
             WHERE id_role = 3
-              AND eliminated = 0`,
-    );
+              AND eliminated = 0`);
     return rows[0]?.total ?? 0;
   }
   //get all clinical users
@@ -82,7 +81,7 @@ class ImpClinicalRepository extends clinicalRepository {
   FROM users u
   LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
   WHERE u.id_user = ?;`, [id_user]);
-    if(!clinicalData || clinicalData.length === 0)
+    if (!clinicalData || clinicalData.length === 0)
       return clinicalData.map(row => new Clinical(row));
     return clinicalData.map(row => new Clinical(uncrypt.uncryptClinical(row)));
   }
@@ -116,7 +115,7 @@ class ImpClinicalRepository extends clinicalRepository {
     const totalPages = Math.ceil(total / limit);
 
     const toReturn = {};
-      
+
     if (!patientsData && patientsData.length === 0)
       return {
         patients: patientsData.map(row => new ClinicalPatient(row)),

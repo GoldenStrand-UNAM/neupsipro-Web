@@ -11,7 +11,7 @@ class uncrypt {
 
     return {
       ...user,
-      full_name: full_name,
+      full_name,
       affiliation: crypt.decrypt(user.affiliation),
       activity: crypt.decrypt(user.activity),
     };
@@ -25,7 +25,7 @@ class uncrypt {
 
     return {
       ...user,
-      full_name: full_name,
+      full_name,
     };
   }
 
@@ -47,11 +47,11 @@ class uncrypt {
 
   uncryptPatients (user) {
     return {
-    ...user,
-    first_name: crypt.decrypt(user.first_name), 
-    lastname_p: crypt.decrypt(user.lastname_p), 
-    lastname_m: crypt.decrypt(user.lastname_m),
-    reference_number: crypt.decrypt(user.reference_number),
+      ...user,
+      first_name: crypt.decrypt(user.first_name),
+      lastname_p: crypt.decrypt(user.lastname_p),
+      lastname_m: crypt.decrypt(user.lastname_m),
+      reference_number: crypt.decrypt(user.reference_number),
     };
   }
 };
