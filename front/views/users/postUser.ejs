@@ -607,7 +607,7 @@
       const data = await res.json();
 
       if (res.ok) {
-        sessionStorage.setItem('usuarioGuardado', 'true');
+        sessionStorage.setItem('userSaved', 'true');
         window.location.href = '/users';
       } else if (res.status === 429) {
           showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
