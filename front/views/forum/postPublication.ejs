@@ -164,17 +164,32 @@
     titleCount.innerText = `${length}/${max}`;
   });
 
-  function limitContent(content) {
+function limitContent(content) {
     const limit = 500;
-    let text = content.innerText.replace(/\r\n/g, '\n');
+    
+    const html = content.innerHTML.trim();
+    if (html === '<br>' || html === '<br><br>' || html === '<div><br></div>') {
+      content.innerHTML = '';
+    }
+
+    let text = content.innerText || '';
+    if (text.endsWith('\n')) {
+      text = text.slice(0, -1);
+    }
 
     if (text.length > limit) {
-      content.innerText = text.substring(0, limit);
-      window.getSelection().selectAllChildren(content);
-      window.getSelection().collapseToEnd();
+      text = text.substring(0, limit);
+      content.innerText = text;
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(content);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
+    
     const counter = document.getElementById('charCount');
-    if (counter) counter.innerText = `${content.innerText.length}/${limit}`;
+    if (counter) counter.innerText = `${text.length}/${limit}`;
   }
 
   // Clean forms
