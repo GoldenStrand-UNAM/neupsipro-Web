@@ -1,5 +1,5 @@
 const express = require('express');
-const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+const { apiLimiter , userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const router = express.Router();
 
@@ -34,6 +34,16 @@ const ImpClinicRepository = require('../../../infrastructure/repositories/ImpCli
 
 const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
 const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
+const upload = require('../../../infrastructure/external/multer.service');
+const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
+const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
+const HashingService  = require('../../../infrastructure/external/hashing.service');
+ 
+const loadEditUserUseCase = require('../../../application/usecase/users/loadEditUserUseCase');
+const editUserUseCase = require('../../../application/usecase/users/editUserUseCase');
+const editUserController = require('../../controller/users/editUser.controller');
+const loadEditUserController = require('../../controller/users/loadEditUser.controller');
+
 
 module.exports = (authUseCase, authMiddleware) => {
 
@@ -66,6 +76,11 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const protocolUseCase = new modifyProtocolUseCase(usersRepository);
   const protocolController = new modifyProtocolController(protocolUseCase);
+  const hashingService  = new HashingService();
+  const loadEditUser = new loadEditUserUseCase(usersRepository);
+  const editUseCase = new editUserUseCase(usersRepository, hashingService);
+  const loadEditController = new loadEditUserController(loadEditUser);
+  const editController = new editUserController(editUseCase);
 
   router.get(
     '/:id_user/applications/check-expiry',
@@ -115,6 +130,25 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
+  );
+  
+  router.get(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => loadEditController.renderEditUser(req, res)
+  );
+ 
+  router.post(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    userLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    upload.single('profilePhoto'),
+    validateImageMiddleware,
+    s3UploadMiddleware,
+    (req, res) => editController.editUser(req, res)
   );
 
   router.patch(
