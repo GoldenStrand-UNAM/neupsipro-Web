@@ -142,10 +142,9 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
   // ── Notes counter ──────────────────────────────────────────────────────────
 
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 500`;
-    notesCount.classList.toggle('text-red-500', len >= 500);
-    notesCount.classList.toggle('text-gray-400', len < 500);
   });
 
   // ── Save ───────────────────────────────────────────────────────────────────
@@ -153,7 +152,12 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
   document.getElementById('btnSaveNIH').addEventListener('click', async () => {
     apiError.classList.add('hidden');
 
-    const notes  = notesInput.value.trim() || null;
+    const notes = notesInput.value.trim();
+    if (!notes) {
+      apiError.textContent = 'Las notas son requeridas';
+      apiError.classList.remove('hidden');
+      return;
+    }
     const config = TEST_REGISTRY[5];
 
     try {

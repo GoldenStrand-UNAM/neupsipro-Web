@@ -185,9 +185,8 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
             </label>
             <input
               id="inputMOCAScore"
-              type="number"
-              min="0"
-              max="30"
+              type="text"
+              inputmode="numeric"
               placeholder="0 – 30"
               value="${escapeHTML(String(prefill.score))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
@@ -283,10 +282,9 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
   // ── Notes counter ──────────────────────────────────────────────────────────
 
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 200`;
-    notesCount.classList.toggle('text-red-500', len >= 200);
-    notesCount.classList.toggle('text-gray-400', len < 200);
   });
 
   // ── Live final score + interpretation ─────────────────────────────────────
@@ -294,23 +292,12 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
 
   scoreInput.addEventListener('input', () => {
     scoreError.classList.add('hidden');
-
-    // Strip non-digit characters
-    if (!/^\d*$/.test(scoreInput.value)) {
-      scoreInput.value = scoreInput.value.replace(/\D/g, '');
-    }
+    scoreInput.value = scoreInput.value.replace(/\D/g, '').slice(0, 2);
+    const capped = parseInt(scoreInput.value, 10);
+    if (!isNaN(capped) && capped > 30) scoreInput.value = '30';
 
     const raw = Number(scoreInput.value);
-
     if (scoreInput.value === '' || isNaN(raw)) {
-      finalScore.textContent = '—';
-      interp.textContent     = '—';
-      return;
-    }
-
-    if (raw > 30) {
-      scoreError.textContent = 'El puntaje debe estar entre 0 y 30';
-      scoreError.classList.remove('hidden');
       finalScore.textContent = '—';
       interp.textContent     = '—';
       return;
@@ -330,8 +317,13 @@ function bindMOCAFormListeners (idUser, idApplication, schoolingYears, closeModa
     const raw = Number(scoreInput.value);
 
     // Client-side validation — server recalculates everything independently
-    if (scoreInput.value.trim() === '' || isNaN(raw) || raw < 0 || raw > 30) {
-      scoreError.textContent = 'Ingresa un puntaje válido entre 0 y 30';
+    if (scoreInput.value.trim() === '') {
+      scoreError.textContent = 'Llena todos los campos';
+      scoreError.classList.remove('hidden');
+      return;
+    }
+    if (isNaN(raw) || raw < 0 || raw > 30) {
+      scoreError.textContent = 'Ingresa un puntaje válido';
       scoreError.classList.remove('hidden');
       return;
     }
