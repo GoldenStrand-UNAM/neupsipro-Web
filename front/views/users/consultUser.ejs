@@ -9,6 +9,7 @@
 </head>
 
 <body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+    <script src="/js/main.js"></script>
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -393,6 +394,10 @@
 
     <script>
 
+    if (sessionStorage.getItem('modifiedUser') === 'true') {
+        showToast('Usuario modificado correctamente');
+        sessionStorage.removeItem('modifiedUser');
+    }
 
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
@@ -506,7 +511,6 @@
 
 
     <%- include('./deleteUserModal') %>
-// tutos
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
     <script>
         const tutorialElements = {
@@ -526,7 +530,6 @@
     <script src="/js/postApplication.js"></script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/consultUser.js"></script>    
-    <script src="/js/main.js"></script>
 
     <%- include('./createAppointmentModal') %>
     <%- include('./cancelAppointmentModal') %> 
