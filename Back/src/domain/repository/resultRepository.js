@@ -70,6 +70,21 @@ class resultRepository {
     throw new Error('saveWaisResult() not implemented');
   }
 
+  //========= Moca ========================
+
+  async fetchMocaResult ({ _id_results }) {
+    throw new Error('fetchMocaResult() not implemented');
+  }
+
+  async saveMocaResult ({
+    _id_results,
+    _score,
+    _interpretation,
+    _notes,
+  }) {
+    throw new Error('saveMocaResult() not implemented');
+  }
+
   //========= REY ========================
 
   // Fetch existing REY result for modify/consult prefill
@@ -100,6 +115,21 @@ class resultRepository {
   async fetchUserAge ({ _id_user }) {
     throw new Error('fetchUserAge() not implemented');
   }
+
+  //========= NIH ========================
+
+  // Fetch existing NIH result for modify/consult prefill
+  async fetchNIHResult ({ _id_results }) {
+    throw new Error('fetchNIHResult() not implemented');
+  }
+
+  // Upsert NIH notes into nih_results.
+  // Also updates test_results.status and date_applied.
+  async saveNIHResult ({ _id_results, _notes }) {
+    throw new Error('saveNIHResult() not implemented');
+
+  }
+
 
 }
 

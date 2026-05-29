@@ -98,6 +98,7 @@ async function startTutorial () {
             block: 'center',
           });
         }
+<<<<<<< HEAD
 
         lockScroll();
       },
@@ -112,6 +113,16 @@ async function startTutorial () {
         currentDriver = null;
       },
 
+=======
+        lockScroll();
+      },
+      onDeselected: () => {
+        unlockScroll();
+      },
+      onDestroyed: () => {
+        unlockScroll();
+      },
+>>>>>>> 8ca15d8d60971781a8cd2f58ac2573747844ce5c
       steps: steps
         .filter(
           s =>

@@ -11,6 +11,15 @@ class validation {
   }
 
   validate (param, requiredLength, label, required) {
+
+  const value = String(param).trim();
+
+  const emojiRegex =
+  /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+  if (emojiRegex.test(value)) {
+    throw new Error(`${label} no puede contener emojis`);
+  }
     if (param) {
       if (param.trim().length > requiredLength) {
         throw new Error(`${label} no puede superar los ${requiredLength} caracteres`);

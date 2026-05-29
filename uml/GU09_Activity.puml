@@ -1,0 +1,62 @@
+@startuml EditUserActivity
+title Modify User - Activity Diagram
+
+start
+
+:Consult user list;
+:Click on "Edit";
+
+if (User exists?) then (yes)
+
+    :System opens modal;
+    :Current values are pre-filled;
+
+    :Modify desired fields;
+
+    if (Cancel modification?) then (yes)
+
+        :Close modal without changes;
+        stop
+
+    else (no)
+
+        if (Required fields completed?) then (yes)
+
+            if (Input data valid?) then (yes)
+
+                :Send update request;
+
+                if (System update successful?) then (yes)
+
+                    :Update user information;
+                    :Show success confirmation;
+
+                else (no)
+
+                    :Show system/database error message;
+
+                endif
+
+            else (no)
+
+                :Show validation errors;
+
+            endif
+
+        else (no)
+
+            :Show required field warning;
+
+        endif
+
+    endif
+
+else (no)
+
+    :Show "User not found" message;
+
+endif
+
+stop
+
+@enduml
