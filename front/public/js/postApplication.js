@@ -77,7 +77,7 @@ async function saveApplication (user, ctx) {
   const name = inputAppName.value.trim();
 
   if (!name) {
-    showModalError('El nombre de la sesión es obligatorio');
+    showModalError('El nombre de la aplicación es obligatorio');
     return;
   }
   if (name.length > 20) {
