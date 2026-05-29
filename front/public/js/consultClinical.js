@@ -36,13 +36,10 @@ function populateUserInfo (user) {
   document.getElementById('clinicalName').textContent = user.name || 'Sin nombre';
   document.getElementById('activity').textContent = user.activity || 'N/A';
   document.getElementById('affiliation').textContent = user.affiliation || 'N/A';
-  document.getElementById('birthdate').textContent = user.birthdate
-    ? new Date(user.birthdate).toLocaleDateString() : 'N/A';
+  document.getElementById('birthdate').textContent = user.birthdate || 'N/A';
   document.getElementById('hours').textContent = user.hours || 'N/A';
-  document.getElementById('startDate').textContent = user.startDate
-    ? new Date(user.startDate).toLocaleDateString() : 'N/A';
-  document.getElementById('endDate').textContent = user.endDate
-    ? new Date(user.endDate).toLocaleDateString() : 'N/A';
+  document.getElementById('startDate').textContent = user.startDate || 'N/A';
+  document.getElementById('endDate').textContent = user.endDate || 'N/A';
   document.getElementById('emergencyName').textContent = user.emergencyName || 'N/A';
   document.getElementById('emergencyPhone').textContent = user.emergencyPhone || 'N/A';
   document.getElementById('emergencyRelation').textContent = user.emergencyRelation || 'N/A';

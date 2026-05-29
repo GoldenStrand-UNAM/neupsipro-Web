@@ -117,44 +117,50 @@
                 <!--Emergency Contact-->
                 <div id="emergencyContactCard" class="bg-[#BA8700]/30 rounded-4xl p-6 md:p-8 w-full flex flex-col gap-6 font-sans"> 
                     
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                        <svg class="w-6 h-6 md:w-7 md:h-7 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11V17"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14H15"/>
-                        </svg>
-                        <h3 class="text-2xl text-black font-bold"> Contacto de emergencia </h3>
-                    </div>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+        <svg class="w-6 h-6 md:w-7 md:h-7 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11V17"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14H15"/>
+        </svg>
+        <h3 class="text-2xl text-black font-bold"> Contacto de emergencia </h3>
+    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full md:px-10 xl:px-24">
-                        
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Nombre:</span>
-                            <span id="emergencyName" class="text-black text-lg md:text-xl whitespace-nowrap"></span>
-                        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full md:px-10 xl:px-24">
+        
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Nombre:</span>
+            </div>
+            <span id="emergencyName" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.38466C8.84711 3 9.24838 3.32135 9.35418 3.77443L10.3702 8.12921C10.4578 8.50486 10.2816 8.8893 9.93284 9.06363L7.74238 10.1589C9.2052 13.084 11.4552 15.334 14.3803 16.7968L15.4756 14.6064C15.6499 14.2576 16.0344 14.0814 16.41 14.169L20.7648 15.185C21.2179 15.2908 21.5392 15.6921 21.5392 16.1545V19C21.5392 20.3807 20.4199 21.5 19.0392 21.5C10.1812 21.5 3 14.3188 3 5.46083V5.5Z"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Teléfono:</span>
-                            <span id="emergencyPhone" class="text-black text-lg md:text-xl whitespace-nowrap "></span>
-                        </div>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.38466C8.84711 3 9.24838 3.32135 9.35418 3.77443L10.3702 8.12921C10.4578 8.50486 10.2816 8.8893 9.93284 9.06363L7.74238 10.1589C9.2052 13.084 11.4552 15.334 14.3803 16.7968L15.4756 14.6064C15.6499 14.2576 16.0344 14.0814 16.41 14.169L20.7648 15.185C21.2179 15.2908 21.5392 15.6921 21.5392 16.1545V19C21.5392 20.3807 20.4199 21.5 19.0392 21.5C10.1812 21.5 3 14.3188 3 5.46083V5.5Z"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Teléfono:</span>
+            </div>
+            <span id="emergencyPhone" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
-                                <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47585 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Parentesco:</span>
-                            <span id="emergencyRelation" class="text-black text-lg md:text-xl whitespace-nowrap "></span>
-                        </div>
-                    </div>
-                </div>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
+                    <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47757 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Parentesco:</span>
+            </div>
+            <span id="emergencyRelation" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
+    </div>
+</div>
                 <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
                     <div class="md:flex justify-between items-center">
                         <h2 class="text-2xl pt-7 p-3 font-medium">Usuarios relacionados</h2>

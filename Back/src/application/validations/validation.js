@@ -8,6 +8,14 @@ class validation {
 
   validate (param) {
     if (param.value) {
+      const value = String(param.value).trim();
+
+      const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+      if (emojiRegex.test(value)) {
+        throw new Error(`${param.label} no puede contener emojis`);
+      }
       if (param.value.trim().length > param.requiredLength) {
         throw new Error(`${param.label} no puede superar los ${param.requiredLength} caracteres`);
       } else //return crypt.encrypt(param);
