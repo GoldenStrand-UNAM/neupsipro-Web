@@ -1,5 +1,6 @@
 class User {
   constructor (data) {
+    console.log(data);
     this.idUser = data.id_user;
     this.photo = data.profile_photo;
     this.referenceNumber = data.reference_number;
