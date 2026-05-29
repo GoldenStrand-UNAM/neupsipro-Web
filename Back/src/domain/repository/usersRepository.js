@@ -35,5 +35,8 @@ class usersRepository {
   async softDeleteUser ({ _id_user }) {
     throw new Error('softDeleteUser() must be implemented');
   }
+  async editUserState ({ _id_user, _state }) {
+    throw new Error('editUserState() must be implemented');
+  }
 }
 module.exports = usersRepository;

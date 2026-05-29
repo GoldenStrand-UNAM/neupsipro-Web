@@ -186,5 +186,26 @@ class ImpUsersRepository extends usersRepository {
     );
     return result.affectedRows > 0;
   }
+  async editUserState ({ id_user, state }) {
+    const [result] = await db.query(
+      `UPDATE user_info 
+          SET state = ?
+        WHERE id_user = ?`,
+      [state, id_user]
+    );
+  
+    if (result.affectedRows === 0) {
+      throw new Error('No se pudo actualizar el estatus del usuario');
+    }
+  
+    const [rows] = await db.query(
+      `SELECT id_user, state
+        FROM user_info 
+        WHERE id_user = ?`,
+      [id_user]
+    );
+  
+    return rows[0];
+  }
 }
 module.exports = ImpUsersRepository;
