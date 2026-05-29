@@ -362,6 +362,52 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
+    // ================= NIH ==================
+
+  // Fetch existing NIH result by id_results for modify/consult prefill
+  async fetchNihResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT nr.*,
+            tr.status,
+            tr.date_applied
+     FROM nih_results nr
+     JOIN test_results tr ON nr.id_results = tr.id_results
+     WHERE nr.id_results = ?
+     LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  // Upserts into nih_results — works for register and modify.
+  async saveNihResult ({ id_results, notes }) {
+
+    // Update parent row status and application date
+    await db.query(
+      `UPDATE test_results
+     SET status       = 3,
+         date_applied = CURDATE()
+     WHERE id_results = ?`,
+      [id_results]
+    );
+
+    // ON DUPLICATE KEY covers the modify flow (row already exists)
+    await db.query(
+      `INSERT INTO nih_results (id_results, notes)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE
+       notes = VALUES(notes)`,
+      [id_results, notes]
+    );
+
+    // Return the saved row for DTO mapping
+    const [rows] = await db.query(
+      'SELECT * FROM nih_results WHERE id_results = ?',
+      [id_results]
+    );
+    return rows[0];
+  }
+
   // ================= schooling and age ==================
 
   // Fetch schooling level for a user from their initial interview.
