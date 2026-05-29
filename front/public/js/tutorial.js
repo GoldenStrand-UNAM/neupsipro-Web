@@ -1,5 +1,6 @@
 
 
+// helpers
 function lockScroll () {
   document.querySelectorAll('*').forEach(el => {
     const cs = window.getComputedStyle(el);
@@ -17,6 +18,19 @@ function unlockScroll () {
     delete el.dataset.scrollLock;
   });
 }
+
+function blockClicks (e) {
+  const isDriverEl = e.target.closest(
+    '.driver-popover, .driver-overlay, [data-driver-highlighted]'
+  );
+  if (!isDriverEl) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}
+
+function lockInteraction ()   { document.addEventListener('click', blockClicks, true); }
+function unlockInteraction () { document.removeEventListener('click', blockClicks, true); }
 
 // eslint-disable-next-line no-unused-vars
 async function startTutorial () {
@@ -49,17 +63,20 @@ async function startTutorial () {
       nextBtnText: 'Siguiente',
       prevBtnText: 'Anterior',
       doneBtnText: 'Finalizar',
+      disableActiveInteraction: true,
       onHighlightStarted: (element) => {
         if (element) {
           element.scrollIntoView({ behavior: 'instant', block: 'center' });
         }
           lockScroll();
+          lockInteraction();
         },
         onDeselected: () => {
           unlockScroll();
         },
         onDestroyed: () => {
           unlockScroll();
+          unlockInteraction();
         },
       steps: steps
         .filter(s => !elements[s.step_order] || document.querySelector(elements[s.step_order]))
