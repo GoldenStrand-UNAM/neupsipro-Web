@@ -17,7 +17,6 @@ class PostPublicationController {
         contenido,
         image,
       });
-
       response.status(201).json(publication);
     } catch (error) {
       if (error.message.includes('obligatorio') || error.message.includes('caracteres')) {

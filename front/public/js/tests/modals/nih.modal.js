@@ -86,18 +86,20 @@ function buildNIHFormHTML (mode, prefill) {
         <!-- Notes — only field for NIH -->
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Notas</label>
-          <textarea
-            id="inputNIHNotes"
-            rows="6"
-            maxlength="500"
-            placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="nihNotesCount" class="text-xs text-gray-400 text-right">
-            ${prefill.notes.length} / 500
-          </p>
+          <div class="relative">
+            <textarea
+              id="inputNIHNotes"
+              rows="6"
+              maxlength="500"
+              placeholder="Observaciones"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition resize-none pb-5"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <p id="nihNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
+              ${prefill.notes.length} / 500
+            </p>
+          </div>
         </div>
 
         <p id="nihApiError" class="text-xs text-red-500 hidden"></p>
@@ -142,10 +144,9 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
   // ── Notes counter ──────────────────────────────────────────────────────────
 
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 500`;
-    notesCount.classList.toggle('text-red-500', len >= 500);
-    notesCount.classList.toggle('text-gray-400', len < 500);
   });
 
   // ── Save ───────────────────────────────────────────────────────────────────
@@ -153,7 +154,12 @@ function bindNIHFormListeners (idUser, idApplication, closeModal) {
   document.getElementById('btnSaveNIH').addEventListener('click', async () => {
     apiError.classList.add('hidden');
 
-    const notes  = notesInput.value.trim() || null;
+    const notes = notesInput.value.trim();
+    if (!notes) {
+      apiError.textContent = 'Las notas son requeridas';
+      apiError.classList.remove('hidden');
+      return;
+    }
     const config = TEST_REGISTRY[5];
 
     try {

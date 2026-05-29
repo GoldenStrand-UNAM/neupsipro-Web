@@ -49,7 +49,7 @@
 
             <div class="search-input w-full relative">
               <input type="text" name="titulo" required maxlength="50" class="search-input_field" placeholder="Titulo..." id="titleInput">
-                <span id="titleCount" class="absolute bottom-0 right-2 text-xs text-gray-500"> 0/50 </span>
+                <span id="titleCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/50 </span>
             </div>
           </div>
           
@@ -134,6 +134,7 @@
   const previewName = document.getElementById('previewName');
   const titleInput = document.getElementById('titleInput');
   const titleCount = document.getElementById('titleCount');
+  const btnPublish = document.getElementById('btnPublish')
 
   // Xss Injection Prevention
   function escapeHTML(text) {
@@ -165,15 +166,16 @@
 
   function limitContent(content) {
     const limit = 500;
+    let text = content.innerText.replace(/\r\n/g, '\n');
 
-    if (content.innerText.length > limit) {
-        content.innerText = content.innerText.substring(0, limit);
-        window.getSelection().selectAllChildren(content);
-        window.getSelection().collapseToEnd();
+    if (text.length > limit) {
+      content.innerText = text.substring(0, limit);
+      window.getSelection().selectAllChildren(content);
+      window.getSelection().collapseToEnd();
     }
     const counter = document.getElementById('charCount');
     if (counter) counter.innerText = `${content.innerText.length}/${limit}`;
-}
+  }
 
   // Clean forms
   clearBtn.addEventListener('click', () => {
@@ -200,19 +202,26 @@
   });
 
   //  Submit
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const content = editor.innerText.trim();
+  const content = editor.innerText.replace(/\r\n/g, '\n').trim();
 
-    if (!content) {
-        showToast('El contenido es obligatorio', 'error');
-        return;
-    }
+  if (!content) {
+    showToast('El contenido es obligatorio', 'error');
+    return;
+  }
 
-    hiddenInput.value = editor.innerText;
+  if (content.length > 500) {
+    showToast('El contenido no puede superar los 500 caracteres', 'error');
+    return;
+  }
 
-    const formData = new FormData(form);
+  hiddenInput.value = content.slice(0, 500);
+  console.log('length enviada:', hiddenInput.value.length);
+
+  const formData = new FormData(form);
+  formData.set('contenido', hiddenInput.value); 
 
     try {
       const res = await fetch('/forum/post', {
@@ -221,7 +230,11 @@
         body: formData,
       });
 
+      btnPublish.querySelector('span').textContent = 'Cargando...';
+
       const data = await res.json();
+
+
 
       if (res.ok) {
         sessionStorage.setItem('pendingToast', JSON.stringify({ 
@@ -236,11 +249,29 @@
           res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 
           'Error al publicar';
         showToast(data.error || fallback, 'error');
+        btnSave.querySelector('span').textContent = 'Guardar';
       }
     } catch (error) {
       showToast('Error de red. Intenta de nuevo más tarde', 'error');
     }
   });
   
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const editorBody = document.querySelector('.editor-body');
+
+    editorBody.addEventListener('paste', (e) => {
+        e.preventDefault();
+
+        let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+
+        document.execCommand('insertText', false, text);
+    });
+
+    editorBody.addEventListener('drop', (e) => {
+        e.preventDefault();
+    });
+});
 </script>
 </html>
