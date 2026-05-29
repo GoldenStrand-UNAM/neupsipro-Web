@@ -1,45 +1,55 @@
-let activeDriver = null;
-let tutorialRunning = false;
+let currentDriver = null;
 
 // helpers
 function lockScroll () {
-  document.body.style.overflow = 'hidden';
+  document.querySelectorAll('*').forEach(el => {
+    const cs = window.getComputedStyle(el);
+
+    if (
+      cs.overflowY === 'auto' ||
+      cs.overflowY === 'scroll' ||
+      cs.overflow === 'auto' ||
+      cs.overflow === 'scroll'
+    ) {
+      el.dataset.scrollLock = el.style.overflowY || '';
+      el.style.overflowY = 'hidden';
+    }
+  });
 }
 
 function unlockScroll () {
-  document.body.style.overflow = '';
+  document.querySelectorAll('[data-scroll-lock]').forEach(el => {
+    el.style.overflowY = el.dataset.scrollLock || '';
+    delete el.dataset.scrollLock;
+  });
 }
 
-function blockClicks (e) {
-  const isDriverEl = e.target.closest(
+function closeTutorialOnInteraction (e) {
+
+  const insideTutorial = e.target.closest(
     '.driver-popover, .driver-overlay, [data-driver-highlighted]'
   );
 
-  if (!isDriverEl) {
-    e.stopPropagation();
-    e.preventDefault();
+  if (insideTutorial) return;
+
+  if (currentDriver) {
+    currentDriver.destroy();
   }
 }
 
-function lockInteraction () {
-  document.addEventListener('click', blockClicks, true);
+function enableAutoClose () {
+  document.addEventListener('click', closeTutorialOnInteraction, true);
 }
 
-function unlockInteraction () {
-  document.removeEventListener('click', blockClicks, true);
+function disableAutoClose () {
+  document.removeEventListener('click', closeTutorialOnInteraction, true);
 }
 
 // eslint-disable-next-line no-unused-vars
 async function startTutorial () {
 
-  // evitar doble ejecución
-  if (tutorialRunning) return;
-
-  tutorialRunning = true;
-
   if (!window.driver?.js?.driver) {
     showToast('Error al cargar el tutorial', 'error');
-    tutorialRunning = false;
     return;
   }
 
@@ -47,16 +57,14 @@ async function startTutorial () {
 
   if (!page) {
     showToast('No hay tutorial para esta página', 'error');
-    tutorialRunning = false;
     return;
   }
 
   try {
 
-    // destruir instancia previa si existe
-    if (activeDriver) {
-      activeDriver.destroy();
-      activeDriver = null;
+    if (currentDriver) {
+      currentDriver.destroy();
+      return;
     }
 
     const res = await fetch(`/api/tutorial?page=${page}`);
@@ -67,7 +75,6 @@ async function startTutorial () {
 
     if (!steps.length) {
       showToast('No hay tutorial disponible', 'error');
-      tutorialRunning = false;
       return;
     }
 
@@ -76,7 +83,7 @@ async function startTutorial () {
         ? tutorialElements
         : {};
 
-    activeDriver = window.driver.js.driver({
+    currentDriver = window.driver.js.driver({
       showProgress: true,
       nextBtnText: 'Siguiente',
       prevBtnText: 'Anterior',
@@ -84,23 +91,25 @@ async function startTutorial () {
       disableActiveInteraction: true,
 
       onHighlightStarted: (element) => {
+
         if (element) {
           element.scrollIntoView({
-            behavior: 'smooth',
+            behavior: 'instant',
             block: 'center',
           });
         }
 
         lockScroll();
-        lockInteraction();
+      },
+
+      onDeselected: () => {
+        unlockScroll();
       },
 
       onDestroyed: () => {
         unlockScroll();
-        unlockInteraction();
-
-        activeDriver = null;
-        tutorialRunning = false;
+        disableAutoClose();
+        currentDriver = null;
       },
 
       steps: steps
@@ -120,14 +129,14 @@ async function startTutorial () {
         })),
     });
 
-    activeDriver.drive();
+    enableAutoClose();
+    currentDriver.drive();
 
   } catch (e) {
 
     unlockScroll();
-    unlockInteraction();
-
-    tutorialRunning = false;
+    disableAutoClose();
+    currentDriver = null;
 
     showToast('Error al cargar el tutorial', 'error');
 
