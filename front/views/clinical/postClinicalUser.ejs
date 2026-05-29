@@ -404,6 +404,16 @@
       if (form) form.reset();
       showToast('Formulario limpiado');
     }
+    function setupCounter(inputId, counterId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      if (!input || !counter) return;
+      const max = input.getAttribute('maxlength');
+      input.addEventListener('input', () => {
+        const longitud = input.value.length;
+        counter.textContent = `${longitud}/${max}`;
+      });
+    }
     form.addEventListener('submit', async (e) => {
       event.preventDefault();
       const formData = new FormData(form);
