@@ -36,6 +36,8 @@ const modifyStateUseCase = require('../../../application/usecase/users/modifySta
 const ModifyStateController = require('../../controller/users/modifyStatus.controller');
  
 
+const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
+const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
 const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
@@ -79,6 +81,8 @@ module.exports = (authUseCase, authMiddleware) => {
   const stateUseCase    = new modifyStateUseCase(usersRepository);
   const stateController = new ModifyStateController(stateUseCase);
  
+  const protocolUseCase = new modifyProtocolUseCase(usersRepository);
+  const protocolController = new modifyProtocolController(protocolUseCase);
   const hashingService  = new HashingService();
   const loadEditUser = new loadEditUserUseCase(usersRepository);
   const editUseCase = new editUserUseCase(usersRepository, hashingService);
@@ -161,5 +165,12 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => stateController.modifyState(req, res)
   );
  
+    '/:id_user/protocol',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    (req, res) => protocolController.modifyProtocol(req, res)
+  );
+
+
   return router;
 };
