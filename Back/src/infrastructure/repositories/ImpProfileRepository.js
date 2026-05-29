@@ -1,6 +1,7 @@
 const profileRepository = require('../../domain/repository/profileRepository');
 const userProfile = require('../../domain/entity/userProfile');
 const db = require('../database/database');
+const crypt = require('../crypt/profile/getProfile');
 
 /**
  * Implementation for the repository using MySQL.
@@ -33,23 +34,24 @@ class ImpProfileRepository extends profileRepository {
     const [rows] = await db.query(query, [userId]);
     const row = rows[0];
     if (!row) return null;
+    const uncrypted = crypt(row);
     return new userProfile({
-      firstName: row.first_name,
-      lastNameP: row.lastname_p,
-      lastNameM: row.lastname_m,
-      profilePhoto: row.profile_photo,
-      birthDate: row.birthdate,
-      registrationDate: row.registration_date,
-      neuroEntryDate: row.neuro_entry_date,
-      neuroStatus: row.neuro_status,
-      protocol: row.protocol,
-      state: row.state,
-      stage: row.stage,
-      prosthetist: row.prosthetist,
-      idUserRelation: row.id_user_relation,
-      assignedClinic: row.assigned_clinic_name,
-      nextAppointmentDate: row.next_appointment_date,
-      nextAppointmentTime: row.next_appointment_time,
+      firstName: uncrypted.first_name,
+      lastNameP: uncrypted.lastname_p,
+      lastNameM: uncrypted.lastname_m,
+      profilePhoto: uncrypted.profile_photo,
+      birthDate: uncrypted.birthdate,
+      registrationDate: uncrypted.registration_date,
+      neuroEntryDate: uncrypted.neuro_entry_date,
+      neuroStatus: uncrypted.neuro_status,
+      protocol: uncrypted.protocol,
+      state: uncrypted.state,
+      stage: uncrypted.stage,
+      prosthetist: uncrypted.prosthetist,
+      idUserRelation: uncrypted.id_user_relation,
+      assignedClinic: uncrypted.assigned_clinic_name,
+      nextAppointmentDate: uncrypted.next_appointment_date,
+      nextAppointmentTime: uncrypted.next_appointment_time,
     });
   }
 }
