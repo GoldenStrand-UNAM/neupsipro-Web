@@ -165,6 +165,7 @@ async function loadUserInfoPanel (user) {
   try {
     const res  = await fetch(ENDPOINTS.userDetail(user));
     const data = await res.json();
+    console.log(data);
     //Error handling
     if (!res.ok) {
       target.innerHTML = `<p class="text-red-500 text-sm">${escapeHtml(data.error || 'Error')}</p>`;
