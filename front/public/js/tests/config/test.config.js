@@ -1,4 +1,4 @@
-/* global openBANFEModal, openWAISModal */
+/* global openBANFEModal, openWAISModal, openREYModal, openMOCAModal */
 // eslint-disable-next-line no-unused-vars
 const TEST_REGISTRY = {
 
@@ -46,6 +46,22 @@ const TEST_REGISTRY = {
       `/api/users/${idUser}/schooling`,
     ageEndpoint: (idUser) =>
       `/api/users/${idUser}/age`,
+  },
+
+  // MOCA
+
+  4: {
+    name: 'MOCA',
+    openRegister: (idUser, idApplication, test) =>
+      openMOCAModal({ idUser, idApplication, test, mode: 'register' }),
+    openModify: (idUser, idApplication, test) =>
+      openMOCAModal({ idUser, idApplication, test, mode: 'modify' }),
+    openConsult: (idUser, idApplication, test) =>
+      openMOCAModal({ idUser, idApplication, test, mode: 'consult' }),
+    endpoint: (idUser, idApplication) =>
+      `/api/users/${idUser}/applications/${idApplication}/tests/4/results`,
+    schoolingEndpoint: (idUser) =>
+      `/api/users/${idUser}/schooling`,
   },
 
 };
