@@ -96,7 +96,7 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
         <label class="text-sm font-medium text-gray-700">
           ${label} <span class="text-red-500">*</span>
         </label>
-        <input id="${inputId}" type="number" min="0" max="300" placeholder="Puntaje"
+        <input id="${inputId}" type="text" inputmode="numeric" placeholder="Puntaje"
           value="${escapeHTML(String(prefillArea.score))}"
           class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                  focus:outline-none focus:ring-2 focus:ring-[#3350A9]
@@ -127,16 +127,10 @@ function buildFormActions () {
         </svg>
         <span class="whitespace-nowrap">Cancelar</span>
       </button>
-      <button id="btnSaveWAIS"
-        class="flex-1 flex items-center justify-center gap-3 px-4 py-3
-               rounded-2xl bg-[#3350A9] text-white font-regular
-               hover:bg-[#2a4190] transition-colors cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 3v5h8"/>
+      <button id="btnSaveWAIS" class="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+          <path fill="none" stroke="currentColor" stroke-width="1.5"
+                d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
         </svg>
         <span class="whitespace-nowrap">Guardar</span>
       </button>
@@ -164,12 +158,14 @@ function buildWAISFormHTML (mode, prefill) {
         ${formAreaRow({ label: 'CI Total',                   inputId: 'inputWAISTotal',       interpId: 'interpWAISTotal',       errorId: 'errorWAISTotal',       prefillArea: prefill.ciTotal })}
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Notas</label>
-          <textarea id="inputWAISNotes" rows="2" maxlength="200" placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="waisNotesCount" class="text-xs text-gray-400 text-right">${prefill.notes.length} / 200</p>
+          <div class="relative">
+            <textarea id="inputWAISNotes" rows="2" maxlength="200" placeholder="Observaciones"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                     focus:border-transparent transition resize-none pb-5"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <p id="waisNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+          </div>
         </div>
         <p id="waisApiError" class="text-xs text-red-500 hidden"></p>
         ${buildFormActions()}
@@ -196,8 +192,9 @@ function bindAreaUpdates (fields) {
     document.getElementById(input).addEventListener('input', () => {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
-      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
-      if (el.value.length > 5) el.value = el.value.slice(0, 5);
+      el.value = el.value.replace(/\D/g, '').slice(0, 3);
+      const capped = parseInt(el.value, 10);
+      if (!isNaN(capped) && capped > 300) el.value = '300';
       errEl.classList.add('hidden');
       const n = Number(el.value);
       document.getElementById(interp).textContent = el.value === '' || isNaN(n) ? '—' : interpretWAIS(n);
@@ -215,8 +212,12 @@ async function handleSave (endpoint, fields, ctx) {
     const el    = document.getElementById(input);
     const errEl = document.getElementById(error);
     const val   = Number(el.value);
-    if (el.value.trim() === '' || isNaN(val) || val < 0 || val > 300) {
-      errEl.textContent = 'Ingresa un puntaje válido (0–300)';
+    if (el.value.trim() === '') {
+      errEl.textContent = 'Llena todos los campos';
+      errEl.classList.remove('hidden');
+      valid = false;
+    } else if (isNaN(val) || val < 0 || val > 300) {
+      errEl.textContent = val > 300 ? 'El puntaje no puede superar 300' : 'Ingresa un puntaje válido';
       errEl.classList.remove('hidden');
       valid = false;
     } else {
@@ -255,10 +256,9 @@ function bindWAISFormListeners (idUser, idApplication, closeModal) {
   const endpoint   = TEST_REGISTRY[2].endpoint(idUser, idApplication);
   // Notes character counter
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 200`;
-    notesCount.classList.toggle('text-red-500', len >= 200);
-    notesCount.classList.toggle('text-gray-400', len < 200);
   });
   bindAreaUpdates(WAIS_FIELDS);
   document.getElementById('btnSaveWAIS').addEventListener(

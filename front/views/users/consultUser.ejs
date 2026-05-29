@@ -148,12 +148,15 @@
                             <span class="text-gray-600">Fecha de amputación:</span>
                             <span class="font-medium" id="amputationDate"></span>
                         </div>
-                        <div class="extra-field hidden md:flex flex-wrap items-start gap-3 w-full min-w-0">
+                         <div class="extra-field hidden md:flex items-start gap-3 w-full min-w-0">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" width="28" height="19" viewBox="0 0 28 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M28 0.730769C28 0.924581 27.925 1.11046 27.7915 1.2475C27.658 1.38455 27.4769 1.46154 27.2881 1.46154H21.3559V6.57692C21.3559 6.77074 21.2809 6.95661 21.1474 7.09365C21.0139 7.2307 20.8329 7.30769 20.6441 7.30769H14.7119V12.4231C14.7119 12.6169 14.6369 12.8028 14.5034 12.9398C14.3699 13.0769 14.1888 13.1538 14 13.1538H8.0678V18.2692C8.0678 18.463 7.9928 18.6489 7.8593 18.786C7.7258 18.923 7.54473 19 7.35593 19H0.711864C0.523066 19 0.342001 18.923 0.2085 18.786C0.0749998 18.6489 0 18.463 0 18.2692C0 18.0754 0.0749998 17.8895 0.2085 17.7525C0.342001 17.6155 0.523066 17.5385 0.711864 17.5385H6.64407V12.4231C6.64407 12.2293 6.71907 12.0434 6.85257 11.9063C6.98607 11.7693 7.16713 11.6923 7.35593 11.6923H13.2881V6.57692C13.2881 6.38311 13.3631 6.19724 13.4966 6.06019C13.6301 5.92315 13.8112 5.84615 14 5.84615H19.9322V0.730769C19.9322 0.536957 20.0072 0.351083 20.1407 0.214037C20.2742 0.0769914 20.4553 0 20.6441 0H27.2881C27.4769 0 27.658 0.0769914 27.7915 0.214037C27.925 0.351083 28 0.536957 28 0.730769Z" fill="black"/>
                             </svg>
-                            <span class="text-gray-600">Nivel de amputación:</span>
-                            <span class="font-medium wrap-break-word min-w-0" id="amputationLevel"></span>
+                            
+                            <div class="min-w-0 leading-tight">
+                                <span class="text-gray-600">Nivel de amputación:</span>
+                                <span class="font-medium wrap-break-word" id="amputationLevel"></span>
+                            </div>
                         </div>
                         <div class="extra-field hidden md:flex flex-wrap items-start gap-3 w-full">
                             <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" width="28" height="28" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -316,14 +319,17 @@
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Nombre de la Aplicación
                                     </label>
-                                    <input
+                                    <div class="search-input w-full relative">
+                                        <input
                                         id="inputAppName"
                                         type="text"
                                         maxlength="20"
                                         placeholder=""
                                         class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"
-                                    />
-                                    <p class="text-xs text-gray-400 mt-1">Max 20 caracteres</p>
+                                        />
+                                        <span id="nameCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/20 </span>
+                                    </div>
+                                    
                                     <!-- Inline error -->
                                     <p id="modalError" class="text-xs text-red-500 mt-1 hidden"></p>
                                 </div>
@@ -437,6 +443,15 @@
             }
         };
 
+        const nameCount = document.getElementById('nameCount');
+        const inputAppName = document.getElementById('inputAppName');
+
+        inputAppName.addEventListener('input', () => {
+            const max = 20;
+            const length = inputAppName.value.length;
+            nameCount.innerText = `${length}/${max}`;
+        });
+
         const _statusMap = {
             "Por comenzar": "neutral",
 
@@ -458,7 +473,6 @@
 
         function createApplicationCard(application, idUser) {
             const colors = getStatusStyle(application.status);
-
             const dateFormatted = application.createdAt
                 ? new Date(application.createdAt).toLocaleDateString('es-MX')
                 : 'Fecha no disponible';

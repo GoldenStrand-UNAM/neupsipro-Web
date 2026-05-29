@@ -74,7 +74,7 @@ function banfeFormAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col gap-1">
         <label class="text-2xl font-regular">${label} <span class="text-red-500">*</span></label>
-        <input id="${inputId}" type="number" min="0" max="200" placeholder="Puntaje"
+        <input id="${inputId}" type="text" inputmode="numeric" placeholder="Puntaje"
           value="${escapeHTML(String(prefillArea.score))}"
           class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
         <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
@@ -130,10 +130,12 @@ function buildFormHTML (mode, prefill) {
         </div>
         <div class="flex flex-col gap-2">
           <label class="text-2xl font-regular">Notas</label>
-          <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">${prefill.notes.length} / 200</p>
+          <div class="relative">
+            <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none pb-5"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <p id="banfeNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+          </div>
         </div>
         <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
         ${buildBANFEFormActions()}
@@ -149,11 +151,10 @@ const BANFE_FIELDS = [
 
 function bindNotesCounter (notesInput) {
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     const el  = document.getElementById('banfeNotesCount');
     el.textContent = `${len} / 200`;
-    el.classList.toggle('text-red-500', len >= 200);
-    el.classList.toggle('text-gray-400', len < 200);
   });
 }
 
@@ -168,8 +169,9 @@ function banfeBindAreaUpdates (fields) {
     document.getElementById(input).addEventListener('input', () => {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
-      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
-      if (el.value.length > 5) el.value = el.value.slice(0, 5);
+      el.value = el.value.replace(/\D/g, '').slice(0, 3);
+      const capped = parseInt(el.value, 10);
+      if (!isNaN(capped) && capped > 200) el.value = '200';
       errEl.classList.add('hidden');
       const n = Number(el.value);
       document.getElementById(interp).textContent = el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
@@ -187,7 +189,11 @@ async function banfeHandleSave (endpoint, fields, ctx) {
     const el    = document.getElementById(input);
     const errEl = document.getElementById(error);
     const val   = Number(el.value);
-    if (el.value.trim() === '' || isNaN(val) || val < 0 || val > 200) {
+    if (el.value.trim() === '') {
+      errEl.textContent = 'Llena todos los campos';
+      errEl.classList.remove('hidden');
+      valid = false;
+    } else if (isNaN(val) || val < 0 || val > 200) {
       errEl.textContent = val > 200 ? 'El puntaje no puede superar 200' : 'Ingresa un puntaje válido';
       errEl.classList.remove('hidden');
       valid = false;

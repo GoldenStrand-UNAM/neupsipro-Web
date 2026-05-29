@@ -24,7 +24,7 @@ class consultUserUseCase {
       assignedApplications = await this.impTestApplicationRepository.fetchTestApplications({ id_user });
     }
     const canStartIntervention = assignedApplications.some(a =>
-      a.status === 'Entregado');
+      a.status === 'Calificada');
 
     const cleanUser = UserDTO.fromEntity(user);
 
