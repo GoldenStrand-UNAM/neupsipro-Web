@@ -165,24 +165,15 @@
 
   function limitContent(content) {
     const limit = 500;
-    const text = content.innerText;
-    
-    const length = text.endsWith('\n') ? text.length - 1 : text.length;
 
-    if (length > limit) {
-      content.innerText = text.substring(0, limit);
-      const range = document.createRange();
-      const sel = window.getSelection();
-      range.selectNodeContents(content);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
+    if (content.innerText.length > limit) {
+        content.innerText = content.innerText.substring(0, limit);
+        window.getSelection().selectAllChildren(content);
+        window.getSelection().collapseToEnd();
     }
-
     const counter = document.getElementById('charCount');
-    const displayed = Math.min(length, limit);
-    if (counter) counter.innerText = `${displayed}/${limit}`;
-  }
+    if (counter) counter.innerText = `${content.innerText.length}/${limit}`;
+}
 
   // Clean forms
   clearBtn.addEventListener('click', () => {
@@ -208,54 +199,48 @@
     emptyState.classList.add('hidden');
   });
 
- form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+  //  Submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  const rawText = editor.innerText;
-  const contentLength = rawText.endsWith('\n') ? rawText.length - 1 : rawText.length;
-  const content = rawText.trim();
+    const content = editor.innerText.trim();
 
-  if (!content) {
-    showToast('El contenido es obligatorio', 'error');
-    return;
-  }
-
-  if (contentLength > 500) {
-    showToast('El contenido no puede superar los 500 caracteres', 'error');
-    return;
-  }
-
-  hiddenInput.value = content;
-
-  const formData = new FormData(form);
-
-  try {
-    const res = await fetch('/forum/post', {
-      method: 'POST',
-      headers: { 'x-csrf-token': _csrfToken },
-      body: formData,
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      sessionStorage.setItem('pendingToast', JSON.stringify({ 
-        message: 'Publicación creada correctamente', 
-        type: 'success' 
-      }));
-      window.location.href = '/forum';
-    } else {
-      const fallback =
-        res.status === 413 ? 'La imagen es demasiado grande (max 5mb)' :
-        res.status === 422 ? 'Datos inválidos' :
-        res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 
-        'Error al publicar';
-      showToast(data.error || fallback, 'error');
+    if (!content) {
+        showToast('El contenido es obligatorio', 'error');
+        return;
     }
-  } catch (error) {
-    showToast('Error de red. Intenta de nuevo más tarde', 'error');
-  }
-});
+
+    hiddenInput.value = editor.innerText;
+
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch('/forum/post', {
+        method: 'POST',
+        headers: { 'x-csrf-token': _csrfToken },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        sessionStorage.setItem('pendingToast', JSON.stringify({ 
+          message: 'Publicación creada correctamente', 
+          type: 'success' 
+        }));
+        window.location.href = '/forum';
+      } else {
+        const fallback =
+          res.status === 413 ? 'La imagen es demasiado grande (max 5mb)' :
+          res.status === 422 ? 'Datos inválidos' :
+          res.status === 429 ? 'Haz alcanzado el límite de publicaciónes. Intenta de nuevo más tarde' : 
+          'Error al publicar';
+        showToast(data.error || fallback, 'error');
+      }
+    } catch (error) {
+      showToast('Error de red. Intenta de nuevo más tarde', 'error');
+    }
+  });
   
 </script>
 </html>
