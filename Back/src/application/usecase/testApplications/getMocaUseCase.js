@@ -1,4 +1,4 @@
-const MocaResultsDTO = require('../../dto/MocaResultDTO');
+const MocaResultsDTO = require('../../dto/mocaResultDTO');
 
 class getMocaResultUseCase {
 
