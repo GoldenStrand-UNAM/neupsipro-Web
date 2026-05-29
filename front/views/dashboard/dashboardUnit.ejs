@@ -303,12 +303,16 @@
                 <span class="text-sm">
                     Hay <strong>${list.length}</strong> usuario${list.length === 1 ? '' : 's'} en Stand By, selecciona uno:
                 </span>
+                <div class="flex items-center gap-1.5">
+                <span class="text-sm text-gray-500 font-medium">Folio:</span>
+
                 <select id="standBySelect"
                     class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white shadow-sm
                            focus:outline-none focus:ring-2 focus:ring-[#3350A9]/30 focus:border-[#3350A9]
                            transition-all cursor-pointer">
                     ${list.map(ref => `<option value="${escapeHtml(ref)}">${escapeHtml(ref)}</option>`).join('')}
                 </select>
+                </div>
             </div>
             <div id="standByDetail"></div>
         `;

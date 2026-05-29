@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Usuario - NeuPsi-Pro</title>
+  <title>Modificar Usuario - NeuPsi-Pro</title>
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
 </head>
-<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row ...">
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
   <script src="/js/main.js"></script>
 
   <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
@@ -23,17 +22,17 @@
       <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <a href="/users">
+            <a href="/users/<%= usuario.idUser %>">
               <button class="cursor-pointer pb">
                 <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
               </button>
             </a>
-            <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
+            <h1 class="text-2xl font-bold text-[#1E1E1E]">Modificar Usuario</h1>
           </div>
           <div class="flex items-center gap-3">
-            <button id="btnClear"
+            <button 
               onclick="resetFormBtn()" 
               class="flex items-center gap-2"
               style="color: #FF0404"
@@ -63,6 +62,7 @@
                 id="firstName"
                 placeholder="Juan Carlos"
                 maxlength="30"
+                value="<%= usuario.firstName || '' %>"
               >
               <span id="charactersNames" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/30 
@@ -83,6 +83,7 @@
                 id="lastnameP"
                 placeholder="Hernández"
                 maxlength="30"
+                value="<%= usuario.lastnameP || '' %>"
               >
               <span id="charactersLastnameP" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/30 
@@ -102,6 +103,7 @@
                 id="lastnameM"
                 placeholder="Camacho"
                 maxlength="30"
+                value="<%= usuario.lastnameM || '' %>"
               >
               <span id="charactersLastnameM" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/30 
@@ -121,6 +123,7 @@
                 name="birthdate"
                 placeholder="DD/MM/AAAA"
                 class="datetime-local input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.birthdate || '' %>"
               >
               <div class="absolute right-3 pointer-events-none text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,14 +140,14 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.sex ? 'text-black' : 'text-gray-400' %>"
                 name="sex"
                 id="sex"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Masculino" class="text-black">Masculino</option>
-                <option value="Femenino" class="text-black">Femenino</option>
-                <option value="Sin especificar" class="text-black">Sin especificar</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Masculino"       class="text-black" <%= usuario.sex === 'Masculino'       ? 'selected' : '' %>>Masculino</option>
+                <option value="Femenino"        class="text-black" <%= usuario.sex === 'Femenino'        ? 'selected' : '' %>>Femenino</option>
+                <option value="Sin especificar" class="text-black" <%= usuario.sex === 'Sin especificar' ? 'selected' : '' %>>Sin especificar</option>
               </select>
             </div>
           </div>
@@ -160,6 +163,7 @@
                 id="phone"
                 placeholder="5574048122"
                 maxlength="16"
+                value="<%= usuario.phone || '' %>"
               >
               <span id="charactersPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/16 
@@ -178,6 +182,7 @@
                 id="email"
                 placeholder="jorge.v@gmail.com"
                 maxlength="50"
+                value="<%= usuario.email || '' %>"
               >
               <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/50 
@@ -198,6 +203,7 @@
                 id="referenceNumber"
                 placeholder="000X - XXX"
                 maxlength="10"
+                value="<%= usuario.referenceNumber || '' %>"
               >
               <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/10 
@@ -212,13 +218,13 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.modality ? 'text-black' : 'text-gray-400' %>"
                 name="modality"
                 id="modality"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Presencial" class="text-black">Presencial</option>
-                <option value="En línea" class="text-black">En línea</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Presencial" class="text-black" <%= usuario.modality === 'Presencial' ? 'selected' : '' %>>Presencial</option>
+                <option value="En línea"   class="text-black" <%= usuario.modality === 'En línea'   ? 'selected' : '' %>>En línea</option>
               </select>
             </div>
           </div>
@@ -233,6 +239,7 @@
                 name="neuroEntryDate"
                 placeholder="DD/MM/AAAA"
                 class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.neuroEntryDate || '' %>"
               >
               <div class="absolute right-3 pointer-events-none text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -249,13 +256,13 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.pairs ? 'text-black' : 'text-gray-400' %>"
                 name="pairs"
                 id="pairs"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Sí asiste" class="text-black">Sí</option>
-                <option value="No asiste" class="text-black">No</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Sí asiste" class="text-black" <%= usuario.pairs === 'Sí asiste' ? 'selected' : '' %>>Sí</option>
+                <option value="No asiste" class="text-black" <%= usuario.pairs === 'No asiste' ? 'selected' : '' %>>No</option>
               </select>
             </div>
           </div>
@@ -272,6 +279,7 @@
                 name="amputationDate"
                 placeholder="DD/MM/AAAA"
                 class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                value="<%= usuario.amputationDate || '' %>"
               >
               <div class="absolute right-3 pointer-events-none text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -281,6 +289,10 @@
             </div>
           </div>
 
+          <%
+            const pathologyOptions = ['Diabetes Mellitus 1','Diabetes Mellitus 2','Congénito','Cáncer','Osteomielitis','Traumática'];
+            const isOtherPathology = usuario.basePathology && !pathologyOptions.includes(usuario.basePathology);
+          %>
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
               Etiología de amputación <span style="color: #FF0404">*</span>
@@ -288,28 +300,29 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.basePathology ? 'text-black' : 'text-gray-400' %>"
                 name="basePathology"
                 id="basePathology"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Diabetes Mellitus 1" class="text-black">Diabetes Mellitus 1</option>
-                <option value="Diabetes Mellitus 2" class="text-black">Diabetes Mellitus 2</option>
-                <option value="Congénito" class="text-black">Congénito</option>
-                <option value="Cáncer" class="text-black">Cáncer</option>
-                <option value="Osteomielitis" class="text-black">Osteomielitis</option>
-                <option value="Traumática" class="text-black">Traumática</option>
-                <option value="other" class="text-black">Otro</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Diabetes Mellitus 1" class="text-black" <%= usuario.basePathology === 'Diabetes Mellitus 1' ? 'selected' : '' %>>Diabetes Mellitus 1</option>
+                <option value="Diabetes Mellitus 2" class="text-black" <%= usuario.basePathology === 'Diabetes Mellitus 2' ? 'selected' : '' %>>Diabetes Mellitus 2</option>
+                <option value="Congénito"           class="text-black" <%= usuario.basePathology === 'Congénito'           ? 'selected' : '' %>>Congénito</option>
+                <option value="Cáncer"              class="text-black" <%= usuario.basePathology === 'Cáncer'              ? 'selected' : '' %>>Cáncer</option>
+                <option value="Osteomielitis"       class="text-black" <%= usuario.basePathology === 'Osteomielitis'       ? 'selected' : '' %>>Osteomielitis</option>
+                <option value="Traumática"          class="text-black" <%= usuario.basePathology === 'Traumática'          ? 'selected' : '' %>>Traumática</option>
+                <option value="other"               class="text-black" <%= isOtherPathology                                ? 'selected' : '' %>>Otro</option>
               </select>
             </div>
           </div>
 
-          <div id="pathologyDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full hidden">
+          <div id="pathologyDiv" class="flex flex-col sm:flex-row sm:items-center gap-4 w-full <%= isOtherPathology ? '' : 'hidden' %>">
             <label class="sm:w-1/4 font-small sm:text-right shrink-0" style="color: #FF0404">*</label>
             <div class="inputs w-full relative flex items-center">
               <input type="text" id="otherPathology" name="otherPathology" 
                 placeholder="Escribe la etiología"
                 maxlength = "50"
+                value="<%= isOtherPathology ? usuario.basePathology : '' %>"
                 class="input w-full border py-1 px-3 pr-10 mb-2 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white "/>
                 <span id="charactersOtherPathology" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/50 
@@ -324,27 +337,27 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.amputationLevel ? 'text-black' : 'text-gray-400' %>"
                 name="amputationLevel"
                 id="amputationLevel"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Sin amputación" class="text-black">Sin amputación</option>
-                <option value="Debajo de la rodilla" class="text-black">Debajo de la rodilla</option>
-                <option value="Encima de la rodilla" class="text-black">Encima de la rodilla</option>
-                <option value="Debajo de la rodilla bilateral" class="text-black">Debajo de la rodilla bilateral</option>
-                <option value="Encima de la rodilla bilateral" class="text-black">Encima de la rodilla bilateral</option>
-                <option value="Encima + debajo de la rodilla" class="text-black">Encima + debajo de la rodilla</option>
-                <option value="Pie" class="text-black">Pie</option>
-                <option value="Ambos pies" class="text-black">Ambos pies</option>
-                <option value="Mano" class="text-black">Mano</option>
-                <option value="Ambas manos" class="text-black">Ambas manos</option>
-                <option value="Antebrazo + mano" class="text-black">Antebrazo + mano</option>
-                <option value="Ambos antebrazos + manos" class="text-black">Ambos antebrazos + manos</option>
-                <option value="Brazo completo" class="text-black">Brazo completo</option>
-                <option value="Ambos brazos completos" class="text-black">Ambos brazos completos</option>
-                <option value="Pierna completa" class="text-black">Pierna completa</option>
-                <option value="Ambas piernas completas" class="text-black">Ambas piernas completas</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Sin amputación"                 class="text-black" <%= usuario.amputationLevel === 'Sin amputación'                 ? 'selected' : '' %>>Sin amputación</option>
+                <option value="Debajo de la rodilla"           class="text-black" <%= usuario.amputationLevel === 'Debajo de la rodilla'           ? 'selected' : '' %>>Debajo de la rodilla</option>
+                <option value="Encima de la rodilla"           class="text-black" <%= usuario.amputationLevel === 'Encima de la rodilla'           ? 'selected' : '' %>>Encima de la rodilla</option>
+                <option value="Debajo de la rodilla bilateral" class="text-black" <%= usuario.amputationLevel === 'Debajo de la rodilla bilateral' ? 'selected' : '' %>>Debajo de la rodilla bilateral</option>
+                <option value="Encima de la rodilla bilateral" class="text-black" <%= usuario.amputationLevel === 'Encima de la rodilla bilateral' ? 'selected' : '' %>>Encima de la rodilla bilateral</option>
+                <option value="Encima + debajo de la rodilla"  class="text-black" <%= usuario.amputationLevel === 'Encima + debajo de la rodilla'  ? 'selected' : '' %>>Encima + debajo de la rodilla</option>
+                <option value="Pie"                            class="text-black" <%= usuario.amputationLevel === 'Pie'                            ? 'selected' : '' %>>Pie</option>
+                <option value="Ambos pies"                     class="text-black" <%= usuario.amputationLevel === 'Ambos pies'                     ? 'selected' : '' %>>Ambos pies</option>
+                <option value="Mano"                           class="text-black" <%= usuario.amputationLevel === 'Mano'                           ? 'selected' : '' %>>Mano</option>
+                <option value="Ambas manos"                    class="text-black" <%= usuario.amputationLevel === 'Ambas manos'                    ? 'selected' : '' %>>Ambas manos</option>
+                <option value="Antebrazo + mano"               class="text-black" <%= usuario.amputationLevel === 'Antebrazo + mano'               ? 'selected' : '' %>>Antebrazo + mano</option>
+                <option value="Ambos antebrazos + manos"       class="text-black" <%= usuario.amputationLevel === 'Ambos antebrazos + manos'       ? 'selected' : '' %>>Ambos antebrazos + manos</option>
+                <option value="Brazo completo"                 class="text-black" <%= usuario.amputationLevel === 'Brazo completo'                 ? 'selected' : '' %>>Brazo completo</option>
+                <option value="Ambos brazos completos"         class="text-black" <%= usuario.amputationLevel === 'Ambos brazos completos'         ? 'selected' : '' %>>Ambos brazos completos</option>
+                <option value="Pierna completa"                class="text-black" <%= usuario.amputationLevel === 'Pierna completa'                ? 'selected' : '' %>>Pierna completa</option>
+                <option value="Ambas piernas completas"        class="text-black" <%= usuario.amputationLevel === 'Ambas piernas completas'        ? 'selected' : '' %>>Ambas piernas completas</option>
               </select>
             </div>
           </div>
@@ -356,14 +369,14 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.laterality ? 'text-black' : 'text-gray-400' %>"
                 name="laterality"
                 id="laterality"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Zurda" class="text-black">Zurda</option>
-                <option value="Diestra" class="text-black">Diestra</option>
-                <option value="Ambidiestra" class="text-black">Ambidiestra</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Zurda"       class="text-black" <%= usuario.laterality === 'Zurda'       ? 'selected' : '' %>>Zurda</option>
+                <option value="Diestra"     class="text-black" <%= usuario.laterality === 'Diestra'     ? 'selected' : '' %>>Diestra</option>
+                <option value="Ambidiestra" class="text-black" <%= usuario.laterality === 'Ambidiestra' ? 'selected' : '' %>>Ambidiestra</option>
               </select>
             </div>
           </div>
@@ -375,14 +388,14 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.prosthetist ? 'text-black' : 'text-gray-400' %>"
                 name="prosthetist"
                 id="prosthetist"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="CPO Alejandra Santos" class="text-black">CPO Alejandra Santos</option>
-                <option value="CPO Juan David Orozco" class="text-black">CPO Juan David Orozco</option>
-                <option value="CPO Melvin Arévalo" class="text-black">CPO Melvin Arévalo</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="CPO Alejandra Santos"  class="text-black" <%= usuario.prosthetist === 'CPO Alejandra Santos'  ? 'selected' : '' %>>CPO Alejandra Santos</option>
+                <option value="CPO Juan David Orozco" class="text-black" <%= usuario.prosthetist === 'CPO Juan David Orozco' ? 'selected' : '' %>>CPO Juan David Orozco</option>
+                <option value="CPO Melvin Arévalo"    class="text-black" <%= usuario.prosthetist === 'CPO Melvin Arévalo'    ? 'selected' : '' %>>CPO Melvin Arévalo</option>
               </select>
             </div>
           </div>
@@ -394,17 +407,17 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.phase ? 'text-black' : 'text-gray-400' %>"
                 name="phase"
                 id="phase"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
-                <option value="Preprotésico" class="text-black">Preprotésico</option>
-                <option value="Protésico" class="text-black">Protésico</option>
-                <option value="Postprotésico" class="text-black">Postprotésico</option>
-                <option value="Adaptación al ejercicio" class="text-black">Adaptación al ejercicio</option>
-                <option value="Alta" class="text-black">Alta</option>
-                <option value="Baja de neuropsicología" class="text-black">Baja de neuropsicología</option>
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Preprotésico"            class="text-black" <%= usuario.phase === 'Preprotésico'            ? 'selected' : '' %>>Preprotésico</option>
+                <option value="Protésico"               class="text-black" <%= usuario.phase === 'Protésico'               ? 'selected' : '' %>>Protésico</option>
+                <option value="Postprotésico"           class="text-black" <%= usuario.phase === 'Postprotésico'           ? 'selected' : '' %>>Postprotésico</option>
+                <option value="Adaptación al ejercicio" class="text-black" <%= usuario.phase === 'Adaptación al ejercicio' ? 'selected' : '' %>>Adaptación al ejercicio</option>
+                <option value="Alta"                    class="text-black" <%= usuario.phase === 'Alta'                    ? 'selected' : '' %>>Alta</option>
+                <option value="Baja de neuropsicología" class="text-black" <%= usuario.phase === 'Baja de neuropsicología' ? 'selected' : '' %>>Baja de neuropsicología</option>
               </select>
             </div>
           </div>
@@ -416,11 +429,12 @@
             <div class="inputs w-full relative flex items-center">
               <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.idClinicUser ? 'text-black' : 'text-gray-400' %>"
                 name="assigned"
                 id="assigned"
+                data-current="<%= usuario.idClinicUser || '' %>"
               >
-                <option disabled selected hidden value="">Elige una opción</option>
+                <option disabled hidden value="">Elige una opción</option>
               </select>
             </div>
           </div>
@@ -438,6 +452,7 @@
                 id="userName"
                 placeholder="Nombre de usuario"
                 maxlength="30"
+                value="<%= usuario.userName || '' %>"
               >
               <span id="charactersUserName" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/30 
@@ -447,16 +462,15 @@
 
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Contraseña <span style="color: #FF0404">*</span>
+              Contraseña
             </label>
             <div class="inputs w-full relative flex items-center">
               <input
-                required
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
                 type="password"
                 name="password"
                 id="password"
-                placeholder="Contraseña del usuario"
+                placeholder="Dejar vacío para conservar la actual"
                 maxlength="30"
               >
               <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -467,16 +481,15 @@
 
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Confirma contraseña <span style="color: #FF0404">*</span>
+              Confirma contraseña
             </label>
             <div class="inputs w-full relative flex items-center">
               <input
-                required
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
                 type="password"
                 name="confirmPassword"
                 id="confirmPassword"
-                placeholder="Contraseña del usuario"
+                placeholder="Repite la nueva contraseña"
                 maxlength="30"
               >
               <span id="charactersConfirmPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -497,11 +510,11 @@
               Foto de perfil
             </label>
             <div class="file-upload-dropzone" id="dropzone">
-              <div id="filePreview" class="hidden flex flex-col items-center gap-2">
-                <img id="previewImg" src="" class="w-16 h-16 object-cover rounded-md border">
-                <span id="previewName" class="text-[10px] text-gray-600 text-center break-all"></span>
+              <div id="filePreview" class="<%= usuario.photo ? 'flex' : 'hidden' %> flex-col items-center gap-2">
+                <img id="previewImg" src="<%= usuario.photo || '' %>" class="w-16 h-16 object-cover rounded-md border">
+                <span id="previewName" class="text-[10px] text-gray-600 text-center break-all"><%= usuario.photo ? 'Foto actual' : '' %></span>
               </div>
-              <div id="emptyState" class="flex flex-col items-center gap-2">
+              <div id="emptyState" class="<%= usuario.photo ? 'hidden' : 'flex' %> flex-col items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="file-upload-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -512,7 +525,7 @@
             </div>
           </div>
           <div class="mb-8 flex justify-center md:justify-end pt-2">
-            <button id="btnSave" class="btn-mini bg-[#3350A9]">
+            <button class="btn-mini bg-[#3350A9]">
               <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>
@@ -525,19 +538,10 @@
   </div>
 
   <script src="/js/sidebar.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
-  <script>
-    const tutorialElements = {
-      1: null,         
-      2: '#firstName', 
-      3: '#dropzone',  
-      4: '#btnClear',  
-      5: '#btnSave',  
-    };
-  </script>
-  <script src="/js/tutorial.js"></script>
+
   <script>
     window.__CSRF_TOKEN__ = "<%= csrfToken %>";
+    window.__USER_ID__    = "<%= usuario.idUser %>";
   </script>
   </body>
 
@@ -569,15 +573,17 @@
         input.dispatchEvent(new Event('input'));
       });
 
-      const selects = document.querySelectorAll('select');
-      selects.forEach(select => {
-        select.classList.remove('text-black');
-        select.classList.add('text-gray-400');
+      document.querySelectorAll('select').forEach(select => {
+        if (select.value !== "") {
+          select.classList.remove('text-gray-400');
+          select.classList.add('text-black');
+        } else {
+          select.classList.remove('text-black');
+          select.classList.add('text-gray-400');
+        }
       });
-      filePreview.classList.add('hidden');
-      emptyState.classList.remove('hidden');
-      previewImg.src = '';
-      showToast('Formulario limpiado');
+
+      showToast('Cambios restablecidos');
     }
 
     function checkOther(select, otherSelect, div) {
@@ -598,23 +604,23 @@
     });
 
     form.addEventListener('submit', async (e) => {
-      event.preventDefault();
+      e.preventDefault();
       const formData = new FormData(form);
 
       try {
-      const res = await fetch('/user/post', {
+      const res = await fetch(`/users/${window.__USER_ID__}/edit`, {
         method: 'POST',
-        headers: { 'x-csrf-token': _csrfToken },
+        headers: { 'x-csrf-token': window.__CSRF_TOKEN__ },
         body: formData,
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        sessionStorage.setItem('usuarioGuardado', 'true');
-        window.location.href = '/users';
+        sessionStorage.setItem('usuarioModificado', 'true');
+        window.location.href = `/users/${window.__USER_ID__}`;
       } else if (res.status === 429) {
-          showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
+          showToast('Has alcanzado el límite de operaciones. Intenta más tarde.', 'error');
       }else {
         showToast((data.error || 'Error desconocido'), 'error');
       }
@@ -631,26 +637,31 @@
 
         if (!res.ok) {
           console.error("Server error:", data.error);
-          showMsg("Ocurrió un error en el sistema. Intenta de nuevo más tarde.", "text-red-400");
           return;
         }
 
         selectClinicUsers(data.users);
       } catch (err) {
         console.error("Network error:", err);
-        showMsg("No se pudo conectar al servidor. Verifica tu conexión.", "text-red-400");
       }
     } 
 
     function selectClinicUsers(users) {
       const assigned = document.getElementById("assigned");
-      if (!users.length) { showMsg("Sin registros", "text-gray-400"); return; }
+      if (!users.length) return;
+
+      const currentId = assigned.dataset.current;
 
       const usersHtml = users.map(u => `
-          <option value="${escapeHtml(u.id)}" class="text-black">${escapeHtml(u.fullName)}</option>
+          <option value="${escapeHTML(u.id)}" class="text-black" ${u.id === currentId ? 'selected' : ''}>${escapeHTML(u.fullName)}</option>
       `).join("");
 
       assigned.insertAdjacentHTML('beforeend', usersHtml);
+
+      if (assigned.value !== '') {
+        assigned.classList.remove('text-gray-400');
+        assigned.classList.add('text-black');
+      }
     }
 
     dropzone.addEventListener('click', () => {
@@ -668,7 +679,9 @@
       previewImg.src = URL.createObjectURL(file);
       previewName.textContent = escapeHTML(file.name);
       filePreview.classList.remove('hidden'); 
+      filePreview.classList.add('flex');
       emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
     });
 
     function setupCounter(inputId, counterId) {
@@ -678,6 +691,8 @@
       if (!input || !counter) return;
 
       const max = input.getAttribute('maxlength');
+
+      counter.textContent = `${input.value.length}/${max}`;
 
       input.addEventListener('input', () => {
         const longitud = input.value.length;
@@ -725,6 +740,12 @@
     function validateMatch() {
       const val = passInput.value;
       const confVal = confirmInput.value;
+
+      if (val === '' && confVal === '') {
+        document.getElementById('validation').textContent = "";
+        confirmInput.setCustomValidity("");
+        return;
+      }
 
       if (val === confVal) {
         document.getElementById('validation').textContent = "";

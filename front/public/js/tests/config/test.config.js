@@ -48,6 +48,7 @@ const TEST_REGISTRY = {
       `/api/users/${idUser}/age`,
   },
 
+
   // MOCA
 
   4: {
@@ -63,5 +64,19 @@ const TEST_REGISTRY = {
     schoolingEndpoint: (idUser) =>
       `/api/users/${idUser}/schooling`,
   },
+
+      // NIHS
+
+  5: {
+    name: 'NIH',
+    openRegister: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'register'),
+    openModify: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'modify'),
+    openConsult: (idUser, idApplication, test) =>
+      openNIHModal(idUser, idApplication, test, 'consult'),
+    endpoint: (idUser, idApplication) =>
+      `/api/users/${idUser}/applications/${idApplication}/tests/5/results`,
+  }
 
 };
