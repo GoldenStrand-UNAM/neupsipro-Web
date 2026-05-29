@@ -1,0 +1,113 @@
+@startuml Post_WAIS
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "wais.modal.js" as BMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "postWAISController" as TCTRL
+participant "postWAISUseCase" as UC_POST
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card WAIS]
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
+
+USR -> OMODAL : Click [Registrar resultados]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> BMODAL : config.openRegister(idUser, idApplication, test)\n→ openWAISModal(idUser, idApplication, test, 'register')
+BMODAL --> USR : Modal de registro visible\n(4 inputs de área + CI Total manual + notas)
+
+== Interpretación en vivo ==
+
+USR -> BMODAL : Ingresa score en cualquier área
+BMODAL -> BMODAL : strip non-digits\ninterpretWAIS(score)\n≤69 → "Discapacidad"\n70-79 → "Limítrofe"\n80-89 → "Promedio bajo"\n90-109 → "Promedio"\n110-119 → "Promedio alto"\n120-129 → "Superior"\n130+ → "Alta capacidad intelectual"
+BMODAL --> USR : Interpretación en vivo por área\nCI Total sin interpretación\n(valor manual del clínico)
+
+== Validación de notas ==
+
+USR -> BMODAL : Ingresa notas
+BMODAL -> BMODAL : contador actualiza\ntextContent = len / 200
+BMODAL --> USR : Contador visible en rojo\nsi len >= 200
+
+== Guardar resultados ==
+
+USR -> BMODAL : Click [Guardar]
+BMODAL -> BMODAL : validate client-side\n- 4 scores de área presentes y no negativos\n- CI Total presente y no negativo\n- notas max 200 chars
+
+alt Datos inválidos
+    BMODAL --> USR : showFieldError(msg) por área
+end
+
+BMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/2/resultados\n{ score_com_verbal, score_razon_perceptual,\n  score_mem_work, score_velo_proce,\n  score_total, notes }
+
+UROUTE -> TCTRL : waisController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application,\nscore_com_verbal, score_razon_perceptual,\nscore_mem_work, score_velo_proce,\nscore_total, notes })
+
+== Validaciones en Use Case ==
+
+UC_POST -> UC_POST : #parseAreaScore()\npor cada área (4):\n- no vacío\n- es número\n- no negativo\n\n#parseTotal(score_total):\n- no vacío\n- es número\n- no negativo
+
+alt score inválido por área o total
+    UC_POST --> TCTRL : throw Error 422\n'fieldName must be a valid number'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+alt notes > 200 caracteres
+    UC_POST --> TCTRL : throw Error 422\n'notes must be 200 characters or less'
+    TCTRL --> BMODAL : HTTP 422 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 2 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 2
+DB --> RREPO : { id_results, status } | []
+RREPO --> UC_POST : { idResults, status } | null
+
+alt result row not found (null)
+    UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
+    TCTRL --> BMODAL : HTTP 404 { error }
+    BMODAL --> USR : showApiError(json.error)
+end
+
+== Interpretación en Use Case ==
+
+UC_POST -> UC_POST : resolveInterpretation(score) por área\n≤69 → "Discapacidad"\n70-79 → "Limítrofe"\n80-89 → "Promedio bajo"\n90-109 → "Promedio"\n110-119 → "Promedio alto"\n120-129 → "Superior"\n130+ → "Alta capacidad intelectual"\n\nCI Total: sin interpretación\n(valor ingresado por el clínico)
+
+note right
+  El servidor recalcula la interpretación
+  por área para no confiar en el cliente.
+  CI Total se persiste tal como viene.
+end note
+
+== Persistencia ==
+
+UC_POST -> RREPO : saveWAISResult({ id_results,\nscore_com_verbal, inter_com_verbal,\nscore_razon_perceptual, inter_razon_perceptual,\nscore_mem_work, inter_mem_work,\nscore_velo_proce, inter_velo_proce,\nscore_total, notes })
+
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO wais_results (...)\nVALUES (...)\nON DUPLICATE KEY UPDATE ...
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM wais_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw wais_results row
+
+UC_POST -> UC_POST : map row → WaisResultsDTO\n{ idResults, idTest, status: 3,\n  areas: { comVerbal, razonPerceptual,\n  memWork, veloProce },\n  scoreTotal, notes }
+UC_POST --> TCTRL : WaisResultsDTO
+TCTRL --> BMODAL : HTTP 200 { data: WaisResultsDTO }
+
+== Actualizar UI ==
+
+BMODAL -> BMODAL : closeModal()
+BMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
+BMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
+
+@enduml

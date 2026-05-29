@@ -1,0 +1,110 @@
+@startuml Expiry_Check
+
+actor "Clinic User" as USR
+participant "user.ejs" as VEJS
+participant "consultUser.js" as UPROF
+participant "UserRoutes" as UROUTE
+participant "checkExpiryUseCase" as UC_EXP
+participant "impTestApplicationRepository" as AREPO
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir perfil de usuario ==
+
+USR -> VEJS : GET /users/:id_user
+VEJS -> UPROF : DOMContentLoaded\nIIFE: checkApplicationExpiry()
+UPROF -> UROUTE : fetch GET /users/:id_user/aplicaciones/check-expiry
+UROUTE -> UC_EXP : execute({ id_user })
+
+== Obtener protocolo del usuario ==
+
+UC_EXP -> AREPO : fetchUserProtocol({ id_user })
+AREPO -> DB : SELECT protocol\nFROM users JOIN user_info\nWHERE id_user = ?
+DB --> AREPO : { protocol } | null
+AREPO --> UC_EXP : 'Research' | 'Clinical' | null
+
+UC_EXP -> UC_EXP : resolveExpiryMonths(protocol)\n'Research' → 6 meses\n'Clinical' → 3 meses\ndefault → 6
+
+== Obtener aplicaciones activas del usuario ==
+
+UC_EXP -> AREPO : fetchActiveApplicationsByUser({ id_user })
+AREPO -> DB : SELECT id_application, status, created_at\nFROM test_applications\nWHERE id_user = ?\nAND status NOT IN (3, 5)
+DB --> AREPO : [ applications ] | []
+AREPO --> UC_EXP : [ applications ]
+
+note right
+  Solo evaluamos aplicaciones que no estén
+  ya completadas (3) ni ya caducadas (5).
+end note
+
+loop Por cada aplicación activa
+
+  == Obtener pruebas con fecha ==
+
+  UC_EXP -> RREPO : fetchTestsWithDateByApplication({ id_application })
+  RREPO -> DB : SELECT status, date_applied\nFROM test_results\nWHERE id_application = ?
+  DB --> RREPO : [ { status, date_applied } ]
+  RREPO --> UC_EXP : [ { status, date_applied } ]
+
+  UC_EXP -> UC_EXP : allCalificada = tests.every(t => t.status === 3)\nsomeCalificada = tests.some(t => t.status === 3)
+
+  alt Todas las pruebas Calificadas
+    UC_EXP -> AREPO : updateApplicationStatus({ id_application, status: 3 })
+    AREPO -> DB : UPDATE test_applications\nSET status = 3\nWHERE id_application = ?
+    DB --> AREPO : OK
+    note right
+      Aplicación completada —
+      caducidad ya no aplica nunca.
+    end note
+
+  else No todas Calificadas — evaluar estado y caducidad
+
+    alt someCalificada && app.status !== 2
+      UC_EXP -> AREPO : updateApplicationStatus({ id_application, status: 2 })
+      AREPO -> DB : UPDATE test_applications\nSET status = 2\nWHERE id_application = ?
+      DB --> AREPO : OK
+      note right
+        Al menos una prueba calificada —
+        aplicación pasa a "En proceso".
+      end note
+    end
+
+    UC_EXP -> UC_EXP : hasExpiredTest = tests.some(t =>\n  t.status !== 3 &&\n  monthsElapsed(t.date_applied ?? app.created_at)\n  >= expiryMonths)
+
+    alt hasExpiredTest === true
+
+      == Caducar aplicación y pruebas ==
+
+      UC_EXP -> AREPO : updateApplicationStatus({ id_application, status: 5 })
+      AREPO -> DB : UPDATE test_applications\nSET status = 5\nWHERE id_application = ?
+      DB --> AREPO : OK
+
+      UC_EXP -> RREPO : expireIncompleteTests({ id_application })
+      RREPO -> DB : UPDATE test_results\nSET status = 5\nWHERE id_application = ?\nAND status != 3
+      DB --> RREPO : OK
+
+    end
+  end
+
+end
+
+UC_EXP --> UROUTE : { expired: [id_application],\ncompleted: [id_application],\ninProgress: [id_application] }
+UROUTE --> UPROF : HTTP 200 { data }
+
+note right of UPROF
+  consultUser.js maneja el resultado
+  silenciosamente — sin banner en perfil.
+  Solo actualiza el estado en DB.
+end note
+
+== Abrir aplicación caducada ==
+
+USR -> VEJS : GET /usuarios/:id_user/aplicaciones/:id_application/pruebas
+VEJS -> VEJS : testList.js detecta applicationStatus === 'Caducada'
+VEJS --> USR : Banner naranja:\n"Esta aplicación ha caducado.\nPuedes consultar los resultados\npero no registrar ni modificar."
+
+note right
+  options.modal.js: applicationStatus === 'Caducada'\nRegistrar y Modificar deshabilitados.\nConsultar habilitado si status === 'Calificada'.
+end note
+
+@enduml

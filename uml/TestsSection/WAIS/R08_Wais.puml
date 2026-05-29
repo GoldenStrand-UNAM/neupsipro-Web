@@ -1,0 +1,39 @@
+@startuml diagrama de actividades WAIS
+
+title WAIS
+
+|User|
+start
+:Opens WAIS test card;
+
+:Selects an option\nRegister / Modify / Consult;
+
+if (Option selected?) then (Register or Modify)
+
+  :Enters scores and notes;
+
+  |System|
+  :Shows live interpretation per field;
+
+  |User|
+  if (Wants to save?) then (yes)
+    |System|
+    :Saves results;
+    stop
+  else (no)
+    :Exits;
+    stop
+  endif
+
+else (Consult)
+
+  |System|
+  :Fetches and displays existing results;
+
+  |User|
+  :Exits;
+  stop
+
+endif
+
+@enduml

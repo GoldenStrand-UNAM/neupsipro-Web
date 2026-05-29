@@ -1,0 +1,70 @@
+@startuml Create User
+
+actor "Clinical User" as USR
+
+participant "ClinicalUsersView" as UV
+participant "PostClinicalUserView" as PUV
+participant "main.js" as MAIN
+participant "UserRoutes" as ROUTE
+participant "UserController" as CTRL
+participant "regClinicalUserUseCase" as UC
+participant "ClinicalUser\n(Entity)" as ENT
+participant "RegClinicalUserRepo" as REPO
+participant "ImpClinicalUserRepo" as IREPO
+database DB
+
+USR -> UV : Go to clinical users
+UV --> USR : Show Clinical User View
+
+USR -> UV : Click [+ Crear Usuario]
+UV -> MAIN : navigate('/users/create-clinical-user')
+MAIN -> PUV : render()
+PUV --> USR : Show forms\n(Usuario*, Contraseña*,\nNombre(s)*, Apellido Paterno*,\nApellido Materno, E-mail,\nFecha de nacimiento*, Fecha\nde inicio*, Fecha de fin*,\nContacto de emergencia,\nTeléfono de contacto de\nemergencia, Relación de\ncontacto de emergencia,\nAfiliacion*, Actividad*, Horas)
+
+USR -> PUV : Complete Form
+USR -> PUV : Click [Guardar]
+
+PUV -> PUV : validate required fields
+alt Empty field
+    PUV --> USR : Error "Rellene todos los capos requeridos"
+end
+
+PUV -> MAIN : submiClinicaltUser(\nfirst_name, lastname_p,\nlastname_m, birthdate,\nuser_name, password,\nemail, affiliation, activity,\nemergency_contact_name,\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, finish_date, hours)
+MAIN -> ROUTE : POST /api/users/user\n[Authorization: Bearer JWT]
+
+ROUTE -> ROUTE : authMiddleware\n verify JWT → id_user
+ROUTE -> CTRL : controller.createClinicalUser(req, res)
+
+CTRL -> CTRL : req.body / req.file {first_name,\nlastname_p, lastname_m,\nbirthdate, user_name, password,\nemail, affiliation, activity,\nemergency_contact_name,\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, finish_date, hours}
+
+CTRL -> UC : PostClinicalUserUseCase.execute({\nfirst_name, lastname_p, lastname_m,\nbirthdate, user_name, password,\nid_role = 1, email, affiliation, activity,\nemergency_contact_name,\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, finish_date, hours})
+
+UC -> UC : Validate\n(required fields, max lenght)
+alt Validación falla
+    UC --> CTRL : throw DomainError(message)
+    CTRL --> ROUTE : HTTP 422 { error }
+    ROUTE --> MAIN : HTTP 422 { error }
+    MAIN --> PUV : Shows error to the Clinic user
+end
+
+UC -> ENT : new ClinicalUser({\nfirst_name, lastname_p,\nlastname_m, birthdate,\nuser_name, password,\nid_role, email, affiliation, activity,\nemergency_contact_name,\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, finish_date, hours })
+ENT --> UC : clinicalUserEntity
+
+UC -> IREPO : save(clinicalUserEntity)
+
+IREPO -> DB : INSERT INTO users\n(id_user, id_role, user_name,\nfirst_name, lastname_p,\nlastname_m, birthdate,\npassword_hash, email)\n\nINSERT INTO user_clinical\naffilation activity,\nemergency_contact_name\nemergency_contact_phone,\nemergency_contact_relation,\nstart_date, end_date, hours)
+DB --> IREPO : { clinicalUser }
+
+IREPO -> ENT : clinicalUser.set(clinicalUser)
+REPO --> UC : clinicalUser
+
+UC -> UC : map Entity → ClinicalUserDTO
+UC --> CTRL : ClinicalUserDTO
+
+
+CTRL --> ROUTE : HTTP 201 Created\n{ data: clinicalUser }
+ROUTE --> MAIN : HTTP 201 Created\n{ data: clinicalUser }
+MAIN -> UV : navigate('/users')\n+ add clinicalUser to consult clinical users
+UV --> USR : Updated users with\nnew clinical user
+
+@enduml
