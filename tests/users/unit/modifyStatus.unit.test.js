@@ -1,10 +1,10 @@
-const ModifyStatusUsecase = require('../../../Back/src/application/usecase/users/modifystateUseCase');
+const modifyStatusUsecase = require('../../../Back/src/application/usecase/users/modifystateUseCase');
 
 describe('modifyStatusUsecase', () => {
 
    beforeEach(() => {
       userRepository = { editUserState: jest.fn()};
-      useCase = new ModifyStatusUsecase(userRepository);
+      useCase = new modifyStatusUsecase(userRepository);
    })
 
    test ('the status is changed correctly', async () => {
