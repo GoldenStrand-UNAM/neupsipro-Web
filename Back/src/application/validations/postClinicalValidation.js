@@ -37,9 +37,8 @@ function validateFirst (user) {
     date: user.birthdate,
     label: 'La fecha de nacimiento ',
     required: true });
-  const email = validation.validate({
+  const email = validation.validateEmail({
     value: user.email,
-    maxLenght: 50,
     label: 'El email',
     required: false });
   return {
