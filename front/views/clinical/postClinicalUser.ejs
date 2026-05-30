@@ -338,7 +338,7 @@
             <div class="inputs w-full relative flex items-center">
               <input
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="tel"
+                type="text"
                 name="emergencyContactPhone"
                 id="emergencyContactPhone"
                 placeholder="1234567890"
@@ -534,6 +534,27 @@
 
       });
     }
+        const phoneInput = document.getElementById('emergencyContactPhone');
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1) return;
+
+      const isLetter = /\p{L}/u.test(e.key);
+
+      if (isLetter) {
+        e.preventDefault();
+        showToast('No se permiten letras en el teléfono', 'error')
+      }
+    });
+
+    phoneInput.addEventListener('paste', (e) => {
+    const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
+    
+    if (/\p{L}/u.test(pasteData)) {
+      e.preventDefault();
+      showToast('No se permiten letras en el teléfono', 'error')
+    }
+  });
 
     function validateFutureDates(id){
       const inputFecha = document.getElementById(id);
@@ -637,7 +658,6 @@
     validateDates('birthdate');
     validateDates('startDate');
     validateFutureDates('finishDate');
-    validatePhone('emergencyContactPhone');
     validateNumber('hours');
   </script>
 </html>
