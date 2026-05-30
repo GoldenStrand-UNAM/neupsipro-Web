@@ -1,9 +1,9 @@
 class modifyStateUseCase {
-  constructor(userRepository) {
+  constructor (userRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute({ id_user, state }) {
+  async execute ({ id_user, state }) {
 
     if (!state || state.trim() === '') {
       return null;
@@ -12,9 +12,9 @@ class modifyStateUseCase {
     const stateMap = {
       'Active': 'Active',
 
-      'Stand_by': 'Stand_by',  
-      'Stand by': 'Stand_by',  
-      'Stand By': 'Stand_by',   
+      'Stand_by': 'Stand_by',
+      'Stand by': 'Stand_by',
+      'Stand By': 'Stand_by',
 
       'Discharged': 'Discharged',
       'Declined': 'Declined',

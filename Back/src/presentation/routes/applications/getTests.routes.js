@@ -151,7 +151,7 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getReyController.getResult(req, res)
   );
 
-    // ======================== NIH ===============================
+  // ======================== NIH ===============================
   router.post(
     '/api/users/:id_user/applications/:id_application/tests/5/results',
     authMiddleware.verifyToken,
