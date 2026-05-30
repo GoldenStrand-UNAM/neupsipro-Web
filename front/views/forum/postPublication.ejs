@@ -93,11 +93,12 @@
           <!-- ============ Upload Button======================-->
           <div class="flex justify-center md:justify-end pt-2">
             <button id="btnPublish" class="btn-mini bg-[#BA8700] w-full md:w-[220px]">
-      
-              <svg xmlns="http://www.w3.org/2000/svg"fill="none"viewBox="0 0 24 24"stroke-width="1.5"stroke="currentColor" class="white-icon">
-                <path stroke-linecap="round" stroke-linejoin="round"
+              <div id="saveIcon">
+                <svg xmlns="http://www.w3.org/2000/svg"fill="none"viewBox="0 0 24 24"stroke-width="1.5"stroke="currentColor" class="white-icon">
+                  <path stroke-linecap="round" stroke-linejoin="round"
                   d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-              </svg>
+                </svg>
+              </div>
 
               <span>Publicar</span>
 
@@ -134,7 +135,8 @@
   const previewName = document.getElementById('previewName');
   const titleInput = document.getElementById('titleInput');
   const titleCount = document.getElementById('titleCount');
-  const btnPublish = document.getElementById('btnPublish')
+  const btnPublish = document.getElementById('btnPublish');
+  const saveIcon = document.getElementById('saveIcon');
 
   // Xss Injection Prevention
   function escapeHTML(text) {
@@ -239,13 +241,23 @@ form.addEventListener('submit', async (e) => {
   formData.set('contenido', hiddenInput.value); 
 
     try {
+      saveIcon.innerHTML = `<svg class="animate-spin h-8 w-8 text-white"
+  viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="12" r="10"
+    class="stroke-current opacity-25" stroke-width="3"/>
+  <path d="M12 2a10 10 0 0 1 10 10"
+    class="stroke-current" stroke-width="3"
+    stroke-linecap="round"/>
+</svg>`
+      btnPublish.querySelector('span').textContent = 'Cargando...';
+
       const res = await fetch('/forum/post', {
         method: 'POST',
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
 
-      btnPublish.querySelector('span').textContent = 'Cargando...';
+      
 
       const data = await res.json();
 
@@ -265,6 +277,10 @@ form.addEventListener('submit', async (e) => {
           'Error al publicar';
         showToast(data.error || fallback, 'error');
         btnSave.querySelector('span').textContent = 'Guardar';
+        saveIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg"fill="none"viewBox="0 0 24 24"stroke-width="1.5"stroke="currentColor" class="white-icon">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                </svg>`
       }
     } catch (error) {
       showToast('Error de red. Intenta de nuevo más tarde', 'error');

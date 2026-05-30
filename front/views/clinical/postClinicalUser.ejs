@@ -405,8 +405,6 @@
     const lastamePInput = document.getElementById('lastnameP');
     const lastameMInput = document.getElementById('lastnameM');
     const birthdateInput = document.getElementById('birthdate');
-    const btnSave = document.getElementById('btnSave');
-
     function escapeHTML(text) {
       return text
       .replaceAll("&", "&amp;")
@@ -442,8 +440,6 @@
 
       const data = await res.json();
 
-      btnSave.querySelector('span').textContent = 'Cargando...';
-
       if (res.ok) {
         sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
@@ -453,10 +449,8 @@
           userInput.style.border = '2px solid red';
           userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
           userInput.reportValidity();
-          btnSave.querySelector('span').textContent = 'Guardar';
         } else {
           showToast((data.error || 'Error desconocido'), 'error');
-          btnSave.querySelector('span').textContent = 'Guardar';
           if (data.error === 'El usuario ya se encuentra registrado.') {
             lastamePInput.style.border = '2px solid red';
             lastamePInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
@@ -473,7 +467,6 @@
       }
       } catch (error) {
         showToast(`Error de conexión: ${error}`, 'error');
-        btnSave.querySelector('span').textContent = 'Guardar';
       }
     });
     userInput.addEventListener('input', () => {
