@@ -81,7 +81,8 @@ function populateUserInfo (user) {
   document.getElementById('userCode').textContent = user.referenceNumber || 'N/A';
   document.getElementById('userAge').textContent = user.age || 'N/A';
   document.getElementById('userDate').textContent = user.registrationDate
-    ? new Date(user.registrationDate).toLocaleDateString() : 'N/A';
+    ? new Date(user.registrationDate).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : 'N/A';
   document.getElementById('userPhase').textContent = user.phase || 'N/A';
   document.getElementById('groupIntervention').textContent = user.groupIntervention || 'N/A';
   document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
@@ -98,7 +99,6 @@ function populateUserInfo (user) {
   document.getElementById('nextApt').textContent = user.nextAppointment
     ? formatAppointmentDate(user.nextAppointment.dateTime)
     : 'Sin cita programada';  document.getElementById('protocol').textContent = user.protocol || 'N/A';
-  console.log(formatAppointmentDate(user.nextAppointment));
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 
