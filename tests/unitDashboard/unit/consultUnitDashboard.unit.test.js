@@ -94,9 +94,24 @@ describe('getDashboardUnitUseCase', () => {
         clinical: 0, research: 1, noProtocol: 0
     };
 
-    const fakeAge  = [
-        18, 25, 30,         
-        31, 35, 40, 45, 50,  
+    const birthdateForAge = (age) => {
+        const d = new Date();
+        d.setFullYear(d.getFullYear() - age);
+        d.setDate(d.getDate() - 1);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}/${d.getFullYear()}`;
+    };
+
+    const fakeAge = [
+        birthdateForAge(18),  // 18-30
+        birthdateForAge(25),  // 18-30
+        birthdateForAge(30),  // 18-30
+        birthdateForAge(31),  // 31-50
+        birthdateForAge(35),  // 31-50
+        birthdateForAge(40),  // 31-50
+        birthdateForAge(45),  // 31-50
+        birthdateForAge(50),  // 31-50
     ];
 
     const fakeGender = [
