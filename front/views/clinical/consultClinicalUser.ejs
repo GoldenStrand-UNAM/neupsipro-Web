@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuario - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
 </head>
 
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body data-module="<%= tutorialModule %>"  class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -43,7 +44,7 @@
                 
                 
                 <!-- User info -->
-                <div class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
+                <div id="clinicalInfoCard" class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
                     <!-- Hidden button for future edite and delete funcionability-->
                     <button class="hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" aria-label="Opciones de usuario">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -161,13 +162,13 @@
         </div>
     </div>
 </div>
-                <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
+                <div id="relatedUsersTable" class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
                     <div class="md:flex justify-between items-center">
                         <h2 class="text-2xl pt-7 p-3 font-medium">Usuarios relacionados</h2>
                     </div>
                     <table class="w-full border-collapse text-sm md:text-base ">
                         <thead>
-                            <tr class="border-b-2 border-gray-200 table-fixed">
+                            <tr  id="relatedUsersTitle" class="border-b-2 border-gray-200 table-fixed">
                                 <th class="w-[10%] py-2.5 px-4 text-left font-semibold text-gray-700">Usuario</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Fecha de asignación</th>
@@ -189,14 +190,24 @@
     </div>
 
 
-   <script>
-        window.__USER_DATA__ = <%- JSON.stringify(usuario).replace(/</g, '\\u003c') %>;
-    </script>
+
     <script src="/js/sidebar.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/consultClinical.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <script>
+        const tutorialElements = {
+        1: null,                    
+        2: '#clinicalInfoCard',     
+        3: '#emergencyContactCard', 
+        4: '#relatedUsersTitle',  
+        };
+    </script>
+    <script src="/js/tutorial.js"></script>
 
-
+   <script>
+        window.__USER_DATA__ = <%- JSON.stringify(usuario).replace(/</g, '\\u003c') %>;
+    </script>
 <script>
 
 // ===== Utilitys =====
