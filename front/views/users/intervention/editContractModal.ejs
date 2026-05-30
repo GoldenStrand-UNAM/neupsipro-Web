@@ -16,19 +16,23 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2" for="editContractLinkInput">
                     Link del contrato clínico
                 </label>
-                <div class="search-input">
-                    <input id="editContractLinkInput" type="url" placeholder="https://drive.google.com/..." class="search-input_field" maxlength="250" />
+                <div class="relative w-full flex items-center">
+                    <input id="editContractLinkInput" type="url" placeholder="https://drive.google.com/..." class="search-input_field w-full pr-16" maxlength="250" />
+                    <span id="charContractLink" class="absolute right-3 text-xs text-gray-400 pointer-events-none">0/250</span>
                 </div>
-                <span id="charContractLink" class="text-xs text-gray-400 block text-right mt-1">0/250</span>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2" for="editNeuropsychInput">
                     Perfil neuropsicológico
                 </label>
-                <textarea id="editNeuropsychInput" rows="5" maxlength="2000" placeholder="Descripción del perfil neuropsicológico..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
-                    <span id="charNeuroProfile" class="text-xs text-gray-400 block text-right mt-1">0/2000</span>
+                <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+                    <textarea id="editNeuropsychInput" rows="5" maxlength="2000" placeholder="Descripción del perfil neuropsicológico..."
+                        class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"></textarea>
+                    <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                        <span id="charNeuroProfile" class="text-xs text-gray-400">0/2000</span>
+                    </div>
+                </div>
             </div>
 
             <p class="text-xs text-gray-400">Deja los campos vacíos para borrar su contenido.</p>
