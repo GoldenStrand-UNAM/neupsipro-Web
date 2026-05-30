@@ -48,7 +48,7 @@
             <label class="text-sm font-medium text-gray-700">Título * </label>
 
             <div class="search-input w-full relative">
-              <input type="text" name="titulo" required maxlength="50" class="search-input_field" placeholder="Titulo..." id="titleInput">
+              <input type="text" name="titulo" maxlength="50" class="search-input_field" placeholder="Titulo..." id="titleInput">
                 <span id="titleCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/50 </span>
             </div>
           </div>
@@ -221,6 +221,13 @@ function limitContent(content) {
   //  Submit
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  const title = titleInput.value.trim();
+
+  if (!title) {
+    showToast('El título es obligatorio', 'error');
+    return;
+  }
 
   const content = editor.innerText.replace(/\r\n/g, '\n').trim();
 
