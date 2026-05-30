@@ -541,27 +541,32 @@
 
       });
     }
-        const phoneInput = document.getElementById('emergencyContactPhone');
+    const phoneInput = document.getElementById('phone');
+
+    const allowedCharRegex = /^[0-9+()\s-]$/;
+    const allowedStringRegex = /^[0-9+()\s-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
-      if (e.key.length !== 1) return;
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
 
-      const isLetter = /\p{L}/u.test(e.key);
+      const isValidKey = allowedCharRegex.test(e.key);
 
-      if (isLetter) {
+      if (!isValidKey) {
         e.preventDefault();
-        showToast('No se permiten letras en el teléfono', 'error')
+        showToast('Solo se permiten números, guiones y paréntesis', 'error');
       }
     });
 
     phoneInput.addEventListener('paste', (e) => {
-    const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
-    
-    if (/\p{L}/u.test(pasteData)) {
-      e.preventDefault();
-      showToast('No se permiten letras en el teléfono', 'error')
-    }
-  });
+      const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
+      
+      const isValidPaste = allowedStringRegex.test(pasteData);
+      
+      if (!isValidPaste) {
+        e.preventDefault();
+        showToast('El texto pegado contiene caracteres no permitidos', 'error');
+      }
+    });
 
     function validateFutureDates(id){
       const inputFecha = document.getElementById(id);
@@ -593,24 +598,6 @@
 
         e.target.value = finalValue;
 
-      });
-    }
-
-    function validatePhone(id) {
-      const inputPhone = document.getElementById(id);
-
-      inputPhone.addEventListener('input', (e) => {
-        let v = e.target.value.replace(/[^0-9+]/g, '');
-
-        if (v.includes('+')) {
-          const hasPlus = v.startsWith('+');
-          v = v.replace(/\+/g, '');
-          if (hasPlus) {
-            v = '+' + v;
-          }
-        }
-
-        e.target.value = v;
       });
     }
 
