@@ -1,3 +1,15 @@
+let _sessionExpired = false;
+const _originalFetch = window.fetch;
+window.fetch = async (resource, options = {}) => {
+  options = { ...options, headers: { 'Accept': 'application/json', ...options.headers } };
+  const res = await _originalFetch(resource, options);
+  if (res.status === 401 && !_sessionExpired) {
+    _sessionExpired = true;
+    window.location.replace('/');
+  }
+  return res;
+};
+
 function openLogoutModal () {
   document.getElementById('logoutModal').classList.remove('hidden');
 }
