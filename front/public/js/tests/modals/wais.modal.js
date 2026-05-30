@@ -1,4 +1,5 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
+/* global buildModalFormActions, buildModalConsultActions, setModalSaveBusy */
 
 // ── Interpretation ────────────────────────────────────────────────────────────
 
@@ -52,18 +53,7 @@ function buildConsultBody (test, dateLabel) {
       ${consultAreaRow('Velocidad de Procesamiento', areas.veloProce)}
       ${consultAreaRow('CI Total', { score: test.scoreTotal, interpretation: test.interTotal })}
       ${consultDataRow('Notas', `<span class="text-base sm:text-lg text-gray-900 leading-relaxed break-words">${notes ? escapeHTML(notes) : '—'}</span>`)}
-      <div class="flex justify-end pt-4 border-t border-gray-200">
-        <button id="btnCancelWAIS"
-          class="flex items-center gap-3 px-6 py-3 border border-gray-300 rounded-2xl
-                 text-base hover:bg-gray-50 transition-colors cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-          Cerrar
-        </button>
-      </div>
+      ${buildModalConsultActions({ cancelId: 'btnCancelWAIS', label: 'Cerrar' })}
     </div>`;
 }
 
@@ -115,26 +105,7 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
 // Cancel + save buttons shared by register and modify
 function buildFormActions () {
   return `
-    <div class="flex justify-end gap-3">
-      <button id="btnCancelWAIS"
-        class="flex-1 flex items-center justify-center gap-3 px-4 py-3
-               border border-gray-300 rounded-2xl font-regular
-               hover:bg-gray-50 transition-colors cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-        </svg>
-        <span class="whitespace-nowrap">Cancelar</span>
-      </button>
-      <button id="btnSaveWAIS" class="btn-save">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" stroke-width="1.5"
-                d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
-        </svg>
-        <span class="whitespace-nowrap">Guardar</span>
-      </button>
-    </div>`;
+    ${buildModalFormActions({ cancelId: 'btnCancelWAIS', saveId: 'btnSaveWAIS' })}`;
 }
 
 function buildWAISFormHTML (mode, prefill) {
@@ -226,6 +197,7 @@ async function handleSave (endpoint, fields, ctx) {
   });
   if (!valid) return;
   const notes = notesInput.value.trim() || null;
+  setModalSaveBusy('btnSaveWAIS', true);
   try {
     const res  = await fetch(endpoint, {
       method: 'POST',
@@ -246,6 +218,8 @@ async function handleSave (endpoint, fields, ctx) {
     apiError.classList.remove('hidden');
     // eslint-disable-next-line no-console
     console.error('[WAIS] post error:', _err);
+  } finally {
+    setModalSaveBusy('btnSaveWAIS', false);
   }
 }
 
