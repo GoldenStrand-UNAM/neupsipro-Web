@@ -387,21 +387,21 @@ function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, timeErro
 // Notes textarea with character counter, error message slot, and Cancel / Save buttons.
 function reyFormActions (prefill) {
   return `
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
-          <div class="relative">
-            <textarea
-              id="inputREYNotes"
-              rows="2"
-              maxlength="200"
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="inputREYNotes">
+            Notas
+          </label>
+          <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+            <textarea 
+              id="inputREYNotes" 
+              rows="2" 
+              maxlength="200" 
               placeholder="Observaciones"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                     focus:border-transparent transition resize-none pb-5"
+              class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"
             >${escapeHTML(prefill.notes)}</textarea>
-            <p id="reyNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
-              ${prefill.notes.length} / 200
-            </p>
+            <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+              <span id="reyNotesCount" class="text-xs text-gray-400">${prefill.notes.length}/200</span>
+            </div>
           </div>
         </div>
         <p id="reyApiError" class="text-xs text-red-500 hidden"></p>
