@@ -28,7 +28,7 @@
                     </div>
 
                     <div>
-                        <button id="btnPost" onclick="window.location.href='/forum/post'" class="btn-mini w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
+                        <button id="btnPost" onclick="window.location.href='/forum/post'" class="btn-mini hidden md:flex w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
                             <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
                             </svg>
@@ -150,6 +150,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <button onclick="window.location.href='/forum/post'" class="md:hidden fixed bottom-6 right-6 z-30 btn-mini bg-[#C89B3C] shadow-xl cursor-pointer" style="padding: 0.875rem 1.5rem; height: auto; font-size: 1rem;">
+        <svg width="16" height="16" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
+        </svg>
+        Publicar
+    </button>
+
     <script src="/js/sidebar.js"></script>
     <script>window._canEliminate = <%- canEliminate %>;</script>
     <script src="/js/publicationModal.js"></script>
