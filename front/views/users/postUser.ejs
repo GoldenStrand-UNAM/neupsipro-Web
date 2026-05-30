@@ -645,7 +645,7 @@
     });
 
     async function fetchUsers() {
-      const params = new URLSearchParams({ search: "", page: 1, limit: 10 });
+      const params = new URLSearchParams({ search: "", page: 1, limit: 100 });
       try {
         const res  = await fetch(`/api/usuarios-clinicos?${params}`);
         const data = await res.json();
