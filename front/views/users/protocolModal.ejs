@@ -1,0 +1,141 @@
+
+<div id="protocolModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Seleccionar protocolo</h2>
+            <button id="closeProtocolModal" class="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <p class="text-sm text-gray-600">
+                Selecciona el protocolo que se le asignará al usuario:
+            </p>
+
+            <label class="flex items-center gap-3 p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="protocolOption" value="Clinical" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <div>
+                    <p class="font-medium text-gray-900">Clínico</p>
+                    <p class="text-xs text-gray-500">Seguimiento clínico estándar</p>
+                </div>
+            </label>
+
+            <label class="flex items-center gap-3 p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="protocolOption" value="Research" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <div>
+                    <p class="font-medium text-gray-900">Investigación</p>
+                    <p class="text-xs text-gray-500">Protocolo de investigación</p>
+                </div>
+            </label>
+
+            <p id="protocolError" class="text-sm text-red-500 hidden"></p>
+        </div>
+
+        <div class="flex gap-3 justify-end mt-6">
+            <button class="btn-cancel" id="cancelProtocol">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="whitespace-nowrap">Cancelar</span>
+            </button>
+            <button class="btn-save" id="confirmProtocol">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
+                </svg>
+                <span class="whitespace-nowrap">Guardar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal       = document.getElementById('protocolModal');
+    const btnOpen     = document.getElementById('btnEditProtocol');
+    const btnClose    = document.getElementById('closeProtocolModal');
+    const btnCancel   = document.getElementById('cancelProtocol');
+    const btnConfirm  = document.getElementById('confirmProtocol');
+    const errorBox    = document.getElementById('protocolError');
+
+    const user   = window.__USER_DATA__ || {};
+    const idUser = user.idUser;
+
+    // Maps displayed protocol names to backend enum values.
+    const displayToEnum = {
+        'Clínico'      : 'Clinical',
+        'Investigación': 'Research',
+    };
+
+    function showError (msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.remove('hidden');
+    }
+    function hideError () {
+        errorBox.classList.add('hidden');
+        errorBox.textContent = '';
+    }
+    function resetForm () {
+        document.querySelectorAll('input[name="protocolOption"]').forEach(r => r.checked = false);
+        hideError();
+    }
+
+    // Preselect the user's current protocol
+    function preselectCurrent () {
+        const current = displayToEnum[user.protocol];
+        if (!current) return;
+        const radio = document.querySelector(`input[name="protocolOption"][value="${current}"]`);
+        if (radio) radio.checked = true;
+    }
+
+    function openModal () {
+        modal.classList.remove('hidden');
+        preselectCurrent();
+    }
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        resetForm();
+    };
+
+    btnOpen?.addEventListener('click', openModal);
+    btnClose?.addEventListener('click', closeModal);
+    btnCancel?.addEventListener('click', closeModal);
+
+    btnConfirm?.addEventListener('click', async () => {
+        hideError();
+
+        const selected = document.querySelector('input[name="protocolOption"]:checked');
+        if (!selected) return showError('Selecciona un protocolo');
+
+        const protocol = selected.value;
+        const originalHTML = btnConfirm.innerHTML;
+        try {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<span>Guardando...</span>';
+
+            const res = await fetch(`/users/${idUser}/protocol`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': _csrfToken,
+                },
+                credentials: 'include',
+                body: JSON.stringify({ protocol }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Error al actualizar el protocolo');
+
+            showToast('Protocolo actualizado con éxito', 'success');
+            setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+            showError(err.message);
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = originalHTML;
+        }
+    });
+})();
+</script>

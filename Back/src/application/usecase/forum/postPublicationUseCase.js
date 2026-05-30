@@ -8,11 +8,16 @@ class RegPublicationUseCase {
   }
 
   async execute ({ id_usuario, titulo, contenido, image }) {
+    const text = contenido ? contenido.replace(/\r\n/g, '\n') : contenido;
+
+    if (text && text.length > 500) {
+      throw new Error('El contenido no puede superar los 500 caracteres');
+    }
     // Entity validation
     const publication = new Publication ({
       id_usuario,
       titulo,
-      contenido,
+      contenido: text,
       image: image || null, // S3 Link or null
     });
 
