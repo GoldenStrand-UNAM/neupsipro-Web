@@ -179,7 +179,7 @@ class ImpUsersRepository extends usersRepository {
       connection.release();
     }
   }
-  
+
   async editUser ({
     id_user,
     userName,
@@ -207,7 +207,7 @@ class ImpUsersRepository extends usersRepository {
     const connection = await db.getConnection();
     try {
       await connection.query('START TRANSACTION');
-  
+
       // Update main user information
       // COALESCE preserves current profile photo/password
       await connection.query(
@@ -223,9 +223,9 @@ class ImpUsersRepository extends usersRepository {
                 password_hash = COALESCE(?, password_hash)
           WHERE id_user = ?`,
         [userName, firstName, lastnameP, lastnameM, email, birthdate, sex,
-        profilePhoto, passwordHash, id_user]
+          profilePhoto, passwordHash, id_user]
       );
-  
+
       // Update clinical info table
       await connection.query(
         `UPDATE user_info
@@ -234,17 +234,17 @@ class ImpUsersRepository extends usersRepository {
                 neuro_entry_date = ?, group_intervention = ?, phone = ?
           WHERE id_user = ?`,
         [phase, basePathology, modality, referenceNumber, amputationDate,
-        amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, phone, id_user]
+          amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, phone, id_user]
       );
-  
-      // update assigned clinic 
+
+      // update assigned clinic
       await connection.query(
         `UPDATE user_relation
             SET id_clinic_user = ?
           WHERE id_user = ? AND type = 'assigned'`,
         [assigned, id_user]
       );
-  
+
       const [rows] = await connection.query(
         `SELECT
           u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.profile_photo, u.gender,
@@ -257,10 +257,10 @@ class ImpUsersRepository extends usersRepository {
           WHERE u.id_user = ? AND ur.type = 'assigned';`,
         [id_user]
       );
-  
+
       // Confirm transasction
       await connection.query('COMMIT');
-  
+
       return rows[0];
     } catch (error) {
       // If any query fails, rollback the entire transaction
@@ -271,7 +271,6 @@ class ImpUsersRepository extends usersRepository {
     }
   }
 
-  
   async fetchUserForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
@@ -302,7 +301,7 @@ class ImpUsersRepository extends usersRepository {
       WHERE u.id_user = ? AND u.eliminated = 0`,
       [id_user]
     );
-  
+
     return rows[0] || null;
   }
 
@@ -338,25 +337,25 @@ class ImpUsersRepository extends usersRepository {
 
     return rows[0];
   }
-    async editUserState ({ id_user, state }) {
+  async editUserState ({ id_user, state }) {
     const [result] = await db.query(
       `UPDATE user_info 
           SET state = ?
         WHERE id_user = ?`,
       [state, id_user]
     );
-  
+
     if (result.affectedRows === 0) {
       throw new Error('No se pudo actualizar el estatus del usuario');
     }
-  
+
     const [rows] = await db.query(
       `SELECT id_user, state
         FROM user_info 
         WHERE id_user = ?`,
       [id_user]
     );
-  
+
     return rows[0];
   }
 }

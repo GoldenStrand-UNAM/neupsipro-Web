@@ -34,7 +34,6 @@ const ImpClinicRepository = require('../../../infrastructure/repositories/ImpCli
 
 const modifyStateUseCase = require('../../../application/usecase/users/modifyStateUseCase');
 const ModifyStateController = require('../../controller/users/modifyStatus.controller');
- 
 
 const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
 const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
@@ -42,12 +41,11 @@ const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 const HashingService  = require('../../../infrastructure/external/hashing.service');
- 
+
 const loadEditUserUseCase = require('../../../application/usecase/users/loadEditUserUseCase');
 const editUserUseCase = require('../../../application/usecase/users/editUserUseCase');
 const editUserController = require('../../controller/users/editUser.controller');
 const loadEditUserController = require('../../controller/users/loadEditUser.controller');
-
 
 module.exports = (authUseCase, authMiddleware) => {
 
@@ -80,7 +78,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const stateUseCase    = new modifyStateUseCase(usersRepository);
   const stateController = new ModifyStateController(stateUseCase);
- 
+
   const protocolUseCase = new modifyProtocolUseCase(usersRepository);
   const protocolController = new modifyProtocolController(protocolUseCase);
   const hashingService  = new HashingService();
@@ -138,7 +136,7 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deleteUser(req, res)
   );
-  
+
   router.get(
     '/:id_user/edit',
     authMiddleware.verifyToken,
@@ -146,7 +144,7 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => loadEditController.renderEditUser(req, res)
   );
- 
+
   router.post(
     '/:id_user/edit',
     authMiddleware.verifyToken,
@@ -164,14 +162,13 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => stateController.modifyState(req, res)
   );
- 
+
   router.patch(
     '/:id_user/protocol',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => protocolController.modifyProtocol(req, res)
   );
-
 
   return router;
 };

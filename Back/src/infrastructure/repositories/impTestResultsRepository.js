@@ -410,7 +410,7 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
-    // ================= NIH ==================
+  // ================= NIH ==================
 
   // Fetch existing NIH result by id_results for modify/consult prefill
   async fetchNihResult ({ id_results }) {
@@ -461,16 +461,16 @@ class impTestResultsRepository extends resultRepository {
   // Fetch schooling level for a user from their initial interview.
   // Used by MOCA use case to determine if +2 bonus applies.
   // Use by REY to determine the percentil
-async fetchUserSchooling ({ id_user }) {
-  const [rows] = await db.query(
-    `SELECT schooling
+  async fetchUserSchooling ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT schooling
      FROM user_info
      WHERE id_user = ?
      LIMIT 1`,
-    [id_user]
-  );
-  return rows.length ? rows[0].schooling : null;
-}
+      [id_user]
+    );
+    return rows.length ? rows[0].schooling : null;
+  }
   // Fetch birthdate of user.
   async fetchUserAge ({ id_user }) {
     const [rows] = await db.query(

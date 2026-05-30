@@ -2,17 +2,17 @@ class modifyStateController {
   constructor (modifyStateUseCase) {
     this.modifyStateUseCase = modifyStateUseCase;
   }
- 
+
   async modifyState (req, res) {
     try {
       const { id_user } = req.params;
       const { state } = req.body;
- 
+
       const updated = await this.modifyStateUseCase.execute({
         id_user,
         state,
       });
- 
+
       return res.status(200).json({
         success: true,
         message: 'Estatus actualizado correctamente',
@@ -26,5 +26,5 @@ class modifyStateController {
     }
   }
 }
- 
+
 module.exports = modifyStateController;
