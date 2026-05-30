@@ -166,16 +166,17 @@
                                 </tr>
                             <% } else { %>
                                 <% intervention.sessions.forEach((s, idx) => { %>
+                                    <% const date = new Date(s.sessionDate).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
                                     <tr class="session-row border-t border-gray-100 hover:bg-gray-50 align-top cursor-pointer"
                                         data-session-id="<%= s.idSession %>"
-                                        data-date="<%= new Date(s.sessionDate).toLocaleDateString('es-MX') %>"
+                                        data-date="<%= date %>"
                                         data-number="<%= s.sessionNumber || '—' %>"
                                         data-development="<%= s.development || '—' %>"
                                         data-objectives="<%= s.objectives || '—' %>"
                                         data-dqp="<%= s.dqpTask || '—' %>">
 
                                         <td class="py-3 px-4 text-gray-700 break-words">
-                                            <%= new Date(s.sessionDate).toLocaleDateString('es-MX') %>
+                                            <%= date %>
                                         </td>
                                         <td class="py-3 px-4 text-gray-700 break-words">
                                             <%= s.sessionNumber || '—' %>
