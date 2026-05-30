@@ -108,9 +108,7 @@ function buildNIHFormHTML (mode, prefill) {
         <div class="flex gap-3">
 
           <button id="btnCancelNIH"
-            class="flex-1 flex items-center justify-center gap-3
-                   px-4 py-3 border border-gray-300 rounded-2xl
-                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
+            class="btn-cancel">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
               <path stroke-linecap="round" stroke-linejoin="round"
