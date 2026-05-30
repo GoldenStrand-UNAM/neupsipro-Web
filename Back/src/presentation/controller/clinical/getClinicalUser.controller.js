@@ -11,6 +11,7 @@ class ClinicalUserController {
       return res.render('clinical/consultClinicalUser', {
         activePage: 'clinical',
         usuario: user,
+        tutorialModule: 'consultClinicalUser',
       });
     } catch (error) {
       return res.status(400).json({
