@@ -29,6 +29,9 @@
                     <select id="appointmentClinic" class="search-input_field">
                         <option value="">Cargando clínicos...</option>
                     </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
                 </div>
             </div>
             <div>
@@ -112,10 +115,17 @@
                     `<option value="${escapeHtml(c.id)}">${escapeHtml(c.full_name)}</option>`
                 ).join('');
             clinicsLoaded = true;
+            syncClinicColor();
         } catch (err) {
             selectClinic.innerHTML = '<option value="">Error al cargar</option>';
             console.error(err);
         }
+    }
+
+    // Show the clinic select in the same gray as the inputs' placeholder while no
+    // clinic is chosen; switch back to normal text color once one is selected.
+    function syncClinicColor() {
+        selectClinic.style.color = selectClinic.value ? '' : '#9ca3af';
     }
 
     function showError(msg) {
@@ -130,6 +140,7 @@
     function resetForm() {
         if (datePicker) datePicker.clear();
         selectClinic.value = '';
+        syncClinicColor();
         inputIssue.value = '';
         hideError();
     }
@@ -163,6 +174,7 @@
     };
     btnClose?.addEventListener('click', closeModal);
     btnCancel?.addEventListener('click', closeModal);
+    selectClinic?.addEventListener('change', syncClinicColor);
 
     btnConfirm?.addEventListener('click', async () => {
         hideError();
