@@ -645,7 +645,7 @@
     });
 
     async function fetchUsers() {
-      const params = new URLSearchParams({ search: "", page: 1, limit: 10 });
+      const params = new URLSearchParams({ search: "", page: 1, limit: 100 });
       try {
         const res  = await fetch(`/api/usuarios-clinicos?${params}`);
         const data = await res.json();
@@ -673,6 +673,28 @@
 
       assigned.insertAdjacentHTML('beforeend', usersHtml);
     }
+
+    const phoneInput = document.getElementById('phone');
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1) return;
+
+      const isLetter = /\p{L}/u.test(e.key);
+
+      if (isLetter) {
+        e.preventDefault();
+        showToast('No se permiten letras en el teléfono', 'error')
+      }
+    });
+
+    phoneInput.addEventListener('paste', (e) => {
+    const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
+    
+    if (/\p{L}/u.test(pasteData)) {
+      e.preventDefault();
+      showToast('No se permiten letras en el teléfono', 'error')
+    }
+  });
 
     dropzone.addEventListener('click', () => {
       fileInput.click();
