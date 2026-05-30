@@ -150,13 +150,21 @@ function buildFormHTML (mode, prefill) {
               <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
             </div>
           </div>
-          <div class="flex flex-col gap-2">
-            <label class="text-sm font-medium text-gray-700">Notas</label>
-            <div class="relative">
-              <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
-                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none pb-5"
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2" for="inputBANFENotes">
+              Notas
+            </label>
+            <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+              <textarea 
+                id="inputBANFENotes" 
+                rows="4" 
+                maxlength="200" 
+                placeholder="Observaciones"
+                class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"
               >${escapeHTML(prefill.notes)}</textarea>
-              <p id="banfeNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+              <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                <span id="banfeNotesCount" class="text-xs text-gray-400">${prefill.notes.length}/200</span>
+              </div>
             </div>
           </div>
           <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>

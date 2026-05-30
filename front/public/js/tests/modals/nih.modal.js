@@ -84,24 +84,23 @@ function buildNIHFormHTML (mode, prefill) {
       <div class="modal__body flex flex-col gap-4">
 
         <!-- Notes — only field for NIH -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
-          <div class="relative">
-            <textarea
-              id="inputNIHNotes"
-              rows="6"
-              maxlength="500"
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="inputNIHNotes">
+            Notas
+          </label>
+          <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+            <textarea 
+              id="inputNIHNotes" 
+              rows="6" 
+              maxlength="500" 
               placeholder="Observaciones"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                     focus:border-transparent transition resize-none pb-5"
+              class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"
             >${escapeHTML(prefill.notes)}</textarea>
-            <p id="nihNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
-              ${prefill.notes.length} / 500
-            </p>
+            <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+              <span id="nihNotesCount" class="text-xs text-gray-400">${prefill.notes.length}/500</span>
+            </div>
           </div>
         </div>
-
         <p id="nihApiError" class="text-xs text-red-500 hidden"></p>
 
         <!-- Actions -->
