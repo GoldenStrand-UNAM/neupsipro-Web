@@ -76,13 +76,41 @@ function buildWAISConsultHTML (test) {
     </div>`;
 }
 
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+// eslint-disable-next-line no-unused-vars
+function switchWAISTab (tab) {
+  const formContent   = document.getElementById('waisTabForm');
+  const interpContent = document.getElementById('waisTabInterp');
+  const tabForm       = document.getElementById('waisTabBtnForm');
+  const tabInterp     = document.getElementById('waisTabBtnInterp');
+  const actions       = document.getElementById('waisActions');
+  if (tab === 'form') {
+    formContent.classList.remove('hidden');
+    interpContent.classList.add('hidden');
+    actions.classList.remove('hidden');
+    tabForm.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabForm.classList.remove('text-gray-400', 'border-transparent');
+    tabInterp.classList.add('text-gray-400', 'border-transparent');
+    tabInterp.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  } else {
+    interpContent.classList.remove('hidden');
+    formContent.classList.add('hidden');
+    actions.classList.add('hidden');
+    tabInterp.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabInterp.classList.remove('text-gray-400', 'border-transparent');
+    tabForm.classList.add('text-gray-400', 'border-transparent');
+    tabForm.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  }
+}
+
 // ── Form helpers ──────────────────────────────────────────────────────────────
 
 // Input + live-interpretation row used in register/modify form
 function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
   return `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="flex flex-col gap-1">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+      <div class="flex flex-col gap-2">
         <label class="text-sm font-medium text-gray-700">
           ${label} <span class="text-red-500">*</span>
         </label>
@@ -93,7 +121,7 @@ function formAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
                  focus:border-transparent transition"/>
         <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
       </div>
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-2">
         <label class="text-sm font-medium text-gray-700">Interpretación</label>
         <div class="w-full h-[40px] flex items-center border border-gray-300 rounded-lg px-3 bg-gray-50">
           <span id="${interpId}" class="text-sm text-gray-800">${escapeHTML(prefillArea.interp)}</span>
@@ -121,25 +149,82 @@ function buildWAISFormHTML (mode, prefill) {
           </svg>
         </button>
       </div>
+      <div class="flex border-b border-gray-200">
+        <button id="waisTabBtnForm"
+          onclick="switchWAISTab('form')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-[#3350A9] border-b-2 border-[#3350A9] cursor-pointer transition-colors">
+          Prueba
+        </button>
+        <button id="waisTabBtnInterp"
+          onclick="switchWAISTab('interp')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-gray-400 border-b-2 border-transparent cursor-pointer hover:text-gray-600 transition-colors">
+          Interpretación
+        </button>
+      </div>
       <div class="modal__body flex flex-col gap-3">
-        ${formAreaRow({ label: 'Comprensión Verbal',         inputId: 'inputComVerbal',       interpId: 'interpComVerbal',       errorId: 'errorComVerbal',       prefillArea: prefill.comVerbal })}
-        ${formAreaRow({ label: 'Razonamiento Perceptual',    inputId: 'inputRazonPerceptual', interpId: 'interpRazonPerceptual', errorId: 'errorRazonPerceptual', prefillArea: prefill.razonPerceptual })}
-        ${formAreaRow({ label: 'Memoria de Trabajo',         inputId: 'inputMemWork',         interpId: 'interpMemWork',         errorId: 'errorMemWork',         prefillArea: prefill.memWork })}
-        ${formAreaRow({ label: 'Velocidad de Procesamiento', inputId: 'inputVeloProce',       interpId: 'interpVeloProce',       errorId: 'errorVeloProce',       prefillArea: prefill.veloProce })}
-        ${formAreaRow({ label: 'CI Total',                   inputId: 'inputWAISTotal',       interpId: 'interpWAISTotal',       errorId: 'errorWAISTotal',       prefillArea: prefill.ciTotal })}
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
-          <div class="relative">
-            <textarea id="inputWAISNotes" rows="2" maxlength="200" placeholder="Observaciones"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                     focus:border-transparent transition resize-none pb-5"
-            >${escapeHTML(prefill.notes)}</textarea>
-            <p id="waisNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+        <div id="waisTabForm">
+          ${formAreaRow({ label: 'Comprensión Verbal',         inputId: 'inputComVerbal',       interpId: 'interpComVerbal',       errorId: 'errorComVerbal',       prefillArea: prefill.comVerbal })}
+          ${formAreaRow({ label: 'Razonamiento Perceptual',    inputId: 'inputRazonPerceptual', interpId: 'interpRazonPerceptual', errorId: 'errorRazonPerceptual', prefillArea: prefill.razonPerceptual })}
+          ${formAreaRow({ label: 'Memoria de Trabajo',         inputId: 'inputMemWork',         interpId: 'interpMemWork',         errorId: 'errorMemWork',         prefillArea: prefill.memWork })}
+          ${formAreaRow({ label: 'Velocidad de Procesamiento', inputId: 'inputVeloProce',       interpId: 'interpVeloProce',       errorId: 'errorVeloProce',       prefillArea: prefill.veloProce })}
+          ${formAreaRow({ label: 'CI Total',                   inputId: 'inputWAISTotal',       interpId: 'interpWAISTotal',       errorId: 'errorWAISTotal',       prefillArea: prefill.ciTotal })}
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-gray-700">Notas</label>
+            <div class="relative">
+              <textarea id="inputWAISNotes" rows="2" maxlength="200" placeholder="Observaciones"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                       focus:border-transparent transition resize-none pb-5"
+              >${escapeHTML(prefill.notes)}</textarea>
+              <p id="waisNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">${prefill.notes.length} / 200</p>
+            </div>
           </div>
+          <p id="waisApiError" class="text-xs text-red-500 hidden"></p>
         </div>
-        <p id="waisApiError" class="text-xs text-red-500 hidden"></p>
-        ${buildFormActions()}
+        <div id="waisTabInterp" class="hidden flex flex-col gap-4">
+          <div class="border border-gray-200 rounded-2xl overflow-hidden">
+            <div class="grid grid-cols-[120px_1fr] bg-[#3350A9]">
+              <span class="px-4 py-2 text-sm font-medium text-white">Puntaje</span>
+              <span class="px-4 py-2 text-sm font-medium text-white">Interpretación</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≥ 130</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Alta capacidad intelectual</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">120 – 129</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Superior</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">110 – 119</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Promedio alto</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">90 – 109</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Promedio</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">80 – 89</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Promedio bajo</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">70 – 79</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Limítrofe</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≤ 69</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Discapacidad</span>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500">
+            La interpretación aplica a todas las áreas y al CI Total por igual. Se calcula automáticamente al ingresar el puntaje.
+          </p>
+        </div>
+        <div id="waisActions">
+          ${buildFormActions()}
+        </div>
       </div>
     </div>`;
 }
