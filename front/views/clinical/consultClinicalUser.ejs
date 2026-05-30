@@ -239,7 +239,8 @@ function renderTable(users) {
             <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(formatAppointmentDate(u.assigmentDate))}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>   
-            <td class="py-3 px-6 flex justify-center">
+            <td class="py-3 px-6 text-center">
+                <div class="flex justify-center">
                         <button
                             onclick="consultar('${escapeHtml(u.id)}')"
                             class="btn-mini bg-[#3350A9]">
@@ -253,7 +254,8 @@ function renderTable(users) {
                             </svg>
                             <span>Consultar</span>
                         </button>
-                    </td>         
+                </div>
+            </td>         
         </tr>
     `).join("");
 }
@@ -306,6 +308,7 @@ function showMsg(msg, colorClass) {
 function consultar(id) {
             window.location.href = `/users/${id}`
 }
+// post clinicals
 fetchUsers();
     </script>
   </body>
