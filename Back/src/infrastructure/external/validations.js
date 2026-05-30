@@ -58,6 +58,12 @@ class validation {
       if (required) throw new Error(`${label} debe llenarse`);
       return null;
     }
+    const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+    if (emojiRegex.test(value)) {
+      throw new Error(`${label} no puede contener emojis`);
+    }
     const phoneStr = String(value).trim();
     if (phoneStr.length > 20)
       throw new Error(`${label} no puede superar los 20 caracteres`);
