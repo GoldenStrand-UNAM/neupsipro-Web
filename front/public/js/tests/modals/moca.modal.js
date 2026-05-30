@@ -104,6 +104,34 @@ function buildMOCAConsultHTML (test) {
     </div>`;
 }
 
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+// eslint-disable-next-line no-unused-vars
+function switchMOCATab (tab) {
+  const formContent   = document.getElementById('mocaTabForm');
+  const interpContent = document.getElementById('mocaTabInterp');
+  const tabForm       = document.getElementById('mocaTabBtnForm');
+  const tabInterp     = document.getElementById('mocaTabBtnInterp');
+  const actions       = document.getElementById('mocaActions');
+  if (tab === 'form') {
+    formContent.classList.remove('hidden');
+    interpContent.classList.add('hidden');
+    actions.classList.remove('hidden');
+    tabForm.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabForm.classList.remove('text-gray-400', 'border-transparent');
+    tabInterp.classList.add('text-gray-400', 'border-transparent');
+    tabInterp.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  } else {
+    interpContent.classList.remove('hidden');
+    formContent.classList.add('hidden');
+    actions.classList.add('hidden');
+    tabInterp.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabInterp.classList.remove('text-gray-400', 'border-transparent');
+    tabForm.classList.add('text-gray-400', 'border-transparent');
+    tabForm.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  }
+}
+
 // ── REGISTER AND MODIFY ────────────────────────────────────────────────────────────────
 // Shared HTML for register and modify modes.
 // schoolingYears is used to show the bonus banner.
@@ -172,73 +200,130 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
         </button>
       </div>
 
+      <div class="flex border-b border-gray-200">
+        <button id="mocaTabBtnForm"
+          onclick="switchMOCATab('form')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-[#3350A9] border-b-2 border-[#3350A9] cursor-pointer transition-colors">
+          Prueba
+        </button>
+        <button id="mocaTabBtnInterp"
+          onclick="switchMOCATab('interp')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-gray-400 border-b-2 border-transparent cursor-pointer hover:text-gray-600 transition-colors">
+          Interpretación
+        </button>
+      </div>
+
       <div class="modal__body flex flex-col gap-4">
 
-        ${schoolingBanner}
+        <div id="mocaTabForm" class="flex flex-col gap-4">
 
-        <!-- Score bruto + puntaje final en vivo -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${schoolingBanner}
 
-          <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">
-              Puntaje bruto <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="inputMOCAScore"
-              type="text"
-              inputmode="numeric"
-              placeholder="0 – 30"
-              value="${escapeHTML(String(prefill.score))}"
-              class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                     focus:border-transparent transition"/>
-            <p class="text-xs text-gray-400">Número entero entre 0 y 30</p>
-            <p id="errorMOCAScore" class="text-xs text-red-500 hidden"></p>
+          <!-- Score bruto + puntaje final en vivo -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-medium text-gray-700">
+                Puntaje bruto <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="inputMOCAScore"
+                type="text"
+                inputmode="numeric"
+                placeholder="0 – 30"
+                value="${escapeHTML(String(prefill.score))}"
+                class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                       focus:border-transparent transition"/>
+              <p class="text-xs text-gray-400">Número entero entre 0 y 30</p>
+              <p id="errorMOCAScore" class="text-xs text-red-500 hidden"></p>
+            </div>
+
+            <!-- Puntaje final — computed live from raw + bonus -->
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-medium text-gray-700">Puntaje final</label>
+              <div class="w-full h-[40px] flex items-center
+                          border border-gray-300 rounded-lg px-3 bg-gray-50">
+                <span id="mocaFinalScore" class="text-sm text-gray-800">—</span>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Puntaje final — computed live from raw + bonus -->
+          <!-- Interpretación en vivo -->
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Puntaje final</label>
+            <label class="text-sm font-medium text-gray-700">Interpretación</label>
             <div class="w-full h-[40px] flex items-center
                         border border-gray-300 rounded-lg px-3 bg-gray-50">
-              <span id="mocaFinalScore" class="text-sm text-gray-800">—</span>
+              <span id="mocaInterpretation" class="text-sm text-gray-800">—</span>
             </div>
           </div>
 
-        </div>
-
-        <!-- Interpretación en vivo -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Interpretación</label>
-          <div class="w-full h-[40px] flex items-center
-                      border border-gray-300 rounded-lg px-3 bg-gray-50">
-            <span id="mocaInterpretation" class="text-sm text-gray-800">—</span>
+          <!-- Notes -->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Notas</label>
+            <div class="relative">
+              <textarea
+                id="inputMOCANotes"
+                rows="2"
+                maxlength="200"
+                placeholder="Observaciones"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-[#3350A9]
+                       focus:border-transparent transition resize-none pb-5"
+              >${escapeHTML(prefill.notes)}</textarea>
+              <p id="mocaNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
+                ${prefill.notes.length} / 200
+              </p>
+            </div>
           </div>
+
+          <p id="mocaApiError" class="text-xs text-red-500 hidden"></p>
+
         </div>
 
-        <!-- Notes -->
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
-          <div class="relative">
-            <textarea
-              id="inputMOCANotes"
-              rows="2"
-              maxlength="200"
-              placeholder="Observaciones"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                     focus:border-transparent transition resize-none pb-5"
-            >${escapeHTML(prefill.notes)}</textarea>
-            <p id="mocaNotesCount" class="absolute bottom-2 right-2 text-xs text-gray-500">
-              ${prefill.notes.length} / 200
+        <div id="mocaTabInterp" class="hidden flex flex-col gap-4">
+
+          <div class="border border-gray-200 rounded-2xl overflow-hidden">
+            <div class="grid grid-cols-[120px_1fr] bg-[#3350A9]">
+              <span class="px-4 py-2 text-sm font-medium text-white">Puntaje final</span>
+              <span class="px-4 py-2 text-sm font-medium text-white">Interpretación</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≥ 26</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Rendimiento cognitivo normal</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">18 – 25</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Deterioro cognitivo leve</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">10 – 17</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Deterioro cognitivo moderado</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≤ 9</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Deterioro cognitivo grave</span>
+            </div>
+          </div>
+
+          <div class="border border-blue-200 rounded-xl bg-blue-50 px-4 py-3">
+            <p class="text-sm font-medium text-gray-700 mb-1">Bono de escolaridad</p>
+            <p class="text-sm text-gray-600">
+              Se suman 2 puntos al puntaje bruto cuando el paciente tiene 12 años o menos de escolaridad Y el puntaje bruto es ≤ 28. El puntaje final se limita a un máximo de 30.
             </p>
           </div>
+
+          <p class="text-xs text-gray-500">
+            El servidor recalcula el puntaje final y la interpretación al guardar — los valores mostrados en vivo son solo orientativos.
+          </p>
+
         </div>
 
-        <p id="mocaApiError" class="text-xs text-red-500 hidden"></p>
-
         <!-- Actions -->
-        <div class="flex gap-3">
+        <div id="mocaActions" class="flex gap-3">
 
           <button id="btnCancelMOCA"
             class="flex-1 flex items-center justify-center gap-3
@@ -259,7 +344,6 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
             </svg>
             <span class="whitespace-nowrap">Guardar</span>
           </button>
-
 
         </div>
       </div>
