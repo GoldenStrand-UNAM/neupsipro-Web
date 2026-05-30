@@ -16,6 +16,27 @@ class GetDashboardSummaryUseCase {
     this.repo = dashboardRepository;
   }
 
+  _calculateAge (birthdate) {
+    if (!birthdate) return null;
+
+    let d;
+    if (typeof birthdate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(birthdate)) {
+      const [day, month, year] = birthdate.split('/').map(Number);
+      d = new Date(year, month - 1, day);
+    } else {
+      d = new Date(birthdate);
+    }
+    if (isNaN(d.getTime())) return null;
+
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) {
+      age -= 1;
+    }
+    return age;
+  }
+
   // classify ages into buckets
   _bucketAges (ages) {
     return AGE_BUCKETS.map(({ label, min, max }) => {
@@ -25,14 +46,19 @@ class GetDashboardSummaryUseCase {
   }
 
   async execute () {
-    const [counts, ageDistribution, gender, tests, standByList] = await Promise.all([
+    const [counts, birthdates, gender, tests, standByList] = await Promise.all([
       this.repo.fetchCounts(),
       this.repo.fetchAgeDistribution(),
       this.repo.fetchGenderDistribution(),
       this.repo.fetchTestCounts(),
       this.repo.fetchStandByList(),
     ]);
-    const age = this._bucketAges(ageDistribution);
+
+    // Convert raw birthdates into ages, discarding malformed ones, then bucket them.
+    const ages = birthdates
+      .map(b => this._calculateAge(b))
+      .filter(age => age !== null);
+    const age = this._bucketAges(ages);
 
     return new DashboardSummaryDTO({ counts, age, gender, tests, standByList });
   }
