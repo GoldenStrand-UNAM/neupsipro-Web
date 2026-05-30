@@ -32,7 +32,14 @@
             <h1 class="text-2xl font-bold text-[#1E1E1E]">Modificar Usuario</h1>
           </div>
           <div class="flex items-center gap-3">
-            <button onclick="resetFormBtn()" class="btn-clear">
+            <button type="button" onclick="resetFormBtn()"
+              class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm md:text-base font-medium hover:bg-gray-50 hover:scale-[1.05] active:scale-95 transition-all duration-200 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356M2.985 19.644v-4.992h4.992m0 0-3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              <span>Restablecer cambios</span>
+            </button>
+            <button type="button" onclick="clearFormBtn()" class="btn-clear">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -580,6 +587,34 @@
       });
 
       showToast('Cambios restablecidos');
+    }
+
+    // Empties every editable field (unlike resetFormBtn, which restores the original values).
+    function clearFormBtn(){
+      if (!form) return;
+
+      // Clear text inputs and textareas, keeping hidden inputs (CSRF / id) intact.
+      form.querySelectorAll('input:not([type="hidden"]), textarea').forEach(field => {
+        field.value = '';
+      });
+
+      // Reset selects to their placeholder state.
+      form.querySelectorAll('select').forEach(select => {
+        select.value = '';
+        select.classList.remove('text-black');
+        select.classList.add('text-gray-400');
+      });
+
+      // Refresh the character counters.
+      document.querySelectorAll('input[maxlength]').forEach(input => {
+        input.dispatchEvent(new Event('input'));
+      });
+
+      // Hide the conditional "other pathology" field if it was open.
+      const pathologyDiv = document.getElementById('pathologyDiv');
+      if (pathologyDiv) pathologyDiv.classList.add('hidden');
+
+      showToast('Campos limpiados');
     }
 
     function checkOther(select, otherSelect, div) {
