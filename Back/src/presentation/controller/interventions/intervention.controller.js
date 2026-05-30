@@ -47,14 +47,13 @@ class interventionController {
     }
   }
 
-  async deleteLastSession (req, res) {
+  async deleteSession (req, res) {
     try {
       const { id_user, id_session } = req.params;
       const result = await this.deleteSessionUC.execute({ id_user, id_session });
       return res.status(200).json(result);
     } catch (error) {
-      const status = error.message.includes('última sesión') ? 409 : 400;
-      return res.status(status).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 }
