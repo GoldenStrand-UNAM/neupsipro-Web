@@ -111,10 +111,17 @@
                     `<option value="${escapeHtml(c.id)}">${escapeHtml(c.full_name)}</option>`
                 ).join('');
             clinicsLoaded = true;
+            syncClinicColor();
         } catch (err) {
             selectClinic.innerHTML = '<option value="">Error al cargar</option>';
             console.error(err);
         }
+    }
+
+    // Show the clinic select in the same gray as the inputs' placeholder while no
+    // clinic is chosen; switch back to normal text color once one is selected.
+    function syncClinicColor() {
+        selectClinic.style.color = selectClinic.value ? '' : '#9ca3af';
     }
 
     function showError(msg) {
@@ -129,6 +136,7 @@
     function resetForm() {
         if (datePicker) datePicker.clear();
         selectClinic.value = '';
+        syncClinicColor();
         inputIssue.value = '';
         hideError();
     }
@@ -145,6 +153,7 @@
     };
     btnClose?.addEventListener('click', closeModal);
     btnCancel?.addEventListener('click', closeModal);
+    selectClinic?.addEventListener('change', syncClinicColor);
 
     btnConfirm?.addEventListener('click', async () => {
         hideError();
