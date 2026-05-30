@@ -181,24 +181,30 @@
             </div>
           </div>
 
-          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-start gap-4 w-full">
+            
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0 mt-2">
               Folio <span style="color: #FF0404">*</span>
             </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
-                name="referenceNumber"
-                id="referenceNumber"
-                placeholder="000X-XXX"
-                minlength="8"
-                maxlength="10"
-              >
-              <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/10 
-              </span>
+            
+            <div class="flex flex-col w-full">
+              
+              <div class="inputs w-full relative flex items-center">
+                <input
+                  required
+                  class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                  type="text"
+                  name="referenceNumber"
+                  id="referenceNumber"
+                  placeholder="000X - XXX"
+                  maxlength="10"                >
+                <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                  0/10 
+                </span>
+              </div>
+              <small class="text-xs text-gray-500 mt-1 ml-1">
+                El folio comienza con 3 números, seguidos de la letra P, un guión y las iniciales del usuario
+              </small>
             </div>
           </div>
 
