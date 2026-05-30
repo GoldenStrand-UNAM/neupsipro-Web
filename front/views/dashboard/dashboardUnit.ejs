@@ -192,7 +192,10 @@
                 responsive: true, maintainAspectRatio: false,
                 plugins: {
                     // Bottom legend
-                    legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 14 }, padding: 10 } },
+                    legend: { position: 'bottom', 
+                    labels: { boxWidth: 14, font: { size: 14 }, padding: 10 },
+                    onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+                    onLeave: (event) => { event.native.target.style.cursor = 'default'; }},
                     // Tooltip with percentage
                     tooltip: {
                         callbacks: {
@@ -269,7 +272,10 @@
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'right', labels: { boxWidth: 10, font: { size: 14 } } },
+                    legend: { position: 'right', 
+                    labels: { boxWidth: 10, font: { size: 14 } },
+                    onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+                    onLeave: (event) => { event.native.target.style.cursor = 'default'; } },
                     tooltip: {
                         callbacks: {
                             label: ctx => {
