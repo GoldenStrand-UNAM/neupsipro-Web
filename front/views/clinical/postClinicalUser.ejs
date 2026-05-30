@@ -412,6 +412,22 @@
     const lastamePInput = document.getElementById('lastnameP');
     const lastameMInput = document.getElementById('lastnameM');
     const birthdateInput = document.getElementById('birthdate');
+    setupCounter('firstName', 'charactersNames');
+    setupCounter('lastnameP', 'charactersLastnameP');
+    setupCounter('lastnameM', 'charactersLastnameM');
+    setupCounter('email', 'charactersEmail');
+    setupCounter('affiliation', 'charactersAffiliation');
+    setupCounter('activity', 'charactersActivity');
+    setupCounter('username', 'charactersUserName');
+    setupCounter('password', 'charactersPassword');
+    setupCounter('confirmPassword', 'charactersConfirmPassword');
+    setupCounter('emergencyContactName', 'charactersEmergencyContactName');
+    setupCounter('emergencyContactPhone', 'charactersEmergencyContactPhone');
+    setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
+    validateDates('birthdate');
+    validateDates('startDate');
+    validateFutureDates('finishDate');
+    validateNumber('hours');
     function escapeHTML(text) {
       return text
       .replaceAll("&", "&amp;")
@@ -420,15 +436,20 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
     }
+
     function resetFormBtn(){
       if (form) form.reset();
       showToast('Formulario limpiado');
     }
+
     function setupCounter(inputId, counterId) {
       const input = document.getElementById(inputId);
       const counter = document.getElementById(counterId);
+
       if (!input || !counter) return;
+
       const max = input.getAttribute('maxlength');
+
       input.addEventListener('input', () => {
         const longitud = input.value.length;
         counter.textContent = `${longitud}/${max}`;
@@ -637,21 +658,5 @@
         if (label) label.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
       });
     }
-    setupCounter('firstName', 'charactersNames');
-    setupCounter('lastnameP', 'charactersLastnameP');
-    setupCounter('lastnameM', 'charactersLastnameM');
-    setupCounter('email', 'charactersEmail');
-    setupCounter('affiliation', 'charactersAffiliation');
-    setupCounter('activity', 'charactersActivity');
-    setupCounter('username', 'charactersUserName');
-    setupCounter('password', 'charactersPassword');
-    setupCounter('confirmPassword', 'charactersConfirmPassword');
-    setupCounter('emergencyContactName', 'charactersEmergencyContactName');
-    setupCounter('emergencyContactPhone', 'charactersEmergencyContactPhone');
-    setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
-    validateDates('birthdate');
-    validateDates('startDate');
-    validateFutureDates('finishDate');
-    validateNumber('hours');
   </script>
 </html>
