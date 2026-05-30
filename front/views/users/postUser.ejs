@@ -510,9 +510,11 @@
           </div>
           <div class="mb-8 flex justify-center md:justify-end pt-2">
             <button id="btnSave" class="btn-mini bg-[#3350A9]">
-              <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <div id="saveIcon">
+                <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>
+              </div>
               <span>Guardar</span>
             </button>
           </div>
@@ -550,6 +552,7 @@
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
     const btnSave = document.getElementById('btnSave');
+    const saveIcon = document.getElementById('saveIcon')
 
     function escapeHTML(text) {
       return text
@@ -600,13 +603,20 @@
       const formData = new FormData(form);
 
       try {
+      btnSave.querySelector('span').textContent = 'Cargando...';
+      saveIcon.innerHTML = `<svg class="animate-spin h-8 w-8 text-white"
+  viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="12" r="10"
+    class="stroke-current opacity-25" stroke-width="3"/>
+  <path d="M12 2a10 10 0 0 1 10 10"
+    class="stroke-current" stroke-width="3"
+    stroke-linecap="round"/>`
       const res = await fetch('/user/post', {
         method: 'POST',
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
 
-      btnSave.querySelector('span').textContent = 'Cargando...';
       const data = await res.json();
       console.log(res.status);
 
@@ -616,13 +626,22 @@
       } else if (res.status === 429) {
           showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
           btnSave.querySelector('span').textContent = 'Guardar';
+          saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
       } else {
         showToast((data.error || 'Error desconocido'), 'error');
         btnSave.querySelector('span').textContent = 'Guardar';
+        saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
       }
       } catch (error) {
       showToast('Error de conexión');
       btnSave.querySelector('span').textContent = 'Guardar';
+      saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
       }
     });
 
