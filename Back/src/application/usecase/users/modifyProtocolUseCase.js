@@ -1,9 +1,9 @@
 class modifyProtocolUseCase {
-  constructor(userRepository) {
+  constructor (userRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute({ id_user, protocol }) {
+  async execute ({ id_user, protocol }) {
 
     if (!id_user) {
       throw new Error('id_user is required');
@@ -19,7 +19,6 @@ class modifyProtocolUseCase {
     if (!VALID_PROTOCOLS.includes(protocol)) {
       throw new Error(`Invalid protocol. Must be one of: ${VALID_PROTOCOLS.join(', ')}`);
     }
-
 
     const updated =
       await this.userRepository.editUserProtocol({

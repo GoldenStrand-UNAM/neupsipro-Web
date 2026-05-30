@@ -1,22 +1,22 @@
 
 const Validation       = require('../../../infrastructure/external/validations');
 const { deleteFromS3 } = require('../../../infrastructure/external/s3.config');
- 
+
 const validation = new Validation();
- 
+
 const enumSex = { FEMENINE: 'Femenino', MASCULINE: 'Masculino', NOT_SPECIFIED: 'Sin especificar' };
 const enumModality = { ONLINE: 'En línea', IN_PERSON: 'Presencial' };
 const enumLaterality = { LEFT: 'Zurda', RIGHT: 'Diestra', BOTH: 'Ambidiestra' };
 const enumPhase = { PRE: 'Preprotésico', PROSTHETIC: 'Protésico', POST: 'Postprotésico', EXERCISE_ADAPT: 'Adaptación al ejercicio', DISCHARGE: 'Alta', DROPOUT: 'Baja de neuropsicología' };
 const enumPairs = { YES: 'Sí asiste', NO: 'No asiste' };
 const enumProsthetist = { JUAN: 'CPO Juan David Orozco', ALEJANDRA: 'CPO Alejandra Santos', MELVIN: 'CPO Melvin Arévalo' };
- 
+
 class editUserUseCase {
   constructor (userRepository, hashingService) {
     this.userRepository = userRepository;
     this.hashingService = hashingService;
   }
- 
+
   async execute ({
     id_user,
     userName,
@@ -42,7 +42,7 @@ class editUserUseCase {
     laterality,
     prosthetist,
   }) {
-    //  Validations 
+    //  Validations
     const fpathology = validation.others(basePathology, otherPathology, 50, 'La etiología de amputación', true);
     const flevel = validation.validate(amputationLevel, 30, 'El nivel de amputación ', true);
     validation.validate(userName, 30, 'El nombre de usuario', true);
@@ -64,13 +64,13 @@ class editUserUseCase {
     const fBirthdate = validation.validateDate(birthdate, 'La fecha de nacimiento ', true);
     const fAmputation = validation.validateDate(amputationDate, 'La fecha de amputación ', true);
     const fNeuroEntry = validation.validateDate(neuroEntryDate, 'La fecha de ingreso a neuropsicología ', false);
- 
+
     //  if password is provided, hash it
     let passwordHash = null;
     if (fpassword) {
       passwordHash = await this.hashingService.hash(fpassword);
     }
- 
+
     const current = await this.userRepository.fetchUserForEdit({ id_user });
     if (!current) {
       const err = new Error('Usuario no encontrado');
@@ -78,7 +78,7 @@ class editUserUseCase {
       throw err;
     }
     const oldPhoto = current.profile_photo;
- 
+
     const saved = await this.userRepository.editUser({
       id_user,
       userName,
@@ -104,14 +104,13 @@ class editUserUseCase {
       sex: fsex,
     });
 
- 
     // delete old photo from s3
     if (profilePhoto && oldPhoto && oldPhoto !== profilePhoto) {
       await deleteFromS3(oldPhoto);
     }
- 
+
     return saved;
   }
 }
- 
+
 module.exports = editUserUseCase;

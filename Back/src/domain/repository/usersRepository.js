@@ -32,7 +32,6 @@ class usersRepository {
     throw new Error('postUser() must be implemented');
   }
 
-
   async fetchOne ({ _id_user }) {
     throw new Error('fetchOne() must be implemented');
   }

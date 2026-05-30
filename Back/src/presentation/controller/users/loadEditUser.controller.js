@@ -2,12 +2,12 @@ class RenderEditUserController {
   constructor (loadEditUserUseCase) {
     this.loadEditUserUseCase = loadEditUserUseCase;
   }
- 
+
   async renderEditUser (req, res) {
     try {
       const { id_user } = req.params;
       const usuario = await this.loadEditUserUseCase.execute({ id_user });
- 
+
       return res.render('users/editUser', {
         activePage: 'users',
         usuario,
@@ -18,6 +18,5 @@ class RenderEditUserController {
     }
   }
 }
- 
+
 module.exports = RenderEditUserController;
- 

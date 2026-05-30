@@ -130,7 +130,6 @@ class resultRepository {
 
   }
 
-
 }
 
 module.exports = resultRepository;
