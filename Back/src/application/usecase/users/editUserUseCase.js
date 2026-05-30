@@ -49,7 +49,7 @@ class editUserUseCase {
     const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
     const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
     const flastnameM = validation.validate(lastnameM, 30, 'EL apellido materno', false);
-    const femail = validation.validate(email, 50, 'El email', false);
+    const femail = validation.validateEmail(email, 'El email', false);
     const fphone = validation.validate(phone, 16, 'El teléfono', false);
     const fpassword = validation.validate(password, 30, 'La contraseña', false);
     validation.validate(assigned, 36, 'El clínico asignado', true);
