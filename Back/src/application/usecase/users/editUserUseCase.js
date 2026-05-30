@@ -54,7 +54,7 @@ class editUserUseCase {
     const fpassword = validation.validate(password, 30, 'La contraseña', false);
     validation.validate(assigned, 36, 'El clínico asignado', true);
     validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
-    const freferenceNumber = validation.validate(referenceNumber, 10, 'El folio', true);
+    const freferenceNumber = validation.validateRefNumber(referenceNumber);
     const fprosthetist = validation.validateEnum(prosthetist, enumProsthetist);
     const fsex = validation.validateEnum(sex, enumSex);
     const fmodality = validation.validateEnum(modality, enumModality);
