@@ -23,8 +23,12 @@ class ImpClinicalRepository extends clinicalRepository {
             (
               SELECT COUNT(*)
               FROM user_relation ur
+              JOIN users pu ON pu.id_user = ur.id_user
+              JOIN user_info ui ON ui.id_user = ur.id_user
               WHERE ur.id_clinic_user = u.id_user
                 AND ur.type = 'assigned'
+                AND pu.eliminated = '0'
+                AND pu.id_role = 2
             ) AS assigned_count
         FROM users u
         LEFT JOIN user_clinical uc ON uc.id_user = u.id_user
