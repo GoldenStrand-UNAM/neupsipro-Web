@@ -3,7 +3,7 @@ class EditUserController {
   constructor (editUserUseCase) {
     this.editUserUseCase = editUserUseCase;
   }
- 
+
   async editUser (req, res) {
     try {
       const {
@@ -29,10 +29,10 @@ class EditUserController {
         pairs,
         sex,
       } = req.body;
- 
+
       const { id_user } = req.params;
       const profilePhoto = req.file ? req.file.s3Location : null;
- 
+
       const user = await this.editUserUseCase.execute({
         id_user,
         userName,
@@ -58,7 +58,7 @@ class EditUserController {
         pairs,
         sex,
       });
- 
+
       return res.status(200).json(user);
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
@@ -75,5 +75,5 @@ class EditUserController {
     }
   }
 }
- 
+
 module.exports = EditUserController;

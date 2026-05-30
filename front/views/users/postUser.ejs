@@ -192,7 +192,8 @@
                 type="text"
                 name="referenceNumber"
                 id="referenceNumber"
-                placeholder="000X - XXX"
+                placeholder="000X-XXX"
+                minlength="8"
                 maxlength="10"
               >
               <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -615,7 +616,7 @@
       } else if (res.status === 429) {
           showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
           btnSave.querySelector('span').textContent = 'Guardar';
-      }else {
+      } else {
         showToast((data.error || 'Error desconocido'), 'error');
         btnSave.querySelector('span').textContent = 'Guardar';
       }
@@ -684,6 +685,33 @@
       input.addEventListener('input', () => {
         const longitud = input.value.length;
         counter.textContent = `${longitud}/${max}`;
+      });
+    }
+
+    function formatRefNumber(id) {
+      const input = document.getElementById(id);
+      input.addEventListener('input', (e) => {
+        let cursorP = input.selectionStart;
+        const oldLength = input.value.length;
+        let val = input.value.toUpperCase().replace(/[^0-9A-Z-]/g, '');
+        let numMatch = val.match(/^[0-8]{0,3}/);
+        let numPart = numMatch ? numMatch[0] : '';
+        let finalValue = numPart;
+        if (numPart.length === 3) {
+          let restPart = val.substring(3);
+          if (restPart.length > 0) {
+            finalValue += 'P';
+            restPart = restPart.replace(/^P/, '');
+            const tieneGuionManual = restPart.startsWith('-');
+            let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
+            if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
+              finalValue += '-' + letterPart;
+          }
+        }
+        input.value = finalValue;
+        const newLength = finalValue.length;
+        cursorP = cursorP + (newLength - oldLength);
+        input.setSelectionRange(cursorP, cursorP);
       });
     }
 
@@ -790,5 +818,6 @@
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
+    formatRefNumber('referenceNumber');
   </script>
 </html>
