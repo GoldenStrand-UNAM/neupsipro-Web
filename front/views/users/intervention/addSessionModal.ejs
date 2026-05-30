@@ -12,6 +12,7 @@
                 </svg>
             </button>
         </div>
+
         <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -114,7 +115,7 @@
         if (picker) return;
         picker = flatpickr(inputDate, {
             dateFormat: "Y-m-d",
-            maxDate: "2050-12-31",
+            maxDate: "today",
             locale: "es",
             appendTo: document.querySelector('#addSessionModal .relative'),
             static: true, 
