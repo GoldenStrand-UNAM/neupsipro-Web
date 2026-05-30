@@ -87,6 +87,12 @@ class validation {
       label: param.label,
       required: param.required,
     });
+    const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+    if (emojiRegex.test(param.value)) {
+      throw new Error(`${param.label} no puede contener emojis`);
+    }
 
     if (!param.required && !param.value) return param.value;
 
@@ -109,6 +115,12 @@ class validation {
       label: param.label,
       required: param.required,
     });
+    const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+    if (emojiRegex.test(param.value)) {
+      throw new Error(`${param.label} no puede contener emojis`);
+    }
 
     if (!param.required && !param.value) return param.value;
 
