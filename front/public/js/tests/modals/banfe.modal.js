@@ -1,4 +1,5 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
+/* global buildModalFormActions, buildModalConsultActions, setModalSaveBusy */
 
 function interpretBANFE (score) {
   const n = Number(score);
@@ -40,14 +41,7 @@ function buildBANFEConsultBody (test, dateLabel) {
       ${banfeConsultAreaRow('Prefrontal Anterior', areas.prefrontalBefore)}
       ${banfeConsultAreaRow('Dorsolateral', areas.dLateral)}
       ${banfeConsultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
-      ${banfeConsultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      <div class="flex justify-end pt-4 border-t border-gray-200">
-        <button id="btnCancelBANFE" class="btn-cancel">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-          <span class="whitespace-nowrap">Cerrar</span>
-        </button>
-      </div>
+      ${banfeConsultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      ${buildModalConsultActions({ cancelId: 'btnCancelBANFE', label: 'Cerrar' })}
     </div>`;
 }
 
@@ -69,19 +63,45 @@ function buildConsultHTML (test) {
     </div>`;
 }
 
+// eslint-disable-next-line no-unused-vars
+function switchBANFETab (tab) {
+  const formContent   = document.getElementById('banfeTabForm');
+  const interpContent = document.getElementById('banfeTabInterp');
+  const tabForm       = document.getElementById('banfeTabBtnForm');
+  const tabInterp     = document.getElementById('banfeTabBtnInterp');
+  const actions       = document.getElementById('banfeActions');
+  if (tab === 'form') {
+    formContent.classList.remove('hidden');
+    interpContent.classList.add('hidden');
+    actions.classList.remove('hidden');
+    tabForm.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabForm.classList.remove('text-gray-400', 'border-transparent');
+    tabInterp.classList.add('text-gray-400', 'border-transparent');
+    tabInterp.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  } else {
+    interpContent.classList.remove('hidden');
+    formContent.classList.add('hidden');
+    actions.classList.add('hidden');
+    tabInterp.classList.add('text-[#3350A9]', 'border-[#3350A9]');
+    tabInterp.classList.remove('text-gray-400', 'border-transparent');
+    tabForm.classList.add('text-gray-400', 'border-transparent');
+    tabForm.classList.remove('text-[#3350A9]', 'border-[#3350A9]');
+  }
+}
+
 function banfeFormAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
   return `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-2xl font-regular">${label} <span class="text-red-500">*</span></label>
-        <input id="${inputId}" type="number" min="0" max="200" placeholder="Puntaje"
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">${label} <span class="text-red-500">*</span></label>
+        <input id="${inputId}" type="text" inputmode="numeric" placeholder="Puntaje"
           value="${escapeHTML(String(prefillArea.score))}"
-          class="w-full h-[52px] border border-gray-300 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
+          class="w-full h-[40px] border border-gray-300 rounded-lg px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition"/>
         <p id="${errorId}" class="text-xs text-red-500 hidden"></p>
       </div>
-      <div class="flex flex-col gap-1">
-        <label class="text-2xl font-regular">Interpretación</label>
-        <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-gray-700">Interpretación</label>
+        <div class="w-full h-[40px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
           <span id="${interpId}" class="text-sm text-gray-800">${escapeHTML(prefillArea.interp)}</span>
         </div>
       </div>
@@ -90,20 +110,7 @@ function banfeFormAreaRow ({ label, inputId, interpId, errorId, prefillArea }) {
 
 function buildBANFEFormActions () {
   return `
-    <div class="flex justify-end gap-3">
-      <button id="btnCancelBANFE" class="btn-cancel">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-        </svg>
-        <span class="whitespace-nowrap">Cancelar</span>
-      </button>
-      <button id="btnSaveBANFE" class="btn-save">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
-        </svg>
-        <span class="whitespace-nowrap">Guardar</span>
-      </button>
-    </div>`;
+    ${buildModalFormActions({ cancelId: 'btnCancelBANFE', saveId: 'btnSaveBANFE' })}`;
 }
 
 function buildFormHTML (mode, prefill) {
@@ -118,25 +125,80 @@ function buildFormHTML (mode, prefill) {
           </svg>
         </button>
       </div>
+      <div class="flex border-b border-gray-200">
+        <button id="banfeTabBtnForm"
+          onclick="switchBANFETab('form')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-[#3350A9] border-b-2 border-[#3350A9] cursor-pointer transition-colors">
+          Prueba
+        </button>
+        <button id="banfeTabBtnInterp"
+          onclick="switchBANFETab('interp')"
+          class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium
+                 text-gray-400 border-b-2 border-transparent cursor-pointer hover:text-gray-600 transition-colors">
+          Interpretación
+        </button>
+      </div>
       <div class="modal__body flex flex-col gap-6">
-        ${banfeFormAreaRow({ label: 'Orbito Frontal',      inputId: 'inputOrbitFrontal',     interpId: 'interpOrbitFrontal',     errorId: 'errorOrbitFrontal',     prefillArea: prefill.orbitFrontal })}
-        ${banfeFormAreaRow({ label: 'Prefrontal Anterior', inputId: 'inputPrefrontalBefore', interpId: 'interpPrefrontalBefore', errorId: 'errorPrefrontalBefore', prefillArea: prefill.prefrontalBefore })}
-        ${banfeFormAreaRow({ label: 'Dorsolateral',        inputId: 'inputDLateral',         interpId: 'interpDLateral',         errorId: 'errorDLateral',         prefillArea: prefill.dLateral })}
-        <div class="flex flex-col gap-1">
-          <label class="text-2xl font-regular">Puntaje Total</label>
-          <div class="w-full h-[52px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-            <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
+        <div id="banfeTabForm">
+          ${banfeFormAreaRow({ label: 'Orbito Frontal',      inputId: 'inputOrbitFrontal',     interpId: 'interpOrbitFrontal',     errorId: 'errorOrbitFrontal',     prefillArea: prefill.orbitFrontal })}
+          ${banfeFormAreaRow({ label: 'Prefrontal Anterior', inputId: 'inputPrefrontalBefore', interpId: 'interpPrefrontalBefore', errorId: 'errorPrefrontalBefore', prefillArea: prefill.prefrontalBefore })}
+          ${banfeFormAreaRow({ label: 'Dorsolateral',        inputId: 'inputDLateral',         interpId: 'interpDLateral',         errorId: 'errorDLateral',         prefillArea: prefill.dLateral })}
+          <div class="flex flex-col gap-2 mb-3">
+            <label class="text-sm font-medium text-gray-700">Puntaje Total</label>
+            <div class="w-full h-[40px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
+              <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
+            </div>
           </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2" for="inputBANFENotes">
+              Notas
+            </label>
+            <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+              <textarea 
+                id="inputBANFENotes" 
+                rows="4" 
+                maxlength="200" 
+                placeholder="Observaciones"
+                class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"
+              >${escapeHTML(prefill.notes)}</textarea>
+              <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                <span id="banfeNotesCount" class="text-xs text-gray-400">${prefill.notes.length}/200</span>
+              </div>
+            </div>
+          </div>
+          <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
         </div>
-        <div class="flex flex-col gap-2">
-          <label class="text-2xl font-regular">Notas</label>
-          <textarea id="inputBANFENotes" rows="4" maxlength="200" placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="banfeNotesCount" class="text-lg text-gray-400 text-right">${prefill.notes.length} / 200</p>
+        <div id="banfeTabInterp" class="hidden flex flex-col gap-4">
+          <div class="border border-gray-200 rounded-2xl overflow-hidden">
+            <div class="grid grid-cols-[120px_1fr] bg-[#3350A9]">
+              <span class="px-4 py-2 text-sm font-medium text-white">Puntaje</span>
+              <span class="px-4 py-2 text-sm font-medium text-white">Interpretación</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≥ 116</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Normal alto</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">85 – 115</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Normal</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">70 – 84</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Alteración leve-moderada</span>
+            </div>
+            <div class="grid grid-cols-[120px_1fr] border-t border-gray-200">
+              <span class="px-4 py-3 text-sm font-medium text-gray-900 bg-gray-50">≤ 69</span>
+              <span class="px-4 py-3 text-sm text-gray-900">Alteración severa</span>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500">
+            La interpretación aplica a cada área de forma independiente. El Puntaje Total es la suma de las 3 áreas y no tiene interpretación propia.
+          </p>
         </div>
-        <p id="banfeApiError" class="text-xs text-red-500 hidden"></p>
-        ${buildBANFEFormActions()}
+        <div id="banfeActions">
+          ${buildBANFEFormActions()}
+        </div>
       </div>
     </div>`;
 }
@@ -149,11 +211,10 @@ const BANFE_FIELDS = [
 
 function bindNotesCounter (notesInput) {
   notesInput.addEventListener('input', () => {
+    notesInput.value = notesInput.value.replace(/\p{Extended_Pictographic}/gu, '');
     const len = notesInput.value.length;
     const el  = document.getElementById('banfeNotesCount');
     el.textContent = `${len} / 200`;
-    el.classList.toggle('text-red-500', len >= 200);
-    el.classList.toggle('text-gray-400', len < 200);
   });
 }
 
@@ -168,8 +229,9 @@ function banfeBindAreaUpdates (fields) {
     document.getElementById(input).addEventListener('input', () => {
       const el    = document.getElementById(input);
       const errEl = document.getElementById(error);
-      if (!/^\d*$/.test(el.value)) el.value = el.value.replace(/\D/g, '');
-      if (el.value.length > 5) el.value = el.value.slice(0, 5);
+      el.value = el.value.replace(/\D/g, '').slice(0, 3);
+      const capped = parseInt(el.value, 10);
+      if (!isNaN(capped) && capped > 200) el.value = '200';
       errEl.classList.add('hidden');
       const n = Number(el.value);
       document.getElementById(interp).textContent = el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
@@ -187,7 +249,11 @@ async function banfeHandleSave (endpoint, fields, ctx) {
     const el    = document.getElementById(input);
     const errEl = document.getElementById(error);
     const val   = Number(el.value);
-    if (el.value.trim() === '' || isNaN(val) || val < 0 || val > 200) {
+    if (el.value.trim() === '') {
+      errEl.textContent = 'Llena todos los campos';
+      errEl.classList.remove('hidden');
+      valid = false;
+    } else if (isNaN(val) || val < 0 || val > 200) {
       errEl.textContent = val > 200 ? 'El puntaje no puede superar 200' : 'Ingresa un puntaje válido';
       errEl.classList.remove('hidden');
       valid = false;
@@ -197,6 +263,7 @@ async function banfeHandleSave (endpoint, fields, ctx) {
   });
   if (!valid) return;
   const notes = notesInput.value.trim() || null;
+  setModalSaveBusy('btnSaveBANFE', true);
   try {
     const res  = await fetch(endpoint, {
       method: 'POST',
@@ -217,6 +284,8 @@ async function banfeHandleSave (endpoint, fields, ctx) {
     apiError.classList.remove('hidden');
     // eslint-disable-next-line no-console
     console.error('[BANFE] post error:', _err);
+  } finally {
+    setModalSaveBusy('btnSaveBANFE', false);
   }
 }
 

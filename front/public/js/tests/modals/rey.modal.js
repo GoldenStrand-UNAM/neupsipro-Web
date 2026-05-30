@@ -1,4 +1,5 @@
 /* global escapeHTML, TEST_REGISTRY, updateTestCardStatus, showToast, _csrfToken */
+/* global buildModalFormActions, buildModalConsultActions, setModalSaveBusy */
 
 // ── Normative tables (client-side mirror for live display) ───────────────────
 // These are read-only copies — server always recalculates on save.
@@ -254,19 +255,7 @@ function buildREYConsultHTML (test) {
             ${notes ? escapeHTML(notes) : '—'}
           </span>
         </div>
-        <div class="flex justify-end pt-4 border-t border-gray-200">
-          <button id="btnCancelREY"
-            class="flex items-center gap-3 px-6 py-3
-                   border border-gray-300 rounded-2xl
-                   text-base hover:bg-gray-50 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-            Cerrar
-          </button>
-        </div>
+        ${buildModalConsultActions({ cancelId: 'btnCancelREY', label: 'Cerrar' })}
       </div>
     </div>`;
 }
@@ -285,9 +274,16 @@ function reyInfoBanner (schoolingData, ageData, prefill) {
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
            stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 text-blue-500">
         <path stroke-linecap="round" stroke-linejoin="round"
-              d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12
+                 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347
+                 m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12
+                 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814
+                 m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1
+                 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0
+                 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981
+                 0 0 0 6.75 15.75v-1.5"/>
       </svg>
-      <div class="flex flex-col">
+      <div class="flex flex-col flex-1">
         <span class="text-sm font-medium text-blue-700">
           Escolaridad: ${escapeHTML(schoolingData.schooling)}
           (${schoolingData.years} años) —
@@ -297,6 +293,14 @@ function reyInfoBanner (schoolingData, ageData, prefill) {
           Edad: ${ageData.age} años — Rango: ${prefill.ageRange ?? '—'}
         </span>
       </div>
+      <a href="/assets/rey_interpretacion.pdf" target="_blank" rel="noopener"
+         title="Ver tabla de interpretaciones" class="shrink-0 text-blue-700 hover:text-blue-900 transition-colors">
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/>
+        </svg>
+      </a>
     </div>`;
   }
   return `
@@ -321,11 +325,10 @@ function reyScoreField ({ scoreId, errorId, prefillArea }) {
             <label class="text-sm font-medium text-gray-700">Puntuación <span class="text-red-500">*</span></label>
             <input
               id="${scoreId}"
-              type="number"
-              min="0"
-              max="100"
+              type="text"
+              inputmode="decimal"
               required
-              oninput="if(this.value.length>5)this.value=this.value.slice(0,5)"
+              oninput="this.value=this.value.replace(/[^0-9.]/g,'').replace(/(\\..*)\\./,'$1').slice(0,5);var n=parseFloat(this.value);if(!isNaN(n)&&n>100)this.value='100';"
               placeholder="Score"
               value="${escapeHTML(String(prefillArea.score))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
@@ -336,28 +339,27 @@ function reyScoreField ({ scoreId, errorId, prefillArea }) {
 }
 
 // Time input — required, 0-100 minutes, allows one decimal place.
-function reyTimeField ({ timeId, prefillArea }) {
+function reyTimeField ({ timeId, timeErrorId, prefillArea }) {
   return `
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Tiempo (min) <span class="text-red-500">*</span></label>
             <input
               id="${timeId}"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
+              type="text"
+              inputmode="decimal"
               required
-              oninput="if(this.value.length>5)this.value=this.value.slice(0,5)"
+              oninput="this.value=this.value.replace(/[^0-9.]/g,'').replace(/(\\..*)\\./,'$1').slice(0,5);var n=parseFloat(this.value);if(!isNaN(n)&&n>100)this.value='100';"
               placeholder="Tiempo"
               value="${escapeHTML(String(prefillArea.time))}"
               class="w-full h-[40px] border border-gray-300 rounded-lg px-3 text-sm
                      focus:outline-none focus:ring-2 focus:ring-[#3350A9]
                      focus:border-transparent transition"/>
+            <p id="${timeErrorId}" class="text-xs text-red-500 hidden"></p>
           </div>`;
 }
 
 // One editable area row: score input → live percentile | time input → live time percentile.
-function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillArea }) {
+function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, timeErrorId, prefillArea }) {
   return `
       <div class="flex flex-col gap-2">
         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">${title}</h3>
@@ -370,7 +372,7 @@ function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillA
               <span id="${pcId}" class="text-sm text-gray-800">${prefillArea.pc ?? '—'}</span>
             </div>
           </div>
-          ${reyTimeField({ timeId, prefillArea })}
+          ${reyTimeField({ timeId, timeErrorId, prefillArea })}
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Pc Tiempo</label>
             <div class="w-full h-[40px] flex items-center
@@ -385,42 +387,25 @@ function reyAreaRow ({ title, scoreId, pcId, timeId, pcTimeId, errorId, prefillA
 // Notes textarea with character counter, error message slot, and Cancel / Save buttons.
 function reyFormActions (prefill) {
   return `
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Notas</label>
-          <textarea
-            id="inputREYNotes"
-            rows="2"
-            maxlength="200"
-            placeholder="Observaciones"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#3350A9]
-                   focus:border-transparent transition resize-none"
-          >${escapeHTML(prefill.notes)}</textarea>
-          <p id="reyNotesCount" class="text-xs text-gray-400 text-right">
-            ${prefill.notes.length} / 200
-          </p>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="inputREYNotes">
+            Notas
+          </label>
+          <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+            <textarea 
+              id="inputREYNotes" 
+              rows="2" 
+              maxlength="200" 
+              placeholder="Observaciones"
+              class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"
+            >${escapeHTML(prefill.notes)}</textarea>
+            <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+              <span id="reyNotesCount" class="text-xs text-gray-400">${prefill.notes.length}/200</span>
+            </div>
+          </div>
         </div>
         <p id="reyApiError" class="text-xs text-red-500 hidden"></p>
-        <div class="flex gap-3">
-          <button id="btnCancelREY"
-            class="flex-1 flex items-center justify-center gap-3
-                   px-4 py-3 border border-gray-300 rounded-2xl
-                   font-regular hover:bg-gray-50 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-            <span class="whitespace-nowrap">Cancelar</span>
-          </button>
-          <button id="btnSaveREY" class="btn-save">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-              <path fill="none" stroke="currentColor" stroke-width="1.5"
-                    d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
-            </svg>
-            <span class="whitespace-nowrap">Guardar</span>
-          </button>
-        </div>`;
+        ${buildModalFormActions({ cancelId: 'btnCancelREY', saveId: 'btnSaveREY' })}`;
 }
 
 // Assembles the full register / modify form from the individual pieces above.
@@ -434,15 +419,15 @@ function buildREYFormHTML ({ mode, prefill, schoolingData, ageData }) {
         ${reyAreaRow({ title: 'R-C — Copia',
     scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
     timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
-    errorId: 'errorRC', prefillArea: prefill.rc })}
+    errorId: 'errorRC', timeErrorId: 'errorRC_Time', prefillArea: prefill.rc })}
         ${reyAreaRow({ title: 'R-MCp — Memoria Corto Plazo',
     scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
     timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
-    errorId: 'errorMCP', prefillArea: prefill.mcp })}
+    errorId: 'errorMCP', timeErrorId: 'errorMCP_Time', prefillArea: prefill.mcp })}
         ${reyAreaRow({ title: 'R-MLp — Memoria Largo Plazo',
     scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
     timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
-    errorId: 'errorMLP', prefillArea: prefill.mlp })}
+    errorId: 'errorMLP', timeErrorId: 'errorMLP_Time', prefillArea: prefill.mlp })}
         ${reyFormActions(prefill)}
       </div>
     </div>`;
@@ -455,19 +440,19 @@ const REY_AREAS = [
   {
     scoreId: 'inputRC_Score',  pcId: 'displayRC_Pc',
     timeId: 'inputRC_Time',   pcTimeId: 'displayRC_PcTime',
-    errorId: 'errorRC', scoreKey: 'score_rc', timeKey: 'time_rc',
+    errorId: 'errorRC', timeErrorId: 'errorRC_Time', scoreKey: 'score_rc', timeKey: 'time_rc',
     table: REY_TABLE_RC,
   },
   {
     scoreId: 'inputMCP_Score', pcId: 'displayMCP_Pc',
     timeId: 'inputMCP_Time',  pcTimeId: 'displayMCP_PcTime',
-    errorId: 'errorMCP', scoreKey: 'score_mcp', timeKey: 'time_mcp',
+    errorId: 'errorMCP', timeErrorId: 'errorMCP_Time', scoreKey: 'score_mcp', timeKey: 'time_mcp',
     table: REY_TABLE_MCP_MLP,
   },
   {
     scoreId: 'inputMLP_Score', pcId: 'displayMLP_Pc',
     timeId: 'inputMLP_Time',  pcTimeId: 'displayMLP_PcTime',
-    errorId: 'errorMLP', scoreKey: 'score_mlp', timeKey: 'time_mlp',
+    errorId: 'errorMLP', timeErrorId: 'errorMLP_Time', scoreKey: 'score_mlp', timeKey: 'time_mlp',
     table: REY_TABLE_MCP_MLP,
   },
 ];
@@ -479,18 +464,15 @@ function reySetupNotesCounter (notesInput, notesCount) {
   notesInput.addEventListener('input', () => {
     const len = notesInput.value.length;
     notesCount.textContent = `${len} / 200`;
-    notesCount.classList.toggle('text-red-500', len >= 200);
-    notesCount.classList.toggle('text-gray-400', len < 200);
   });
 }
 
 // Wires live percentile preview for each area — updates as the clinician types.
 function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
-  areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, table }) => {
+  areas.forEach(({ scoreId, pcId, timeId, pcTimeId, errorId, timeErrorId, table }) => {
     document.getElementById(scoreId).addEventListener('input', () => {
       const el    = document.getElementById(scoreId);
-      const errEl = document.getElementById(errorId);
-      errEl.classList.add('hidden');
+      document.getElementById(errorId).classList.add('hidden');
       const score = Number(el.value);
       if (el.value.trim() === '' || isNaN(score) || score < 0 || score > 100) {
         document.getElementById(pcId).textContent = '—';
@@ -502,6 +484,7 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
 
     document.getElementById(timeId).addEventListener('input', () => {
       const el   = document.getElementById(timeId);
+      document.getElementById(timeErrorId).classList.add('hidden');
       const time = Number(el.value);
       if (el.value.trim() === '' || isNaN(time) || time < 0 || time > 100) {
         document.getElementById(pcTimeId).textContent = '—';
@@ -517,35 +500,43 @@ function reySetupAreaListeners ({ areas, educationBlock, ageRange, age }) {
 // Fills the body object with valid values; returns false if anything is wrong.
 function reyValidateAreas (areas, body) {
   let valid = true;
-  areas.forEach(({ scoreId, timeId, errorId, scoreKey, timeKey }) => {
+  areas.forEach(({ scoreId, timeId, errorId, timeErrorId, scoreKey, timeKey }) => {
     const scoreEl  = document.getElementById(scoreId);
     const timeEl   = document.getElementById(timeId);
-    const errEl    = document.getElementById(errorId);
+    const scoreErr = document.getElementById(errorId);
+    const timeErr  = document.getElementById(timeErrorId);
     const scoreVal = scoreEl.value.trim();
     const timeVal  = timeEl.value.trim();
 
-    errEl.textContent = '';
-    errEl.classList.add('hidden');
+    scoreErr.textContent = '';
+    scoreErr.classList.add('hidden');
+    timeErr.textContent = '';
+    timeErr.classList.add('hidden');
 
-    if (scoreVal === '' || timeVal === '') {
-      errEl.textContent = 'Puntuación y Tiempo son requeridos';
-      errEl.classList.remove('hidden');
+    if (scoreVal === '') {
+      scoreErr.textContent = 'Puntuación es requerida';
+      scoreErr.classList.remove('hidden');
       valid = false;
     } else {
       const scoreN = Number(scoreVal);
       if (isNaN(scoreN) || scoreN < 0 || scoreN > 100) {
-        errEl.textContent = 'Puntuación debe estar entre 0 y 100';
-        errEl.classList.remove('hidden');
+        scoreErr.textContent = 'Puntuación debe estar entre 0 y 100';
+        scoreErr.classList.remove('hidden');
         valid = false;
       } else {
         Reflect.set(body, scoreKey, scoreN);
       }
+    }
+
+    if (timeVal === '') {
+      timeErr.textContent = 'Tiempo es requerido';
+      timeErr.classList.remove('hidden');
+      valid = false;
+    } else {
       const timeN = Number(timeVal);
       if (isNaN(timeN) || timeN < 0 || timeN > 100) {
-        if (!errEl.textContent) {
-          errEl.textContent = 'Tiempo debe estar entre 0 y 100';
-          errEl.classList.remove('hidden');
-        }
+        timeErr.textContent = 'Tiempo debe estar entre 0 y 100';
+        timeErr.classList.remove('hidden');
         valid = false;
       } else {
         Reflect.set(body, timeKey, timeN);
@@ -558,6 +549,7 @@ function reyValidateAreas (areas, body) {
 // Sends the result to the server. Shows an error message if something fails.
 async function reySubmitResult ({ idUser, idApplication, body, apiError, closeModal }) {
   const config = TEST_REGISTRY[3];
+  setModalSaveBusy('btnSaveREY', true);
   try {
     const res  = await fetch(config.endpoint(idUser, idApplication), {
       method: 'POST',
@@ -578,6 +570,8 @@ async function reySubmitResult ({ idUser, idApplication, body, apiError, closeMo
     apiError.classList.remove('hidden');
     // eslint-disable-next-line no-console
     console.error('[REY] post error:', _err);
+  } finally {
+    setModalSaveBusy('btnSaveREY', false);
   }
 }
 

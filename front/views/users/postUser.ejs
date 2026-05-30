@@ -33,12 +33,8 @@
             <h1 class="text-2xl font-bold text-[#1E1E1E]">Registrar Usuario</h1>
           </div>
           <div class="flex items-center gap-3">
-            <button id="btnClear"
-              onclick="resetFormBtn()" 
-              class="flex items-center gap-2"
-              style="color: #FF0404"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button onclick="resetFormBtn()" id="btnClear" class="btn-clear">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               <span>Limpiar</span>
@@ -185,23 +181,30 @@
             </div>
           </div>
 
-          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-start gap-4 w-full">
+            
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0 mt-2">
               Folio <span style="color: #FF0404">*</span>
             </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
-                name="referenceNumber"
-                id="referenceNumber"
-                placeholder="000X - XXX"
-                maxlength="10"
-              >
-              <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/10 
-              </span>
+            
+            <div class="flex flex-col w-full">
+              
+              <div class="inputs w-full relative flex items-center">
+                <input
+                  required
+                  class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                  type="text"
+                  name="referenceNumber"
+                  id="referenceNumber"
+                  placeholder="000X - XXX"
+                  maxlength="10"                >
+                <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                  0/10 
+                </span>
+              </div>
+              <small class="text-xs text-gray-500 mt-1 ml-1">
+                El folio comienza con 3 números, seguidos de la letra P, un guión y las iniciales del usuario
+              </small>
             </div>
           </div>
 
@@ -511,11 +514,13 @@
               <input type="file" name="profilePhoto" accept="image/jpeg,image/png,image/webp" class="file-upload-input" id="fileInput">
             </div>
           </div>
-          <div class="mb-8 flex justify-center md:justify-end pt-2">
+          <div class="mb-8 hidden md:flex md:justify-end pt-2 pb-4">
             <button id="btnSave" class="btn-mini bg-[#3350A9]">
-              <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <div id="saveIcon">
+                <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>
+              </div>
               <span>Guardar</span>
             </button>
           </div>
@@ -523,6 +528,13 @@
       </div>
     </main>
   </div>
+
+  <button type="submit" form="formUser" class="md:hidden fixed bottom-6 right-6 z-30 btn-mini bg-[#3350A9] shadow-xl" style="padding: 0.875rem 1.5rem; height: auto; font-size: 1rem;">
+    <svg class="w-5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+    </svg>
+    Guardar
+  </button>
 
   <script src="/js/sidebar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
@@ -552,6 +564,8 @@
     const passInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
+    const btnSave = document.getElementById('btnSave');
+    const saveIcon = document.getElementById('saveIcon')
 
     function escapeHTML(text) {
       return text
@@ -602,6 +616,14 @@
       const formData = new FormData(form);
 
       try {
+      btnSave.querySelector('span').textContent = 'Cargando...';
+      saveIcon.innerHTML = `<svg class="animate-spin h-8 w-8 text-white"
+  viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="12" r="10"
+    class="stroke-current opacity-25" stroke-width="3"/>
+  <path d="M12 2a10 10 0 0 1 10 10"
+    class="stroke-current" stroke-width="3"
+    stroke-linecap="round"/>`
       const res = await fetch('/user/post', {
         method: 'POST',
         headers: { 'x-csrf-token': _csrfToken },
@@ -609,22 +631,35 @@
       });
 
       const data = await res.json();
+      console.log(res.status);
 
       if (res.ok) {
-        sessionStorage.setItem('usuarioGuardado', 'true');
+        sessionStorage.setItem('userSaved', 'true');
         window.location.href = '/users';
       } else if (res.status === 429) {
           showToast('Has alcanzado el límite de usuarios registrados. Intenta más tarde.', 'error');
-      }else {
+          btnSave.querySelector('span').textContent = 'Guardar';
+          saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
+      } else {
         showToast((data.error || 'Error desconocido'), 'error');
+        btnSave.querySelector('span').textContent = 'Guardar';
+        saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
       }
       } catch (error) {
-      showToast('Error de conexión');
+      showToast('Error de conexión', 'error');
+      btnSave.querySelector('span').textContent = 'Guardar';
+      saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>`
       }
     });
 
     async function fetchUsers() {
-      const params = new URLSearchParams({ search: "", page: 1, limit: 10 });
+      const params = new URLSearchParams({ search: "", page: 1, limit: 100 });
       try {
         const res  = await fetch(`/api/usuarios-clinicos?${params}`);
         const data = await res.json();
@@ -652,6 +687,33 @@
 
       assigned.insertAdjacentHTML('beforeend', usersHtml);
     }
+
+    const phoneInput = document.getElementById('phone');
+
+    const allowedCharRegex = /^[0-9+()\s-]$/;
+    const allowedStringRegex = /^[0-9+()\s-]+$/;
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const isValidKey = allowedCharRegex.test(e.key);
+
+      if (!isValidKey) {
+        e.preventDefault();
+        showToast('Solo se permiten números, guiones y paréntesis', 'error');
+      }
+    });
+
+    phoneInput.addEventListener('paste', (e) => {
+      const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
+      
+      const isValidPaste = allowedStringRegex.test(pasteData);
+      
+      if (!isValidPaste) {
+        e.preventDefault();
+        showToast('El texto pegado contiene caracteres no permitidos', 'error');
+      }
+    });
 
     dropzone.addEventListener('click', () => {
       fileInput.click();
@@ -682,6 +744,33 @@
       input.addEventListener('input', () => {
         const longitud = input.value.length;
         counter.textContent = `${longitud}/${max}`;
+      });
+    }
+
+    function formatRefNumber(id) {
+      const input = document.getElementById(id);
+      input.addEventListener('input', (e) => {
+        let cursorP = input.selectionStart;
+        const oldLength = input.value.length;
+        let val = input.value.toUpperCase().replace(/[^0-9A-Z-]/g, '');
+        let numMatch = val.match(/^[0-8]{0,3}/);
+        let numPart = numMatch ? numMatch[0] : '';
+        let finalValue = numPart;
+        if (numPart.length === 3) {
+          let restPart = val.substring(3);
+          if (restPart.length > 0) {
+            finalValue += 'P';
+            restPart = restPart.replace(/^P/, '');
+            const tieneGuionManual = restPart.startsWith('-');
+            let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
+            if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
+              finalValue += '-' + letterPart;
+          }
+        }
+        input.value = finalValue;
+        const newLength = finalValue.length;
+        cursorP = cursorP + (newLength - oldLength);
+        input.setSelectionRange(cursorP, cursorP);
       });
     }
 
@@ -788,5 +877,6 @@
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
+    formatRefNumber('referenceNumber');
   </script>
 </html>

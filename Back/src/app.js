@@ -71,7 +71,7 @@ const {
   doubleCsrfProtection,
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || 'cambia-esto-en-desarrollo',
-  getSessionIdentifier: (req) => req.session.id,
+  getSessionIdentifier: (req) => req.cookies?.jwt_token || '',
   cookieName: 'x-csrf-token',
   cookieOptions: { httpOnly: true, sameSite: 'lax', secure: false },
   getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],

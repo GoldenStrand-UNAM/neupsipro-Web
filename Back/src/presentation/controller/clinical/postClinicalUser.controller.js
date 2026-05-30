@@ -27,7 +27,7 @@ class PostClinicalUserController {
   postUser (req, res) {
     try {
       res.locals.activePage = 'clinical';
-      res.render('clinical/postClinicalUser');
+      res.render('clinical/postClinicalUser', { tutorialModule: 'postClinicalUser' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

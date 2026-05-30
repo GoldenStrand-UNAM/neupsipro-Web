@@ -4,46 +4,35 @@
  * This class is independant from the database or from any framework.
  */
 class userProfile {
-  constructor ({
-    firstName,
-    lastNameP,
-    lastNameM,
-    profilePhoto,
-    birthDate,
-    registrationDate,
-    neuroEntryDate,
-    neuroStatus,
-    protocol,
-    state,
-    stage,
-    prosthetist,
-    idUserRelation,
-    assignedClinic,
-    nextAppointmentTime,
-    nextAppointmentDate,
-  }) {
-    this.firstName = firstName;
-    this.lastNameP = lastNameP;
-    this.lastNameM = lastNameM;
-    this.profilePhoto = profilePhoto;
-    this.birthDate = birthDate;
-    this.registrationDate = registrationDate;
-    this.neuroEntryDate = neuroEntryDate;
-    this.neuroStatus = neuroStatus;
-    this.protocol = protocol;
-    this.state = state;
-    this.stage = stage;
-    this.prosthetist = prosthetist;
-    this.idUserRelation = idUserRelation;
-    this.assignedClinic = assignedClinic;
-    this.nextAppointmentDate = nextAppointmentDate;
-    this.nextAppointmentTime = nextAppointmentTime;
-    this.age = this._calculateAge(birthDate);
+  constructor (rows) {
+    const baseRow = rows[0] || {};
+
+    this.firstName = baseRow.first_name;
+    this.lastNameP = baseRow.lastname_p;
+    this.lastNameM = baseRow.lastname_m;
+    this.profilePhoto = baseRow.profile_photo;
+    this.birthDate = baseRow.birthdate;
+    this.registrationDate = baseRow.registration_date;
+    this.neuroEntryDate = baseRow.neuro_entry_date;
+    this.neuroStatus = baseRow.neuro_status;
+    this.protocol = baseRow.protocol;
+    this.state = baseRow.state;
+    this.stage = baseRow.stage;
+    this.prosthetist = baseRow.prosthetist;
+    this.idUserRelation = baseRow.id_user_relation;
+
+    const assignedRow = rows.find(r => r.type === 'assigned');
+    this.assignedClinic = assignedRow ? assignedRow.assigned_clinic_name : null;
+
+    const appointmentRow = rows.find(r => r.type === 'appointment');
+    this.nextAppointmentDate = appointmentRow ? appointmentRow.next_appointment_date : null;
+    this.nextAppointmentTime = appointmentRow ? appointmentRow.next_appointment_time : null;
+
+    this.age = this._calculateAge(baseRow.birthdate);
   }
 
   _calculateAge (birthDate) {
     if (!birthDate || String(birthDate).trim() === '') return null;
-
     let normalizedDate = String(birthDate).trim();
 
     if (/^\d{2}\/\d{2}\/\d{4}$/.test(normalizedDate)) {
@@ -52,10 +41,7 @@ class userProfile {
     }
 
     const birth = new Date(normalizedDate);
-
-    if (isNaN(birth.getTime())) {
-      return null;
-    }
+    if (isNaN(birth.getTime())) return null;
 
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
