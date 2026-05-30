@@ -192,7 +192,8 @@
                 type="text"
                 name="referenceNumber"
                 id="referenceNumber"
-                placeholder="000X - XXX"
+                placeholder="000X-XXX"
+                minlength="8"
                 maxlength="10"
               >
               <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -628,7 +629,7 @@
           saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>`
-      }else {
+      } else {
         showToast((data.error || 'Error desconocido'), 'error');
         btnSave.querySelector('span').textContent = 'Guardar';
         saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -725,6 +726,33 @@
       input.addEventListener('input', () => {
         const longitud = input.value.length;
         counter.textContent = `${longitud}/${max}`;
+      });
+    }
+
+    function formatRefNumber(id) {
+      const input = document.getElementById(id);
+      input.addEventListener('input', (e) => {
+        let cursorP = input.selectionStart;
+        const oldLength = input.value.length;
+        let val = input.value.toUpperCase().replace(/[^0-9A-Z-]/g, '');
+        let numMatch = val.match(/^[0-8]{0,3}/);
+        let numPart = numMatch ? numMatch[0] : '';
+        let finalValue = numPart;
+        if (numPart.length === 3) {
+          let restPart = val.substring(3);
+          if (restPart.length > 0) {
+            finalValue += 'P';
+            restPart = restPart.replace(/^P/, '');
+            const tieneGuionManual = restPart.startsWith('-');
+            let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
+            if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
+              finalValue += '-' + letterPart;
+          }
+        }
+        input.value = finalValue;
+        const newLength = finalValue.length;
+        cursorP = cursorP + (newLength - oldLength);
+        input.setSelectionRange(cursorP, cursorP);
       });
     }
 
@@ -831,5 +859,6 @@
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
+    formatRefNumber('referenceNumber');
   </script>
 </html>
