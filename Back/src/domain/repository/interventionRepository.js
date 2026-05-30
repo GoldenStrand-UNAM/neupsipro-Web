@@ -20,5 +20,8 @@ class interventionRepository {
   async deleteSession ({ _id_session }) {
     throw new Error('deleteSession() must be implemented');
   }
+  async findSessionById ({ _id_session }) {
+    throw new Error('findSessionById() must be implemented');
+  }
 }
 module.exports = interventionRepository;
