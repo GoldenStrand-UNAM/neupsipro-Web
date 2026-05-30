@@ -193,27 +193,34 @@
             </div>
           </div>
 
-          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-start gap-4 w-full">
+            
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0 mt-2">
               Folio <span style="color: #FF0404">*</span>
             </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
-                name="referenceNumber"
-                id="referenceNumber"
-                placeholder="000X - XXX"
-                maxlength="10"
-                value="<%= usuario.referenceNumber || '' %>"
-              >
-              <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/10 
-              </span>
+            
+            <div class="flex flex-col w-full">
+              
+              <div class="inputs w-full relative flex items-center">
+                <input
+                  required
+                  class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
+                  type="text"
+                  name="referenceNumber"
+                  id="referenceNumber"
+                  placeholder="000X - XXX"
+                  maxlength="10"
+                  value="<%= usuario.referenceNumber || '' %>"
+                >
+                <span id="charactersReferenceNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
+                  0/10 
+                </span>
+              </div>
+              <small class="text-xs text-gray-500 mt-1 ml-1">
+                El folio comienza con 3 números, seguidos de la letra P, un guión y las iniciales del usuario
+              </small>
             </div>
           </div>
-
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
               Modalidad <span style="color: #FF0404">*</span>
@@ -473,7 +480,7 @@
                 type="password"
                 name="password"
                 id="password"
-                placeholder="Dejar vacío para conservar la actual"
+                placeholder="Deja vacío para conservar la actual"
                 maxlength="30"
               >
               <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
@@ -615,6 +622,33 @@
       if (pathologyDiv) pathologyDiv.classList.add('hidden');
 
       showToast('Campos limpiados');
+    }
+
+        function formatRefNumber(id) {
+      const input = document.getElementById(id);
+      input.addEventListener('input', (e) => {
+        let cursorP = input.selectionStart;
+        const oldLength = input.value.length;
+        let val = input.value.toUpperCase().replace(/[^0-9A-Z-]/g, '');
+        let numMatch = val.match(/^[0-8]{0,3}/);
+        let numPart = numMatch ? numMatch[0] : '';
+        let finalValue = numPart;
+        if (numPart.length === 3) {
+          let restPart = val.substring(3);
+          if (restPart.length > 0) {
+            finalValue += 'P';
+            restPart = restPart.replace(/^P/, '');
+            const tieneGuionManual = restPart.startsWith('-');
+            let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
+            if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
+              finalValue += '-' + letterPart;
+          }
+        }
+        input.value = finalValue;
+        const newLength = finalValue.length;
+        cursorP = cursorP + (newLength - oldLength);
+        input.setSelectionRange(cursorP, cursorP);
+      });
     }
 
     function checkOther(select, otherSelect, div) {
@@ -768,6 +802,33 @@
 
       });
     }
+    const phoneInput = document.getElementById('phone');
+
+    const allowedCharRegex = /^[0-9+()\s-]$/;
+    const allowedStringRegex = /^[0-9+()\s-]+$/;
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const isValidKey = allowedCharRegex.test(e.key);
+
+      if (!isValidKey) {
+        e.preventDefault();
+        showToast('Solo se permiten números, guiones y paréntesis', 'error');
+      }
+    });
+
+    phoneInput.addEventListener('paste', (e) => {
+      const pasteData = (e.originalEvent || e).clipboardData.getData('text/plain');
+      
+      const isValidPaste = allowedStringRegex.test(pasteData);
+      
+      if (!isValidPaste) {
+        e.preventDefault();
+        showToast('El texto pegado contiene caracteres no permitidos', 'error');
+      }
+    });
+
 
     function validateMatch() {
       const val = passInput.value;
@@ -841,5 +902,6 @@
     changeDefaultColor('phase');
     changeDefaultColor('assigned');
     changeDefaultColor('pairs');
+    formatRefNumber('referenceNumber');
   </script>
 </html>

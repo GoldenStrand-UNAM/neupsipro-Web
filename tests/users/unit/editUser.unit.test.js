@@ -7,6 +7,9 @@ jest.mock('../../../Back/src/infrastructure/external/validations', () => {
         validate: jest.fn((val) => val),
         validateEnum: jest.fn((val) => val),
         validateDate: jest.fn((val) => val),
+        validateEmail: jest.fn((val) => val),
+        validatePhone: jest.fn((val) => val),
+        validateRefNumber: jest.fn((val) => val), // <--- ¡Esta era la que faltaba!
         others: jest.fn((v1, v2) => v1),
     }));
 });
