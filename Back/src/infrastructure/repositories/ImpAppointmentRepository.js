@@ -14,14 +14,14 @@ class ImpAppointmentRepository extends appointmentRepository {
           a.issue,
           a.date_time,
           CONCAT_WS(' ', uc.first_name, uc.lastname_p, uc.lastname_m) AS clinic_name
-       FROM appointment a
-       JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
-       LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
-       WHERE ur.id_user = ?
-         AND ur.type = 'appointment'
-         AND a.date_time >= NOW()
-       ORDER BY a.date_time ASC
-       LIMIT 1`,
+      FROM appointment a
+      JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
+      LEFT JOIN users uc ON ur.id_clinic_user = uc.id_user
+      WHERE ur.id_user = ?
+        AND ur.type = 'appointment'
+        AND a.date_time >= NOW() - INTERVAL 6 HOUR
+      ORDER BY a.date_time ASC
+      LIMIT 1`,
       [id_user]
     );
     return rows.length ? new Appointment(rows[0]) : null;
