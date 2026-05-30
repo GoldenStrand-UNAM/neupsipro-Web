@@ -14,6 +14,11 @@ class createAppointmentUseCase {
       throw new Error('Fecha inválida');
     }
 
+    // validate if the date has already passed
+    if (appointmentDate < new Date()) {
+      throw new Error('Esta fecha ya pasó, intente una nueva fecha');
+    }
+
     // validate it doesn´t exists a future appointment
     const upcoming = await this.appointmentRepository.findUpcomingByUser({ id_user });
     if (upcoming) {
