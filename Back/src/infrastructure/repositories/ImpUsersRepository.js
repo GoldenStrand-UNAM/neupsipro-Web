@@ -61,7 +61,7 @@ class ImpUsersRepository extends usersRepository {
             WHERE u.id_role = 2
               AND u.eliminated = 0
               AND (? IS NULL OR CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) LIKE ?)
-            ORDER BY u.first_name ASC
+            ORDER BY l.reference_number ASC
             LIMIT ? OFFSET ?`,
       [searchParam, searchParam, Number(limit), Number(offset)]
     );
