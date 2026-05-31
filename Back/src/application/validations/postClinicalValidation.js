@@ -2,9 +2,9 @@ const Validation = require('./validation');
 
 const validation = new Validation();
 
-function validate (user) {
+function validate (user, { passwordRequired = true } = {}) {
   const first = validateFirst(user);
-  const second = validateSecond(user);
+  const second = validateSecond(user, { passwordRequired });
   const third = validateThird(user);
 
   return {
@@ -50,7 +50,7 @@ function validateFirst (user) {
   };
 }
 
-function validateSecond (user) {
+function validateSecond (user, passwordRequired) {
   const affiliation = validation.validate({
     value: user.affiliation,
     maxLenght: 20,
@@ -82,16 +82,9 @@ function validateSecond (user) {
     value: user.password,
     maxLenght: 30,
     label: 'La contraseña',
-    required: true });
-  return {
-    affiliation,
-    activity,
-    startDate,
-    finishDate,
-    hours,
-    username,
-    password,
-  };
+    required: passwordRequired,
+  });
+  return { affiliation, activity, startDate, finishDate, hours, username, password };
 }
 
 function validateThird (user) {
