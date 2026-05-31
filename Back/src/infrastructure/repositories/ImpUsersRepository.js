@@ -59,7 +59,7 @@ class ImpUsersRepository extends usersRepository {
               AND u.eliminated = 0
               AND (? IS NULL OR l.reference_number LIKE ?)
               AND (? IS NULL OR l.state = ?)
-            ORDER BY u.first_name ASC
+            ORDER BY l.reference_number ASC
             LIMIT ? OFFSET ?`,
       [searchParam, searchParam, statusParam, statusParam, Number(limit), Number(offset)]
     );
