@@ -25,8 +25,12 @@ class ImpClinicalRepository extends clinicalRepository {
             (
               SELECT COUNT(*)
               FROM user_relation ur
+              JOIN users pu ON pu.id_user = ur.id_user
+              JOIN user_info ui ON ui.id_user = ur.id_user
               WHERE ur.id_clinic_user = u.id_user
                 AND ur.type = 'assigned'
+                AND pu.eliminated = '0'
+                AND pu.id_role = 2
             ) AS assigned_count
         FROM users u
         LEFT JOIN user_clinical uc ON uc.id_user = u.id_user
@@ -108,8 +112,10 @@ class ImpClinicalRepository extends clinicalRepository {
     LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
-    FROM user_relation ur
-    WHERE ur.id_clinic_user = ?;
+      FROM user_relation ur
+      INNER JOIN users p ON ur.id_user = p.id_user
+      WHERE ur.id_clinic_user = ?
+        AND p.eliminated = 0;
   `, [id_user]);
 
     const totalPages = Math.ceil(total / limit);
@@ -154,7 +160,7 @@ class ImpClinicalRepository extends clinicalRepository {
       await connection.query(
         `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.password, user.email]
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.passwordHash, user.email]
       );
 
       await connection.query(

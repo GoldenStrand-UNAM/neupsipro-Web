@@ -17,7 +17,7 @@
     // eslint-disable-next-line security/detect-object-injection
     const statusIcon = _variantIcons[variant] ?? _variantIcons.neutral;
     const dateFormatted = test.dateApplied
-      ? new Date(test.dateApplied).toLocaleDateString('es-MX')
+      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
       : 'Sin fecha';
 
     const isClickable = !!TEST_REGISTRY[test.idTest];

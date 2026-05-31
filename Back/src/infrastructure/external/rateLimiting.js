@@ -1,7 +1,7 @@
 const rateLimit = require('express-rate-limit');
 
-// key generator for rate limiting, based on user id if authenticated, otherwise by IP
-const keyByUser = (req) => req.user?.id ? String(req.user.id) : req.ip;
+// key generator for rate limiting, always by IP
+const keyByIp = (req) => req.ip;
 
 // response
 const response = (req, res) => {
@@ -44,15 +44,14 @@ const loginLimiter = rateLimit({
   handler: loginHandler,
 });
 
-// log user by id, for routes that require authentication
+// log user by IP, for routes that require authentication
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 600,
-  keyGenerator: keyByUser,
+  keyGenerator: keyByIp,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   handler: response,
-  validate: { keyGeneratorIpFallback: false },
 });
 
 // public routes with out log user, by IP
@@ -64,26 +63,24 @@ const generalLimiter = rateLimit({
   handler: response,
 });
 
-// to post publications, limit by user id
+// to post publications, limit by IP
 const publicationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   limit: 10,                 // 10 publication per hour
-  keyGenerator: keyByUser,
+  keyGenerator: keyByIp,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   handler: response,
-  validate: { keyGeneratorIpFallback: false },
 });
 
-// to post users, limit by user id
+// to post users, limit by IP
 const userLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   limit: 20,                 // 20 users per hour
-  keyGenerator: keyByUser,
+  keyGenerator: keyByIp,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   handler: response,
-  validate: { keyGeneratorIpFallback: false },
 });
 
 module.exports = { loginLimiter, generalLimiter, apiLimiter, publicationLimiter, userLimiter };
