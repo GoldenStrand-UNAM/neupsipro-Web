@@ -48,11 +48,25 @@ async function startTutorial () {
       nextBtnText: 'Siguiente',
       prevBtnText: 'Anterior',
       doneBtnText: 'Finalizar',
+      onPopoverRender: () => {
+        setTimeout(() => {
+          const progress = document.querySelector('.driver-popover-progress-text');
+          if (progress) {
+            progress.textContent = progress.textContent.replace('of', 'de');
+          }
+        }, 0);
+      },
       onHighlightStarted: (element) => {
         if (element) {
           element.scrollIntoView({ behavior: 'instant', block: 'center' });
         }
         lockScroll();
+        setTimeout(() => {
+          const progress = document.querySelector('.driver-popover-progress-text');
+          if (progress) {
+            progress.textContent = progress.textContent.replace('of', 'de');
+          }
+        }, 0);
       },
       onDeselected: () => {
         unlockScroll();

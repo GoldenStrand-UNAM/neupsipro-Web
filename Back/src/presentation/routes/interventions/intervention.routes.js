@@ -4,7 +4,7 @@ const ImpInterventionRepository = require('../../../infrastructure/repositories/
 const getInterventionUseCase = require('../../../application/usecase/interventions/getInterventionUseCase');
 const updateContractUseCase = require('../../../application/usecase/interventions/updateContractUseCase');
 const addSessionUseCase = require('../../../application/usecase/interventions/addSessionUseCase');
-const deleteLastSessionUseCase = require('../../../application/usecase/interventions/deleteLastSessionUseCase');
+const deleteSessionUseCase = require('../../../application/usecase/interventions/deleteSessionUseCase');
 const InterventionController = require('../../controller/interventions/intervention.controller');
 
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -18,8 +18,8 @@ module.exports = (authUseCase, authMiddleware) => {
   const intervention = new getInterventionUseCase(repo);
   const updateNeuroContract = new updateContractUseCase(repo);
   const Session = new addSessionUseCase(repo);
-  const DeleteLastSession = new deleteLastSessionUseCase(repo);
-  const controller = new InterventionController(intervention, updateNeuroContract, Session, DeleteLastSession);
+  const DeleteSession = new deleteSessionUseCase(repo);
+  const controller = new InterventionController(intervention, updateNeuroContract, Session, DeleteSession);
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
@@ -48,7 +48,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/users/:id_user/intervention/sessions/:id_session',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
-    (req, res) => controller.deleteLastSession(req, res)
+    (req, res) => controller.deleteSession(req, res)
   );
 
   return router;

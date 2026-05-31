@@ -6,7 +6,7 @@ class getTestsByApplicationController {
   // Handles the view
   renderTests (req, res) {
     const { id_user, id_application } = req.params;
-    return res.render('applications/getTests', { id_user, id_application });
+    return res.render('applications/getTests', { id_user, id_application, tutorialModule: 'getTests' });
   }
 
   // Handles the API

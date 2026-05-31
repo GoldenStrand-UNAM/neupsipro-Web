@@ -5,6 +5,7 @@ const MAX_APPLICATIONS = 5;
 function setupModalControls (modal) {
   const inputEl = document.getElementById('inputAppName');
   const errorEl = document.getElementById('modalError');
+  const nameCount = document.getElementById('nameCount');
 
   function openModal () {
     inputEl.value = '';
@@ -13,11 +14,13 @@ function setupModalControls (modal) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     inputEl.focus();
+    nameCount.innerText = '0/20';
   }
 
   function closeModal () {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    inputEl.value.length = 0;
   }
 
   function showModalError (msg) {
@@ -77,7 +80,7 @@ async function saveApplication (user, ctx) {
   const name = inputAppName.value.trim();
 
   if (!name) {
-    showModalError('El nombre de la sesión es obligatorio');
+    showModalError('El nombre de la aplicación es obligatorio');
     return;
   }
   if (name.length > 20) {
