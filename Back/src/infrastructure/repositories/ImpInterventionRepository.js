@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../database/database');
 const interventionRepository = require('../../domain/repository/interventionRepository');
 const { Intervention, InterventionSession } = require('../../domain/entity/intervention');
+const { decryptIntervention , decryptInterventionSession } = require('../../infrastructure/crypt/intervention/getIntervention');
 
 class ImpInterventionRepository extends interventionRepository {
 
@@ -28,7 +29,7 @@ class ImpInterventionRepository extends interventionRepository {
        LIMIT 1`,
       [id_user]
     );
-    return rows.length ? new Intervention(rows[0]) : null;
+    return rows.length ? decryptIntervention(new Intervention(rows[0])) : null;
   }
 
   // Creates a new empty intervention
