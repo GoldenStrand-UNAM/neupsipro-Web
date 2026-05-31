@@ -25,28 +25,52 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionNumberInput">
                         Sesión
                     </label>
-                    <div class="search-input">
-                        <input id="sessionNumberInput" type="text" maxlength="20" placeholder="Numero de sesión" class="search-input_field"/>
+                    <div class="search-input relative flex items-center">
+                        <input id="sessionNumberInput" type="text" inputmode="numeric" maxlength="20"
+                            placeholder="Numero de sesión" class="search-input_field pr-14"/>
+                        <span id="charSessionNumber" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/20</span>
+                    </div>
+                    <span id="sessionNumberError" class="text-xs text-red-500 hidden mt-1 block"></span>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionObjectivesInput">
+                    Objetivos
+                </label>
+                <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+                    <textarea id="sessionObjectivesInput" rows="2" maxlength="2000" placeholder="Objetivos de la sesión..."
+                        class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"></textarea>
+                    <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                        <span id="charSessionObjectives" class="text-xs text-gray-400">0/2000</span>
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionObjectivesInput">Objetivos</label>
-                <textarea id="sessionObjectivesInput" rows="2"  maxlength="1000" placeholder="Objetivos de la sesión..." 
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDevelopmentInput">
+                    Desarrollo
+                </label>
+                <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+                    <textarea id="sessionDevelopmentInput" rows="3"  maxlength="2000" placeholder="Desarrollo de la sesión..."
+                        class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"></textarea>
+                    <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                        <span id="charSessionDevelopment" class="text-xs text-gray-400 block text-right mt-1">0/2000</span>
+                    </div>
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDevelopmentInput">Desarrollo</label>
-                <textarea id="sessionDevelopmentInput" rows="3"  maxlength="1000" placeholder="Desarrollo de la sesión..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDqpInput">DQP / Tarea terapéutica</label>
-                <textarea id="sessionDqpInput" rows="2"  maxlength="1000" placeholder="Tarea terapéutica o DQP..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3350A9] resize-none"></textarea>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDqpInput">
+                    DQP / Tarea terapéutica
+                </label>
+                <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+                    <textarea id="sessionDqpInput" rows="2"  maxlength="2000" placeholder="Tarea terapéutica o DQP..."
+                       class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"></textarea>
+                    <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                        <span id="charSessionDqp" class="text-xs text-gray-400 block text-right mt-1">0/2000</span>
+                    </div>
+                </div>
             </div>
 
             <p id="addSessionError" class="text-sm text-red-500 hidden"></p>
@@ -85,10 +109,22 @@
     const inputObj = document.getElementById('sessionObjectivesInput');
     const inputDev = document.getElementById('sessionDevelopmentInput');
     const inputDqp = document.getElementById('sessionDqpInput');
+    const numberError = document.getElementById('sessionNumberError');
 
     const idUser = (window.__INTERVENTION_DATA__ || {}).idUser;
     
     let picker = null;
+
+    inputNumber.addEventListener('input', () => {
+    const limpio = inputNumber.value.replace(/\D/g, '');
+        if (limpio !== inputNumber.value) {
+            numberError.textContent = 'Solo se permiten números';
+            numberError.classList.remove('hidden');
+            inputNumber.value = limpio;
+        } else {
+            numberError.classList.add('hidden');
+        }
+    });
 
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
     function hideError()    { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
@@ -105,6 +141,55 @@
 
         });
     }
+    function attachCharCounter(el) {
+    if (!el || !el.maxLength || el.maxLength < 0) return;
+
+    const counter = document.createElement('span');
+    counter.className = 'text-xs text-gray-400 block text-right mt-1';
+    el.insertAdjacentElement('afterend', counter);
+
+    const update = () => {
+        counter.textContent = `${el.value.length} / ${el.maxLength}`;
+        counter.classList.toggle('text-red-500', el.value.length >= el.maxLength);
+    };
+    el.addEventListener('input', update);
+    update();
+}
+
+    function setupCounter(inputId, counterId) {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        const max = input.getAttribute('maxlength');
+        input.addEventListener('input', () => {
+            counter.textContent = `${input.value.length}/${max}`;
+        });
+    }
+
+    setupCounter('sessionNumberInput', 'charSessionNumber');
+    setupCounter('sessionObjectivesInput', 'charSessionObjectives');
+    setupCounter('sessionDevelopmentInput', 'charSessionDevelopment');
+    setupCounter('sessionDqpInput', 'charSessionDqp');
+
+    function resetForm() {
+        inputNumber.value = '';
+        inputObj.value = '';
+        inputDev.value = '';
+        inputDqp.value = '';
+        if (picker) picker.clear(); else inputDate.value = '';
+        [inputNumber, inputObj, inputDev, inputDqp].forEach(el => el.dispatchEvent(new Event('input')));
+        hideError();
+    }
+
+    const close = () => {
+        resetForm();
+        modal.classList.add('hidden');
+    };
+    btnClose?.addEventListener('click', close);
+    btnCancel?.addEventListener('click', close);
+    
+
+
 
     btnOpen?.addEventListener('click', () => {
         hideError();
@@ -112,10 +197,7 @@
         modal.classList.remove('hidden');
     });
 
-    const close = () => modal.classList.add('hidden');
-    btnClose?.addEventListener('click', close);
-    btnCancel?.addEventListener('click', close);
-
+  
     btnConfirm?.addEventListener('click', async () => {
         hideError();
         // Data to be sent 

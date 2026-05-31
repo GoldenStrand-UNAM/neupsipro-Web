@@ -45,13 +45,11 @@
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
     function hideError() { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
 
-    document.querySelectorAll('.btn-delete-session').forEach(btn => {
-        btn.addEventListener('click', () => {
-            pendingSessionId = btn.dataset.sessionId;
-            hideError();
-            modal.classList.remove('hidden');
-        });
-    });
+    window.openDeleteSession = (sessionId) => {
+        pendingSessionId = sessionId;
+        hideError();
+        modal.classList.remove('hidden');
+    };
 
     btnCancel?.addEventListener('click', () => {
         modal.classList.add('hidden');
@@ -75,7 +73,7 @@
             if (!res.ok) throw new Error(json.error || 'Error al eliminar');
 
             showToast('Sesión eliminada', 'success');
-            setTimeout(() => window.location.reload(), 1200);
+            setTimeout(() => window.location.reload(), 1000);
         } catch (err) {
             showError(err.message);
             btnConfirm.disabled = false;

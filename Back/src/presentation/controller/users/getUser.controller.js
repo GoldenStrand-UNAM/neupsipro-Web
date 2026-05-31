@@ -10,6 +10,7 @@ class getUserController {
       return res.render('users/consultUser', {
         activePage: 'users',
         usuario: user,
+        tutorialModule: 'consultUser',
       });
     } catch (error) {
       return res.status(400).json({
@@ -18,5 +19,5 @@ class getUserController {
     }
   }
 }
-
+// nice
 module.exports = getUserController;

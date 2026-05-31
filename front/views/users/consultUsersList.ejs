@@ -38,7 +38,7 @@
                         </a>
 
                         <div class="search-input">
-                            <input id="search-input"type="text" class="search-input_field" placeholder="Buscar"/>
+                            <input id="search-input"type="text" class="search-input_field" placeholder="Buscar por nombre"/>
                             <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -101,9 +101,9 @@ const LIMIT       = 6;
 let searchQuery   = "";
 let debounceTimer;
 
-if (sessionStorage.getItem('usuarioGuardado') === 'true') {
+if (sessionStorage.getItem('userSaved') === 'true') {
     showToast('Usuario guardado correctamente');
-    sessionStorage.removeItem('usuarioGuardado');
+    sessionStorage.removeItem('userSaved');
 }
 
 // = ====  Fetch===========

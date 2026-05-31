@@ -47,11 +47,11 @@ class PostUserUseCase {
     const ffirstName = validation.validate(firstName, 30, 'El nombre', true);
     const flastnameP = validation.validate(lastnameP, 30, 'El apellido paterno', true);
     const flastnameM = validation.validate(lastnameM, 30, 'EL apellido materno', false);
-    const femail = validation.validate(email, 50, 'El email', false);
+    const femail = validation.validateEmail(email, 'El email', false);
     validation.validate(password, 30, 'La contraseña', true);
     validation.validate(assigned, 36, 'El clínico asignado', true);
     validation.validate(profilePhoto, 255, 'La URL de la foto de perfil', false);
-    const freferenceNumber = validation.validate(referenceNumber, 10, 'El folio', true);
+    const freferenceNumber = validation.validateRefNumber(referenceNumber);
     const fprosthetist = validation.validateEnum(prosthetist, enumProsthetist);
     const fsex = validation.validateEnum(sex, enumSex);
     const fmodality = validation.validateEnum(modality, enumModality);
@@ -62,7 +62,7 @@ class PostUserUseCase {
     const fAmputation = validation.validateDate(amputationDate, 'La fecha de amputación ', true);
     const fNeuroEntry = validation.validateDate(neuroEntryDate, 'La fecha de ingreso a neuropsicología ', false);
     const passwordHash = await this.hashingService.hash(password);
-    const fphone = validation.validate(phone, 16, 'El teléfono', false);
+    const fphone = validation.validatePhone(phone, 'El teléfono', false);
 
     // Entity validation
     const user = new User ({

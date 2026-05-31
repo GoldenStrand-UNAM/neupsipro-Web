@@ -8,6 +8,14 @@ class validation {
 
   validate (param) {
     if (param.value) {
+      const value = String(param.value).trim();
+
+      const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+      if (emojiRegex.test(value)) {
+        throw new Error(`${param.label} no puede contener emojis`);
+      }
       if (param.value.trim().length > param.requiredLength) {
         throw new Error(`${param.label} no puede superar los ${param.requiredLength} caracteres`);
       } else //return crypt.encrypt(param);
@@ -74,16 +82,54 @@ class validation {
   validatePhone (param) {
     this.validate({
       value: param.value,
-      maxLength: 15,
+      minLength: 8,
+      maxLength: 20,
       label: param.label,
       required: param.required,
     });
-    if (!param.required) return param.value;
+    const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+    if (emojiRegex.test(param.value)) {
+      throw new Error(`${param.label} no puede contener emojis`);
+    }
+
+    if (!param.required && !param.value) return param.value;
+
     const phoneStr = String(param.value).trim();
-    const phoneRegex = /^\+?[0-9]+$/;
+    const phoneRegex = /^\+?[0-9() -]+$/;
+
+    if (phoneStr.length < 8) {
+      throw new Error(`${param.label} debe tener al menos 8 caracteres`);
+    }
 
     if (phoneRegex.test(phoneStr))
       return phoneStr;
-    throw new Error(`${param.label} solo debe contener números y un signo '+' opcional al inicio`);
+
+    throw new Error(`${param.label} solo debe contener números y + - ( )`);
+  }
+  validateEmail (param) {
+    this.validate({
+      value: param.value,
+      maxLength: 50,
+      label: param.label,
+      required: param.required,
+    });
+    const emojiRegex =
+      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+    if (emojiRegex.test(param.value)) {
+      throw new Error(`${param.label} no puede contener emojis`);
+    }
+
+    if (!param.required && !param.value) return param.value;
+
+    const emailStr = String(param.value).trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailRegex.test(emailStr))
+      return emailStr;
+
+    throw new Error(`${param.label} debe tener un formato de correo electrónico válido (ejemplo@correo.com)`);
   }
 } module.exports = validation;
