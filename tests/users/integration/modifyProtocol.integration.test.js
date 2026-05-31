@@ -49,7 +49,7 @@ describe('INTEGRATION — patch /users/:id_user/protocol', () => {
     asAuthenticated(1);
 
     db.query.mockResolvedValueOnce([
-      [{ id_user: '123', first_name: 'Test' }],
+      [{ id_user: '123', first_name: '2a037a08004e4dc3e5c97548:b58c55e4f15613020f81ec4a4279f540:86f413e76217' }],
       []
     ]);
 
