@@ -61,7 +61,7 @@ class ImpUsersRepository extends usersRepository {
               AND (? IS NULL OR l.reference_number LIKE ?)
               AND (? IS NULL OR l.state = ?)
               AND (? IS NULL OR l.protocol = ?)
-            ORDER BY u.first_name ASC
+            ORDER BY l.reference_number ASC
             LIMIT ? OFFSET ?`,
       [searchParam, searchParam, statusParam, statusParam, protocolParam, protocolParam, Number(limit), Number(offset)]
     );
