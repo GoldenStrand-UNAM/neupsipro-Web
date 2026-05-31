@@ -57,9 +57,14 @@ class ImpUsersRepository extends usersRepository {
             LEFT JOIN user_info l ON l.id_user = u.id_user
             WHERE u.id_role = 2
               AND u.eliminated = 0
+<<<<<<< HEAD
               AND (? IS NULL OR l.reference_number LIKE ?)
               AND (? IS NULL OR l.state = ?)
             ORDER BY u.first_name ASC
+=======
+              AND (? IS NULL OR CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) LIKE ?)
+            ORDER BY l.reference_number ASC
+>>>>>>> bb0033a82d9f198bde22a009b3d973970cb5495b
             LIMIT ? OFFSET ?`,
       [searchParam, searchParam, statusParam, statusParam, Number(limit), Number(offset)]
     );
