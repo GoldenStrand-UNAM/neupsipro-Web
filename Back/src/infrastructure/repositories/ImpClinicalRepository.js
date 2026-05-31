@@ -195,24 +195,13 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     );
     return rows[0];
   }
+  
   async fetchClinicalForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
-          u.id_user,
-          u.first_name,
-          u.lastname_p,
-          u.lastname_m,
-          u.user_name,
-          u.email,
-          u.birthdate,
-          uc.affiliation,
-          uc.activity,
-          uc.emergency_contact_name,
-          uc.emergency_contact_phone,
-          uc.emergency_contact_relation,
-          uc.start_date,
-          uc.finish_date,
-          uc.hours
+          u.id_user, u.first_name, u.lastname_p, u.lastname_m, u.user_name, u.email, u.birthdate,
+          uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone,
+          uc.emergency_contact_relation, uc.start_date, uc.finish_date, uc.hours
       FROM users u
       LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
       WHERE u.id_user = ? AND u.id_role = 3 AND u.eliminated = 0;`,
@@ -257,7 +246,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
 
       const [rows] = await connection.query(
         `SELECT 
-          u.id_user, u.id_role, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.email, u.user_name,
+          u.id_role, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.email, u.user_name,
           uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone, uc.emergency_contact_relation,
           uc.start_date, uc.finish_date, uc.hours
         FROM users u
