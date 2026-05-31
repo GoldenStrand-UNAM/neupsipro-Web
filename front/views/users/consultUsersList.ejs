@@ -74,7 +74,22 @@
                                     <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-[#276076] bg-[#276076]/30 text-[#276076] hover:bg-[#276076]/50 transition" data-value="Declined">No ingresó</button>
                                 </div>
                             </th>                            
-                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Protocolo</th>
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700 relative">
+                                <div id="protocolFilterTrigger" class="flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded transition duration-200 select-none">
+                                    <span>Protocolo</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h10M10 18h4" />
+                                    </svg>
+                                </div>
+
+                                <div id="protocolDropdown" class="hidden absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-44 bg-white border border-gray-100 shadow-xl rounded-xl z-50 p-3 flex flex-col gap-3 font-normal">
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="">Todos</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Pending">Sin asignar</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Clinical">Clínico</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Research">Investigación</button>
+
+                                </div>
+                            </th>                                 
                             <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Consultar Información</th>
                         </tr>
                     </thead>
@@ -115,6 +130,7 @@ let currentPage   = 1;
 const LIMIT       = 6;
 let searchQuery   = "";
 let statusQuery   = "";
+let protocolQuery = "";
 let debounceTimer;
 
 if (sessionStorage.getItem('userSaved') === 'true') {
@@ -124,7 +140,7 @@ if (sessionStorage.getItem('userSaved') === 'true') {
 
 // = ====  Fetch===========
 async function fetchUsers() {
-    const params = new URLSearchParams({ search: searchQuery, status: statusQuery, page: currentPage, limit: LIMIT });
+    const params = new URLSearchParams({ search: searchQuery, status: statusQuery, protocol: protocolQuery, page: currentPage, limit: LIMIT });
     try {
         const res  = await fetch(`/api/users?${params}`);
         const data = await res.json();
@@ -250,6 +266,31 @@ statusOptions.forEach(option => {
         statusQuery = e.currentTarget.getAttribute("data-value"); 
         currentPage = 1;
         statusDropdown.classList.add("hidden");
+        fetchUsers();
+    });
+});
+
+// = ==== Dropdown Protocol Filter ===========
+const protocolTrigger = document.getElementById("protocolFilterTrigger");
+const protocolDropdown = document.getElementById("protocolDropdown");
+const protocolOptions = document.querySelectorAll(".protocol-option");
+
+protocolTrigger.addEventListener("click", (e) => {
+    e.stopPropagation(); 
+    protocolDropdown.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+    if (!protocolTrigger.contains(e.target) && !protocolDropdown.contains(e.target)) {
+        protocolDropdown.classList.add("hidden");
+    }
+});
+
+protocolOptions.forEach(option => {
+    option.addEventListener("click", (e) => {
+        protocolQuery = e.currentTarget.getAttribute("data-value"); 
+        currentPage = 1;
+        protocolDropdown.classList.add("hidden");
         fetchUsers();
     });
 });
