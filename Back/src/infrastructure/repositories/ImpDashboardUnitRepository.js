@@ -56,7 +56,7 @@ class ImpDashboardRepository extends DashboardRepository {
         AND u.birthdate <> ''
         AND (ui.state IS NULL OR ui.state <> 'Declined')
     `);
-    return rows.map(r => r.birthdate);   
+    return rows.map(r => r.birthdate);
   }
 
   // Counts patients by gender

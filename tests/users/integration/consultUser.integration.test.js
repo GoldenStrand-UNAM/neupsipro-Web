@@ -28,7 +28,7 @@ const app = require('../../../Back/src/app');
 // Endpoint base (U-001 must exist)
 describe('GET /users/:id_user ', () => {
   test('returns status 200 with existing user (u-001)', async () => {
-    const res = await request(app).get('/users/u-001');
+    const res = await request(app).get('/users/eca7b79a-ffa0-42a7-bf18-5266f4fe04e1');
     expect(res.status).toBe(200);
   });
 
