@@ -3,12 +3,15 @@ const { AgeBucketEntity } = require('../../../domain/entity/dashboardUnitEntity'
 
 // Ages buckets for the age distribution
 const AGE_BUCKETS = [
-  { label: '0-17',  min: 0,   max: 17  },
-  { label: '18-30', min: 18,  max: 30  },
-  { label: '31-50', min: 31,  max: 50  },
-  { label: '51-60', min: 51,  max: 60  },
-  { label: '61-80', min: 61,  max: 80  },
-  { label: '81+',   min: 81,  max: Infinity },
+  { label: '0-10',  min: 0,   max: 10  },
+  { label: '11-17', min: 11,  max: 17  },
+  { label: '18-29', min: 18,  max: 29  },
+  { label: '30-39', min: 30,  max: 39  },
+  { label: '40-49', min: 40,  max: 49  },
+  { label: '50-59', min: 50,  max: 59  },
+  { label: '60-69', min: 60,  max: 69  },
+  { label: '70-79', min: 70,  max: 79  },
+  { label: '80+',   min: 80,  max: Infinity },
 ];
 
 class GetDashboardSummaryUseCase {
