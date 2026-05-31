@@ -256,7 +256,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       );
 
       await connection.query('COMMIT');
-      return rows[0];
+      return new Clinical(rows[0]);
     } catch (error) {
       await connection.query('ROLLBACK');
       throw error;

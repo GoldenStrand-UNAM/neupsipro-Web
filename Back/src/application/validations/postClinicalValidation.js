@@ -50,7 +50,7 @@ function validateFirst (user) {
   };
 }
 
-function validateSecond (user, passwordRequired) {
+function validateSecond (user, { passwordRequired }) {
   const affiliation = validation.validate({
     value: user.affiliation,
     maxLenght: 20,
