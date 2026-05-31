@@ -24,4 +24,4 @@ function uncryptData (data) {
   };
 }
 
-module.exports = uncryptData;
+module.exports = { safeDecrypt };

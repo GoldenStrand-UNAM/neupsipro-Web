@@ -8,6 +8,7 @@ const crypt = require('../crypt/profile/getProfile');
  * It does a JOIN between multiple tables to consolidate data.
  */
 class ImpProfileRepository extends profileRepository {
+  // eslint-disable-next-line max-lines-per-function
   async getUserId (userId) {
     const query = `
             SELECT
@@ -35,7 +36,44 @@ class ImpProfileRepository extends profileRepository {
     if (!rows || rows.length === 0) {
       return null;
     }
-    return new userProfile(rows);
+    const baseRow = rows[0];
+    const firstNameU = crypt.safeDecrypt(baseRow.first_name);
+    const lastNamePU = crypt.safeDecrypt(baseRow.lastname_p);
+    const lastNameMU = crypt.safeDecrypt(baseRow.lastname_m);
+    const profilePhotoU = baseRow.profile_photo;
+    const birthDateU = crypt.safeDecrypt(baseRow.birthdate);
+    const registrationDateU = baseRow.registration_date;
+    const neuroEntryDateU  = crypt.safeDecrypt(baseRow.neuro_entry_date);
+    const neuroStatusU = crypt.safeDecrypt(baseRow.neuro_status);
+    const protocolU = baseRow.protocol;
+    const stateU = baseRow.state;
+    const stageU = baseRow.stage;
+    const prosthetistU = crypt.safeDecrypt(baseRow.prosthetist);
+
+    const userRelationsU = rows.map(row => ({
+      idUserRelation: row.id_user_relation,
+      type: row.type,
+      assignedClinic: crypt.safeDecrypt(row.assigned_clinic_name),
+      nextAppointmentDate: row.next_appointment_date,
+      nextAppointmentTime: row.next_appointment_time,
+    }));
+
+    const consolidatedUserData = {
+      first_name: firstNameU,
+      lastname_p: lastNamePU,
+      lastname_m: lastNameMU,
+      profile_photo: profilePhotoU,
+      birthdate: birthDateU,
+      registration_date: registrationDateU,
+      neuro_entry_date: neuroEntryDateU,
+      neuro_status: neuroStatusU,
+      protocol: protocolU,
+      state: stateU,
+      stage: stageU,
+      prosthetist: prosthetistU,
+      relations: userRelationsU,
+    };
+    return new userProfile(consolidatedUserData);
   }
 }
 
