@@ -11,13 +11,13 @@ class deleteClinicalUseCase {
     const clinical = await this.clinicalRepository.fetchClinical({ id_user });
 
     if (!clinical || clinical.length === 0) {
-      throw new Error('User not found');
+      throw new Error('Clinical not found');
     }
 
     const deleted = await this.clinicalRepository.softDeleteUser({ id_user });
 
     if (!deleted) {
-      throw new Error('Failed to delete user');
+      throw new Error('Failed to delete clinical');
     }
 
     return {
