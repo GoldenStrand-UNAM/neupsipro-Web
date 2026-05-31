@@ -78,7 +78,7 @@ describe('INTEGRATION — DELETE /clinical/:id_user', () => {
     const res = await request(app).delete('/clinical/999');
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe('User not found');
+    expect(res.body.error).toBe('Clinical not found');
   });
 
   test('must return 400 if the id_user is not valid or misses', async () => {
