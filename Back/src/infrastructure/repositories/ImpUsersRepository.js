@@ -41,10 +41,11 @@ class ImpUsersRepository extends usersRepository {
     return userData.map(row => new User(row));
   }
 
-  async fetchActivePatients ({ search, status, page, limit }) {
+  async fetchActivePatients ({ search, status, protocol, page, limit }) {
     const offset = (page - 1) * limit;
     const searchParam = search ? `%${search}%` : null;
     const statusParam = status || null;
+    const protocolParam = protocol || null;
 
     const [rows] = await db.query(
       `SELECT 
@@ -59,16 +60,18 @@ class ImpUsersRepository extends usersRepository {
               AND u.eliminated = 0
               AND (? IS NULL OR l.reference_number LIKE ?)
               AND (? IS NULL OR l.state = ?)
+              AND (? IS NULL OR l.protocol = ?)
             ORDER BY l.reference_number ASC
             LIMIT ? OFFSET ?`,
-      [searchParam, searchParam, statusParam, statusParam, Number(limit), Number(offset)]
+      [searchParam, searchParam, statusParam, statusParam, protocolParam, protocolParam, Number(limit), Number(offset)]
     );
     return rows.map(row => new userSummary(row));
   }
 
-  async countActivePatients ({ search, status }) {
+  async countActivePatients ({ search, status, protocol }) {
     const searchParam = search ? `%${search}%` : null;
     const statusParam = status || null;
+    const protocolParam = protocol || null;
 
     const [rows] = await db.query (
       `SELECT COUNT(*) AS total
@@ -77,8 +80,9 @@ class ImpUsersRepository extends usersRepository {
             WHERE u.id_role = 2
               AND u.eliminated = 0
               AND (? IS NULL OR l.reference_number LIKE ?) 
-              AND (? IS NULL OR l.state = ?)`,
-      [searchParam, searchParam, statusParam, statusParam]
+              AND (? IS NULL OR l.state = ?)
+              AND (? IS NULL OR l.protocol = ?)`,
+      [searchParam, searchParam, statusParam, statusParam, protocolParam, protocolParam]
     );
     return rows[0]?.total ?? 0;
   }
