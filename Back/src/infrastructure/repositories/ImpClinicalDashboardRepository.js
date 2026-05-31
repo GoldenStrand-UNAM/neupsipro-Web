@@ -76,7 +76,7 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
       FROM user_info ui
 	      JOIN users u ON u.id_user = ui.id_user
 	      JOIN user_relation ur ON ui.id_user = ur.id_user
-      WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND u.eliminated = '0'`,
+      WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND u.eliminated = '0' AND u.id_role = 2`,
       [idClinicalUser]
     );
     const uncrypted = users.map(row => crypt2(row));

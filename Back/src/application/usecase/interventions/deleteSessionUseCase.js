@@ -1,4 +1,4 @@
-class deleteLastSessionUseCase {
+class deleteSessionUseCase {
   constructor (interventionRepository) {
     this.interventionRepository = interventionRepository;
   }
@@ -10,14 +10,9 @@ class deleteLastSessionUseCase {
     const intervention = await this.interventionRepository.findByUser({ id_user });
     if (!intervention) throw new Error('No existe intervención activa');
 
-    const lastSession = await this.interventionRepository.findLastSession({
-      id_intervention: intervention.idIntervention,
-    });
-
-    if (!lastSession) throw new Error('No hay sesiones para eliminar');
-
-    if (lastSession.idSession !== id_session) {
-      throw new Error('Solo se puede eliminar la última sesión registrada');
+    const session = await this.interventionRepository.findSessionById({ id_session });
+    if (!session || session.idIntervention !== intervention.idIntervention) {
+      throw new Error('La sesión no existe o no pertenece a este usuario');
     }
 
     const deleted = await this.interventionRepository.deleteSession({ id_session });
@@ -26,4 +21,4 @@ class deleteLastSessionUseCase {
     return { success: true, message: 'Sesión eliminada' };
   }
 }
-module.exports = deleteLastSessionUseCase;
+module.exports = deleteSessionUseCase;

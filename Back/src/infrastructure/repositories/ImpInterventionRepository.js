@@ -98,6 +98,17 @@ class ImpInterventionRepository extends interventionRepository {
     );
     return result.affectedRows > 0;
   }
+  async findSessionById ({ id_session }) {
+    const [rows] = await db.query(
+      `SELECT id_session, id_intervention, session_number, session_date,
+              objectives, development, dqp_task
+        FROM intervention_session
+        WHERE id_session = ?
+        LIMIT 1`,
+      [id_session]
+    );
+    return rows.length ? new InterventionSession(rows[0]) : null;
+  }
 }
 
 module.exports = ImpInterventionRepository;

@@ -36,7 +36,7 @@ describe('createUserUseCase',()=>{
         otherPathology:null,
         modality:'Presencial',
         profilePhoto:null,
-        referenceNumber:'REF001',
+        referenceNumber:'123P-JPG',
         amputationDate:'01/01/2023',
         amputationLevel:'Rodilla',
         laterality:'Diestra',

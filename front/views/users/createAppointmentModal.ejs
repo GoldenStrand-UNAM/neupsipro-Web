@@ -29,6 +29,9 @@
                     <select id="appointmentClinic" class="search-input_field">
                         <option value="">Cargando clínicos...</option>
                     </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
                 </div>
             </div>
             <div>
@@ -41,8 +44,8 @@
                         placeholder="Ej. Evaluación inicial"
                         class="search-input_field"
                     />
+                    <span id="motiveCount" class="absolute bottom-2 right-2 text-xs text-gray-500"> 0/50 </span>
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Máx. 50 caracteres</p>
             </div>
             <p id="appointmentError" class="text-sm text-red-500 hidden"></p>
         </div>
@@ -74,6 +77,7 @@
     const btnCancel = document.getElementById('cancelAppointment');
     const btnConfirm = document.getElementById('confirmAppointment');
     const errorBox = document.getElementById('appointmentError');
+    const motiveCount = document.getElementById('motiveCount');
 
     const inputDate = document.getElementById('appointmentDateTime');
     const selectClinic = document.getElementById('appointmentClinic');
@@ -111,10 +115,17 @@
                     `<option value="${escapeHtml(c.id)}">${escapeHtml(c.full_name)}</option>`
                 ).join('');
             clinicsLoaded = true;
+            syncClinicColor();
         } catch (err) {
             selectClinic.innerHTML = '<option value="">Error al cargar</option>';
             console.error(err);
         }
+    }
+
+    // Show the clinic select in the same gray as the inputs' placeholder while no
+    // clinic is chosen; switch back to normal text color once one is selected.
+    function syncClinicColor() {
+        selectClinic.style.color = selectClinic.value ? '' : '#9ca3af';
     }
 
     function showError(msg) {
@@ -129,9 +140,27 @@
     function resetForm() {
         if (datePicker) datePicker.clear();
         selectClinic.value = '';
+        syncClinicColor();
         inputIssue.value = '';
         hideError();
     }
+    function resetFormMotive() {
+    form.reset();
+        editor.innerHTML = '';
+        hiddenInput.value = '';
+        filePreview.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        previewImg.src = '';
+
+        motiveCount.innerText = '0/50';
+        document.getElementById('charCount').innerText = '0/500';
+    }  
+
+    appointmentIssue.addEventListener('input', () => {
+        const max = 50;
+        const length = appointmentIssue.value.length;
+        motiveCount.innerText = `${length}/${max}`;
+    });
 
     btnOpen?.addEventListener('click', () => {
         modal.classList.remove('hidden');
@@ -145,6 +174,7 @@
     };
     btnClose?.addEventListener('click', closeModal);
     btnCancel?.addEventListener('click', closeModal);
+    selectClinic?.addEventListener('change', syncClinicColor);
 
     btnConfirm?.addEventListener('click', async () => {
         hideError();
@@ -164,7 +194,7 @@
 
             const res = await fetch(`/users/${idUser}/appointments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken,  },
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
                 credentials: 'include',
                 body: JSON.stringify({
                     id_clinic_user: clinicId,

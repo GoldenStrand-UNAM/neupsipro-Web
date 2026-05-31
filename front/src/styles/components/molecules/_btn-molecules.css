@@ -97,7 +97,7 @@
     @apply text-sm md:text-base;
     @apply w-full sm:w-auto flex-1;
     @apply h-[44px] md:h-[53px];
-    @apply hover:bg-gray-50 active:scale-95;
+    @apply hover:bg-gray-50 hover:scale-[1.05] active:scale-95;
     @apply transition-all duration-200;
     @apply cursor-pointer select-none;
 }
