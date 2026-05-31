@@ -25,12 +25,17 @@ class PostClinicalUserUseCase {
     // Password hashing
     const passwordHash = await this.hashingService.hash(user.password);
     // Entity validation
-    const clinicalUser = new ClinicalUser (validatedUser);
+    const entityUser = new ClinicalUser (validatedUser);
 
-    const cryptedUser = crypt(user);
-    const saved = await this.clinicalUserRepository.postUser({ ...cryptedUser, passwordHash });
-    // Map saved into clean DTO for the client
-    return ClinicalUserDTO.fromEntity(saved);
+    const cryptedUser = crypt(entityUser);
+    const duplicate = await this.clinicalUserRepository.checkDuplicate(cryptedUser.bindex);
+    if (duplicate)
+      throw new Error('El usuario ya se encuentra registrado.');
+    else {
+      const saved = await this.clinicalUserRepository.postUser({ ...cryptedUser, passwordHash });
+      // Map saved into clean DTO for the client
+      return ClinicalUserDTO.fromEntity(saved);
+    }
   }
 }
 module.exports = PostClinicalUserUseCase;

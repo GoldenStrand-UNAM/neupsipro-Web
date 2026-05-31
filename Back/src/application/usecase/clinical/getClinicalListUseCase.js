@@ -1,5 +1,4 @@
 const userClinicalSummaryDTO = require('../../dto/userClinicalSummaryDTO');
-const crypt = require('../../../infrastructure/crypt/clinical/getClinicals');
 
 /* Use case to fetch the folio + name of the active "usuarios" patients */
 class GetUsersClinicalListUseCase {

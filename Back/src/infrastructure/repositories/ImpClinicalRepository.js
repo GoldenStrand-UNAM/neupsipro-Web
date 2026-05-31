@@ -120,8 +120,6 @@ class ImpClinicalRepository extends clinicalRepository {
 
     const totalPages = Math.ceil(total / limit);
 
-    const toReturn = {};
-
     if (!patientsData && patientsData.length === 0)
       return {
         patients: patientsData.map(row => new ClinicalPatient(row)),
@@ -158,9 +156,11 @@ class ImpClinicalRepository extends clinicalRepository {
       await connection.query('START TRANSACTION');
 
       await connection.query(
-        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.passwordHash, user.email]
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate,
+        password_hash, email, dup_bindex)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate,
+          user.passwordHash, user.email, user.bindex]
       );
 
       await connection.query(
@@ -192,6 +192,18 @@ class ImpClinicalRepository extends clinicalRepository {
     } finally {
       connection.release();
     }
+  }
+
+  async checkDuplicate (bindex) {
+    const [rows] = await db.query (
+      `SELECT *
+          FROM users
+          WHERE id_role = '3'
+          AND dup_bindex = ?
+          AND eliminated = '0';`,
+      [bindex]
+    );
+    return rows[0];
   }
 }
 module.exports = ImpClinicalRepository;

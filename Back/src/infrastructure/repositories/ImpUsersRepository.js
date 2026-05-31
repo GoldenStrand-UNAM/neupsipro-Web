@@ -39,9 +39,7 @@ class ImpUsersRepository extends usersRepository {
       WHERE l.id_user = ?;`,
       [id_user]
     );
-    if (!userData || userData.legth === 0) return userData.map(row => new User(row));
-    const uncrypted = userData.map(row => crypt(row));
-    return uncrypted.map(row => new User(row));
+    return userData.map(row => new User(crypt(row)));
   }
 
   async fetchActivePatients ({ page, limit }) {
@@ -76,84 +74,39 @@ class ImpUsersRepository extends usersRepository {
     return rows[0]?.total ?? 0;
   }
 
-  async postUser ({
-    idRole,
-    userName,
-    firstName,
-    lastnameP,
-    lastnameM,
-    email,
-    birthdate,
-    passwordHash,
-    assigned,
-    phase,
-    basePathology,
-    modality,
-    profilePhoto,
-    referenceNumber,
-    amputationDate,
-    amputationLevel,
-    laterality,
-    prosthetist,
-    neuroEntryDate,
-    pairs,
-    sex,
-    phone,
-  }) {
+  async postUser (user) {
     const idUser = uuidv4();
     const idRelation = uuidv4();
     const connection = await db.getConnection();
 
     try {
       await connection.query('START TRANSACTION');
-
       await connection.query(
-        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, email, profile_photo, birthdate, password_hash, gender)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, idRole, userName, firstName, lastnameP, lastnameM, email, profilePhoto, birthdate, passwordHash, sex]
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, email, profile_photo, birthdate,
+        password_hash, gender, dup_bindex)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, '2', user.userName, user.firstName, user.lastnameP, user.lastnameM, user.email,
+          user.profilePhoto, user.birthdate, user.passwordHash, user.sex, user.bindex]
       );
-
       await connection.query(
         `INSERT INTO user_info (
-        id_user,
-        neuro_status,
-        base_patology,
-        attendance,
-        registration_date,
-        reference_number,
-        laterality,
-        prosthetist,
-        neuro_entry_date,
-        amputation_date,
-        amputation_level,
-        group_intervention,
-        phone
+        id_user, neuro_status, base_patology, attendance, registration_date, reference_number, laterality,
+        prosthetist, neuro_entry_date, amputation_date, amputation_level, group_intervention, phone, ref_bindex
         )
-      VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser,
-          phase,
-          basePathology,
-          modality,
-          referenceNumber,
-          laterality,
-          prosthetist,
-          neuroEntryDate,
-          amputationDate,
-          amputationLevel,
-          pairs,
-          phone]
+      VALUES (?, ?, ?, ?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, user.phase, user.basePathology, user.modality, user.referenceNumber, user.laterality, user.prosthetist,
+          user.neuroEntryDate, user.amputationDate, user.amputationLevel, user.pairs, user.phone, user.refBindex]
       );
-
       await connection.query(
         `INSERT INTO user_relation (id_user_relation, id_user, id_clinic_user, assignment_date, type)
         VALUES(?, ?, ?, CURRENT_DATE, 'assigned')`,
-        [idRelation, idUser, assigned]
+        [idRelation, idUser, user.assigned]
       );
-
       const [rows] = await connection.query(
         `SELECT
         u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.password_hash, u.profile_photo, u.gender,
-        ui.neuro_status, ui.base_patology, ui.attendance, ui.reference_number, ui.amputation_date, ui.amputation_level, ui.laterality, ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
+        ui.neuro_status, ui.base_patology, ui.attendance, ui.reference_number, ui.amputation_date, ui.amputation_level, ui.laterality,
+        ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
         ur.id_clinic_user
         FROM users u
         LEFT JOIN user_info ui ON ui.id_user = u.id_user
@@ -161,9 +114,7 @@ class ImpUsersRepository extends usersRepository {
         WHERE u.id_user = ? AND ur.type = 'assigned';`,
         [idUser]
       );
-
       await connection.query('COMMIT');
-
       return rows[0];
     } catch (error) {
       await connection.query('ROLLBACK');
@@ -349,6 +300,25 @@ class ImpUsersRepository extends usersRepository {
       [id_user]
     );
 
+    return rows[0];
+  }
+
+  async checkDuplicate (user) {
+    const [rows] = await db.query (
+      `SELECT 
+          (u.dup_bindex = ?) AS matched_bindex,
+          (u.user_name = ?) AS matched_username,
+          (ui.ref_bindex = ?) AS matched_reference
+      FROM users u
+      LEFT JOIN user_info ui ON u.id_user = ui.id_user
+      WHERE u.user_name = ?
+        OR (u.eliminated = '0'
+        AND (
+            u.dup_bindex = ?   
+            OR ui.ref_bindex = ?
+        ));`,
+      [user.bindex, user.userName, user.refBindex, user.userName, user.bindex, user.refBindex]
+    );
     return rows[0];
   }
 }

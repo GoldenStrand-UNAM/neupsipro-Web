@@ -16,7 +16,6 @@ class PostClinicalUserController {
           inUse: 'user',
         });
       } if (error.code !== undefined || error.errno !== undefined) {
-        console.log(error);
         return res.status(409).json({
           error: 'Error al registrar usuario.',
         });
