@@ -25,7 +25,7 @@ function decryptInterventionSession (interventionSession) {
     ...interventionSession,
     objectives: crypt.decrypt(interventionSession.objectives),
     development: crypt.decrypt(interventionSession.development),
-    dqpTask: crypt.decrypt(interventionSession.dqp_task),
+    dqpTask: crypt.decrypt(interventionSession.dqpTask),
 
   };
 }
