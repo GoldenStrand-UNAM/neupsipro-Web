@@ -10,6 +10,9 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 const GetClinicalUserUseCase = require('../../../application/usecase/clinical/getClinicalUserUseCase');
 const GetClinicalPatientsUseCase = require('../../../application/usecase/clinical/getClinicalPatientsUseCase');
 
+const deleteClinicalUseCase = require('../../../application/usecase/clinical/deleteClinicalUseCase');
+const DeleteClinicalController = require('../../controller/clinical/deleteClinical.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
 
   const clinicalUserRepository    = new ImpClinicalRepository();
@@ -17,12 +20,23 @@ module.exports = (authUseCase, authMiddleware) => {
   const secondUseCase = new GetClinicalPatientsUseCase(clinicalUserRepository);
   const controller = new ClinicalUserController(useCase, secondUseCase);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
+ 
+  const deleteUseCase = new deleteClinicalUseCase(clinicalUserRepository);
+  const deleteController = new DeleteClinicalController(deleteUseCase);
+
 
   router.get('/clinical-patient', authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getPatients(req, res));
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getClinicalUser(req, res)
+  );
+
+  router.delete(
+    '/:id_user',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => deleteController.deleteClinical(req, res)
   );
 
   return router;
