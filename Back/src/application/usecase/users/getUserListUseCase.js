@@ -6,11 +6,11 @@ class GetUsersListUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute ({ search = '', page = 1, limit = 10 }) {
+  async execute ({ search = '', status =  '', page = 1, limit = 10 }) {
     const [users, total] = await Promise.all([
       // Run queries in parallel
-      this.userRepository.fetchActivePatients ({ search, page, limit }),
-      this.userRepository.countActivePatients ({ search }),
+      this.userRepository.fetchActivePatients ({ search, status, page, limit }),
+      this.userRepository.countActivePatients ({ search , status }),
     ]);
 
     return {
