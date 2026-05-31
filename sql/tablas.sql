@@ -887,3 +887,6 @@ ALTER TABLE user_clinical
     MODIFY COLUMN hours INT NULL;
     
 ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);
+
+ALTER TABLE intervention 
+MODIFY COLUMN contract_link VARCHAR(568) DEFAULT NULL;
