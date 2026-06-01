@@ -134,7 +134,7 @@ class impTestResultsRepository extends resultRepository {
     score_orbit_frontal,  inter_orbit_frontal,
     score_prefrontal_before, inter_prefrontal_before,
     score_d_lateral,      inter_d_lateral,
-    score_total, notes,
+    score_total, inter_total, notes,
   }) {
   // Update parent row status and application date
     await db.query(
@@ -152,8 +152,8 @@ class impTestResultsRepository extends resultRepository {
         score_orbit_frontal,    inter_orbit_frontal,
         score_prefrontal_before, inter_prefrontal_before,
         score_d_lateral,        inter_d_lateral,
-        score_total, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        score_total, inter_total, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
         score_orbit_frontal     = VALUES(score_orbit_frontal),
         inter_orbit_frontal     = VALUES(inter_orbit_frontal),
@@ -162,13 +162,14 @@ class impTestResultsRepository extends resultRepository {
         score_d_lateral         = VALUES(score_d_lateral),
         inter_d_lateral         = VALUES(inter_d_lateral),
         score_total             = VALUES(score_total),
+        inter_total             = VALUES(inter_total),
         notes                   = VALUES(notes)`,
       [
         id_results,
         score_orbit_frontal,    inter_orbit_frontal,
         score_prefrontal_before, inter_prefrontal_before,
         score_d_lateral,        inter_d_lateral,
-        score_total,            notes,
+        score_total,            inter_total,            notes,
       ]
     );
 

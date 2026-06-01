@@ -40,7 +40,7 @@ function buildBANFEConsultBody (test, dateLabel) {
       ${banfeConsultAreaRow('Orbito Frontal', areas.orbitFrontal)}
       ${banfeConsultAreaRow('Prefrontal Anterior', areas.prefrontalBefore)}
       ${banfeConsultAreaRow('Dorsolateral', areas.dLateral)}
-      ${banfeConsultDataRow('Score Total', `<span class="text-base sm:text-lg text-gray-900 font-medium">${test.scoreTotal ?? '—'}</span>`)}
+      ${banfeConsultAreaRow('Puntaje Total', { score: test.scoreTotal, interpretation: test.interTotal })}
       ${banfeConsultDataRow('Notas', `<div class="min-w-0 overflow-hidden"><span class="text-base sm:text-lg text-gray-900 leading-relaxed break-all block">${notes ? escapeHTML(notes) : '—'}</span></div>`)}      ${buildModalConsultActions({ cancelId: 'btnCancelBANFE', label: 'Cerrar' })}
     </div>`;
 }
@@ -144,12 +144,7 @@ function buildFormHTML (mode, prefill) {
           ${banfeFormAreaRow({ label: 'Orbito Frontal',      inputId: 'inputOrbitFrontal',     interpId: 'interpOrbitFrontal',     errorId: 'errorOrbitFrontal',     prefillArea: prefill.orbitFrontal })}
           ${banfeFormAreaRow({ label: 'Prefrontal Anterior', inputId: 'inputPrefrontalBefore', interpId: 'interpPrefrontalBefore', errorId: 'errorPrefrontalBefore', prefillArea: prefill.prefrontalBefore })}
           ${banfeFormAreaRow({ label: 'Dorsolateral',        inputId: 'inputDLateral',         interpId: 'interpDLateral',         errorId: 'errorDLateral',         prefillArea: prefill.dLateral })}
-          <div class="flex flex-col gap-2 mb-3">
-            <label class="text-sm font-medium text-gray-700">Puntaje Total</label>
-            <div class="w-full h-[40px] flex items-center border border-gray-300 rounded-lg px-4 bg-gray-50">
-              <span id="banfeScoreTotal" class="text-sm text-gray-800">—</span>
-            </div>
-          </div>
+          ${banfeFormAreaRow({ label: 'Puntaje Total', inputId: 'inputBANFETotal', interpId: 'interpBANFETotal', errorId: 'errorBANFETotal', prefillArea: prefill.scoreTotal })}
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2" for="inputBANFENotes">
               Notas
@@ -193,7 +188,7 @@ function buildFormHTML (mode, prefill) {
             </div>
           </div>
           <p class="text-xs text-gray-500">
-            La interpretación aplica a cada área de forma independiente. El Puntaje Total es la suma de las 3 áreas y no tiene interpretación propia.
+            La interpretación aplica a cada área de forma independiente y al Puntaje Total.
           </p>
         </div>
         <div id="banfeActions">
@@ -218,12 +213,6 @@ function bindNotesCounter (notesInput) {
   });
 }
 
-function updateTotal (fields) {
-  const values = fields.map(({ input }) => document.getElementById(input).value.trim());
-  document.getElementById('banfeScoreTotal').textContent = values.every(v => v !== '')
-    ? values.reduce((acc, v) => acc + Number(v), 0) : '—';
-}
-
 function banfeBindAreaUpdates (fields) {
   fields.forEach(({ input, interp, error }) => {
     document.getElementById(input).addEventListener('input', () => {
@@ -235,7 +224,6 @@ function banfeBindAreaUpdates (fields) {
       errEl.classList.add('hidden');
       const n = Number(el.value);
       document.getElementById(interp).textContent = el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
-      updateTotal(fields);
     });
   });
 }
@@ -261,6 +249,22 @@ async function banfeHandleSave (endpoint, fields, ctx) {
       scores.set(key, val);
     }
   });
+  const totalEl    = document.getElementById('inputBANFETotal');
+  const totalErrEl = document.getElementById('errorBANFETotal');
+  const totalVal   = Number(totalEl.value);
+  totalErrEl.textContent = '';
+  totalErrEl.classList.add('hidden');
+  if (totalEl.value.trim() === '') {
+    totalErrEl.textContent = 'Llena todos los campos';
+    totalErrEl.classList.remove('hidden');
+    valid = false;
+  } else if (isNaN(totalVal) || totalVal < 0 || totalVal > 600) {
+    totalErrEl.textContent = totalVal > 600 ? 'El puntaje no puede superar 600' : 'Ingresa un puntaje válido';
+    totalErrEl.classList.remove('hidden');
+    valid = false;
+  } else {
+    scores.set('score_total', totalVal);
+  }
   if (!valid) return;
   const notes = notesInput.value.trim() || null;
   setModalSaveBusy('btnSaveBANFE', true);
@@ -289,12 +293,26 @@ async function banfeHandleSave (endpoint, fields, ctx) {
   }
 }
 
+function banfeBindTotalListener () {
+  document.getElementById('inputBANFETotal').addEventListener('input', () => {
+    const el    = document.getElementById('inputBANFETotal');
+    const errEl = document.getElementById('errorBANFETotal');
+    el.value = el.value.replace(/\D/g, '').slice(0, 3);
+    const capped = parseInt(el.value, 10);
+    if (!isNaN(capped) && capped > 600) el.value = '600';
+    errEl.classList.add('hidden');
+    const n = Number(el.value);
+    document.getElementById('interpBANFETotal').textContent = el.value === '' || isNaN(n) ? '—' : interpretBANFE(n);
+  });
+}
+
 function bindFormListeners (idUser, idApplication, closeModal) {
   const notesInput = document.getElementById('inputBANFENotes');
   const apiError   = document.getElementById('banfeApiError');
   const endpoint   = TEST_REGISTRY[1].endpoint(idUser, idApplication);
   bindNotesCounter(notesInput);
   banfeBindAreaUpdates(BANFE_FIELDS);
+  banfeBindTotalListener();
   document.getElementById('btnSaveBANFE').addEventListener(
     'click',
     () => banfeHandleSave(endpoint, BANFE_FIELDS, { notesInput, apiError, closeModal })
@@ -321,10 +339,13 @@ async function fetchBANFEResult (idUser, idApplication, idResults) {
 function buildBANFEPrefill (fetchedTest, needsData) {
   const areas = needsData ? (fetchedTest.areas ?? {}) : {};
   const notes = needsData ? (fetchedTest.notes ?? '') : '';
+  const scoreTotal = needsData ? (fetchedTest.scoreTotal ?? '') : '';
+  const interTotal = needsData ? (fetchedTest.interTotal ?? '—') : '—';
   return {
     orbitFrontal: { score: areas.orbitFrontal?.score ?? '',     interp: areas.orbitFrontal?.interpretation ?? '—' },
     prefrontalBefore: { score: areas.prefrontalBefore?.score ?? '', interp: areas.prefrontalBefore?.interpretation ?? '—' },
     dLateral: { score: areas.dLateral?.score ?? '',         interp: areas.dLateral?.interpretation ?? '—' },
+    scoreTotal: { score: scoreTotal, interp: interTotal },
     notes,
   };
 }
