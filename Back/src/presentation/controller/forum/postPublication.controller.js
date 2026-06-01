@@ -17,11 +17,13 @@ class PostPublicationController {
         contenido,
         image,
       });
-
       response.status(201).json(publication);
     } catch (error) {
       if (error.message.includes('obligatorio') || error.message.includes('caracteres')) {
         return response.status(422).json({ error: error.message });
+      }
+      if (error.code === 'ER_DATA_TOO_LONG') {
+        return response.status(422).json({ error: 'El contenido es demasiado largo' });
       }
       response.status(500).json({ error: error.message });
     }

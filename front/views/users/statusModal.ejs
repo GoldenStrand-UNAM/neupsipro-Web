@@ -1,0 +1,164 @@
+<div id="statusModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Modificar estatus</h2>
+            <button id="closeStatusModal" class="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-3">
+            <p class="text-sm text-gray-600 mb-2">
+                Selecciona el estatus que se le asignará al usuario:
+            </p>
+
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="statusOption" value="Active" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                    style="border-color:#1F893A; color:#1F893A; background-color:rgba(31,137,58,0.33);">
+                    Activo
+                </span>
+
+                <span class="text-xs text-gray-500">El usuario está activo</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="statusOption" value="Stand_by" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                    style="border-color:#1560BD; color:#1560BD; background-color:rgba(21,96,189,0.33);">
+                    Stand By
+                </span>             
+                <span class="text-xs text-gray-500">El usuario está en espera</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="statusOption" value="Declined" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                    style="border-color:#276076; color:#276076; background-color:rgba(39,96,118,0.33);">
+                    No ingresó
+                </span>
+                <span class="text-xs text-gray-500">El usuario no ingresó</span>
+            </label>
+
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors has-[:checked]:border-[#3350A9] has-[:checked]:bg-[#3350A9]/5">
+                <input type="radio" name="statusOption" value="Discharged" class="w-4 h-4 text-[#3350A9] focus:ring-[#3350A9]">
+                <span
+                    class="inline-block px-3 py-1 rounded-full text-xs font-medium border"
+                    style="border-color:#E03232; color:#E03232; background-color:rgba(224,50,50,0.33);">
+                    Alta
+                </span>
+                <span class="text-xs text-gray-500">El usuario ha sido dado de alta</span>
+            </label>
+
+            <p id="statusError" class="text-sm text-red-500 hidden"></p>
+        </div>
+
+        <div class="flex gap-3 justify-end mt-6">
+            <button class="btn-cancel" id="cancelStatus">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="whitespace-nowrap">Cancelar</span>
+            </button>
+            <button class="btn-save" id="confirmStatus">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
+                </svg>
+                <span class="whitespace-nowrap">Guardar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal      = document.getElementById('statusModal');
+    const btnOpen    = document.getElementById('btnEditStatus');
+    const btnClose   = document.getElementById('closeStatusModal');
+    const btnCancel  = document.getElementById('cancelStatus');
+    const btnConfirm = document.getElementById('confirmStatus');
+    const errorBox   = document.getElementById('statusError');
+
+    const user   = window.__USER_DATA__ || {};
+    const idUser = user.idUser;
+
+    const displayToEnum = {
+        'Active':     'Active',
+        'Stand_by':   'Stand_by',
+        'Declined':   'Declined',
+        'Discharged': 'Discharged',
+    };
+
+    function showError (msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.remove('hidden');
+    }
+    function hideError () {
+        errorBox.classList.add('hidden');
+        errorBox.textContent = '';
+    }
+    function resetForm () {
+        document.querySelectorAll('input[name="statusOption"]').forEach(r => r.checked = false);
+        hideError();
+    }
+    function preselectCurrent () {
+        const current = displayToEnum[user.state];
+        if (!current) return;
+        const radio = document.querySelector(`input[name="statusOption"][value="${current}"]`);
+        if (radio) radio.checked = true;
+    }
+
+    function openModal () {
+        modal.classList.remove('hidden');
+        preselectCurrent();
+    }
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        resetForm();
+    };
+
+    btnOpen?.addEventListener('click', openModal);
+    btnClose?.addEventListener('click', closeModal);
+    btnCancel?.addEventListener('click', closeModal);
+
+    btnConfirm?.addEventListener('click', async () => {
+        hideError();
+
+        const selected = document.querySelector('input[name="statusOption"]:checked');
+        if (!selected) return showError('Selecciona un estatus');
+
+        const state = selected.value;
+        const originalHTML = btnConfirm.innerHTML;
+        try {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<span>Guardando...</span>';
+
+            const res = await fetch(`/users/${idUser}/state`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': _csrfToken,
+                },
+                credentials: 'include',
+                body: JSON.stringify({ state }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Error al actualizar el estatus');
+
+            showToast('Estatus actualizado con éxito', 'success');
+            setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+            showError(err.message);
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = originalHTML;
+        }
+    });
+})();
+</script>

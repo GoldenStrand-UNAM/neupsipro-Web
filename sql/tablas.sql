@@ -24,7 +24,7 @@ CREATE TABLE privilege_role (
 CREATE TABLE acl (
     id_acl         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     consultation   BOOL         NOT NULL,
-    writting       BOOL         NOT NULL,
+    writing       BOOL         NOT NULL,
     edit           BOOL         NOT NULL,
     eliminate      BOOL         NOT NULL
 );
@@ -71,17 +71,17 @@ CREATE TABLE tutorial (
 -- ============================================================
 
 CREATE TABLE users (
-	id_user            VARCHAR(36)  NOT NULL PRIMARY KEY,
-    id_role            INT          NOT NULL,
-    user_name          VARCHAR(20)  NOT NULL,
-    first_name	       VARCHAR(20)  NOT NULL,
-    lastname_p         VARCHAR(20)  NOT NULL,
-    lastname_m         VARCHAR(20)  NULL,
-    email              VARCHAR(50)  NULL,
-    profile_photo      VARCHAR(255) NULL,
-    birthdate          DATE         NULL,
-    eliminated         BOOL         NOT NULL DEFAULT 0,
-    password_hash      VARCHAR(250) NOT NULL,
+	id_user            VARCHAR(36)   NOT NULL PRIMARY KEY,
+    id_role            INT           NOT NULL,
+    user_name          VARCHAR(118)  NOT NULL UNIQUE,
+    first_name	       VARCHAR(118)  NOT NULL,
+    lastname_p         VARCHAR(118)  NOT NULL,
+    lastname_m         VARCHAR(118)  NULL,
+    email              VARCHAR(158)  NULL,
+    profile_photo      VARCHAR(255)  NULL,
+    birthdate          VARCHAR(78)   NULL,
+    eliminated         BOOL          NOT NULL DEFAULT 0,
+    password_hash      VARCHAR(250)  NOT NULL,
     CONSTRAINT fk_user_role FOREIGN KEY (id_role) REFERENCES roles (id_role)
 );
 
@@ -120,27 +120,27 @@ ALTER TABLE access_role
 -- ============================================================
 
 CREATE TABLE user_info (
-    id_user              VARCHAR(36)  NOT NULL  PRIMARY KEY,
-    origin               VARCHAR(40)  NULL,
-    neuro_status         VARCHAR(40)  NULL,
-    status_act_date      DATETIME     NULL,
-    base_patology        VARCHAR(80)  NULL,
-    modality             VARCHAR(30)  NULL      COMMENT 'Modality in which the user attends',
-    notes                VARCHAR(100) NULL      COMMENT 'Clinical group notes',
-    attendance           VARCHAR(80)  NOT NULL,
-    initial_interview    INT          NULL      DEFAULT 0 COMMENT 'Status: por comenzar, en proceso, calificado',
-	registration_date  DATE         NOT NULL,
-    reference_number   VARCHAR(10)  NOT NULL,
-    amputation_date    DATE         NOT NULL,
-    protocol           ENUM('Research','Clinical', 'Pending') NOT NULL DEFAULT 'Pending', 
-    state             ENUM('Discharged','Stand_by', 'Declined', 'Active') NULL, -- estatus
-	is_child           BOOL         NOT NULL,
-    group_intervention BOOL NOT NULL DEFAULT false,
-    amputation_etiology  VARCHAR(80)  NULL,
-	laterality          ENUM('right', 'left', 'both') NULL,
-    prosthetist		VARCHAR(35) NOT NULL,
-    neuro_entry_date DATE NULL,
-    amputation_level VARCHAR(50) NOT NULL,
+    id_user              VARCHAR(36)   NOT NULL  PRIMARY KEY,
+    origin               VARCHAR(138)  NULL,
+    neuro_status         VARCHAR(110)  NOT NULL,
+    status_act_date      DATETIME      NULL,
+    base_patology        VARCHAR(160)  NOT NULL,
+    modality             VARCHAR(118)  NULL      COMMENT 'Modality in which the user attends',
+    notes                VARCHAR(258)  NULL      COMMENT 'Clinical group notes',
+    attendance           VARCHAR(78)   NOT NULL,
+    initial_interview    INT           NULL      DEFAULT 0 COMMENT 'Status: por comenzar, en proceso, calificado',
+	registration_date    DATE  		   NOT NULL,
+    reference_number     VARCHAR(78)   NOT NULL  UNIQUE,
+    amputation_date      VARCHAR(78)   NOT NULL,
+    protocol             ENUM('Research','Clinical', 'Pending') NOT NULL DEFAULT 'Pending', 
+    state                ENUM('Discharged','Stand_by', 'Declined', 'Active') NULL, -- estatus
+    is_child             BOOL          NULL,
+    group_intervention   VARCHAR(78)   NOT NULL,
+    amputation_etiology  VARCHAR(164)  NULL,
+	laterality           VARCHAR(80)   NOT NULL,
+    prosthetist		     VARCHAR(125)  NOT NULL,
+    neuro_entry_date     VARCHAR(78)   NULL,
+    amputation_level     VARCHAR(165)  NOT NULL,
     CONSTRAINT fk_logbook_user FOREIGN KEY (id_user) REFERENCES users (id_user)
 );
 
@@ -696,7 +696,7 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
 
-ALTER TABLE acl CHANGE writting writing BOOL NOT NULL;
+ALTER TABLE acl CHANGE writing writing BOOL NOT NULL;
 
 CREATE TABLE user_clinical (
     id_user      VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -706,8 +706,8 @@ CREATE TABLE user_clinical (
 );
 
 ALTER TABLE users 
-ADD COLUMN gender enum('Man','Woman','Other','not especified') 
-NULL AFTER birthdate;
+ADD COLUMN gender VARCHAR(108) DEFAULT 'Sin especificar'
+NOT NULL AFTER birthdate;
 
 ALTER TABLE test_sessions RENAME TO test_applications;
 
@@ -733,6 +733,30 @@ ALTER TABLE test_results
 ADD CONSTRAINT fk_results_application 
 FOREIGN KEY (id_application) REFERENCES test_applications (id_application);
 
+
+CREATE TABLE intervention (
+    id_intervention      VARCHAR(36) NOT NULL PRIMARY KEY,
+    id_user              VARCHAR(36) NOT NULL UNIQUE,
+    neuro_profile   TEXT NULL,
+    contract_link        VARCHAR(255) NULL,
+    created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_intervention_user
+        FOREIGN KEY (id_user) REFERENCES users(id_user)
+);
+
+CREATE TABLE intervention_session (
+    id_session         VARCHAR(36) NOT NULL PRIMARY KEY,
+    id_intervention    VARCHAR(36) NOT NULL,
+    session_number     VARCHAR(20) NULL,
+    session_date       DATE NOT NULL,
+    objectives         TEXT NULL,
+    development        TEXT NULL,
+    dqp_task           TEXT NULL,
+    CONSTRAINT fk_session_intervention
+        FOREIGN KEY (id_intervention)
+        REFERENCES intervention(id_intervention)
+        ON DELETE CASCADE
+);
 ALTER TABLE user_clinical
     ADD COLUMN emergency_contact_name varchar(50) NOT NULL,
     ADD COLUMN emergency_contact_phone VARCHAR(15) NOT NULL,
@@ -741,5 +765,122 @@ ALTER TABLE user_clinical
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
 
-ALTER TABLE initial_interview
-    ADD COLUMN student_name varchar(50) NULL after id_user_relation;
+
+-- ===========================================================
+-- Test changes
+-- ===========================================================
+ 
+ALTER TABLE test_results
+DROP COLUMN score;
+ 
+ALTER TABLE test_results
+DROP COLUMN interpretation;
+
+ALTER TABLE test_results
+DROP COLUMN notes;
+ 
+ALTER TABLE psych_tests
+ADD COLUMN result_table VARCHAR(50) NOT NULL;
+ 
+-- -----------------------------------------------------------
+-- BANFE
+-- -----------------------------------------------------------
+CREATE TABLE banfe_results (
+    id_banfe                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                  VARCHAR(36)  NOT NULL UNIQUE,
+    score_orbit_frontal         INT          NULL,
+    inter_orbit_frontal         VARCHAR(36),
+    score_prefrontal_before     INT          NULL,
+    inter_prefrontal_before     VARCHAR(36),
+    score_d_lateral             INT          NULL,
+    inter_d_lateral             VARCHAR(36),
+    score_total                 INT          NULL,
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+
+-- -----------------------------------------------------------
+-- WAIS
+-- -----------------------------------------------------------
+CREATE TABLE wais_results (
+    id_wais                  INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36)  NOT NULL UNIQUE,
+    score_com_verbal         INT          NULL,
+    inter_com_verbal         VARCHAR(36),
+    score_razon_perceptual   INT          NULL,
+    inter_razon_perceptual   VARCHAR(36),
+    score_mem_work           INT          NULL,
+    inter_mem_work           VARCHAR(36),
+    score_velo_proce         INT          NULL,
+    inter_velo_proce         VARCHAR(36),
+    score_total              INT          NULL,
+    inter_total              VARCHAR(36),
+    notes                    VARCHAR(200),
+    CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- MOCA
+-- -----------------------------------------------------------
+CREATE TABLE moca_results (
+    id_moca                  INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36) NOT NULL UNIQUE,
+    score                    INT NOT NULL,
+    interpretation VARCHAR(36),
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_moca_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- NIH 
+-- -----------------------------------------------------------
+CREATE TABLE nih_results (
+    id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36) NOT NULL UNIQUE,
+    notes                       VARCHAR(500),
+    CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
+-- -----------------------------------------------------------
+-- REY
+-- -----------------------------------------------------------
+CREATE TABLE rey_results (
+    id_rey                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36)  NOT NULL UNIQUE,
+    score_rc                  DECIMAL(5,2) NULL,
+    pc_rc                     INT          NULL,
+    time_rc                   DECIMAL(5,2) NULL,
+    pc_time_rc                INT          NULL,
+    score_mcp                 DECIMAL(5,2) NULL,
+    pc_mcp                    INT          NULL,
+    time_mcp                  DECIMAL(5,2) NULL,
+    pc_time_mcp               INT          NULL,
+    score_mlp                 DECIMAL(5,2) NULL,
+    pc_mlp                    INT          NULL,
+    time_mlp                  DECIMAL(5,2) NULL,
+    pc_time_mlp               INT          NULL,
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
+ALTER TABLE tutorial DROP FOREIGN KEY fk_tutorial_module;
+DROP TABLE tutorial;
+
+CREATE TABLE tutorial (
+    id_tutorial  VARCHAR(36)   NOT NULL PRIMARY KEY,
+    page         VARCHAR(50)   NOT NULL,
+    step_order   INT           NOT NULL,
+    title        VARCHAR(100)  NOT NULL,
+    content      VARCHAR(300)  NOT NULL
+);
+
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(50) NOT NULL,
+    MODIFY COLUMN finish_date varchar(50) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(50) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(15) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(25) NULL,
+    MODIFY COLUMN hours INT NULL;
+    
+ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);

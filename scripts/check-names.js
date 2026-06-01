@@ -19,7 +19,9 @@ files.forEach(file => {
   if (normalizedPath.startsWith('assets/') || normalizedPath.includes('/assets/')) {
     return;
   }
-
+  if (normalizedPath.startsWith('/infrastructure/repositories/') || normalizedPath.includes('/infrastructure/repositories/')) {
+    return;
+  }
   const parts = normalizedPath.split('/');
   const fileName = parts[parts.length - 1];
 

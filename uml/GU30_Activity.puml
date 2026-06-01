@@ -1,0 +1,46 @@
+@startuml CancelAppointmentActivity
+title Cancel Appointment 
+
+start
+
+:User opens patient detail page;
+
+if (Has upcoming appointment?) then (yes)
+    :Show "Cancelar cita" button;
+    :User clicks the button;
+    :Confirmation modal opens;
+
+    if (User confirms?) then (yes)
+        :Send DELETE /users/:id/appointments;
+
+        if (Auth & permissions OK?) then (yes)
+
+            if (Appointment exists?) then (yes)
+                :Begin transaction;
+                :Delete appointment;
+                :Delete user_relation;
+                :Commit transaction;
+                :Show success toast;
+                :Reload page;
+                stop
+            else (no)
+                :Show "Not found" error;
+                stop
+            endif
+
+        else (no)
+            :Reject request (401/403);
+            stop
+        endif
+
+    else (no)
+        :Close modal;
+        stop
+    endif
+
+else (no)
+    :Show "Agendar cita" button instead;
+    stop
+endif
+
+@enduml

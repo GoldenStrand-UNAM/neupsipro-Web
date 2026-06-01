@@ -1,51 +1,55 @@
-@startuml dashboard_activity
-title Neuropsychology Unit Dashboard - Activity Diagram
+@startuml dashboard_activity_improved
+title Dashboard — Activity Diagram
+
+|User|
 
 start
 
-:User clicks "Inicio";
+:Open "Mi Panel";
 
-:Load dashboard page (HTML shell);
-:Show "Loading..." state;
+|System|
 
-:Request dashboard summary;
+:Load dashboard page;
 
-if (Auth & permissions OK?) then (yes)
-    fork
-        :Fetch counts;
-    fork again
-        :Fetch age distribution;
-    fork again
-        :Fetch gender distribution;
-    fork again
-        :Fetch test counts;
-    fork again
-        :Fetch stand-by list;
-    end fork
+:Display loading indicators;
 
-    :Build summary DTO;
-    :Render charts and cubes;
-    :Load first stand-by patient detail;
+:Generate dashboard summary;
 
-    if (Patient has profile photo?) then (yes)
-        :Generate signed S3 URL;
+:Calculate statistics;
+
+:Build charts and indicators;
+
+:Display dashboard information;
+
+if (Stand-By patients available?) then (yes)
+
+    :Show patient selector;
+
+    :Load first patient information;
+
+    if (Profile photo exists?) then (yes)
+
+        :Display patient photo;
+
     else (no)
+
+        :Display default avatar;
+
     endif
 
-    :Build patient detail DTO;
-    :Render patient info panel;
+    |User|
 
     repeat
-        :User selects another patient;
+        :Select another patient;
+
+        |System|
         :Load selected patient detail;
-    repeat while (User keeps browsing?) is (yes)
-    -> no;
+        :Update information panel;
 
-    stop
+    repeat while (Continue browsing?) is (yes)
 
-else (no)
-    :Reject request (401/403);
-    stop
 endif
+
+stop
 
 @enduml

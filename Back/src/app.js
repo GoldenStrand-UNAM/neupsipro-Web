@@ -3,8 +3,8 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
-const { loginLimiter, generalLimiter } = require('./infrastructure/external/rateLimiting');
-//const { doubleCsrf } = require('csrf-csrf');
+const { loginLimiter, generalLimiter, apiLimiter, publicationLimiter } = require('./infrastructure/external/rateLimiting');
+const { doubleCsrf } = require('csrf-csrf');
 const helmet = require('helmet');
 
 const app = express();
@@ -18,14 +18,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet({
+  //TODO: remove once we have HTTPS certificate
+  hsts: false,
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'upgrade-insecure-requests': null,
 
       'default-src': ["'self'"],
 
-      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+      'style-src-elem': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
 
       'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
 
@@ -63,22 +66,73 @@ app.use (session({
   saveUninitialized: true,
 }));
 
-/*const {
+const {
   generateCsrfToken,
   doubleCsrfProtection,
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || 'cambia-esto-en-desarrollo',
-  getSessionIdentifier: (req) => req.session.id,
+  getSessionIdentifier: (req) => req.cookies?.jwt_token || '',
   cookieName: 'x-csrf-token',
   cookieOptions: { httpOnly: true, sameSite: 'lax', secure: false },
-  getCsrfTokenFromRequest: (req) => req.body['x-csrf-token'] || req.headers['x-csrf-token'],
+  getCsrfTokenFromRequest: (req) => req.body?.['x-csrf-token'] || req.headers['x-csrf-token'],
 });
 
-app.use(doubleCsrfProtection);
+// Middleware to either apply or skip csrf
 app.use((req, res, next) => {
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
+
+  // Use include to ignore charset
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  //If any of the three above is true, means it is android request
+  if (isAndroidOrApi) {
+    return next();
+  }
+
+  // If web, validate csrf
+  if (process.env.NODE_ENV !== 'test') {
+    return doubleCsrfProtection(req, res, next);
+  }
+  next();
+});
+
+// Middleware to generate csfr for web
+app.use((req, res, next) => {
+  const hasBearer = req.headers.authorization?.startsWith('Bearer ');
+  const isJsonBody = req.headers['content-type']?.includes('application/json');
+  const wantsJson = req.headers.accept?.includes('application/json');
+  const isAndroidOrApi = hasBearer || isJsonBody || wantsJson;
+
+  // If mobile, does not generate csrf
+  if (isAndroidOrApi) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
+  // Generate only if it is web
+  try {
+    res.locals.csrfToken = generateCsrfToken(req, res);
+  } catch (error) {
+    res.locals.csrfToken = '';
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    res.locals.csrfToken = null;
+    return next();
+  }
+
   res.locals.csrfToken = generateCsrfToken(req, res);
   next();
-});*/
+});
+
+app.get('/auth/token', (req, res) => {
+  res.json({ csrfToken: res.locals.csrfToken });
+});
 
 const dbPool = require('./infrastructure/database/database');
 const AuthRepository = require('./infrastructure/repositories/ImpLoginRepository');
@@ -96,16 +150,18 @@ const authService = new AuthService();
 const authRepository = new AuthRepository(dbPool);
 const sessionRepository = new SessionRepository(dbPool);
 
-const authMiddleware = new AuthMiddleware(jwtService, authService);
+const authMiddleware = new AuthMiddleware(jwtService, authService, sessionRepository);
 
 const loginUseCase = new LoginUseCase(authRepository, hashingService, jwtService, cacheService, sessionRepository);
-const logoutUseCase = new LogoutUseCase(authService);
+const logoutUseCase = new LogoutUseCase(authRepository);
 const authUseCase = new AuthorizationUseCase(authRepository);
 
 const loginController = new LoginController(loginUseCase);
-const logoutController = new LogoutController(logoutUseCase);
+const logoutController = new LogoutController(logoutUseCase, jwtService);
 
+//login routes
 app.use('/auth', authRoutes(logoutController, loginController));
+app.use('/', authRoutes(logoutController, loginController));
 
 //================ Routes =======================
 app.use((req, res, next) => {
@@ -113,38 +169,58 @@ app.use((req, res, next) => {
   next();
 });
 
+// Dasboards
+const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
+
+app.use('/dashboardClinical', dashRoutes(authUseCase, authMiddleware));
+
 // Forum
 const forumRoutes = require('./presentation/routes/forum/getForum.routes');
 
-app.use('/forum', forumRoutes(authUseCase));
+app.use('/forum', forumRoutes(authUseCase, authMiddleware));
 
 const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
 
-app.use('/publication', publicationRoutes(authUseCase));
+app.use('/publication', publicationRoutes(authUseCase, authMiddleware));
 
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
-app.use('/', usersRoutes(authUseCase));
+app.use('/', usersRoutes(authUseCase, authMiddleware));
 
 const userRoutes = require('./presentation/routes/users/getUser.routes');
 
-app.use('/users', userRoutes(authUseCase));
+app.use('/users', userRoutes(authUseCase, authMiddleware));
+
+const postClinicalUserRoutes = require('./presentation/routes/clinical/postClinicalUser.routes');
+
+app.use('/clinical', postClinicalUserRoutes(authUseCase, authMiddleware));
 
 const clinicalUserRoutes = require('./presentation/routes/clinical/getClinicalUser.routes');
 
-app.use('/clinical', clinicalUserRoutes(authUseCase));
+const postUserRoutes = require('./presentation/routes/users/postUser.routes');
+
+app.use('/user', postUserRoutes(authUseCase, authMiddleware));
+
+app.use('/clinical', clinicalUserRoutes(authUseCase, authMiddleware));
 
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
 
-app.use('/', clinicalRoutes(authUseCase));
+app.use('/', clinicalRoutes(authUseCase, authMiddleware));
 
 const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
 
-app.use('/', postPublicationRoutes(authUseCase));
+app.use('/', postPublicationRoutes(authUseCase, authMiddleware));
 
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
-app.use('/', dashboardRoutes(authUseCase));
+app.use('/', dashboardRoutes(authUseCase, authMiddleware));
+
+const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
+
+app.use('/', interventionRoutes(authUseCase, authMiddleware));
+const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
+
+app.use('/', getAllClinicalsRoutes(authUseCase, authMiddleware));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
@@ -152,7 +228,16 @@ app.get('/test', authMiddleware.verifyToken, (req, res) => {
 
 const profileRoutes = require('./presentation/routes/users/profile.routes');
 
-app.use('/api/profile', profileRoutes(authUseCase));
+app.use('/api/profile', profileRoutes(authUseCase, authMiddleware));
+
+// Applications
+
+const testRoutes = require('./presentation/routes/applications/getTests.routes');
+
+app.use('/', testRoutes(authUseCase, authMiddleware));
+const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
+
+app.use('/api/tutorial', tutorialRoutes(authMiddleware));
 
 app.get('/consultUser', (req, res) => {
   res.render('users/consultUser', {

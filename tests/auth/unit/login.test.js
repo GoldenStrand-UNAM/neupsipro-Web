@@ -1,4 +1,4 @@
-const LoginUseCase = require('../../../Back/src/application/Usecase/auth/loginUseCase');
+const LoginUseCase = require('../../../Back/src/application/usecase/auth/loginUseCase');
 
 describe('LoginUseCase Unit Test', () => {
     let loginUseCase;
@@ -9,7 +9,7 @@ describe('LoginUseCase Unit Test', () => {
         mockHashService = { compare: jest.fn() };
         mockJwtService = { generateToken: jest.fn() };
         mockCache = { getAttempts: jest.fn(), incrementAttempts: jest.fn(), clearAttempts: jest.fn() };
-        mockSessionRepo = { createSession: jest.fn() };
+        mockSessionRepo = { replaceActiveSessions: jest.fn() };
 
         loginUseCase = new LoginUseCase(
             mockAuthRepo, mockHashService, mockJwtService, mockCache, mockSessionRepo
@@ -30,7 +30,7 @@ describe('LoginUseCase Unit Test', () => {
         });
         mockHashService.compare.mockResolvedValue(true);
         mockJwtService.generateToken.mockReturnValue('fake-jwt-token');
-        mockSessionRepo.createSession.mockResolvedValue(123);
+        mockSessionRepo.replaceActiveSessions.mockResolvedValue(123);
 
         const token = await loginUseCase.execute('test', 'pass', '127.0.0.1', 'agent');
 

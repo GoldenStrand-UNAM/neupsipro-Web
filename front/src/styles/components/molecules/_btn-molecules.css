@@ -31,6 +31,18 @@
     @apply text-sm md:text-base;
     @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
+
+  .btn-clear {
+    @apply flex items-center justify-center gap-2;
+    @apply px-3 py-2 md:px-4 font-medium rounded-lg;
+    @apply ml-auto md:w-[138px];
+    @apply h-[34px] md:h-[40px];
+    @apply text-sm md:text-base;
+    @apply hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
+    @apply bg-transparent text-[#C8922A] border border-[#C8922A];
+    @apply hover:bg-[#C8922A] hover:text-white;
+  }
+
   /* Boton status (texto)*/
   .btn-status {
     @apply flex items-center justify-center;
@@ -77,4 +89,68 @@
   width: 9rem;
   }
 
+.btn-cancel {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply border border-gray-300 rounded-lg;
+    @apply font-semibold text-gray-700;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:bg-gray-50 hover:scale-[1.05] active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-schedule {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-[#3350A9] rounded-lg;
+    @apply font-semibold text-white;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:brightness-110 active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-logout {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-red-600 rounded-lg;
+    @apply font-semibold text-white;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:bg-red-700 active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-save {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-[#3350A9] text-white rounded-lg;
+    @apply font-semibold;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto flex-1;
+    @apply h-[44px] md:h-[53px];
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
+
+.btn-add {
+    @apply flex items-center justify-center gap-3;
+    @apply px-4 py-2 md:px-6 md:py-3;
+    @apply bg-[#3350A9] text-white rounded-lg;
+    @apply font-semibold;
+    @apply text-sm md:text-base;
+    @apply w-full sm:w-auto sm:min-w-[140px];
+    @apply h-[44px] md:h-[53px];
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+}
 }

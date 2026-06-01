@@ -70,18 +70,21 @@ describe('getDashboardUnitUseCase', () => {
         dashboardRepository.fetchStandByList.mockResolvedValue([]);
         const result = await useCase.execute();
         expect(result).toEqual({
-        ageDistribution: { data: [], labels: [] },
-        counts: {
-            clinical: undefined,
-            discharged: undefined,
-            inIntervention: undefined,
-            noProtocol: undefined,
-            research: undefined,
-            standBy: undefined
-        },
-        genderDistribution: { items: [] },
-        standByList: [],
-        testCounts: { items: [], totalProtocols: 0 }
+            ageDistribution: {
+                labels: ['0-10', '11-17', '18-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+'],
+                data:   [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            },
+            counts: {
+                clinical: undefined,
+                discharged: undefined,
+                inIntervention: undefined,
+                noProtocol: undefined,
+                research: undefined,
+                standBy: undefined
+            },
+            genderDistribution: { items: [] },
+            standByList: [],
+            testCounts: { items: [], totalProtocols: 0 }
         });
     });
 
@@ -91,9 +94,24 @@ describe('getDashboardUnitUseCase', () => {
         clinical: 0, research: 1, noProtocol: 0
     };
 
+    const birthdateForAge = (age) => {
+        const d = new Date();
+        d.setFullYear(d.getFullYear() - age);
+        d.setDate(d.getDate() - 1);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}/${d.getFullYear()}`;
+    };
+
     const fakeAge = [
-        { range: '18-29', total: 3 },
-        { range: '30-44', total: 5 }
+        birthdateForAge(18),  // 18-30
+        birthdateForAge(25),  // 18-30
+        birthdateForAge(30),  // 18-30
+        birthdateForAge(31),  // 31-50
+        birthdateForAge(35),  // 31-50
+        birthdateForAge(40),  // 31-50
+        birthdateForAge(45),  // 31-50
+        birthdateForAge(50),  // 31-50
     ];
 
     const fakeGender = [
@@ -124,8 +142,8 @@ describe('getDashboardUnitUseCase', () => {
             standBy: 4
         },
         ageDistribution: {
-            data: [3, 5],
-            labels: ["18-29", "30-44"]
+            labels: ['0-10', '11-17', '18-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80+'],
+            data:   [0, 0, 2, 3, 2, 1, 0, 0, 0]
         },
         genderDistribution: {
             items: [

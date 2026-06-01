@@ -40,6 +40,7 @@ function formatAppointmentDate (dateString) {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
+    timeZone: 'UTC',
   });
 }
 
@@ -80,22 +81,24 @@ function populateUserInfo (user) {
   document.getElementById('userCode').textContent = user.referenceNumber || 'N/A';
   document.getElementById('userAge').textContent = user.age || 'N/A';
   document.getElementById('userDate').textContent = user.registrationDate
-    ? new Date(user.registrationDate).toLocaleDateString() : 'N/A';
+    ? new Date(user.registrationDate).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : 'N/A';
   document.getElementById('userPhase').textContent = user.phase || 'N/A';
   document.getElementById('groupIntervention').textContent = user.groupIntervention || 'N/A';
   document.getElementById('etiology').textContent = user.amputationEtiology || 'N/A';
 
   document.getElementById('prosthetist').textContent = user.prosthetist || 'N/A';
-  document.getElementById('neuroDate').textContent = user.neuroEntryDate
-    ? new Date(user.neuroEntryDate).toLocaleDateString() : 'N/A';
-  document.getElementById('amputationDate').textContent = user.amputationDate
-    ? new Date(user.amputationDate).toLocaleDateString() : 'N/A';
+  document.getElementById('neuroDate').textContent = user.neuroEntryDate || 'N/A';
+
+  document.getElementById('amputationDate').textContent = user.amputationDate || 'N/A';
+
   document.getElementById('amputationLevel').textContent = user.amputationLevel || 'N/A';
   document.getElementById('laterality').textContent = user.laterality || 'N/A';
 
   document.getElementById('state').innerHTML = getStatusBadge(user.state);
-  document.getElementById('nextApt').textContent = formatAppointmentDate(user.nextAppointment) || 'N/A';
-  document.getElementById('protocol').textContent = user.protocol || 'N/A';
+  document.getElementById('nextApt').textContent = user.nextAppointment
+    ? formatAppointmentDate(user.nextAppointment.dateTime)
+    : 'Sin cita programada';  document.getElementById('protocol').textContent = user.protocol || 'N/A';
   document.getElementById('clinic').textContent = user.assignedClinic || 'N/A';
 }
 
@@ -115,11 +118,32 @@ function populateLogbook (user) {
   } else {
     if (user.assignedApplications && user.assignedApplications.length > 0) {
       user.assignedApplications.forEach(application => {
-        container.innerHTML += createApplicationCard(application);
+        container.innerHTML += createApplicationCard(application, user.idUser);
       });
     }
     container.innerHTML += createAddSessionCard();
   }
+}
+
+// Max applications allowed per user
+const MAX_APPLICATIONS_UI = 5;
+
+// When the limit is reached, swap the "Nueva aplicación" button for a disabled placeholder.
+function enforceApplicationLimit (container) {
+  const addBtn = document.getElementById('btnCreateSession');
+  if (!addBtn) return;
+
+  const cardCount = container.querySelectorAll('a').length;
+  if (cardCount < MAX_APPLICATIONS_UI) return;
+
+  addBtn.outerHTML = `
+    <div class="flex flex-col items-center justify-center gap-3 rounded-3xl p-6 w-full border-2 border-dashed border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed select-none">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+      </svg>
+      <span class="text-sm font-medium">Límite de 5 alcanzado</span>
+    </div>
+  `;
 }
 
 function setupShowMoreToggle () {
@@ -162,6 +186,18 @@ function setupShowMoreToggle () {
   });
 }
 
+(async function checkApplicationExpiry () {
+  const idUser = window.__USER_DATA__?.idUser;
+  if (!idUser) return;
+  try {
+    const res  = await fetch(`/users/${idUser}/applications/check-expiry`);
+    const json = await res.json();
+    if (!res.ok) { console.error('[checkExpiry]', json.error); return; }
+  } catch (err) {
+    console.error('[checkExpiry] fetch error:', err);
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const user = window.__USER_DATA__;
   if (!user) return;
@@ -179,6 +215,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   populateLogbook(user);
+
+  const logbook = document.getElementById('logbookContainer');
+  if (logbook) {
+    enforceApplicationLimit(logbook);
+    new MutationObserver(() => enforceApplicationLimit(logbook))
+      .observe(logbook, { childList: true });
+  }
 
   setupShowMoreToggle();
 });
