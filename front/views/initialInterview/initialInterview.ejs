@@ -126,11 +126,11 @@
     </div>
 
     <!-- Script -->
-    <script src="/js/inicialInterview/financial/financialMapper.js"></script>
+    <script src="/js/initialInterview/financial/financialMapper.js"></script>
     <script src="/js/sidebar.js"></script>
-    <script src="/js/inicialInterview/sectionsStepper.js"></script>
-    <script src="/js/inicialInterview/sidebarTimeline.js"></script>
-    <script src="/js/inicialInterview/financial/financialBuilder.js"></script>
+    <script src="/js/initialInterview/sectionsStepper.js"></script>
+    <script src="/js/initialInterview/sidebarTimeline.js"></script>
+    <script src="/js/initialInterview/financial/financialBuilder.js"></script>
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
@@ -210,7 +210,7 @@
 
             try {
                 const res = await fetch(
-                    `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`
+                    `/users/${id_user}/initial-interview/api/${id_user}/financial/${section}`
                 );
 
                 const data = await res.json();
@@ -422,7 +422,7 @@
                 const body = buildSection(section);
                 console.log('body: ', body);
                 const res = await fetch(
-                `/users/${id_user}/inicial-interview/api/${id_user}/financial/${section}`,
+                `/users/${id_user}/initial-interview/api/${id_user}/financial/${section}`,
                 {
                     method: 'PATCH',
                     headers: {

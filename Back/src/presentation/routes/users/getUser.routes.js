@@ -176,8 +176,8 @@ module.exports = (authUseCase, authMiddleware) => {
   );
 
   //INITIAL INTERVIEW
-  const inicialInterviewRoutes = require('../initialInterview/financialInterview.routes');
-  router.use('/:id_user/initial-interview', inicialInterviewRoutes(authUseCase, authMiddleware));
+  const initialInterviewRoutes = require('../initialInterview/financialInterview.routes');
+  router.use('/:id_user/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 
   return router;
 };

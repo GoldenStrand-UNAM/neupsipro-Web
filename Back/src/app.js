@@ -237,9 +237,9 @@ const testRoutes = require('./presentation/routes/applications/getTests.routes')
 app.use('/', testRoutes(authUseCase, authMiddleware));
 
 // ======== INITIAL INTERVIEW ROUTES ========
-const inicialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
+const initialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
 
-app.use('/initial-interview', inicialInterviewRoutes(authUseCase, authMiddleware));
+app.use('/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 
 // ======== TUTORIAL ROUTES ========
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
