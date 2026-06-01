@@ -101,7 +101,11 @@ function renderFlowChart (counts) {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         // Bottom legend
-        legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 14 }, padding: 10 } },
+        legend: { position: 'bottom', 
+        labels: { boxWidth: 14, font: { size: 14 }, padding: 10 },
+        onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+        onLeave: (event) => { event.native.target.style.cursor = 'default'; }},
+
         // Tooltip with percentage
         tooltip: {
           callbacks: {
@@ -172,7 +176,7 @@ async function loadUserInfoPanel (user) {
       return;
     }
     const ageStr = data.age
-      ? `${data.age.years} años · ${data.age.months} meses · ${data.age.days} días`
+      ? `${escapeHtml(data.age.years)} años · ${escapeHtml(data.age.months)} meses · ${data.age.days} días`
       : 'sin datos de edad';
 
     const protocolMap  = { Clinical: 'Clínico', Research: 'Investigación', Pending: 'Pendiente' };
@@ -211,9 +215,12 @@ async function loadUserInfoPanel (user) {
                             <p class="font-bold text-gray-800 truncate">${escapeHtml(data.fullName)}</p>
                             <p class="text-xs text-gray-500 mt-0.5">${escapeHtml(ageStr)}</p>
                         </div>
-                        <span class="text-[10px] uppercase tracking-wider font-bold text-[#3350A9] bg-white border border-[#3350A9]/30 rounded px-2 py-0.5">
-                            ${escapeHtml(data.referenceNumber)}
-                        </span>
+                        <div class="flex items-center gap-1">
+                          <span class="text-sm text-gray-500 font-medium">Folio: </span>
+                          <span class="text-[10px] uppercase tracking-wider font-bold text-[#3350A9] bg-white border border-[#3350A9]/30 rounded px-2 py-0.5">
+                              ${escapeHtml(data.referenceNumber)}
+                          </span>
+                      </div>
                     </div>
 
                     <!-- Info rows -->
@@ -258,9 +265,9 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     todayContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Hoy:</h2>
       ${listToday.map (ref => `
-        <p class="text-gray-500 italic"> ${ref.date} - ${ref.name} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
-            ${ref.issue}
+        <p class="text-gray-500 italic"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
+            ${escapeHtml(ref.issue)}
           </span>
         </p>
         `).join('')}
@@ -272,9 +279,9 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     tomorrowContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Mañana:</h2>
       ${listTomorrow.map (ref => `
-        <p class="text-regular text-gray-500"> ${ref.date} - ${ref.name} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
-            ${ref.issue}
+        <p class="text-regular text-gray-500"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
+            ${escapeHtml(ref.issue)}
           </span>
         </p>
         `).join('')}
@@ -286,9 +293,9 @@ function loadAppointments (listToday, listTomorrow, listOther) {
     otherContainer.innerHTML = `
     <h2 class="text-base font-bold text-gray-700 mb-3">Próximas:</h2>
       ${listOther.map (ref => `
-        <p class="relative group text-gray-500 italic hover:-translate-y-0.5 hover: hover:brightness-[1.02]"> ${ref.date} - ${ref.name} 
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
-            ${ref.issue}
+        <p class="relative group text-gray-500 italic"> ${escapeHtml(ref.date)} - ${escapeHtml(ref.name)} 
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[#E5E8FA] px-2 py-1 text-xs text-gray-500 opacity-0 transition-opacity pointer-events-none">
+            ${escapeHtml(ref.issue)}
           </span>
         </p>
         `).join('')}

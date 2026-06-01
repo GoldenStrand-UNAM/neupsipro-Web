@@ -22,7 +22,7 @@ const interventionController = new InterventionController(
   { execute: jest.fn() },  // getIntervention
   { execute: jest.fn() },  // updateContract
   { execute: jest.fn() },  // addSession
-  { execute: mockExecute } // deleteLastSession
+  { execute: mockExecute } // deleteSession
 );
  
 // ===================== HELPERS ===========================================
@@ -53,7 +53,7 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
     const req = buildReq();
     const res = buildRes();
  
-    await interventionController.deleteLastSession(req, res);
+    await interventionController.deleteSession(req, res);
  
     expect(mockExecute).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(200);
@@ -71,7 +71,7 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
     });
     const res = buildRes();
  
-    await interventionController.deleteLastSession(req, res);
+    await interventionController.deleteSession(req, res);
  
     expect(res.status).toHaveBeenCalledWith(200);
  
@@ -87,7 +87,7 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
     const req = buildReq();
     const res = buildRes();
  
-    await interventionController.deleteLastSession(req, res);
+    await interventionController.deleteSession(req, res);
  
     expect(res.status).toHaveBeenCalledWith(400);
  
@@ -102,7 +102,7 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
     const req = buildReq();
     const res = buildRes();
  
-    await interventionController.deleteLastSession(req, res);
+    await interventionController.deleteSession(req, res);
  
     expect(res.status).toHaveBeenCalledWith(400);
  
@@ -111,18 +111,18 @@ describe('UNIT — DELETE /users/:id_user/intervention/sessions/:id_session', ()
   });
  
   // Alternating flow — id_session is not the last session.
-  test('responds 409 when the session is not the last one', async () => {
-    mockExecute.mockRejectedValue(new Error('Solo se puede eliminar la última sesión'));
- 
-    const req = buildReq();
-    const res = buildRes();
- 
-    await interventionController.deleteLastSession(req, res);
- 
-    expect(res.status).toHaveBeenCalledWith(409);
- 
-    const body = JSON.stringify(res.json.mock.calls[0][0]);
-    expect(body).not.toContain('stack');
+  test('responds 400 when the session does not belong to the user', async () => {
+      mockExecute.mockRejectedValue(new Error('La sesión no existe o no pertenece a este usuario'));
+
+      const req = buildReq();
+      const res = buildRes();
+
+      await interventionController.deleteSession(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+
+      const body = JSON.stringify(res.json.mock.calls[0][0]);
+      expect(body).not.toContain('stack');
   });
 
 });

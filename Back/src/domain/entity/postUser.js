@@ -5,6 +5,7 @@ class User {
     firstName,
     lastnameP,
     lastnameM,
+    email,
     birthdate,
     passwordHash,
     assigned,
@@ -20,12 +21,14 @@ class User {
     amputationLevel,
     pairs,
     sex,
+    phone,
   }) {
     this.idRole = idRole,
     this.userName = userName,
     this.firstName = firstName,
     this.lastnameP = lastnameP,
     this.lastnameM = lastnameM || null,
+    this.email = email || null,
     this.birthdate = birthdate,
     this.passwordHash = passwordHash,
     this.assigned = assigned,
@@ -40,7 +43,8 @@ class User {
     this.prosthetist = prosthetist,
     this.neuroEntryDate = neuroEntryDate || null,
     this.pairs = pairs,
-    this.sex = sex;
+    this.sex = sex,
+    this.phone = phone;
   }
 }
 

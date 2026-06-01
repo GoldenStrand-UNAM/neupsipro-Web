@@ -48,17 +48,39 @@ class impTestApplicationsRepository extends TestApplicationRepository {
     return rows.length ? rows[0] : null;
   }
 
-  /**
-   * Fetches all test IDs registered for a given protocol.
-   * @returns {string[]} Array of id_test values (empty if protocol has no tests).
-   */
+  // Fetch all test ids assigned to a protocol
   async fetchProtocolTests ({ protocol }) {
     const [rows] = await db.query(
-      'SELECT id_test FROM protocol_tests WHERE protocol = ?',
+      `SELECT pt.id_test, p.test_name, p.result_table
+       FROM protocol_tests pt
+       INNER JOIN psych_tests p ON pt.id_test = p.id_test
+       WHERE pt.protocol = ?`,
       [protocol]
     );
+    return rows; // [{ id_test, test_name, result_table }]
+  }
 
-    return rows.map(row => row.id_test);
+  // Fetch applications that are neither completed (3) nor already expired (5).
+  // Only these need expiry evaluation.
+  async fetchActiveApplicationsByUser ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT id_application, status, created_at
+      FROM test_applications
+      WHERE id_user  = ?
+        AND status NOT IN (3, 5)`,
+      [id_user]
+    );
+    return rows;
+  }
+
+  // Update the status of a single application.
+  async updateApplicationStatus ({ id_application, status }) {
+    await db.query(
+      `UPDATE test_applications
+      SET status = ?
+      WHERE id_application = ?`,
+      [status, id_application]
+    );
   }
 }
 

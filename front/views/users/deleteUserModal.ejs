@@ -63,8 +63,7 @@
     // edit button
     btnEdit?.addEventListener('click', () => {
         menu.classList.add('hidden');
-        //window.location.href = `/users/${idUser}/edit`;
-        window.location.href = `/construction`
+        window.location.href = `/users/${idUser}/edit`;
     });
 
     // delete button, opens modal
@@ -104,6 +103,11 @@
                 const data = await res.json().catch(() => ({}));
                 throw new Error(data.error || 'Error al eliminar usuario');
             }
+
+            sessionStorage.setItem('pendingToast', JSON.stringify({
+            message: 'Usuario eliminado correctamente',
+            type: 'success'
+            }));
 
             window.location.href = '/users';
         } catch (err) {

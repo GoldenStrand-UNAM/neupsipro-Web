@@ -5,6 +5,14 @@
 
     .input-base{
         @apply w-full px-4 py-2 rounded-lg border border-gray-300;
-        
+
+    }
+
+    /* Selects: hide the native arrow and show the same gray chevron used across the app */
+    select.input-base{
+        @apply appearance-none bg-no-repeat;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+        background-size: 1.25rem;
     }
 }

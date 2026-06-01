@@ -42,6 +42,18 @@
     @apply text-sm md:text-base;
     @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
+
+  .btn-clear {
+    @apply flex items-center justify-center gap-2;
+    @apply px-3 py-2 md:px-4 font-medium rounded-lg;
+    @apply ml-auto md:w-[138px];
+    @apply h-[34px] md:h-[40px];
+    @apply text-sm md:text-base;
+    @apply hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
+    @apply bg-transparent text-[#C8922A] border border-[#C8922A];
+    @apply hover:bg-[#C8922A] hover:text-white;
+  }
+
   /* Boton status (texto)*/
   .btn-status {
     @apply flex items-center justify-center;
@@ -96,7 +108,7 @@
     @apply text-sm md:text-base;
     @apply w-full sm:w-auto flex-1;
     @apply h-[44px] md:h-[53px];
-    @apply hover:bg-gray-50 active:scale-95;
+    @apply hover:bg-gray-50 hover:scale-[1.05] active:scale-95;
     @apply transition-all duration-200;
     @apply cursor-pointer select-none;
 }
@@ -152,5 +164,4 @@
     @apply transition-all duration-200;
     @apply cursor-pointer select-none;
 }
-
 }

@@ -1,0 +1,19 @@
+@startuml ModifyProtocolActivity
+title Modify User Protocol - Activity Diagram
+
+start
+:Consult user;
+:Click on "Protocolo" field;
+:System shows modal with protocol options;
+:Select new protocol (Clinical / Research);
+
+if (Confirm change?) then (yes)
+  :Update protocol;
+  :Show confirmation;
+else (no)
+  :Close modal;
+endif
+
+stop
+
+@enduml
