@@ -205,5 +205,15 @@ class ImpClinicalRepository extends clinicalRepository {
     );
     return rows[0];
   }
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
+  }
 }
 module.exports = ImpClinicalRepository;
