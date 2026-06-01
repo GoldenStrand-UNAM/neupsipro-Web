@@ -44,7 +44,7 @@ class FinancialInterviewUseCase {
 
     return new FinancialInterview({
       id_user,
-      current_step: initialProgress[0].current_step,
+      current_step: initialProgress[0]?.current_step ?? 2,
       current_section: subStep,
       initialProgress,
       financialProgress: sectionResult[0][0],
@@ -57,7 +57,7 @@ class FinancialInterviewUseCase {
     const refFetch = await this.financialInterviewRepository.fetchRefNum({ id_user });
 
     // fetch  relation
-    const relationResult = await this.financialInterviewRepository.fetchRelation({ idUser });
+    const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
 
     // fetch initial interview full progress
