@@ -1,0 +1,28 @@
+@startuml R02_Activity
+
+title R02 - Diagrama de estados para exportacion PDF
+
+[*] --> PorComenzar : status = 1
+PorComenzar --> EnProceso : iniciar aplicacion
+EnProceso --> Calificada : calificar pruebas
+EnProceso --> Caducada : expira vigencia
+
+Caducada --> [*]
+
+state Calificada {
+	[*] --> ListaParaExportar
+	ListaParaExportar --> Exportando : click Exportar PDF
+	Exportando --> ListaParaExportar : error 404/422/500
+	Exportando --> Entregado : exportacion exitosa
+}
+
+Entregado : status = 4
+Entregado : Consultar = habilitado
+Entregado : Modificar = deshabilitado
+
+Calificada --> Entregado : updateApplicationAndTestsStatus(4)
+Entregado --> Entregado : re-exportar permitido
+
+Entregado --> [*]
+
+@enduml

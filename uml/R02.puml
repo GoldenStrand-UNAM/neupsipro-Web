@@ -1,0 +1,100 @@
+@startuml Export_PDF
+
+title R02 - Exportar PDF de resultados
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "testList.js" as TLIST
+participant "getTests.routes.js" as UROUTE
+participant "ExportPdfController" as TCTRL
+participant "ExportPdfUseCase" as UC_EXP
+participant "impTestResultsRepository" as RREPO
+participant "ImpUsersRepository" as UREPO
+participant "PdfService" as PDF
+database "DB" as DB
+
+== Boton de exportar ==
+
+note over VEJS,TLIST
+  El boton existe en la vista y solo se muestra
+  cuando applicationStatus es 'Calificada' o 'Entregado'.
+end note
+
+USR -> TLIST : Click [Exportar PDF]
+TLIST -> UROUTE : GET /users/:id_user/applications/:id_application/export
+UROUTE -> TCTRL : export(req, res)
+TCTRL -> UC_EXP : execute({ id_user, id_application })
+
+== Validaciones ==
+
+UC_EXP -> RREPO : fetchApplicationById({ id_application })
+RREPO -> DB : SELECT ... FROM test_applications WHERE id_application = ?
+DB --> RREPO : application | null
+RREPO --> UC_EXP : application | null
+
+alt application no existe
+  UC_EXP --> TCTRL : Error 404 'Application not found'
+  TCTRL --> TLIST : HTTP 404 { error }
+  TLIST --> USR : showToast(error)
+end
+
+alt application.status no es 3 ni 4
+  UC_EXP --> TCTRL : Error 422 'Application is not completed'
+  TCTRL --> TLIST : HTTP 422 { error }
+  TLIST --> USR : showToast(error)
+end
+
+== Datos para reporte ==
+
+UC_EXP -> UREPO : fetchUserForExport({ id_user })
+UREPO -> DB : SELECT name, protocol, reference_number ...
+DB --> UREPO : user | null
+UREPO --> UC_EXP : user | null
+
+alt user no existe
+  UC_EXP --> TCTRL : Error 404 'User not found'
+  TCTRL --> TLIST : HTTP 404 { error }
+  TLIST --> USR : showToast(error)
+end
+
+UC_EXP -> RREPO : fetchAllResultsForExport({ id_application })
+RREPO -> DB : SELECT tr.id_results, tr.id_test, ...\nWHERE status IN (3,4)
+DB --> RREPO : [results]
+RREPO --> UC_EXP : [results]
+
+loop por cada resultado
+  alt id_test == 1 (BANFE)
+    UC_EXP -> UC_EXP : getBanfeUseCase.execute({ id_results })
+  end
+  alt id_test == 2 (WAIS)
+    UC_EXP -> UC_EXP : getWaisUseCase.execute({ id_results })
+  end
+  alt id_test == 3 (REY)
+    UC_EXP -> UC_EXP : getReyUseCase.execute({ id_results })
+  end
+  alt id_test == 4 o 5
+    UC_EXP -> UC_EXP : no se agrega a exportacion
+  end
+end
+
+== Generacion y actualizacion ==
+
+UC_EXP -> PDF : generate(report)
+PDF --> UC_EXP : pdfBuffer
+
+UC_EXP -> RREPO : updateApplicationAndTestsStatus({ id_application, status: 4 })
+RREPO -> DB : UPDATE test_applications SET status = 4 ...
+RREPO -> DB : UPDATE test_results SET status = 4 WHERE status = 3 ...
+DB --> RREPO : OK
+RREPO --> UC_EXP : OK
+
+UC_EXP --> TCTRL : { pdfBuffer, filename }
+TCTRL --> TLIST : HTTP 200 PDF (attachment)
+
+== UI ==
+
+TLIST -> TLIST : Descargar blob y guardar archivo
+TLIST -> TLIST : markAllDelivered()
+TLIST --> USR : Toast exito + badges en 'Entregado'
+
+@enduml
