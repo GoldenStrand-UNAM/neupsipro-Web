@@ -39,7 +39,7 @@ describe('EditUserUseCase', () => {
         modality: 'En línea',
         pairs: 'Sí asiste',
         assigned: 'clinic-456',
-        amputationDate: '05/05/2020',
+        amputationDate: '05/05/2000',
         amputationLevel: 'Transtibial',
         laterality: 'Diestra',
         prosthetist: 'CPO Juan David Orozco',
@@ -66,6 +66,7 @@ describe('EditUserUseCase', () => {
             id_user: '123',
             profile_photo: 'old_photo.jpg',
         });
+        mockUserRepository.checkDuplicate.mockResolvedValue(null);
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123', success: true});
         mockUserRepository.checkDuplicate.mockResolvedValue(null);
 
