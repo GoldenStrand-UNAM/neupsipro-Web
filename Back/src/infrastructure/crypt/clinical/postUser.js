@@ -3,6 +3,11 @@ const Crypt = require('../crypt');
 const crypt = new Crypt();
 
 function cryptUser (user) {
+  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ""} ${user.birthdate}
+    `.replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  const bindex = crypt.generateBlindIndex(data);
   return {
     ...user,
     firstName: crypt.encrypt(user.firstName),
@@ -12,11 +17,13 @@ function cryptUser (user) {
     email: crypt.encrypt(user.email),
     affiliation: crypt.encrypt(user.affiliation),
     activity: crypt.encrypt(user.activity),
-    start_date: crypt.encrypt(user.start_date),
-    finish_date: crypt.encrypt(user.finish_date),
-    hours: crypt.encrypt(user.hours),
-    emergency_contact_name: crypt.encrypt(user.emergency_contact_name),
-    emergency_contact_phone: crypt.encrypt(user.emergency_contact_phone),
-    emergency_contact_relation: crypt.encrypt(user.emergency_contact_relation),
+    startDate: crypt.encrypt(user.startDate),
+    finishDate: crypt.encrypt(user.finishDate),
+    emergencyContactName: crypt.encrypt(user.emergencyContactName),
+    emergencyContactPhone: crypt.encrypt(user.emergencyContactPhone),
+    emergencyContactRelation: crypt.encrypt(user.emergencyContactRelation),
+    bindex: bindex,
   };
 }
+
+module.exports = cryptUser;
