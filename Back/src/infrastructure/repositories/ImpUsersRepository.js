@@ -124,30 +124,7 @@ class ImpUsersRepository extends usersRepository {
     }
   }
 
-  async editUser ({
-    id_user,
-    userName,
-    firstName,
-    lastnameP,
-    lastnameM,
-    birthdate,
-    sex,
-    email,
-    phone,
-    passwordHash,
-    profilePhoto,
-    referenceNumber,
-    phase,
-    basePathology,
-    modality,
-    pairs,
-    assigned,
-    neuroEntryDate,
-    amputationDate,
-    amputationLevel,
-    laterality,
-    prosthetist,
-  }) {
+  async editUser (user) {
     const connection = await db.getConnection();
     try {
       await connection.query('START TRANSACTION');
@@ -166,19 +143,19 @@ class ImpUsersRepository extends usersRepository {
                 profile_photo = COALESCE(?, profile_photo),
                 password_hash = COALESCE(?, password_hash)
           WHERE id_user = ?`,
-        [userName, firstName, lastnameP, lastnameM, email, birthdate, sex,
-          profilePhoto, passwordHash, id_user]
+        [user.userName, user.firstName, user.lastnameP, user.lastnameM, user.email,
+          user.birthdate, user.sex, user.profilePhoto, user.passwordHash, user.id_user]
       );
 
       // Update clinical info table
       await connection.query(
         `UPDATE user_info
-            SET neuro_status = ?, base_patology = ?, modality = ?, reference_number = ?,
+            SET neuro_status = ?, base_patology = ?, attendance = ?, reference_number = ?,
                 amputation_date = ?, amputation_level = ?, laterality = ?, prosthetist = ?,
                 neuro_entry_date = ?, group_intervention = ?, phone = ?
           WHERE id_user = ?`,
-        [phase, basePathology, modality, referenceNumber, amputationDate,
-          amputationLevel, laterality, prosthetist, neuroEntryDate, pairs, phone, id_user]
+        [user.phase, user.basePathology, user.modality, user.referenceNumber, user.amputationDate, user.amputationLevel,
+          user.laterality, user.prosthetist, user.neuroEntryDate, user.pairs, user.phone, user.id_user]
       );
 
       // update assigned clinic
@@ -186,20 +163,20 @@ class ImpUsersRepository extends usersRepository {
         `UPDATE user_relation
             SET id_clinic_user = ?
           WHERE id_user = ? AND type = 'assigned'`,
-        [assigned, id_user]
+        [user.assigned, user.id_user]
       );
 
       const [rows] = await connection.query(
         `SELECT
           u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.profile_photo, u.gender,
-          ui.neuro_status, ui.base_patology, ui.modality, ui.reference_number, ui.amputation_date, ui.amputation_level,
+          ui.neuro_status, ui.base_patology, ui.attendance, ui.reference_number, ui.amputation_date, ui.amputation_level,
           ui.laterality, ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
           ur.id_clinic_user
           FROM users u
           LEFT JOIN user_info ui ON ui.id_user = u.id_user
           LEFT JOIN user_relation ur ON ur.id_user = u.id_user
           WHERE u.id_user = ? AND ur.type = 'assigned';`,
-        [id_user]
+        [user.id_user]
       );
 
       // Confirm transasction
@@ -229,7 +206,7 @@ class ImpUsersRepository extends usersRepository {
           u.profile_photo,
           ui.neuro_status,
           ui.base_patology, 
-          ui.modality, 
+          ui.attendance, 
           ui.reference_number,
           ui.amputation_date, 
           ui.amputation_level, 
@@ -245,8 +222,8 @@ class ImpUsersRepository extends usersRepository {
       WHERE u.id_user = ? AND u.eliminated = 0`,
       [id_user]
     );
-
-    return rows[0] || null;
+    if (rows) return crypt(rows[0]);
+    else return null;
   }
 
   async softDeleteUser ({ id_user }) {
@@ -303,7 +280,7 @@ class ImpUsersRepository extends usersRepository {
     return rows[0];
   }
 
-  async checkDuplicate (user) {
+  async checkDuplicate (user, id = '') {
     const [rows] = await db.query (
       `SELECT 
           (u.dup_bindex = ?) AS matched_bindex,
@@ -311,13 +288,15 @@ class ImpUsersRepository extends usersRepository {
           (ui.ref_bindex = ?) AS matched_reference
       FROM users u
       LEFT JOIN user_info ui ON u.id_user = ui.id_user
-      WHERE u.user_name = ?
+      WHERE u.id_user <> ?
+        AND (u.user_name = ?
         OR (u.eliminated = '0'
         AND (
             u.dup_bindex = ?   
             OR ui.ref_bindex = ?
-        ));`,
-      [user.bindex, user.userName, user.refBindex, user.userName, user.bindex, user.refBindex]
+        ))
+    );`,
+      [user.bindex, user.userName, user.refBindex, id, user.userName, user.bindex, user.refBindex]
     );
     return rows[0];
   }

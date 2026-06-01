@@ -36,11 +36,10 @@ class PostUserUseCase {
           throw new Error("El número de referencia ya pertenece a otro usuario.");
       if (duplicate.matched_username === 1)
           throw new Error("El nombre de usuario ya está en uso.");
-    } else {
+    }
       const saved = await this.userRepository.postUser({ ...cryptedUser, passwordHash });
       // Map saved into clean DTO for the client
       return UsersDTO.fromEntity(saved);
-    }
   }
 }
 module.exports = PostUserUseCase;

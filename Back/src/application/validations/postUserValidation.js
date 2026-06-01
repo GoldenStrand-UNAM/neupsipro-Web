@@ -68,6 +68,9 @@ function validateFirst (user) {
 }
 
 function validateSecond (user) {
+  let requiredPassword;
+  if(user.id_user) requiredPassword = false
+  else requiredPassword = true;
   return {
     userName: validation.validate({
       value: user.userName,
@@ -79,7 +82,7 @@ function validateSecond (user) {
       value: user.password,
       maxLength: 30,
       label: 'La contraseña',
-      required: true,
+      required: requiredPassword
     }),
     assigned: validation.validate({
       value: user.assigned,
