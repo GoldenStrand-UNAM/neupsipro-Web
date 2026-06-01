@@ -5,12 +5,11 @@ const crypt = new Crypt();
 function uncryptUser (user) {
   return {
     ...user,
-    origin: crypt.decrypt(user.origin),
     neuro_status: crypt.decrypt(user.neuro_status),
     base_patology: crypt.decrypt(user.base_patology),
     notes: crypt.decrypt(user.notes),
-    modality: crypt.decrypt(user.modality),
-    attendance: crypt.decrypt(user.attendance),
+    sex: crypt.decrypt(user.gender),
+    modality: crypt.decrypt(user.attendance),
     reference_number: crypt.decrypt(user.reference_number),
     amputation_date: crypt.decrypt(user.amputation_date),
     group_intervention: crypt.decrypt(user.group_intervention),
@@ -23,6 +22,8 @@ function uncryptUser (user) {
     lastname_m: crypt.decrypt(user.lastname_m),
     birthdate: crypt.decrypt(user.birthdate),
     assigned_clinic: crypt.decrypt(user.assigned_clinic),
+    email: crypt.decrypt(user.email),
+    phone: crypt.decrypt(user.phone),
   };
 }
 

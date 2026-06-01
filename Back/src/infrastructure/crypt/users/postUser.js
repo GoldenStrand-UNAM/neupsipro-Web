@@ -4,7 +4,12 @@ const crypt = new Crypt();
 
 function cryptUser (user) {
   const encrypted = encrypt(user);
-
+  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ""} ${user.birthdate}
+    `.replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  const bindex = crypt.generateBlindIndex(data);
+  const refBindex = crypt.generateBlindIndex(user.referenceNumber);
   return {
     ...encrypted,
     userName: user.userName,
@@ -12,10 +17,12 @@ function cryptUser (user) {
     assigned: user.assigned,
     passwordHash: user.passwordHash,
     profilePhoto: user.profilePhoto,
+    bindex: bindex,
+    refBindex: refBindex,
   };
 }
 
-function encrypt (user) {;
+function encrypt (user) {
   return {
     firstName: crypt.encrypt(user.firstName),
     lastnameP: crypt.encrypt(user.lastnameP),
@@ -32,6 +39,8 @@ function encrypt (user) {;
     amputationLevel: crypt.encrypt(user.amputationLevel),
     pairs: crypt.encrypt(user.pairs),
     sex: crypt.encrypt(user.sex),
+    email: crypt.encrypt(user.email),
+    phone: crypt.encrypt(user.phone),
   };
 }
 
