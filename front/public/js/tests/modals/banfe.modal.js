@@ -47,7 +47,7 @@ function buildBANFEConsultBody (test, dateLabel) {
 
 function buildConsultHTML (test) {
   const dateLabel = test.dateApplied
-    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
     : '—';
   return `
     <div class="modal">
