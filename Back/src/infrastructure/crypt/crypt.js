@@ -30,4 +30,11 @@ class crypt {
       return decrypted;
     } return null;
   }
+
+  generateBlindIndex (data) {
+    const normalizedData = data.trim().toLowerCase();
+    const hmac = crypto.createHmac('sha256', process.env.BLIND_INDEX_PEPPER);
+    hmac.update(normalizedData);
+    return hmac.digest('hex');
+  }
 } module.exports = crypt;

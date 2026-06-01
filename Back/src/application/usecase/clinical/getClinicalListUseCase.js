@@ -9,13 +9,23 @@ class GetUsersClinicalListUseCase {
   async execute ({ search = '', page = 1, limit = 10 }) {
     const [users, total] = await Promise.all([
       // Run queries in parallel
-      this.userClinicalRepository.fetchActivePatients ({ search, page, limit }),
-      this.userClinicalRepository.countActivePatients ({ search }),
+      this.userClinicalRepository.fetchActivePatients ({ page, limit }),
+      this.userClinicalRepository.countActivePatients (),
     ]);
+
+    const filteredClinicals = users
+      .filter(user => {
+        if (!search) return true;
+
+        const searchLower = search.toLowerCase();
+        const fullName = user.fullName.toLowerCase();
+        const referenceNumber = (user.referenceNumber || '').toLowerCase();
+        return (fullName.includes(searchLower) || referenceNumber.includes(searchLower));
+      });
 
     return {
       // Map raw data to DTO for the output contract
-      users: users.map (u => new userClinicalSummaryDTO(u)),
+      users: filteredClinicals.map (u => new userClinicalSummaryDTO(u)),
 
       // Pagination metadata
       total,

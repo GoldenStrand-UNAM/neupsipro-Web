@@ -34,12 +34,12 @@ describe('GET /dashboardClinical routes', () => {
     });
  
   test('GET /api/:idClinicalUser returns status 200 with a valid id', async () => {
-    const res = await request(app).get(`/dashboardClinical/api/3`);  // works for the moment but if the users change this will fail
+    const res = await request(app).get(`/dashboardClinical/api/722582d8-f77e-4e10-afef-f4b11b660f97`);  // works for the moment but if the users change this will fail
     expect(res.status).toBe(200);
   });
  
   test('GET /api/user/:idUser returns status 200 with a valid id', async () => {
-    const res = await request(app).get(`/dashboardClinical/api/user/u-006`); // works for the moment but if the users change this will fail
+    const res = await request(app).get(`/dashboardClinical/api/user/722582d8-f77e-4e10-afef-f4b11b660f97`); // works for the moment but if the users change this will fail
     expect(res.status).toBe(200);
   });
  

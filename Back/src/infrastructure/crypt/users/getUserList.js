@@ -11,7 +11,7 @@ function uncryptUser (user) {
   return {
     ...user,
     referenceNumber: crypt.decrypt(user.referenceNumber),
-    fullName: fullName,
+    fullName,
   };
 }
 
