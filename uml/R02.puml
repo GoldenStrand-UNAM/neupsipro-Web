@@ -3,7 +3,6 @@
 title R02 - Exportar PDF de resultados
 
 actor "Clinic User" as USR
-participant "getTests.ejs" as VEJS
 participant "testList.js" as TLIST
 participant "getTests.routes.js" as UROUTE
 participant "ExportPdfController" as TCTRL
@@ -15,8 +14,8 @@ database "DB" as DB
 
 == Boton de exportar ==
 
-note over VEJS,TLIST
-  El boton existe en la vista y solo se muestra
+note over USR,TLIST
+  El boton existe en getTests.ejs y solo se muestra
   cuando applicationStatus es 'Calificada' o 'Entregado'.
 end note
 
@@ -62,18 +61,20 @@ RREPO -> DB : SELECT tr.id_results, tr.id_test, ...\nWHERE status IN (3,4)
 DB --> RREPO : [results]
 RREPO --> UC_EXP : [results]
 
-loop por cada resultado
-  alt id_test == 1 (BANFE)
+note over UC_EXP
+  fetchAllResultsForExport devuelve solo status IN (3,4).
+  MOCA (4) y NIH (5) se filtran por id_test en #buildSection.
+end note
+
+loop #buildSection por cada resultado
+  alt id_test === 1 (BANFE)
     UC_EXP -> UC_EXP : getBanfeUseCase.execute({ id_results })
-  end
-  alt id_test == 2 (WAIS)
+  else id_test === 2 (WAIS)
     UC_EXP -> UC_EXP : getWaisUseCase.execute({ id_results })
-  end
-  alt id_test == 3 (REY)
+  else id_test === 3 (REY)
     UC_EXP -> UC_EXP : getReyUseCase.execute({ id_results })
-  end
-  alt id_test == 4 o 5
-    UC_EXP -> UC_EXP : no se agrega a exportacion
+  else id_test === 4 o 5 (MOCA/NIH)
+    UC_EXP -> UC_EXP : return null (no incluido en reporte)
   end
 end
 
