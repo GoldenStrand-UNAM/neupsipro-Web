@@ -132,4 +132,19 @@ class validation {
 
     throw new Error(`${param.label} debe tener un formato de correo electrónico válido (ejemplo@correo.com)`);
   }
+
+  validateBoolean (param) {
+    if (param.value === undefined || param.value === null || param.value === '') {
+      if (param.required)
+        throw new Error(`${param.label} es obligatorio`);
+      return null;
+    }
+
+    if (param.value === true || param.value === 'true' || param.value === 1 || param.value === '1')
+      return true;
+    if (param.value === false || param.value === 'false' || param.value === 0 || param.value === '0')
+      return false;
+
+    throw new Error(`${param.label} debe ser verdadero o falso`);
+  }
 } module.exports = validation;

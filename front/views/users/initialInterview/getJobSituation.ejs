@@ -136,12 +136,8 @@
             <!-- Nivel de estrés en el trabajo -->
             <div class="flex flex-col gap-2">
               <label class="font-medium text-gray-800" for="stressWork">Nivel de estrés en el trabajo:</label>
-              <select id="stressWork" name="stress_work" class="input-base w-full border p-2 pr-12 rounded text-gray-400">
-                <option value="" disabled hidden selected>Elige una opción</option>
-                <option value="Bajo" class="text-black">Bajo</option>
-                <option value="Medio" class="text-black">Medio</option>
-                <option value="Alto" class="text-black">Alto</option>
-              </select>
+              <input id="stressWork" name="stress_work" type="text" maxlength="150"
+                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
             </div>
 
             <!-- Estado laboral actual -->
