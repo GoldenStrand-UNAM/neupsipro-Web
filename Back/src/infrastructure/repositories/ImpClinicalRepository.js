@@ -3,6 +3,7 @@ const clinicalRepository = require('../../domain/repository/clinicalRepository')
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
 const ClinicalPatient = require('../../domain/entity/clinicalPatient');
+const { v4: uuidv4 } = require('uuid');
 
 class ImpClinicalRepository extends clinicalRepository {
   async fetchActivePatients ({ search, page, limit }) {
@@ -22,8 +23,12 @@ class ImpClinicalRepository extends clinicalRepository {
             (
               SELECT COUNT(*)
               FROM user_relation ur
+              JOIN users pu ON pu.id_user = ur.id_user
+              JOIN user_info ui ON ui.id_user = ur.id_user
               WHERE ur.id_clinic_user = u.id_user
                 AND ur.type = 'assigned'
+                AND pu.eliminated = '0'
+                AND pu.id_role = 2
             ) AS assigned_count
         FROM users u
         LEFT JOIN user_clinical uc ON uc.id_user = u.id_user
@@ -106,8 +111,10 @@ WHERE ur.id_clinic_user = ?
 LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
-    FROM user_relation ur
-    WHERE ur.id_clinic_user = ?;
+      FROM user_relation ur
+      INNER JOIN users p ON ur.id_user = p.id_user
+      WHERE ur.id_clinic_user = ?
+        AND p.eliminated = 0;
   `, [id_user]);
 
     const totalPages = Math.ceil(total / limit);
@@ -128,6 +135,75 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
           AND eliminated = 0
           ORDER BY user_name ASC`);
     return rows.map(row => new userClinicalSummary(row));
+  }
+
+  async postUser (user) {
+    const idUser = uuidv4();
+    const connection = await db.getConnection();
+
+    try {
+      await connection.query('START TRANSACTION');
+
+      await connection.query(
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.passwordHash, user.email]
+      );
+
+      await connection.query(
+        `INSERT INTO user_clinical (
+        id_user, affiliation, activity, emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+        start_date, finish_date, hours)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, user.affiliation, user.activity, user.emergencyContactName, user.emergencyContactPhone,
+          user.emergencyContactRelation, user.startDate, user.finishDate, user.hours]
+      );
+
+      const [rows] = await connection.query(
+        `SELECT 
+        u.id_role, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.email, u.user_name, u.password_hash,
+        uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone, uc.emergency_contact_relation,
+        uc.start_date, uc.finish_date, uc.hours
+        FROM users u
+        LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
+        WHERE u.id_user = ?;`,
+        [idUser]
+      );
+
+      await connection.query('COMMIT');
+
+      return rows[0];
+    } catch (error) {
+      await connection.query('ROLLBACK');
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
+  async checkDuplicate (user) {
+    const [rows] = await db.query (
+      `SELECT *
+          FROM users
+          WHERE id_role = '3'
+          AND first_name = ?
+          AND lastname_p = ?
+          AND (lastname_m = ? OR (? IS NULL AND lastname_m IS NULL))
+          AND birthdate = ?
+          AND eliminated = '0';`,
+      [user.firstName, user.lastnameP, user.lastnameM, user.lastnameM, user.birthdate]
+    );
+    return rows[0];
+  }
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
   }
 }
 module.exports = ImpClinicalRepository;

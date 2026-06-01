@@ -4,6 +4,7 @@ class UserDTO {
     photo,
     referenceNumber,
     name,
+    email,
     age,
     registrationDate,
     phase,
@@ -12,6 +13,7 @@ class UserDTO {
     attendance,
     amputationDate,
     protocol,
+    phone,
     state,
     groupIntervention,
     amputationEtiology,
@@ -26,6 +28,7 @@ class UserDTO {
     this.photo = photo;
     this.referenceNumber = referenceNumber;
     this.name = name;
+    this.email = email;
     this.age = age;
     this.registrationDate = registrationDate;
     this.phase = phase;
@@ -35,6 +38,7 @@ class UserDTO {
     this.attendance = attendance;
     this.amputationDate = amputationDate;
     this.protocol = protocol;
+    this.phone = phone;
     this.state = state;
     this.groupIntervention = groupIntervention;
     this.amputationEtiology = amputationEtiology;
@@ -53,6 +57,7 @@ class UserDTO {
       photo: entity.photo,
       referenceNumber: entity.referenceNumber,
       name: entity.name,
+      email: entity.email,
       age: entity.age,
       registrationDate: entity.registrationDate,
       phase: entity.phase,
@@ -62,6 +67,7 @@ class UserDTO {
       attendance: entity.attendance,
       amputationDate: entity.amputationDate,
       protocol: entity.protocol,
+      phone: entity.phone,
       state: entity.state,
       groupIntervention: entity.groupIntervention,
       amputationEtiology: entity.amputationEtiology,

@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuarios - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
 </head>
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body data-module="<%= tutorialModule %>"  class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
     <script src="/js/main.js"></script>
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
@@ -24,9 +25,9 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h1 class="text-2xl font-bold text-[#1E1E1E]">Usuarios</h1>
                     <div class="flex items-center gap-3">
-                        <a href="/user/post">
+                        <a id="btnNewUser" href="/user/post">
                         <button
-                            class="btn-mini w-full sm:w-[260px] md:w-[306px] bg-[#C89B3C]">
+                             class= "btn-mini w-full sm:w-[260px] md:w-[306px] bg-[#C89B3C]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="white-icon-mini" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -37,7 +38,7 @@
                         </a>
 
                         <div class="search-input">
-                            <input id="search-input"type="text" class="search-input_field" placeholder="Buscar"/>
+                            <input id="search-input"type="text" class="search-input_field" placeholder="Buscar por folio"/>
                             <svg xmlns="http://www.w3.org/2000/svg" class="search-icon" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -52,13 +53,43 @@
 
                 <!-- Table -->
                 <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
-                <table class="w-full border-collapse text-sm md:text-base ">
+                <table id="usersTable" class="w-full border-collapse text-sm md:text-base ">
                     <thead>
                         <tr class="border-b-2 border-gray-200 table-fixed">
                             <th class="w-[10%] py-2.5 px-4 text-left font-semibold text-gray-700">Folio</th>
                             <th class="w-[30%] py-2.5 px-4 text-left font-semibold text-gray-700">Nombre</th>
-                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
-                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Protocolo</th>
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700 relative">
+                                <div id="statusFilterTrigger" class="flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded transition duration-200 select-none">
+                                    <span>Estatus</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h10M10 18h4" />
+                                    </svg>
+                                </div>
+
+                                <div id="statusDropdown" class="hidden absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-44 bg-white border border-gray-100 shadow-xl rounded-xl z-50 p-3 flex flex-col gap-3 font-normal">
+                                    <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="">Todos</button>
+                                    <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-[#E03232] bg-[#E03232]/30 text-[#E03232] hover:bg-[#E03232]/50 transition" data-value="Discharged">Alta</button>
+                                    <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-[#1F893A] bg-[#1F893A]/30 text-[#1F893A] hover:bg-[#1F893A]/50 transition" data-value="Active">Activo</button>
+                                    <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-[#1560BD] bg-[#1560BD]/30 text-[#1560BD] hover:bg-[#1560BD]/50 transition" data-value="Stand_by">Stand By</button>
+                                    <button class="status-option w-full py-1.5 px-4 rounded-lg text-sm border border-[#276076] bg-[#276076]/30 text-[#276076] hover:bg-[#276076]/50 transition" data-value="Declined">No ingresó</button>
+                                </div>
+                            </th>                            
+                            <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700 relative">
+                                <div id="protocolFilterTrigger" class="flex items-center justify-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded transition duration-200 select-none">
+                                    <span>Protocolo</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M7 12h10M10 18h4" />
+                                    </svg>
+                                </div>
+
+                                <div id="protocolDropdown" class="hidden absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-44 bg-white border border-gray-100 shadow-xl rounded-xl z-50 p-3 flex flex-col gap-3 font-normal">
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="">Todos</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Pending">Sin asignar</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Clinical">Clínico</button>
+                                    <button class="protocol-option w-full py-1.5 px-4 rounded-lg text-sm border border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100 transition" data-value="Research">Investigación</button>
+
+                                </div>
+                            </th>                                 
                             <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Consultar Información</th>
                         </tr>
                     </thead>
@@ -77,6 +108,18 @@
     </div>
 
     <script src="/js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <script src="/js/tutorial.js"></script>
+    <script>
+        const tutorialElements = {
+        1: null,                  // intro
+        2: '#btnNewUser',    // btn new user
+        3: '#search-input',       // finder
+        4: '#usersTable',         // table
+        5: '#pagination',         // pagination
+        };
+    </script>    
+
 
 <script>
 // ===== UTilitys ========
@@ -86,16 +129,18 @@ const MAX_SEARCH_LENGTH = 50;
 let currentPage   = 1;
 const LIMIT       = 6;
 let searchQuery   = "";
+let statusQuery   = "";
+let protocolQuery = "";
 let debounceTimer;
 
-if (sessionStorage.getItem('usuarioGuardado') === 'true') {
+if (sessionStorage.getItem('userSaved') === 'true') {
     showToast('Usuario guardado correctamente');
-    sessionStorage.removeItem('usuarioGuardado');
+    sessionStorage.removeItem('userSaved');
 }
 
 // = ====  Fetch===========
 async function fetchUsers() {
-    const params = new URLSearchParams({ search: searchQuery, page: currentPage, limit: LIMIT });
+    const params = new URLSearchParams({ search: searchQuery, status: statusQuery, protocol: protocolQuery, page: currentPage, limit: LIMIT });
     try {
         const res  = await fetch(`/api/users?${params}`);
         const data = await res.json();
@@ -198,6 +243,56 @@ searchInput.addEventListener("input", e => {
         currentPage = 1;
         fetchUsers();
     }, 400);
+});
+
+// = ==== Dropdown Status Filter ===========
+const statusTrigger = document.getElementById("statusFilterTrigger");
+const statusDropdown = document.getElementById("statusDropdown");
+const statusOptions = document.querySelectorAll(".status-option");
+
+statusTrigger.addEventListener("click", (e) => {
+    e.stopPropagation(); 
+    statusDropdown.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+    if (!statusTrigger.contains(e.target) && !statusDropdown.contains(e.target)) {
+        statusDropdown.classList.add("hidden");
+    }
+});
+
+statusOptions.forEach(option => {
+    option.addEventListener("click", (e) => {
+        statusQuery = e.currentTarget.getAttribute("data-value"); 
+        currentPage = 1;
+        statusDropdown.classList.add("hidden");
+        fetchUsers();
+    });
+});
+
+// = ==== Dropdown Protocol Filter ===========
+const protocolTrigger = document.getElementById("protocolFilterTrigger");
+const protocolDropdown = document.getElementById("protocolDropdown");
+const protocolOptions = document.querySelectorAll(".protocol-option");
+
+protocolTrigger.addEventListener("click", (e) => {
+    e.stopPropagation(); 
+    protocolDropdown.classList.toggle("hidden");
+});
+
+document.addEventListener("click", (e) => {
+    if (!protocolTrigger.contains(e.target) && !protocolDropdown.contains(e.target)) {
+        protocolDropdown.classList.add("hidden");
+    }
+});
+
+protocolOptions.forEach(option => {
+    option.addEventListener("click", (e) => {
+        protocolQuery = e.currentTarget.getAttribute("data-value"); 
+        currentPage = 1;
+        protocolDropdown.classList.add("hidden");
+        fetchUsers();
+    });
 });
 
 function getStatusBadge(val) {

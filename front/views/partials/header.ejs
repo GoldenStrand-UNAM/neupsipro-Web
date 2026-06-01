@@ -5,7 +5,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
         </button>
-        <div class="flex items-center gap-2 text-white text-xl pt-4  w-max  relative rounded-br-xl  md:hidden">
+        <div class="flex items-center gap-2 text-white text-xl w-max relative rounded-br-xl md:hidden">
             <img src="/assets/enes-white-logo1.svg" class="h-12 shrink-0" alt="Logo">
             <h1 class="font-semibold whitespace-nowrap ">Golondrina</h1>
         </div>
@@ -13,8 +13,7 @@
 
 <div class="flex items-center gap-3">
 
-    <!--Hidden button for tutorials funcionability-->
-    <button title="Ayuda" class="hidden">
+      <button onclick="startTutorial()" title="Ayuda" class="cursor-pointer">
         <svg class="w-6 h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
         </svg>
@@ -28,6 +27,9 @@
 </div>
 </header>
 
+<script src="/js/tutorial.js"></script>
+
+
 <div id="logoutModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
         <div class="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
@@ -35,7 +37,7 @@
                 <span class="text-4xl font-light text-gray-800">!</span>
             </div>
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Confirmar cierre de sesión</h2>
-            <p class="text-gray-600 mb-8 px-4">
+            <p class="text-gray-600 mb-8 px-4">  
                 ¿Estás seguro de querer cerrar sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
@@ -56,7 +58,6 @@
 </div>
 
 <script>
-const _csrfToken = '<%= csrfToken %>';
 const logoutModal = document.getElementById('logoutModal');
 const openBtn = document.getElementById('openLogoutModal');
 const closeBtn = document.getElementById('cancelLogout');
@@ -75,8 +76,7 @@ confirmBtn.addEventListener('click', async () => {
         const response = await fetch('/auth/logout', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': _csrfToken
+                'Content-Type': 'application/json'
             }
         });
 
@@ -93,3 +93,7 @@ confirmBtn.addEventListener('click', async () => {
     }
 });
 </script>
+<script>
+  const _csrfToken = "<%= locals.csrfToken || '' %>";
+</script>
+

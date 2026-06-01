@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuario - Golondrina</title>
     <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
 </head>
 
-<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+<body data-module="<%= tutorialModule %>"  class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
 
     <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
 
@@ -43,13 +44,30 @@
                 
                 
                 <!-- User info -->
-                <div class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
+                <div id="clinicalInfoCard" class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8 items-center border rounded-2xl border-gray-300 p-6 mt-6">
                     <!-- Hidden button for future edite and delete funcionability-->
-                    <button class="hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" aria-label="Opciones de usuario">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
-                        </svg>
-                    </button>
+                    <div class="absolute top-4 right-4">
+                        <button id="btnClinicalOptions" class="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors cursor-pointer" aria-label="Opciones de usuario">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                            </svg>
+                        </button>
+
+                        <div id="clinicalOptionsMenu" class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg z-40 overflow-hidden">
+                            <button id="btnEditClinical" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487z" />
+                                </svg>
+                                Editar
+                            </button>
+                            <button id="btnDeleteClinical" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                </svg>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
                     <!-- Clinical Name -->
                    <div class="flex flex-col md:flex-row items-center justify-center text-center gap-2">      
                     <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -117,51 +135,57 @@
                 <!--Emergency Contact-->
                 <div id="emergencyContactCard" class="bg-[#BA8700]/30 rounded-4xl p-6 md:p-8 w-full flex flex-col gap-6 font-sans"> 
                     
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                        <svg class="w-6 h-6 md:w-7 md:h-7 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11V17"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14H15"/>
-                        </svg>
-                        <h3 class="text-2xl text-black font-bold"> Contacto de emergencia </h3>
-                    </div>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+        <svg class="w-6 h-6 md:w-7 md:h-7 shrink-0 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11V17"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14H15"/>
+        </svg>
+        <h3 class="text-2xl text-black font-bold"> Contacto de emergencia </h3>
+    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full md:px-10 xl:px-24">
-                        
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Nombre:</span>
-                            <span id="emergencyName" class="text-black text-lg md:text-xl whitespace-nowrap"></span>
-                        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full md:px-10 xl:px-24">
+        
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Nombre:</span>
+            </div>
+            <span id="emergencyName" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.38466C8.84711 3 9.24838 3.32135 9.35418 3.77443L10.3702 8.12921C10.4578 8.50486 10.2816 8.8893 9.93284 9.06363L7.74238 10.1589C9.2052 13.084 11.4552 15.334 14.3803 16.7968L15.4756 14.6064C15.6499 14.2576 16.0344 14.0814 16.41 14.169L20.7648 15.185C21.2179 15.2908 21.5392 15.6921 21.5392 16.1545V19C21.5392 20.3807 20.4199 21.5 19.0392 21.5C10.1812 21.5 3 14.3188 3 5.46083V5.5Z"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Teléfono:</span>
-                            <span id="emergencyPhone" class="text-black text-lg md:text-xl whitespace-nowrap "></span>
-                        </div>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-5 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5.5C3 4.11929 4.11929 3 5.5 3H8.38466C8.84711 3 9.24838 3.32135 9.35418 3.77443L10.3702 8.12921C10.4578 8.50486 10.2816 8.8893 9.93284 9.06363L7.74238 10.1589C9.2052 13.084 11.4552 15.334 14.3803 16.7968L15.4756 14.6064C15.6499 14.2576 16.0344 14.0814 16.41 14.169L20.7648 15.185C21.2179 15.2908 21.5392 15.6921 21.5392 16.1545V19C21.5392 20.3807 20.4199 21.5 19.0392 21.5C10.1812 21.5 3 14.3188 3 5.46083V5.5Z"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Teléfono:</span>
+            </div>
+            <span id="emergencyPhone" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-1 sm:gap-2 min-w-0">
-                            <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
-                                <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47585 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
-                            </svg>
-                            <span class="text-black text-lg md:text-xl whitespace-nowrap font-semibold">Parentesco:</span>
-                            <span id="emergencyRelation" class="text-black text-lg md:text-xl whitespace-nowrap "></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-start gap-1 sm:gap-2 min-w-0 flex-wrap">
+            <div class="flex items-center gap-2 shrink-0">
+                <svg class="w-6 h-5 md:w-6 md:h-6 shrink-0" viewBox="0 0 28 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke-width="1.9" >
+                    <path d="M3.30105 12.1897C2.71837 11.6094 2.25671 10.9186 1.94298 10.1576C1.62925 9.39657 1.46972 8.58056 1.47368 7.75711C1.47368 6.09167 2.13355 4.49445 3.30812 3.3168C4.48269 2.13916 6.07575 1.47757 7.73684 1.47757C10.0653 1.47757 12.0989 2.74825 13.1747 4.6395H14.8253C15.3722 3.67771 16.1635 2.8784 17.1187 2.32298C18.074 1.76756 19.1589 1.47757 20.2632 1.47757C21.9243 1.47757 23.5173 2.13916 24.6919 3.3168C25.8664 4.49445 26.5263 6.09167 26.5263 7.75711C26.5263 9.48583 25.7895 11.0816 24.6989 12.1897L14 22.9019L3.30105 12.1897ZM25.7305 13.2388C27.1305 11.8203 28 9.89954 28 7.75711C28 5.6998 27.1849 3.72676 25.7339 2.27202C24.283 0.817288 22.3151 2.66726e-05 20.2632 2.66726e-05C17.6842 2.66726e-05 15.4 1.25594 14 3.20629C13.2854 2.21116 12.3445 1.4012 11.2552 0.843596C10.166 0.285988 8.95985 -0.00319785 7.73684 2.66726e-05C5.6849 2.66726e-05 3.71701 0.817288 2.26607 2.27202C0.815129 3.72676 0 5.6998 0 7.75711C0 9.89954 0.869474 11.8203 2.26947 13.2388L14 25L25.7305 13.2388Z" fill="black"/>
+                </svg>
+                <span class="text-black text-lg md:text-xl font-semibold whitespace-nowrap">Parentesco:</span>
+            </div>
+            <span id="emergencyRelation" class="text-black text-lg md:text-xl break-words w-full sm:w-auto"></span>
+        </div>
+    </div>
+</div>
+                <div id="relatedUsersTable" class="flex-1 overflow-auto bg-[#FAFAFA] rounded-xl shadow-sm  px-3 md:px-6">
                     <div class="md:flex justify-between items-center">
                         <h2 class="text-2xl pt-7 p-3 font-medium">Usuarios relacionados</h2>
                     </div>
                     <table class="w-full border-collapse text-sm md:text-base ">
                         <thead>
-                            <tr class="border-b-2 border-gray-200 table-fixed">
+                            <tr  id="relatedUsersTitle" class="border-b-2 border-gray-200 table-fixed">
                                 <th class="w-[10%] py-2.5 px-4 text-left font-semibold text-gray-700">Usuario</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Estatus</th>
                                 <th class="w-[20%] py-2.5 px-4 text-center font-semibold text-gray-700">Fecha de asignación</th>
@@ -183,14 +207,25 @@
     </div>
 
 
-   <script>
-        window.__USER_DATA__ = <%- JSON.stringify(usuario).replace(/</g, '\\u003c') %>;
-    </script>
+
     <script src="/js/sidebar.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/consultClinical.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <script>
+        const tutorialElements = {
+        1: null,                    
+        2: '#clinicalInfoCard',     
+        3: '#emergencyContactCard', 
+        4: '#relatedUsersTitle',  
+        };
+    </script>
+    <script src="/js/tutorial.js"></script>
 
-
+   <script>
+        window.__USER_DATA__ = <%- JSON.stringify(usuario).replace(/</g, '\\u003c') %>;
+    </script>
+    <%- include('./deleteClinicalModal') %>
 <script>
 
 // ===== Utilitys =====
@@ -233,7 +268,8 @@ function renderTable(users) {
             <td class="py-3 px-4 text-center">${getStatusBadge(u.state)}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(formatAppointmentDate(u.assigmentDate))}</td>
             <td class="py-3 px-4 text-gray-500 text-center">${escapeHtml(u.type)}</td>   
-            <td class="py-3 px-6 flex justify-center">
+            <td class="py-3 px-6 text-center">
+                <div class="flex justify-center">
                         <button
                             onclick="consultar('${escapeHtml(u.id)}')"
                             class="btn-mini bg-[#3350A9]">
@@ -247,7 +283,8 @@ function renderTable(users) {
                             </svg>
                             <span>Consultar</span>
                         </button>
-                    </td>         
+                </div>
+            </td>         
         </tr>
     `).join("");
 }
@@ -300,6 +337,7 @@ function showMsg(msg, colorClass) {
 function consultar(id) {
             window.location.href = `/users/${id}`
 }
+// post clinicals
 fetchUsers();
     </script>
   </body>
