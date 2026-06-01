@@ -1,0 +1,88 @@
+@startuml Sequence_GET_Physical_Conserns
+title Get Physical Conserns
+
+actor Clinical_Group as a1
+participant "View (Frontend)" as View
+participant "initialInterview.routes.js" as R
+participant "authMiddleware" as AM
+participant "getPhysicalConcerns.controller.js" as C
+participant "getPhysicalConcernsUseCase.js" as U
+participant "physicalConcernsDTO" as D
+participant "getPhysicalConcernsRepository.js" as RE
+participant "ImpGetPhysicalConcernsRepository.js" as I
+participant "physicalConcerns.js" as CR
+database "mySQL" as DB
+
+activate a1
+a1 -> View: Click on "Next"
+deactivate a1
+activate View
+View -> R: GET /users/:id_user/inicial-interview/clinicalRecord/physCon
+deactivate View
+activate R
+R -> AM : authMiddleware(req, res, next)
+deactivate R
+activate AM
+AM -> AM: Verifies and decodes JWT\n(role, valid session)
+AM -> R: next()
+deactivate AM
+activate R
+R -> C: controller.physicalConcernsView(req,res)
+deactivate R
+activate C
+C -> R: response.render("/initialInterview/clinicalRecord/physicalConcerns")
+deactivate C
+activate R
+R -> View: HTML
+deactivate R
+activate View
+View -> R: GET /api/clinicalRecord/:idUser/:substep
+activate R
+R -> AM : authMiddleware(req, res, next)
+deactivate R
+activate AM
+AM -> AM: Verifies and decodes JWT\n(role, valid session)
+AM -> R: next()
+deactivate AM
+activate R
+R -> C: controller.getPhysicalConcerns(req, res)
+deactivate R
+activate C
+C -> U: execute({idUserRelation})
+deactivate C
+activate U
+U -> RE: fetchPhysicalConcerns({idUserRelation})
+activate RE
+RE -> I: extends
+deactivate RE
+activate I
+I ->> DB:'SELECT headache, dizziness, urinary_inconsistency, skin_problem, id_user_relation\nFROM clinical_interview\nWHERE id_user_relation = '4545'; '
+activate DB
+DB -->> I: rows
+deactivate DB
+I -> CR: decrypt(rows)
+activate CR
+CR -> I: uncrypt
+deactivate CR
+I -->> U: uncrypt
+deactivate I
+U -> D: constructor(uncrypt)
+activate D
+D -> U: physicalConcernsDTO
+deactivate D
+U -> C: physicalConcernsDTO
+deactivate U
+activate C
+alt error
+C -> R: response(200).json(data:physicalConcernsDTO)
+deactivate C
+activate R
+R -> View: JSON
+deactivate R
+View -> a1: Shows questions with current answers
+deactivate View
+activate a1
+
+
+
+@enduml

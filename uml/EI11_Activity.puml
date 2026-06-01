@@ -1,0 +1,22 @@
+@startuml Activity_GET_Physical_Conserns
+title Get Physical Conserns
+
+|Clinic User|
+start
+:User clicks on "Siguiente" after ending financial part;
+|System|
+repeat
+if (question already answered?) then (yes)
+  :get previous information;
+  :show filled camps to user;
+else (no)
+  :show empty camp to user;
+
+endif
+repeat while (questions left?) is (yes)
+|Clinic User|
+:User can interact with questions;
+stop
+
+
+@enduml
