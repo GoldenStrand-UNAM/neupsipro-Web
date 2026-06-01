@@ -54,6 +54,65 @@
     `;
   }
 
+  // ── Export PDF ────────────────────────────────────────────────────────────────
+
+  // Marks every test card as "Entregado" after a successful export.
+  function markAllDelivered () {
+    const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
+    document.querySelectorAll('.application-card').forEach(card => {
+      const badge = card.querySelector('.application-card__badge');
+      if (!badge) return;
+      const text = badge.querySelector('p');
+      if (text) text.textContent = 'Entregado';
+      variants.forEach(v => {
+        badge.classList.remove(`application-card__badge--${v}`);
+        card.classList.remove(`application-card--${v}`);
+      });
+      badge.classList.add('application-card__badge--complete');
+      card.classList.add('application-card--complete');
+    });
+  }
+
+  // Downloads the application report PDF and updates the UI to "Entregado".
+  async function exportPdf (idUser, idApplication, button) {
+    const btn = button;
+    btn.disabled = true;
+    btn.classList.add('opacity-60');
+    try {
+      const res = await fetch(`/users/${idUser}/applications/${idApplication}/export`);
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        showToast(json.error || 'No se pudo exportar el PDF');
+        return;
+      }
+
+      const blob = await res.blob();
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="?([^"]+)"?/);
+      const filename = match ? match[1] : 'reporte.pdf';
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast('PDF exportado con éxito');
+      markAllDelivered();
+    } catch (err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[exportPdf] error:', err);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('opacity-60');
+    }
+  }
+
   // ── Main fetch ──────────────────────────────────────────────────────────────
 
   async function loadTests (idUser, idApplication) {
@@ -92,6 +151,13 @@
           createTestCard(test, { idUser, idApplication, applicationStatus })
         );
       });
+
+      // Show the export button once the application is graded or delivered
+      const exportBtn = document.getElementById('btnExportPdf');
+      if (exportBtn && (applicationStatus === 'Calificada' || applicationStatus === 'Entregado')) {
+        exportBtn.classList.remove('hidden');
+        exportBtn.onclick = () => exportPdf(idUser, idApplication, exportBtn);
+      }
 
     } catch (err) {
       removeSkeletons();
