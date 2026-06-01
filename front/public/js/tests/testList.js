@@ -75,9 +75,17 @@
 
   // Downloads the application report PDF and updates the UI to "Entregado".
   async function exportPdf (idUser, idApplication, button) {
-    const btn = button;
+    const btn     = button;
+    const iconEl  = document.getElementById('exportPdfIcon');
+    const labelEl = btn.querySelector('span');
+
     btn.disabled = true;
-    btn.classList.add('opacity-60');
+    if (iconEl) iconEl.innerHTML = `<svg class="animate-spin w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" class="stroke-current opacity-25" stroke-width="3"/>
+      <path d="M12 2a10 10 0 0 1 10 10" class="stroke-current" stroke-width="3" stroke-linecap="round"/>
+    </svg>`;
+    if (labelEl) labelEl.textContent = 'Cargando...';
+
     try {
       const res = await fetch(`/users/${idUser}/applications/${idApplication}/export`);
 
@@ -109,9 +117,32 @@
       console.error('[exportPdf] error:', err);
     } finally {
       btn.disabled = false;
-      btn.classList.remove('opacity-60');
+      if (iconEl) iconEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+      </svg>`;
+      if (labelEl) labelEl.textContent = 'Exportar PDF';
     }
   }
+
+  // Exposed globally so utils.js can trigger it after every card update.
+  // Shows the export button once all test cards are Calificada or Entregado.
+  window._revealExportIfAllGraded = function () {
+    const allCards = document.querySelectorAll('[data-id-results]');
+    if (allCards.length === 0) return;
+    const allGraded = [...allCards].every(card => {
+      try {
+        const data = JSON.parse(card.dataset.test || '{}');
+        return data.status === 'Calificada' || data.status === 'Entregado';
+      } catch { return false; }
+    });
+    if (!allGraded) return;
+    const exportBtn = document.getElementById('btnExportPdf');
+    if (!exportBtn || !exportBtn.classList.contains('hidden')) return;
+    const { idUser, idApplication } = window.__TEST_PAGE__ || {};
+    if (!idUser || !idApplication) return;
+    exportBtn.classList.remove('hidden');
+    exportBtn.onclick = () => exportPdf(idUser, idApplication, exportBtn);
+  };
 
   // ── Main fetch ──────────────────────────────────────────────────────────────
 
