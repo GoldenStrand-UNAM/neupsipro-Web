@@ -31,7 +31,7 @@ class financialInterviewController {
   getFinancialPage (req, res) {
     try {
       res.locals.activePage = 'usuarios';
-      res.render('inicialInterview/inicialInterview', {
+      res.render('initialInterview/initialInterview', {
         id_user: req.params.id_user,
         current_step: 2,
         current_section: 1,

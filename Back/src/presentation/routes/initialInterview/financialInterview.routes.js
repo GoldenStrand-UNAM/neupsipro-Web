@@ -6,12 +6,12 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 const FIRepository = require('../../../infrastructure/repositories/financialInterviewRepository');
 
 // Get
-const FIController = require('../../controller/inicialInterview/financialInterview.controller');
-const GetFIUseCase = require('../../../application/usecase/inicialInterview/financialInterviewUseCase');
+const FIController = require('../../controller/initialInterview/financialInterview.controller');
+const GetFIUseCase = require('../../../application/usecase/initialInterview/financialInterviewUseCase');
 
 // Post
-const PFIController = require('../../controller/inicialInterview/postFinancialInterview.controller');
-const PostFIUseCase = require('../../../application/usecase/inicialInterview/postFinancialInterviewUseCase');
+const PFIController = require('../../controller/initialInterview/postFinancialInterview.controller');
+const PostFIUseCase = require('../../../application/usecase/initialInterview/postFinancialInterviewUseCase');
 
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router({ mergeParams: true });

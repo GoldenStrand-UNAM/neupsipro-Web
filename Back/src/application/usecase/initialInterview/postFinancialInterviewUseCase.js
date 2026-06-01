@@ -161,18 +161,18 @@ class postFinancialInterviewUseCase {
       await this.financialInterviewRepository.updateFinancialProgress({ id_user_relation });
 
       const [rows] = await this.financialInterviewRepository.fetchInterviewProgress({ id_user_relation });
-      const inicialProgress = rows[0];
+      const initialProgress = rows[0];
 
-      if (String(inicialProgress.status) !== 'completed') {
+      if (String(initialProgress.status) !== 'completed') {
         let status;
         if (
-          inicialProgress.identification_completed &&
-          inicialProgress.financial_completed &&
-          inicialProgress.symptoms_completed
+          initialProgress.identification_completed &&
+          initialProgress.financial_completed &&
+          initialProgress.symptoms_completed
         ) {
           status = 'completed';
 
-        } else if (String(inicialProgress.status) !== 'in_progress') {
+        } else if (String(initialProgress.status) !== 'in_progress') {
           status = 'in_progress';
         } else {
           return;

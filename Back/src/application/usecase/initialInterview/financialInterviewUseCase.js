@@ -12,7 +12,7 @@ class FinancialInterviewUseCase {
     id_user,
     subStep,
     id_user_relation,
-    inicialProgress,
+    initialProgress,
   }) {
     // fetch financial progress
     const sectionResult = await this.financialInterviewRepository.fetchFinancialProgress({ id_user_relation });
@@ -44,9 +44,9 @@ class FinancialInterviewUseCase {
 
     return new FinancialInterview({
       id_user,
-      current_step: inicialProgress[0].current_step,
+      current_step: initialProgress[0].current_step,
       current_section: subStep,
-      inicialProgress,
+      initialProgress,
       financialProgress: sectionResult[0][0],
       data: formattedData,
     });
@@ -60,9 +60,9 @@ class FinancialInterviewUseCase {
     const relationResult = await this.financialInterviewRepository.fetchRelation({ idUser });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
 
-    // fetch inicial interview full progress
-    const inicialResult = await this.financialInterviewRepository.fetchInterviewProgress({ id_user_relation });
-    const inicialProgress = inicialResult[0];
+    // fetch initial interview full progress
+    const initialResult = await this.financialInterviewRepository.fetchInterviewProgress({ id_user_relation });
+    const initialProgress = initialResult[0];
 
     // Get data by step
     if (step === 'financial') {
@@ -71,7 +71,7 @@ class FinancialInterviewUseCase {
         refNumber: refFetch[0][0].reference_number,
         subStep: Number(subStep),
         id_user_relation,
-        inicialProgress,
+        initialProgress,
       });
     }
 

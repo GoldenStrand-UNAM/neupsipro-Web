@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 class FinancialInterview {
-  constructor ({ id_user, refNumber, current_step, current_section, inicialProgress, financialProgress, data }) {
+  constructor ({ id_user, refNumber, current_step, current_section, initialProgress, financialProgress, data }) {
     this.id_user = id_user;
     this.refNumber = refNumber;
     this.current_step = current_step;
@@ -9,19 +9,19 @@ class FinancialInterview {
 
     switch (current_section) {
       case 1:
-        this.data = this.mapFinancialSituation(inicialProgress, financialProgress, data);
+        this.data = this.mapFinancialSituation(initialProgress, financialProgress, data);
         break;
 
       case 2:
-        this.data = this.mapEscGovernment(inicialProgress, financialProgress, data);
+        this.data = this.mapEscGovernment(initialProgress, financialProgress, data);
         break;
 
       case 3:
-        this.data = this.mapAmai(inicialProgress, financialProgress, data);
+        this.data = this.mapAmai(initialProgress, financialProgress, data);
         break;
 
       case 4:
-        this.data = this.mapResults(inicialProgress, financialProgress, data);
+        this.data = this.mapResults(initialProgress, financialProgress, data);
         break;
 
       default:
@@ -132,7 +132,7 @@ class FinancialInterview {
   // ================================= Map =================================
 
   // Financial Situation
-  mapFinancialSituation (inicialProgress, financialProgress, data) {
+  mapFinancialSituation (initialProgress, financialProgress, data) {
     const base = data.base || {};
     const contributors = data.contributors || [];
 
@@ -148,7 +148,7 @@ class FinancialInterview {
     return {
       income: this.buildIncome(base, formattedContributors, totalContributors),
       expenses: this.buildExpenses(base),
-      completedSteps: this.mapInicialProgress(inicialProgress),
+      completedSteps: this.mapInitialProgress(initialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
@@ -157,7 +157,7 @@ class FinancialInterview {
   }
 
   // ESC Goverment
-  mapEscGovernment (inicialProgress, financialProgress, datas) {
+  mapEscGovernment (initialProgress, financialProgress, datas) {
 
     const data = Array.isArray(datas) ? datas[0] : datas;
 
@@ -192,7 +192,7 @@ class FinancialInterview {
       socioeconomicLevel: FinancialInterview.textOrNull(data.socioeconomic_level),
       total: FinancialInterview.numberOrNull(data.total),
 
-      completedSteps: this.mapInicialProgress(inicialProgress),
+      completedSteps: this.mapInitialProgress(initialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
@@ -201,7 +201,7 @@ class FinancialInterview {
   }
 
   // AMAI Questionnaire
-  mapAmai (inicialProgress, financialProgress, datas) {
+  mapAmai (initialProgress, financialProgress, datas) {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
@@ -215,7 +215,7 @@ class FinancialInterview {
       socioeconomicLevel: FinancialInterview.textOrNull(data.socioeconomic_level),
       total: FinancialInterview.numberOrNull(data.total),
 
-      completedSteps: this.mapInicialProgress(inicialProgress),
+      completedSteps: this.mapInitialProgress(initialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
@@ -224,7 +224,7 @@ class FinancialInterview {
   }
 
   // Results
-  mapResults (inicialProgress, financialProgress, datas) {
+  mapResults (initialProgress, financialProgress, datas) {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
@@ -243,7 +243,7 @@ class FinancialInterview {
         score: FinancialInterview.numberOrNull(data.total_amai),
       },
 
-      completedSteps: this.mapInicialProgress(inicialProgress),
+      completedSteps: this.mapInitialProgress(initialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
       refNumber: this.refNumber,
@@ -252,8 +252,8 @@ class FinancialInterview {
   }
 
   // Inicial Interview Progress
-  mapInicialProgress (inicialProgress) {
-    const data = inicialProgress[0];
+  mapInitialProgress (initialProgress) {
+    const data = initialProgress[0];
 
     const completedSteps = [];
 
