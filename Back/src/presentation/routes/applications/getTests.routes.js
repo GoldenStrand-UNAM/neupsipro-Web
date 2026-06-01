@@ -46,6 +46,12 @@ const getMocaResultController     = require('../../controller/testApplications/g
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
+// Export PDF
+const ImpUsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
+const PdfService = require('../../../infrastructure/external/pdf.service');
+const ExportPdfUseCase = require('../../../application/usecase/testApplications/exportPdfUseCase');
+const ExportPdfController = require('../../controller/testApplications/exportPdf.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
@@ -89,6 +95,19 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getMocaUseCase    = new getMocaResultUseCase(testResultsRepo);
   const getMocaController = new getMocaResultController(getMocaUseCase);
+
+  // Export PDF
+  const usersRepo = new ImpUsersRepository();
+  const pdfService = new PdfService();
+  const exportPdfUseCase = new ExportPdfUseCase(
+    testResultsRepo,
+    usersRepo,
+    pdfService,
+    getBanfeUseCase,
+    getWaisUseCase,
+    getReyUseCase
+  );
+  const exportPdfController = new ExportPdfController(exportPdfUseCase);
 
   // Only manage the render
   router.get(
@@ -226,6 +245,14 @@ module.exports = (authUseCase, authMiddleware) => {
         })
         .catch(err => res.status(500).json({ error: err.message }));
     }
+  );
+
+  // ======================== EXPORT PDF ===============================
+  router.get(
+    '/users/:id_user/applications/:id_application/export',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => exportPdfController.export(req, res)
   );
 
   return router;
