@@ -122,6 +122,57 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
+  // ================= EXPORT PDF =================
+
+  // Fetch the graded/delivered test results of an application, for the PDF export.
+  async fetchAllResultsForExport ({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT tr.id_results,
+              tr.id_test,
+              pt.test_name,
+              tr.status,
+              tr.date_applied
+       FROM test_results tr
+       JOIN psych_tests pt ON tr.id_test = pt.id_test
+       WHERE tr.id_application = ?
+         AND tr.status IN (3, 4)
+       ORDER BY tr.id_test`,
+      [id_application]
+    );
+    return rows.map(row => ({
+      idResults: row.id_results,
+      idTest: row.id_test,
+      testName: row.test_name,
+      status: row.status,
+      dateApplied: row.date_applied ?? null,
+    }));
+  }
+
+  // Mark an application and its graded tests as Entregado (status 4) after a successful export.
+  async updateApplicationAndTestsStatus ({ id_application, status }) {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      await conn.query(
+        'UPDATE test_applications SET status = ? WHERE id_application = ?',
+        [status, id_application]
+      );
+
+      await conn.query(
+        'UPDATE test_results SET status = ? WHERE id_application = ? AND status = 3',
+        [status, id_application]
+      );
+
+      await conn.commit();
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
   // ================= BANFE  ==================
 
   // Upserts into banfe_results
