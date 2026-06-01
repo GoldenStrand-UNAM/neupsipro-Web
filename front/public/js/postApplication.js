@@ -1,6 +1,6 @@
 /* global createApplicationCard, _csrfToken*/
 
-const MAX_APPLICATIONS = 5;
+const MAX_APPLICATIONS = 10;
 
 function setupModalControls (modal) {
   const inputEl = document.getElementById('inputAppName');
@@ -69,7 +69,7 @@ function showLimitToast () {
                2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898
                0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
     </svg>
-    <span>Límite alcanzado — máximo 5 aplicaciones por usuario</span>
+    <span>Límite alcanzado — máximo 10 aplicaciones por usuario</span>
   `;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);

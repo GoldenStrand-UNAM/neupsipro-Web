@@ -6,6 +6,7 @@ class BanfeResultsDTO {
     dateApplied,
     areas,
     scoreTotal,
+    interTotal,
     notes,
   }) {
     this.idResults   = idResults;
@@ -27,6 +28,7 @@ class BanfeResultsDTO {
       },
     };
     this.scoreTotal  = scoreTotal;
+    this.interTotal  = interTotal ?? null;
     this.notes       = notes ?? null;
   }
 }
