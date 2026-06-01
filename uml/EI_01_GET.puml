@@ -1,0 +1,83 @@
+@startuml EI02 - GET Identification Card
+
+title Get - Identification Card (Golondrina)
+
+actor "Clinical Group" as CG
+boundary "Consult User View" as UView
+boundary "Consult \nIdentification Card \nView" as View
+boundary "Consult \nFamily Situation \nView" as FView
+boundary "Consult \nWork Situation \nView" as WView
+
+boundary "Initial Interview \nRoutes" as Route
+control "Initial Interview Controller" as ctrl
+
+control "get \nPersonal Data \nUseCase" as pUC
+control "get \nFamilySituation \nUseCase" as fUC
+control "get \nWorkSituation \nUseCase" as wUC
+
+control "Initial Interview Repository" as Repo
+entity "Initial Interview Info" as iiinfo
+entity "Initial Interview DTO" as DTO
+database "Database" as DB
+
+CG -> UView : Click on 'Entrevista Inicial' for one user
+UView -> Route : GET /interview/personal_info/:idUser
+Route -> ctrl : getPersonalData(req, res)
+ctrl -> pUC : execute({id_user})
+pUC -> Repo : getPersonalData({id_user})
+Repo -->> DB : query('SELECT \nu.first_name, u.lastname_p, u.lastname_m, u.birthdate, \nui.laterality, ii.student_name, ii.interview_date, \nii.companions_name, ii.companion_relation, ii.address, \nii.proof_address, ii.healthcare_system, ii.religion, \nii.weight, ii.size, ii.schooling, ii.fathers_schooling, \nii.mothers_schooling, ii.ocupation, ii.phone_number \nFROM users u \nJOIN user_info ui ON u.id_user = ui.id_user \nJOIN initial_interview ii ON u.id_user = ii.id_user \nWHERE u.id_user = ?;', [id_user])
+alt User Found
+    DB -->> Repo : rawData
+    Repo -> iiinfo : rawData
+    iiinfo --> Repo : InitialInterviewInfo
+    Repo --> pUC : InitialInterviewInfo
+    pUC --> DTO : InitialInterviewInfo
+    DTO --> pUC : cleanInfo
+    pUC --> ctrl : cleanInfo
+    ctrl --> Route : HTTP 200 render view {cleanInfo}
+    Route --> View : HTTP 200
+    View --> CG : Consult Identification Card View
+else User Not Found
+    DB -->> Repo : notFound
+    Repo --> pUC : null
+    pUC --> ctrl : Error (User Not Found)
+    ctrl --> Route : HTTP 404 Not Found
+    Route --> UView : Render Error View
+    UView --> CG : Display "User not found"
+end
+
+CG -> View : Click next to view Family Situation
+View -> Route : GET /interview/family_situation/:idUser
+Route -> ctrl : getFamilySituation(req, res)
+ctrl -> fUC : execute({id_user})
+fUC -> Repo : getFamilySituation({id_user})
+Repo -->> DB : query('SELECT \nin_relationship, relationship_duration, \npartners_name, partners_age, \npartners_ocupation, partners_health, \nhas_children, childrens_names, \nnumber_family_members, roomie_info, \naditional_info \nFROM initial_interview WHERE id_user = ?;', [id_user])
+DB -->> Repo : rawData
+Repo -> iiinfo : rawData
+iiinfo --> Repo : FamilySituationInfo
+Repo --> fUC : FamilySituationInfo
+fUC --> DTO : FamilySituationInfo
+DTO --> fUC : cleanInfo
+fUC --> ctrl : cleanInfo
+ctrl --> Route : HTTP 200 render view {cleanInfo}
+Route --> FView : HTTP 200
+FView --> CG : Consult Family Situation View
+
+CG -> FView : Click next to view Work Situation
+FView -> Route : GET /interview/work_situation/:idUser
+Route -> ctrl : getWorkSituation(req, res)
+ctrl -> wUC : execute({id_user})
+wUC -> Repo : getWorkSituation({id_user})
+Repo -->> DB : query('SELECT \nhas_job, work_activity, stress_work, \nwork_problems, employment_status, seniority, \nemployer, employers_phone_number, \nsocioeconomic_level, amai_questionnaire, \nts_conclusions \nFROM initial_interview WHERE id_user = ?;', [id_user])
+DB -->> Repo : rawData
+Repo -> iiinfo : rawData
+iiinfo --> Repo : WorkSituationInfo
+Repo --> wUC : WorkSituationInfo
+wUC --> DTO : WorkSituationInfo
+DTO --> wUC : cleanInfo
+wUC --> ctrl : cleanInfo
+ctrl --> Route : HTTP 200 render view {cleanInfo}
+Route --> WView : HTTP 200
+WView --> CG : Consult Work Situation View
+
+@enduml
