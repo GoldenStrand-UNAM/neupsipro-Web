@@ -88,23 +88,31 @@
         <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8 pb-8">
 
           <!-- Sub-stepper -->
-          <ol class="flex flex-col gap-6">
-            <li class="flex items-start gap-3" data-sub-step="1">
-              <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">1</span>
-              <div>
+          <ol class="flex flex-col">
+            <li class="flex gap-3" data-sub-step="1">
+              <div class="flex flex-col items-center self-stretch">
+                <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">1</span>
+                <span class="w-px flex-1 bg-gray-300"></span>
+              </div>
+              <div class="pb-8">
                 <p class="font-medium text-[#1E1E1E]">Datos personales</p>
                 <p class="text-sm text-gray-400" data-sub-status>Completada</p>
               </div>
             </li>
-            <li class="flex items-start gap-3" data-sub-step="2">
-              <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">2</span>
-              <div>
+            <li class="flex gap-3" data-sub-step="2">
+              <div class="flex flex-col items-center self-stretch">
+                <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">2</span>
+                <span class="w-px flex-1 bg-gray-300"></span>
+              </div>
+              <div class="pb-8">
                 <p class="font-medium text-[#1E1E1E]">Situación familiar</p>
                 <p class="text-sm text-gray-400" data-sub-status>Completada</p>
               </div>
             </li>
-            <li class="flex items-start gap-3" data-sub-step="3">
-              <span class="w-9 h-9 shrink-0 rounded-full bg-[#C89B3C] text-white flex items-center justify-center font-semibold">3</span>
+            <li class="flex gap-3" data-sub-step="3">
+              <div class="flex flex-col items-center">
+                <span class="w-9 h-9 shrink-0 rounded-full bg-[#C89B3C] text-white flex items-center justify-center font-semibold">3</span>
+              </div>
               <div>
                 <p class="font-medium text-[#1E1E1E]">Situación laboral</p>
                 <p class="text-sm text-[#C89B3C]" data-sub-status>En proceso</p>
@@ -129,29 +137,38 @@
             <!-- Tipo de actividad laboral -->
             <div class="flex flex-col gap-2">
               <label class="font-medium text-gray-800" for="workActivity">Tipo de actividad laboral:</label>
-              <input id="workActivity" name="work_activity" type="text" maxlength="150"
-                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+              <div class="relative">
+                <input id="workActivity" name="work_activity" type="text" maxlength="150"
+                       class="input-base w-full border p-2 pr-16 rounded" placeholder="Ej. Empleado de oficina">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none" data-counter-for="workActivity">0/150</span>
+              </div>
             </div>
 
             <!-- Nivel de estrés en el trabajo -->
             <div class="flex flex-col gap-2">
               <label class="font-medium text-gray-800" for="stressWork">Nivel de estrés en el trabajo:</label>
-              <input id="stressWork" name="stress_work" type="text" maxlength="150"
-                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+              <div class="relative">
+                <input id="stressWork" name="stress_work" type="text" maxlength="150"
+                       class="input-base w-full border p-2 pr-16 rounded" placeholder="Ej. Medio">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none" data-counter-for="stressWork">0/150</span>
+              </div>
             </div>
 
             <!-- Estado laboral actual -->
             <div class="flex flex-col gap-2">
               <label class="font-medium text-gray-800" for="employmentStatus">Estado laboral actual:</label>
-              <input id="employmentStatus" name="employment_status" type="text" maxlength="150"
-                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+              <div class="relative">
+                <input id="employmentStatus" name="employment_status" type="text" maxlength="150"
+                       class="input-base w-full border p-2 pr-16 rounded" placeholder="Ej. Activo / Desempleado">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none" data-counter-for="employmentStatus">0/150</span>
+              </div>
             </div>
 
             <!-- Antigüedad -->
             <div class="flex flex-col gap-2">
               <label class="font-medium text-gray-800" for="seniority">Antigüedad:</label>
               <input id="seniority" name="seniority" type="number" min="0"
-                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+                     class="input-base w-full border p-2 pr-12 rounded" placeholder="Ej. 3 (años)">
             </div>
 
             <!-- Inline error -->
@@ -180,5 +197,16 @@
   </div>
 
   <script src="/js/sidebar.js"></script>
+  <script>
+    // Character counters: update "x/max" inside each input as the user types.
+    document.querySelectorAll('[data-counter-for]').forEach((counter) => {
+      const input = document.getElementById(counter.getAttribute('data-counter-for'));
+      if (!input) return;
+      const max = input.getAttribute('maxlength');
+      const update = () => { counter.textContent = `${input.value.length}/${max}`; };
+      input.addEventListener('input', update);
+      update();
+    });
+  </script>
 </body>
 </html>
