@@ -1,6 +1,9 @@
 const db = require('../database/database');
 const DashboardRepository = require('../../domain/repository/dashboardUnitRepository');
 const { decryptBirthdate , decryptGender, decryptRefNum, decryptDetail } = require('../../infrastructure/crypt/dashboard/getUnitDashboard');
+const Crypt = require('../../infrastructure/crypt/crypt');
+
+const crypt = new Crypt();
 
 const {
   DashboardCountsEntity,
@@ -65,17 +68,17 @@ class ImpDashboardRepository extends DashboardRepository {
   async fetchGenderDistribution () {
     const [rows] = await db.query(`
       SELECT
-        COALESCE(u.gender, 'Not specified') AS gender,
-        COUNT(*) AS total
+        COALESCE(u.gender, 'Not specified') AS gender
       FROM users u
       JOIN user_info ui ON ui.id_user = u.id_user
       WHERE u.eliminated = 0
         AND u.id_role = 2
-        AND (ui.state IS NULL OR ui.state <> 'Declined')
-      GROUP BY gender;
+        AND (ui.state IS NULL OR ui.state <> 'Declined');
     `);
-    return rows.map(r => decryptGender(new GenderBucketEntity(r)));
-  }
+    return rows.map(r => {
+      const entity = decryptGender({ gender: r.gender });
+      return entity.gender;
+    });  }
   // Counts how many results exist per psychological test
   async fetchTestCounts () {
     const [rows] = await db.query(`
@@ -106,6 +109,7 @@ class ImpDashboardRepository extends DashboardRepository {
 
   // Returns full detail of one standBy user
   async fetchStandByDetail (referenceNumber) {
+    const refNum =  crypt.generateBlindIndex(referenceNumber);
     const [rows] = await db.query(`
     SELECT
       u.id_user,
@@ -137,16 +141,14 @@ class ImpDashboardRepository extends DashboardRepository {
       ) AS assigned_clinics
     FROM user_info ui
     JOIN users u ON u.id_user = ui.id_user
-    WHERE ui.reference_number = ?
+    WHERE ui.ref_bindex = ?
       AND ui.state = 'Stand_by'
       AND u.eliminated = 0
     LIMIT 1;
-  `, [referenceNumber]);
+  `, [refNum]);
 
     if (!rows.length) return null;
-    console.log(rows[0]);
     const data = decryptDetail(new StandByDetailEntity(rows[0]));
-    console.log(data);
     return data;
   }
 }
