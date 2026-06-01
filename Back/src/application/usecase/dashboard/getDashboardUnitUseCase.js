@@ -1,5 +1,5 @@
 const { DashboardSummaryDTO } = require('../../dto/dashboardUnitDTO');
-const { AgeBucketEntity } = require('../../../domain/entity/dashboardUnitEntity');
+const { AgeBucketEntity, GenderBucketEntity } = require('../../../domain/entity/dashboardUnitEntity');
 
 // Ages buckets for the age distribution
 const AGE_BUCKETS = [
@@ -48,8 +48,20 @@ class GetDashboardSummaryUseCase {
     });
   }
 
+  // Classify and count genders into buckets
+  _groupGenders (gendersList) {
+    const counts = gendersList.reduce((acc, gender) => {
+      const g = gender || 'Not specified';
+      // eslint-disable-next-line security/detect-object-injection, no-param-reassign
+      acc[g] = (acc[g] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.keys(counts).map(key => new GenderBucketEntity({ gender: key, total: counts[key] }));
+  }
+
   async execute () {
-    const [counts, birthdates, gender, tests, standByList] = await Promise.all([
+    const [counts, birthdates, rawGenders, tests, standByList] = await Promise.all([
       this.repo.fetchCounts(),
       this.repo.fetchAgeDistribution(),
       this.repo.fetchGenderDistribution(),
@@ -62,6 +74,8 @@ class GetDashboardSummaryUseCase {
       .map(b => this._calculateAge(b))
       .filter(age => age !== null);
     const age = this._bucketAges(ages);
+
+    const gender = this._groupGenders(rawGenders);
 
     return new DashboardSummaryDTO({ counts, age, gender, tests, standByList });
   }

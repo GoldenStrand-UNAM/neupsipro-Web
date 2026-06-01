@@ -10,7 +10,7 @@ function uncryptUser (user) {
 
   return {
     ...user,
-    fullName: fullName,
+    fullName,
     affiliation: crypt.decrypt(user.affiliation),
     activity: crypt.decrypt(user.activity),
   };

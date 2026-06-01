@@ -4,7 +4,6 @@ const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting')
 const ImpClinicalRepository = require('../../../infrastructure/repositories/ImpClinicalRepository');
 const PostClinicalUserUseCase = require('../../../application/usecase/clinical/postClinicalUserUseCase');
 const postClinicalUserController = require('../../controller/clinical/postClinicalUser.controller');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 const HashingService = require('../../../infrastructure/external/hashing.service');
 const upload = require('../../../infrastructure/external/multer.service');
