@@ -33,14 +33,14 @@ const decryptFullName = (encryptedFullName) => {
 function decryptDetail (detailEntry) {
   return {
     ...detailEntry,
-    userFullName: decryptFullName(detailEntry.userFullName),
+    fullName: decryptFullName(detailEntry.fullName),
     referenceNumber: decryptRefNum(detailEntry.referenceNumber),
     birthdate: decryptBirthdate(detailEntry.birthdate),
     neuroEntryDate: crypt.decrypt(detailEntry.neuroEntryDate),
     amputationDate: crypt.decrypt(detailEntry.amputationDate),
-    assignedClinic: crypt.decrypt(detailEntry.assignedClinic),
-
-  };
+    assignedClinics: Array.isArray(detailEntry.assignedClinics)
+      ? detailEntry.assignedClinics.map(clinic => decryptFullName(clinic))
+      : []  };
 }
 
 module.exports = { decryptBirthdate,  decryptGender, decryptRefNum, decryptDetail  };
