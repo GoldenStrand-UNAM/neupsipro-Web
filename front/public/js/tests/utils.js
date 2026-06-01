@@ -75,7 +75,7 @@ function updateTestCardStatus (dto) {
     const dateEl = card.querySelector('.application-card__date');
     if (dateEl) {
       const formatted = new Date(dto.dateApplied).toLocaleDateString('es-MX', { timeZone: 'UTC' });
-      dateEl.textContent = `Aplicada: ${formatted}`;
+      dateEl.textContent = `Registrada: ${formatted}`;
     }
   }
 
