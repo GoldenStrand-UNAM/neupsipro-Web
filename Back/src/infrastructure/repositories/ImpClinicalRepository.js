@@ -263,6 +263,7 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     } finally {
       connection.release();
     }
+  }
   async softDeleteUser ({ id_user }) {
     const [result] = await db.query(
       `UPDATE users 
