@@ -139,7 +139,10 @@
     if (!allGraded) return;
     const { idUser } = window.__TEST_PAGE__ || {};
     if (!idUser) return;
-    showToast('¡Todas las pruebas calificadas! Redirigiendo...');
+    sessionStorage.setItem('pendingToast', JSON.stringify({
+      message: '¡Todas los resultados han sido registrados!',
+      type: 'success',
+    }));
     setTimeout(() => { window.location.href = `/users/${idUser}`; }, 1500);
   };
 
