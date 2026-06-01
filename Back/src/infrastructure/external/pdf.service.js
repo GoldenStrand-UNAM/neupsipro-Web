@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
-const puppeteer = require('puppeteer');
 
 const TEMPLATE_PATH = path.resolve(__dirname, '../../../../front/views/pdf/exportReport.ejs');
 const UNAM_LOGO_PATH = path.resolve(__dirname, '../../../../front/public/assets/Escudo-UNAM-escalable.svg');
@@ -9,6 +8,10 @@ const UNAM_LOGO_PATH = path.resolve(__dirname, '../../../../front/public/assets/
 // Renders the export report EJS template to a PDF buffer using headless Chromium.
 class PdfService {
   async generate (report) {
+    // Lazy require: puppeteer is ESM and only works with require() under Node, not Jest.
+    // Loading it here keeps app.js (and the whole test suite) importable.
+    const puppeteer = require('puppeteer');
+
     const unamLogo = this.#loadLogoDataUri(UNAM_LOGO_PATH);
     const html = await ejs.renderFile(TEMPLATE_PATH, { report, unamLogo });
 
