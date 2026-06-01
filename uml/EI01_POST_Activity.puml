@@ -1,0 +1,43 @@
+@startuml EI01_POST_Activity
+title Base Level Interview POST- Activity Diagram (Golondrina)
+
+
+|User|
+start
+:Click on 'Entrevista inicial' for a specific user;
+
+|System|
+:Validates session;
+
+if (Valid session?) then (yes)
+    #D6EAF8:Render information card view with empty fields;
+
+    |User|
+    :Writes down info;
+    :Clicks on 'Siguiente';
+
+    |System|
+    #D6EAF8:Saves info;
+    #D6EAF8:Render family situation view with empty fields;
+
+    |User|
+    :Writes down info;
+    :Clicks on 'Siguiente';
+
+    |System| 
+    #D6EAF8: Saves info;
+    #D6EAF8:Render work situation view with empty fields;
+
+    |User|
+    :Writes down info;
+    :Clicks on 'Siguiente';
+
+else (no)
+    |System|
+    :Show message 'please login again';
+    stop
+
+endif
+stop
+
+@enduml

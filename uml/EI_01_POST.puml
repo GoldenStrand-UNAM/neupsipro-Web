@@ -1,0 +1,89 @@
+@startuml EI01 - POST Identification Card
+
+title Post - Identification Card (Golondrina)
+
+actor "Clinical Group" as CG
+boundary "Consult User View" as UView
+boundary "Register \nIdentification Card \nView" as View
+boundary "Register \nFamily Situation \nView" as FView
+boundary "Register \nWork Situation \nView" as WView
+
+boundary "Initial Interview \nRoutes" as Route
+control "Initial Interview Controller" as ctrl
+
+control "get \nPersonal Data \nUseCase" as UC
+control "post \nPersonalData \nUseCase" as pUC
+control "post \nFamilySituation \nUseCase" as fUC
+control "post \nWorkSituation \nUseCase" as wUC
+
+control "Initial Interview Repository" as Repo
+entity "Initial Interview Info" as iiinfo
+entity "Initial Interview DTO" as DTO
+database "Database" as DB
+
+CG -> UView : Click on 'Entrevista Inicial' for one user
+UView -> Route : GET /interview/personal_info/:idUser
+Route -> ctrl : getPersonalData(req, res)
+ctrl -> UC : execute({id_user})
+UC -> Repo : getPersonalData({id_user})
+Repo -->> DB : query('SELECT \nu.first_name, \nu.lastname_p, \nu.lastname_m, \nu.birthdate, \nui.laterality \nFROM users u \nJOIN user_info ui ON u.id_user = ui.id_user \nWHERE u.id_user = ?;', [id_user])
+
+
+alt User Found
+    DB -->> Repo : rawData
+    Repo -> iiinfo : rawData
+    iiinfo --> Repo : InitialInterviewInfo
+    Repo --> UC : InitialInterviewInfo
+    UC --> DTO : InitialInterviewInfo
+    DTO --> UC : cleanInfo
+    UC --> ctrl : cleanInfo
+    ctrl --> Route : HTTP 200 render view {cleanInfo}
+    Route --> View : HTTP 200
+    View --> CG : Register Identification Card View
+else User Not Found
+    DB -->> Repo : rawData
+    Repo --> UC : null
+    UC --> ctrl : Error (User Not Found)
+    ctrl --> Route : HTTP 404 Not Found
+    Route --> UView : Render Error View
+    UView --> CG : Display "User not found"
+end
+
+CG -> View : Register information, click next
+View -> Route : POST /interview/personal_info/:idUser
+Route -> ctrl : postPersonalData(req, res)
+ctrl -> pUC : execute({data})
+pUC -> Repo : postPersonalData({data})
+Repo -->> DB : query('UPDATE users SET first_name=?, lastname_p=?, \nlastname_m=?, birthdate=?, email=? WHERE id_user=?;\nUPDATE user_info SET laterality=? WHERE id_user=?;\nINSERT INTO initial_interview VALUES (\n?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \n?, ?, ?, ?, ?);', \n[u.first_name, u.lastname_p, u.lastname_m, u.birthdate, email, id_user, \nlaterality, id_user, \nid_user, student_name, interview_date, companions_name, companion_relation, \naddress, proof_address, healthcare_system, religion, \nweight, size, schooling, fathers_schooling, \nmothers_schooling, ocupation, phone_number])
+DB -->> Repo : query ok
+Repo --> pUC : query ok
+pUC --> ctrl : query ok
+ctrl --> Route : HTTP 201 Redirect next step
+Route --> FView : Render family situation view
+FView --> CG : Show next part of form
+
+CG -> FView : Register information, click next
+FView -> Route : POST /interview/family_situation/:idUser
+Route -> ctrl : postFamilySituation(req, res)
+ctrl -> fUC : execute({data})
+fUC -> Repo : postFamilySituation({data})
+Repo -->> DB : query('UPDATE initial_interview SET \nin_relationship=?, relationship_duration=?, \npartners_name=?, partners_age=?, \npartners_ocupation=?, partners_health=?, \nhas_children=?, childrens_names=?, \nnumber_family_members=?, roomie_info=?, \naditional_info=? WHERE id_user=?;', \n[in_relationship, relationship_duration, partners_name, \npartners_age, partners_ocupation, partners_health, \nhas_children, childrens_names, number_family_members, \nroomie_info, aditional_info, id_user])
+DB -->> Repo : query ok
+Repo --> fUC : query ok
+fUC --> ctrl : query ok
+ctrl --> Route : HTTP 201 Redirect next step
+Route --> WView : Render work situation view
+WView --> CG : Show next part of form
+
+CG -> WView : Register information, click next
+WView -> Route : POST /interview/work_situation/:idUser
+Route -> ctrl : postWorkSituation(req, res)
+ctrl -> wUC : execute({data})
+wUC -> Repo : postWorkSituation({data})
+Repo -->> DB : query('UPDATE initial_interview SET \nhas_job=?, work_activity=?, stress_work=?, \nwork_problems=?, employment_status=?, seniority=?, \nemployer=?, employers_phone_number=?, \nsocioeconomic_level=?, amai_questionnaire=?, \nts_conclusions=? WHERE id_user=?;', \n[has_job, work_activity, stress_work, \nwork_problems, employment_status, seniority, \nemployer, employers_phone_number, \nsocioeconomic_level, amai_questionnaire, \nts_conclusions, id_user])
+DB -->> Repo : query ok
+Repo --> wUC : query ok
+wUC --> ctrl : query ok
+ctrl --> Route : HTTP 201 Redirect next step
+
+@enduml
