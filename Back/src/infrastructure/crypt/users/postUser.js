@@ -39,6 +39,8 @@ function encrypt (user) {
     amputationLevel: crypt.encrypt(user.amputationLevel),
     pairs: crypt.encrypt(user.pairs),
     sex: crypt.encrypt(user.sex),
+    email: crypt.encrypt(user.email),
+    phone: crypt.encrypt(user.phone),
   };
 }
 
