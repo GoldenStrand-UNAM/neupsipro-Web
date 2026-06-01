@@ -1,0 +1,49 @@
+@startuml EditClinicalUserActivity
+title Edit Clinical User - Activity Diagram
+
+|User|
+start
+:Consult clinical user;
+:Click **[Editar]**;
+
+|System|
+if (Valid session) then (yes)
+  :fetchClinical(id_user);
+  if (User exists?) then (yes)
+    :"Modificar Usuario Clínico" view;
+    :Show fields pre-filled\nwith current values;
+
+    repeat
+      |User|
+      :Modify desired fields\n(optional: new password);
+      :Select **[Guardar]**;
+      |System|
+      backward:Message **Llene los**\n**campos requeridos**;
+    repeat while (Filled required fields\n& password match?) is (no) not (yes)
+
+    if (Data valid?) then (yes)
+      :checkDuplicateOnEdit;
+      if (Duplicate user?) then (no)
+        :updateUser (transaction);
+        if (Update successful?) then (yes)
+          :Message **Usuario actualizado**\n**correctamente**;
+          :"Usuario clínico" view;
+        else (no)
+          :Message **Error al**\n**modificar usuario**;
+        endif
+      else (yes)
+        :Message **El usuario ya**\n**se encuentra registrado**;
+      endif
+    else (no)
+      :Show validation errors;
+    endif
+
+  else (no)
+    :Message **Usuario no encontrado**;
+  endif
+else (no)
+  :"Sign in" view;
+endif
+stop
+
+@enduml

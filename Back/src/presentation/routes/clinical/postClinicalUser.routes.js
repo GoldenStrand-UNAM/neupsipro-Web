@@ -9,6 +9,9 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 const HashingService = require('../../../infrastructure/external/hashing.service');
 const upload = require('../../../infrastructure/external/multer.service');
 
+const EditClinicalUserUseCase = require('../../../application/usecase/clinical/editClinicalUserUseCase');
+const editClinicalUserController = require('../../controller/clinical/editClinicalUser.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
 
   const router = express.Router();
@@ -19,6 +22,10 @@ module.exports = (authUseCase, authMiddleware) => {
   const controller = new postClinicalUserController(useCase);
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
+
+  const editUseCase = new EditClinicalUserUseCase(repository, hashingService);
+  const editController = new editClinicalUserController(editUseCase, repository);
+
 
   router.get(
     '/postUser',
@@ -36,6 +43,24 @@ module.exports = (authUseCase, authMiddleware) => {
     upload.none(),
     (req, res) => controller.postClinicalUser(req, res)
   );
+
+  router.get(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => editController.editClinicalUserView(req, res)
+  );
+
+  router.post(
+    '/:id_user/edit',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'writing'),
+    upload.none(),
+    (req, res) => editController.editClinicalUser(req, res)
+  );
+
 
   return router;
 };
