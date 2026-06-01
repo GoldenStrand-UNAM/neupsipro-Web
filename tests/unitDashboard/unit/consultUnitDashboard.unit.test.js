@@ -115,7 +115,7 @@ describe('getDashboardUnitUseCase', () => {
     ];
 
     const fakeGender = [
-        { gender: 'Woman', total: 5 }
+        { gender: 'Femenino', total: 5 }
     ];
 
     const fakeTests = [
@@ -147,7 +147,7 @@ describe('getDashboardUnitUseCase', () => {
         },
         genderDistribution: {
             items: [
-                { gender: "Woman", percentage: 100, total: 5 }
+                { gender: "Femenino", percentage: 100, total: 5 }
             ]
         },
         testCounts: {
