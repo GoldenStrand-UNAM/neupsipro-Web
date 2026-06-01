@@ -4,7 +4,6 @@ const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
 const ClinicalPatient = require('../../domain/entity/clinicalPatient');
 const Uncrypt = require('../crypt/clinical/getClinicals');
-// 1. Importas la clase
 const uncrypt = new Uncrypt();
 const { v4: uuidv4 } = require('uuid');
 
