@@ -9,7 +9,7 @@ class FinancialInterviewUseCase {
 
   // Function that gets financial substeps info
   async getSecondStepData ({
-    refNumber,
+    id_user,
     subStep,
     id_user_relation,
     inicialProgress,
@@ -43,7 +43,7 @@ class FinancialInterviewUseCase {
     }
 
     return new FinancialInterview({
-      refNumber,
+      id_user,
       current_step: inicialProgress[0].current_step,
       current_section: subStep,
       inicialProgress,
@@ -52,10 +52,9 @@ class FinancialInterviewUseCase {
     });
   }
 
-  async execute ({ refNumber, step, subStep }) {
-    // fetch user id
-    const res = await this.financialInterviewRepository.fetchUserId({ refNumber });
-    const idUser = res[0][0].id_user;
+  async execute ({ id_user, step, subStep }) {
+    // fetch refnumber
+    const refFetch = await this.financialInterviewRepository.fetchRefNum({ id_user });
 
     // fetch  relation
     const relationResult = await this.financialInterviewRepository.fetchRelation({ idUser });
@@ -68,7 +67,8 @@ class FinancialInterviewUseCase {
     // Get data by step
     if (step === 'financial') {
       return await this.getSecondStepData({
-        refNumber,
+        id_user,
+        refNumber: refFetch[0][0].reference_number,
         subStep: Number(subStep),
         id_user_relation,
         inicialProgress,
