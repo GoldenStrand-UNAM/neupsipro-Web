@@ -272,6 +272,7 @@ class ImpClinicalRepository extends clinicalRepository {
     } finally {
       connection.release();
     }
+  }
   async softDeleteUser ({ id_user }) {
     const [result] = await db.query(
       `UPDATE users 
