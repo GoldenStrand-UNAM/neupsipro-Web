@@ -68,6 +68,7 @@ describe('EditUserUseCase', () => {
         });
         mockUserRepository.checkDuplicate.mockResolvedValue(null);
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123', success: true});
+        mockUserRepository.checkDuplicate.mockResolvedValue(null);
 
         const result = await useCase.execute(validUserData);
         
