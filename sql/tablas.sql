@@ -894,3 +894,6 @@ ALTER TABLE user_clinical
     MODIFY COLUMN emergency_contact_name VARCHAR(160) NULL,
     MODIFY COLUMN emergency_contact_phone VARCHAR(88) NULL,
     MODIFY COLUMN emergency_contact_relation VARCHAR(115) NULL;
+    
+ALTER TABLE intervention 
+MODIFY COLUMN contract_link VARCHAR(568) DEFAULT NULL;
