@@ -10,6 +10,7 @@ describe('createUserUseCase',()=>{
     beforeEach(()=>{
 
         userRepository = {
+            checkDuplicate: jest.fn(),
             postUser:jest.fn()
         };
 
@@ -49,6 +50,8 @@ describe('createUserUseCase',()=>{
     test('creates a new user successfully',async()=>{
 
         hashingService.hash.mockResolvedValue('hashedPassword');
+
+        userRepository.checkDuplicate.mockResolvedValue(null);
 
         userRepository.postUser.mockResolvedValue({idUser:'u-001'});
 

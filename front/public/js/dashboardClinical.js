@@ -101,10 +101,10 @@ function renderFlowChart (counts) {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         // Bottom legend
-        legend: { position: 'bottom', 
-        labels: { boxWidth: 14, font: { size: 14 }, padding: 10 },
-        onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
-        onLeave: (event) => { event.native.target.style.cursor = 'default'; }},
+        legend: { position: 'bottom',
+          labels: { boxWidth: 14, font: { size: 14 }, padding: 10 },
+          onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+          onLeave: (event) => { event.native.target.style.cursor = 'default'; } },
 
         // Tooltip with percentage
         tooltip: {

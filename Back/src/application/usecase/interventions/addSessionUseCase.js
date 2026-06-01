@@ -29,6 +29,9 @@ class addSessionUseCase {
       throw new Error('El desarrollo no puede superar los 2000 caracteres');
     if (dqp_task && dqp_task.length > 2000)
       throw new Error('El DQP / tarea terapéutica no puede superar los 2000 caracteres');
+    
+    if (session_date && new Date(session_date) > new Date('2100-12-31'))
+      throw new Error('La fecha de la sesión no puede ser posterior al año 2100');
 
     const intervention = await this.interventionRepository.findByUser({ id_user });
     if (!intervention) throw new Error('No existe intervención activa');
