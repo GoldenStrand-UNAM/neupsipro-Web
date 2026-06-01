@@ -230,13 +230,22 @@ const profileRoutes = require('./presentation/routes/users/profile.routes');
 
 app.use('/api/profile', profileRoutes(authUseCase, authMiddleware));
 
-// Applications
+// ========= APPLICATIONS ROUTES ========
 
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase, authMiddleware));
-const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
+// ======== INITIAL INTERVIEW ROUTES ========
+
+
+const inicialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
+app.use('/initial-interview', inicialInterviewRoutes(authUseCase));
+
+
+// ======== TUTORIAL ROUTES ========
+
+const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 app.use('/api/tutorial', tutorialRoutes(authMiddleware));
 
 app.get('/consultUser', (req, res) => {

@@ -399,10 +399,7 @@
 
     <script>
         document.getElementById("IIbutton").addEventListener("click", () => {
-
-            const id_user = document.getElementById("userCode").textContent.trim();
-
-            window.location.href = `/users/${id_user}/inicial-interview/financial`;
+            window.location.href = `/users/<%= usuario.idUser %>/initial-interview/financial`;
         });
 
     if (sessionStorage.getItem('modifiedUser') === 'true') {
