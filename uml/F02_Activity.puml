@@ -1,0 +1,23 @@
+@startuml Consul_publication
+title Consult publication
+
+|User|
+start
+:Click on a publication;
+
+|System|
+if (The post exists) then (no)
+    |User|
+    :See "Publicacion no encontrada!";
+
+else (yes)
+  |System|
+    :loads publication;
+    :loads likes;
+    :loads interactions;
+    |User| 
+    :See publication detail;
+    
+endif
+stop
+@enduml

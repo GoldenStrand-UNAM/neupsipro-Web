@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foro - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
+    <script src="/js/main.js"></script>
+</head>
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 overflow-y-auto">
+
+                <!-- Page Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h1 class="font-['Roboto'] text-2xl text-black font-bold">Foro</h1>
+                    </div>
+
+                    <div>
+                        <button id="btnPost" onclick="window.location.href='/forum/post'" class="btn-mini hidden md:flex w-full sm:w-[260px] md:w-[250px] bg-[#C89B3C] cursor-pointer">
+                            <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
+                            </svg>
+                            Publicar
+                        </button>
+                    </div>
+                </div>
+                <div class ="w-full mt-4">
+                    <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator" class = "w-full">
+                </div>
+
+                <!-- Posts -->
+                <div id="postsContainer" class="flex flex-col gap-5 mt-6 w-full max-w-3xl mx-auto px-4 sm:px-6 pb-6">
+
+                    <% if (posts && posts.length > 0) { %>
+                        <% posts.forEach(post => { %>
+                        <div class="bg-white rounded-2xl p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" 
+                        style="border: 0.5px solid #575757;"
+                        id = "p-<%= post.id %>">
+
+
+                            <!-- Author -->
+                            <div class="flex items-center gap-3 mb-3 wrap-break-word">
+
+
+                            <% if (post.pp) { %>
+                                <img 
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-gray-100" src="<%= post.pp %>"
+                                 >
+                            <% } else { %>
+                                
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-medium shrink-0">
+                                    <%= post.author ? post.author.charAt(0).toUpperCase() : '?' %>
+                                    </div>
+                                
+                            <% } %>
+                                    <div>
+                                    <p class="font-['Roboto'] text-base sm:text-xl text-black font-medium leading-tight"><%= post.author %></p>
+                                </div>
+                                <div class="ml-auto">
+                                    <p class="font-['Roboto'] text-xs sm:text-sm text-gray-500 wrap-break-word">
+                                            <script>document.write(formatDate("<%= new Date(post.date).toISOString() %>"));</script>
+                                    </p>                            
+                                </div>
+                            </div>
+
+                            <!-- Content-->
+                            <h2 class="font-['Roboto'] text-lg sm:text-2xl text-black font-medium py-4 sm:py-8 wrap-break-word"><%= post.title %></h2>
+                            <p class="font-['Roboto'] text-sm sm:text-xl text-black font-regular leading-relaxed wrap-break-word"><%= post.content %></p>
+
+                            <% if (post.image) { %>
+                                <div class="w-full mt-4 rounded-[10px] overflow-hidden" style="aspect-ratio: 1/1;">
+                                    <img 
+                                        class="w-full h-full object-cover"
+                                        src="<%= post.image %>"
+                                        alt="Imagen del post"
+                                        loading="lazy"
+                                    >
+                                </div>
+                            <% } %>
+
+                            <!-- Actions -->
+                            <div class="flex justify-end mt-4 pt-3 border-t border-gray-100">
+
+                                <button class="flex items-center gap-1.5 text-s text-black hover:text-[#002B7A] transition-colors hidden" onclick="window.location.href = '/construction'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    Me gusta
+                                </button>
+                            </div>
+                        </div>
+
+                        <% }) %>
+
+                    <% } else { %>
+                        <div class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-16 h-16 text-[#0A2472] opacity-30">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                            </svg>
+                            <h3 class="font-['Roboto'] text-xl font-semibold text-[#0A2472]">No hay publicaciones aún</h3>
+                            <p class="font-['Roboto'] text-sm text-gray-500 max-w-xs">Sé el primero en compartir algo con la comunidad.</p>
+                        </div>
+                    <% } %>
+                </div>
+                <!-- Pagination -->
+                <% if (totalPages > 1) { %>
+                <div id="pagination" class="flex items-center justify-center gap-3 mt-8 mb-4 pt-4">
+
+                    <!-- Before button -->
+                    <a href="?page=<%= page - 1 %>&limit=<%= limit %>"
+                    class="btn-mini bg-[#002B7A] text-white
+                            <%= page <= 1 ? 'pointer-events-none opacity-40' : '' %>">
+                        ← Anterior
+                    </a>
+
+                    <!-- Info -->
+                    <span class="text-sm text-gray-500">
+                        Página <%= page %> de <%= totalPages %>
+                    </span>
+
+                    <!-- Next Button -->
+                    <a href="?page=<%= page + 1 %>&limit=<%= limit %>"
+                    class="btn-mini bg-[#002B7A] text-white
+                            <%= page >= totalPages ? 'pointer-events-none opacity-40' : '' %>">
+                        Siguiente →
+                    </a>
+
+                </div>
+                <% } %>
+
+            </div>
+
+            <%- include('../partials/publicationModal') %>
+            <%- include('./deletePostModal') %>
+        </main>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <button onclick="window.location.href='/forum/post'" class="md:hidden fixed bottom-6 right-6 z-30 btn-mini bg-[#C89B3C] shadow-xl cursor-pointer" style="padding: 0.875rem 1.5rem; height: auto; font-size: 1rem;">
+        <svg width="16" height="16" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
+        </svg>
+        Publicar
+    </button>
+
+    <script src="/js/sidebar.js"></script>
+    <script>window._canEliminate = <%- canEliminate %>;</script>
+    <script src="/js/publicationModal.js"></script>
+    <script src="/js/tutorial.js"></script>
+    <script>
+      const tutorialElements = {
+        1: null,              // intro 
+        2: '#btnPost',    // publish button
+        3: '#pagination',     // pagination
+      };
+    </script>
+</body>
+</html>

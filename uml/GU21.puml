@@ -1,0 +1,66 @@
+@startuml GU05 Get-Clinical-User
+
+title Get Clinical User - User Management (Golondrina)
+
+actor "Clinical Group" as CG
+
+boundary "clinicalUserListView" as VUsers
+boundary "clinicalUserView" as VOne
+boundary "getClinicalUser\nRoutes" as ROUTE
+control "getClinicalUser\nController" as CTRL
+control "getClinicalUser\nUseCase" as UC
+control "getClinicalPatient \nUseCase" as 2UC
+control "clinicalUser\nRepository" as REPO
+entity "clinicalUser" as ENT
+entity "user" as UENT
+entity "userDTO" as UDTO
+entity "ClinicalUserDTO" as DTO
+database DB
+
+CG -> VUsers : Click [Consultar Usuario (Clínico)]
+VUsers -> MAIN : navigate\n('/clinical/{id_clinicalUser}')
+
+MAIN -> ROUTE : GET /api/clinical/{id_clinicalUser}\n[Authorization: Bearer JWT]
+
+ROUTE -> ROUTE : authMiddleware\nvalidate JWT
+ROUTE -> CTRL : getClinicalUser(req, res)
+
+CTRL -> CTRL : Extract id_clinicalUser from req.params
+
+CTRL -> UC : execute({id_clinicalUser})
+CTRL -> 2UC : getPatients({ id_user, page, limit})
+
+UC -> REPO : fetchOne({id_clinicalUser})
+2UC -> REPO : fetchPatientsAssigned ({id_user, page, limit})
+
+REPO --> DB : SELECT \nu.first_name, \nu.lastname_p, \nu.lastname_m, \nu.email, \nuc.affiliation, \nuc.activity, \nuc.emergency_contact_name, \nuc.emergency_contact_phone, \nuc.emergency_contact_relation, \nuc.start_date, \nuc.finish_date, \nuc.hours \nFROM users u \nLEFT JOIN user_clinical uc ON u.id_user = uc.id_user \nWHERE u.id_user = ?;`, [id_user]
+REPO --> DB : SELECT \np.id_user AS patient_id, \np.first_name AS patient_name, \np.lastname_p AS patient_lastname_p, \np.lastname_m AS patient_lastname_m, \nui.state AS patient_state, \nur.assignment_date, \nur.type AS relation_type \nFROM user_relation ur \nINNER JOIN users p ON ur.id_user = p.id_user \nLEFT JOIN user_info ui ON p.id_user = ui.id_user \nWHERE ur.id_clinic_user = ?;`, [id_user]
+
+DB --> REPO : rawDataClinical
+DB --> REPO : rawDataUser
+
+REPO --> ENT : rawDataClinical
+REPO --> UENT : rawDataUser
+
+
+ENT --> UC : ClinicalUserEntity
+UENT --> 2UC : UserEntity
+
+UC --> DTO : ClinicalUserEntity
+2UC --> UDTO : UserEntity
+
+DTO -> UC : map entities to DTO
+UDTO --> 2UC : map entities to DTO
+
+UC --> CTRL : ClinicalUserDTO
+2UC --> CTRL : UserDTO
+
+CTRL --> ROUTE : HTTP 200 { data: ClinicalUserDTO }
+
+ROUTE --> MAIN : HTTP 200 { data: clinicalUser }
+
+MAIN -> VOne : navigate('/clinical/{id_clinicalUser}')\n+ data
+
+VOne --> CG : Display one clinical user view
+
+@enduml

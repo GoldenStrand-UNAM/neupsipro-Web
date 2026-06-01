@@ -1,0 +1,47 @@
+@startuml consult User GU05
+title Consult User Flow
+
+|User|
+start
+:Click on 'Consultar' for a specific user;
+
+|System|
+:Validates session;
+
+if (Valid session?) then (yes)
+    :get User info;
+    note left
+        from user_info:
+        * registration_date
+        * reference_number
+        * amputation_date
+        * protocol
+        * state
+        * is_child
+        * group_intervention
+        * amputation_etiology
+        * laterality
+        * prosthetist
+        * unit_entry_date
+        * neuro_entry_date
+        * amputation_level
+    end note
+
+    if (Data found?) then (yes)
+        :Render View w/user info;
+        |User|
+        :View info;
+        stop
+    else (no)
+        |System|
+        :Display error 'No data found'; 
+        stop
+    endif
+
+else (no)
+    |System|
+    :Show message 'please login again';
+    stop
+endif
+
+@enduml
