@@ -1,0 +1,29 @@
+@startuml ConsultCreateInterventionActivity
+title Consult/Create Intervention - Activity 
+
+start
+
+:User opens patient detail page;
+:User clicks "Consultar" (Intervention);
+:Send GET /users/:id_user/intervention;
+
+if (Auth & permissions OK?) then (yes)
+
+    :Find intervention by user;
+
+    if (Intervention exists?) then (no)
+        :Create empty intervention;
+        :Re-fetch with user data;
+    else (yes)
+    endif
+
+    :Fetch sessions of the intervention;
+    :Render page with user info,\ncontract, profile, sessions;
+    stop
+
+else (no)
+    :Reject request (401/403);
+    stop
+endif
+
+@enduml

@@ -45,28 +45,18 @@ class ImpDashboardRepository extends DashboardRepository {
     return new DashboardCountsEntity(rows[0] || {});
   }
 
-  // Groups patients into 5 age ranges (0-17, 18-29, 30-44, 45-59, 60+)
   async fetchAgeDistribution () {
     const [rows] = await db.query(`
-      SELECT
-        CASE
-          WHEN TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) < 18 THEN '0-17'
-          WHEN TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) < 30 THEN '18-29'
-          WHEN TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) < 45 THEN '30-44'
-          WHEN TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) < 60 THEN '45-59'
-          ELSE '60+'
-        END AS age_range,
-        COUNT(*) AS total
+      SELECT u.birthdate
       FROM users u
       JOIN user_info ui ON ui.id_user = u.id_user
       WHERE u.eliminated = 0
         AND u.id_role = 2
         AND u.birthdate IS NOT NULL
+        AND u.birthdate <> ''
         AND (ui.state IS NULL OR ui.state <> 'Declined')
-      GROUP BY age_range
-      ORDER BY FIELD(age_range, '0-17','18-29','30-44','45-59','60+');
     `);
-    return rows.map(r => new AgeBucketEntity(r));
+    return rows.map(r => r.birthdate);   
   }
 
   // Counts patients by gender
@@ -129,7 +119,7 @@ class ImpDashboardRepository extends DashboardRepository {
         ORDER BY ur.assignment_date DESC
         LIMIT 1
       ) AS schooling,
-      ui.unit_entry_date,
+      ui.registration_date,
       ui.neuro_entry_date,
       ui.amputation_date,
       ui.protocol,

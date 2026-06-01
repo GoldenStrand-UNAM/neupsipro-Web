@@ -1,0 +1,125 @@
+<script>
+const LIMIT = 120;
+// Truncate long text
+document.querySelectorAll('#sessionsTbody .truncatable').forEach(td => {
+    const full = td.textContent.trim();
+    if (full.length > LIMIT) {
+        td.textContent = full.substring(0, LIMIT) + '…';
+        td.classList.add('text-gray-400');
+    }
+});
+
+// Builds and opens a detail modal for the clicked session row
+function openSessionDetailModal({ sessionId, date, number, development, objectives, dqp }) {
+
+    // Remove any existing instance
+    document.getElementById('sessionDetailModal')?.remove();
+    // key matches the panel id and the data-tab attribute of the button
+    const tabs = [
+        { key: 'development', label: 'Desarrollo', content: development },
+        { key: 'objectives', label: 'Objetivos', content: objectives  },
+        { key: 'dqp', label: 'DQP / Tarea', content: dqp  },
+    ];
+
+    // Create the modal overlay and inject HTML
+    const modal = document.createElement('div');
+    modal.id  = 'sessionDetailModal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center';
+
+    modal.innerHTML = `
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Sesión ${number}</h2>
+                    <p class="text-sm text-gray-400 mt-0.5">${date}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btnDeleteSessionDetail" class="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Eliminar sesión">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                        </svg>
+                    </button>
+                    <button id="btnCloseSessionDetail" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex overflow-x-auto gap-2 border-b border-gray-200">
+                ${tabs.map((t, i) => `
+                    <button
+                        class="session-tab pb-2 px-1 text-sm font-medium border-b-2 transition-colors cursor-pointer
+                               ${i === 0
+                                   ? 'border-[#3350A9] text-[#3350A9]'
+                                   : 'border-transparent text-gray-400 hover:text-gray-700'}"
+                        data-tab="${t.key}">
+                        ${t.label}
+                    </button>
+                `).join('')}
+            </div>
+
+            <!-- Tab content panels -->
+            ${tabs.map((t, i) => `
+                <p id="tab-${t.key}"
+                    class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words overflow-hidden ${i !== 0 ? 'hidden' : ''}">
+                    ${t.content}
+                </p>
+            `).join('')}
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close handlers
+    const close = () => modal.remove();
+    document.getElementById('btnCloseSessionDetail').addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+
+    // Delete: close this modal and open the confirmation modal
+    document.getElementById('btnDeleteSessionDetail').addEventListener('click', () => {
+        close();
+        if (typeof window.openDeleteSession === 'function') {
+            window.openDeleteSession(sessionId);
+        }
+    });
+
+    // Tab switching
+    modal.querySelectorAll('.session-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Reset all tabs
+            modal.querySelectorAll('.session-tab').forEach(t => {
+                t.classList.remove('border-[#3350A9]', 'text-[#3350A9]');
+                t.classList.add('border-transparent', 'text-gray-400');
+            });
+            // Activate clicked tab
+            btn.classList.add('border-[#3350A9]', 'text-[#3350A9]');
+            btn.classList.remove('border-transparent', 'text-gray-400');
+
+            // Hide all panels, show the selected one
+            tabs.forEach(t => document.getElementById(`tab-${t.key}`).classList.add('hidden'));
+            document.getElementById(`tab-${btn.dataset.tab}`).classList.remove('hidden');
+        });
+    });
+}
+
+document.getElementById('sessionsTbody').addEventListener('click', e => {
+    const row = e.target.closest('.session-row');
+    if (!row) return;
+
+    openSessionDetailModal({
+        sessionId: row.dataset.sessionId,
+        date:  row.dataset.date,
+        number: row.dataset.number,
+        development: row.dataset.development,
+        objectives: row.dataset.objectives,
+        dqp: row.dataset.dqp,
+    });
+});
+</script>

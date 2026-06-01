@@ -1,0 +1,91 @@
+@startuml Get_REY
+
+actor "Clinic User" as USR
+participant "rey.modal.js" as RMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getREYController" as TCTRL
+participant "getREYResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card REY]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\nRegistrar deshabilitado\nModificar y Consultar habilitados
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> RMODAL : config.openModify() o config.openConsult()\n→ openREYModal(idUser, idApplication, test, mode)
+
+RMODAL -> UROUTE : Promise.all([\n  GET /api/users/:id_user/schooling,\n  GET /api/users/:id_user/age,\n  GET /api/users/:id_user/applications/:id_application/tests/3/results/:id_results\n])
+
+== GET /schooling (inline en routes) ==
+
+UROUTE -> RREPO : fetchUserSchooling({ id_user })
+RREPO -> DB : SELECT ii.schooling\nFROM initial_interview ii\nINNER JOIN user_relation ur\n  ON ii.id_user_relation = ur.id_user_relation\nWHERE ur.id_user = ?\nLIMIT 1
+DB --> RREPO : schooling string | null
+RREPO --> UROUTE : schooling | null
+UROUTE -> UROUTE : map schooling → years\n'Sin schooling'→0 | 'Primaria'→6\n'Secundaria'→9 | 'Bachillerato'→12\n'Licenciatura'→16 | 'Posgrado'→18
+
+== GET /age (inline en routes) ==
+
+UROUTE -> RREPO : fetchUserAge({ id_user })
+RREPO -> DB : SELECT birthdate\nFROM users\nWHERE id_user = ?
+DB --> RREPO : birthdate | null
+RREPO --> UROUTE : birthdate | null
+UROUTE -> UROUTE : calculateAge(birthdate)\n→ age (years) | null
+
+== GET /tests/3/results/:id_results ==
+
+UROUTE -> TCTRL : getReyController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchREYResult({ id_results })
+RREPO -> DB : SELECT rr.*,\n       tr.status,\n       tr.date_applied\nFROM rey_results rr\nJOIN test_results tr ON rr.id_results = tr.id_results\nWHERE rr.id_results = ?\nLIMIT 1
+DB --> RREPO : { rey row } | null
+
+alt result not found (null)
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'REY result not found'
+    TCTRL --> RMODAL : HTTP 404 { error }
+    RMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw rey_results row
+UC_GET -> UC_GET : map row → ReyResultsDTO\n{ idResults, idTest, status, dateApplied,\n  rc:  { score, pc, time, pcTime },\n  mcp: { score, pc, time, pcTime },\n  mlp: { score, pc, time, pcTime },\n  notes }
+UC_GET --> TCTRL : ReyResultsDTO
+TCTRL --> RMODAL : HTTP 200 { data: ReyResultsDTO }
+
+== Promise.all resuelto ==
+
+UROUTE --> RMODAL : { schooling, years } +\n{ age } +\n{ data: ReyResultsDTO }
+
+== Renderizar modal ==
+
+RMODAL -> RMODAL : resolveEducationBlock(years)\nyears > 12 → '>12' | years <= 12 → '1-12'
+RMODAL -> RMODAL : resolveAgeRange(age)\n18-22 | 23-27 | 28-32 | ... | >77
+RMODAL -> RMODAL : merge fetchedTest = { ...test, ...json.data }\nconstruye prefill desde fetchedTest.rc,\nfetchedTest.mcp, fetchedTest.mlp
+
+alt mode === 'consult'
+    RMODAL -> RMODAL : buildREYConsultHTML(fetchedTest)\n3 secciones: RC, MCp, MLp\ncada una con score, pc, tiempo, pc_time\ntodo solo lectura + fecha + notas
+    RMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    RMODAL -> RMODAL : buildREYFormHTML('modify', prefill,\nschoolingData, ageData)\n6 inputs editables con valores precargados\npercentiles en vivo recalculados
+    RMODAL --> USR : Modal modificar visible\n[Cancelar] [Guardar]
+end
+
+note right of RMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_REY desde
+  "Guardar resultados"
+end note
+
+@enduml

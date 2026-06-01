@@ -7,7 +7,7 @@ class GetUsersListController {
   async getUsers (req, res) {
     try {
       // Extract query params
-      const { search = '', page = 1, limit = 10 } = req.query;
+      const { search = '', status = '', protocol = '', page = 1, limit = 10 } = req.query;
 
       if (String(search).length > 100) {
         return res.status(429).json({ error: 'Search too long' });
@@ -22,7 +22,7 @@ class GetUsersListController {
       //Exceute useCase
       const result = await this.GetUsersListUseCase.execute ({
 
-        search: safeSearch, page: safePage, limit: safeLimit,
+        search: safeSearch, status, protocol, page: safePage, limit: safeLimit,
       });
 
       //Successful response
@@ -35,7 +35,7 @@ class GetUsersListController {
   getUsersPage (req, res) {
     try {
       res.locals.activePage = 'users';
-      res.render('users/consultUsersList');
+      res.render('users/consultUsersList', { tutorialModule: 'usersList' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

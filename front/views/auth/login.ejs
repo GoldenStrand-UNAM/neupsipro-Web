@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>NeuPsi-Pro</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
+        <title>Golondrina</title>
         <link rel="stylesheet" href="../css/output.css">
 
     </head>
@@ -16,6 +16,7 @@
                 <img src="../assets/enes-white-logo.svg" alt="Logo ENES" class="logo-white"/>
                 <h1 class="title">Golondrina</h1>
             <form id="loginForm" action="/auth/login" method="POST">
+                <input type="hidden" name="x-csrf-token" value="<%= csrfToken %>">
                 <div class="login-form">
 
                     <!-- Usuario -->
@@ -28,7 +29,7 @@
                     <!-- Contraseña -->
                     <div class="input-div">
                         <label>Contraseña</label>
-                        <input id="password" type="password" name="password" placeholder="***********" class="input-base" maxlength="30" >
+                        <input id="password" type="password" name="password" placeholder="***********" class="input-base pr-12" maxlength="30" >
                         <small id="passwordMessage" hidden>Alcanzaste el límite de caracteres permitido</small>
                         <!-- Icono -->
                         <svg id="togglePassword" class="w-7 h-7 absolute right-3 top-9 text-gray-400 cursor-pointer"
@@ -40,23 +41,19 @@
                         </svg>
                     </div>
 
-                    <div id="errorMessage" style="color: red; background-color: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none " class="text-center">
-                        <p>
-                        Por favor, llena todos los campos.
-                    </p>
+                    <div id="errorMessage"
+                        class="text-center"
+                        style="color: red; background-color: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; <%= locals.error ? '' : 'display: none;' %>">
+                        <p id="errorText"><%= locals.error || 'Por favor, llena todos los campos.' %></p>
                     </div>
-
+                    
                     <button type="submit" class="btn-big bg-[#3350A9]">
                         <svg class="white-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                         </svg>
                         <span>Iniciar Sesión</span>
                     </button>
-                    <% if (locals.error) { %>
-                        <div style="color: red; background-color: #fee2e2; padding: 10px; border-radius: 5px; margin-bottom: 15px; " class="text-center">
-                            <%= error %>
-                        </div>
-                    <% } %>
+
                     <!--Recuperar contraseña-->
                     <button type="button" id="recoverPassword" class="recover-password">
                         <span >¿Olvidaste la contraseña?</span>

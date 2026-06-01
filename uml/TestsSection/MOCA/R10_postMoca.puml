@@ -1,0 +1,149 @@
+@startuml Post_MOCA
+
+actor "Clinic User" as USR
+participant "getTests.ejs" as VEJS
+participant "moca.modal.js" as MMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "postMOCAController" as TCTRL
+participant "postMOCAUseCase" as UC_POST
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card MOCA]
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test)
+OMODAL --> USR : Modal con opciones visible\n(Registrar / Modificar / Consultar)\nModificar y Consultar habilitados\nsolo si test.status === 'Calificada'
+
+USR -> OMODAL : Click [Registrar resultados]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> MMODAL : config.openRegister(idUser, idApplication, test)\n→ openMOCAModal(idUser, idApplication, test, 'register')
+
+== Carga de escolaridad al abrir modal ==
+
+MMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/escolaridad
+UROUTE -> RREPO : fetchUserSchooling({ id_user })
+RREPO -> DB : SELECT ii.schooling\nFROM initial_interview ii\nINNER JOIN user_relation ur\n  ON ii.id_user_relation = ur.id_user_relation\nWHERE ur.id_user = ?\nLIMIT 1
+DB --> RREPO : { schooling } | []
+RREPO --> UROUTE : schooling | null
+UROUTE --> MMODAL : HTTP 200 { schooling, years }
+
+alt sin escolaridad registrada
+    MMODAL --> USR : Banner: "Sin datos de\nescolaridad registrados"
+end
+
+MMODAL --> USR : Modal de registro visible\nBanner: escolaridad + años\n+ aplica bono / no aplica bono
+
+== Interpretación en vivo ==
+
+USR -> MMODAL : Ingresa puntaje bruto (número)
+MMODAL -> MMODAL : strip non-digits\n- no negativo\n- no > 30
+
+alt Input inválido
+    MMODAL --> USR : showScoreError(msg)\n"El puntaje debe estar entre 0 y 30"
+end
+
+MMODAL -> MMODAL : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+MMODAL -> MMODAL : interpretMOCA(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
+MMODAL --> USR : Puntaje final + interpretación\nen vivo (sin submit)
+
+== Validación de notas ==
+
+USR -> MMODAL : Ingresa notas
+MMODAL -> MMODAL : contador actualiza\ntextContent = len / 200
+MMODAL --> USR : Contador en rojo si len >= 200
+
+== Guardar resultados ==
+
+USR -> MMODAL : Click [Guardar]
+MMODAL -> MMODAL : validate client-side\n- score válido (0-30)\n- notas max 200 chars
+
+alt Datos inválidos
+    MMODAL --> USR : showScoreError(msg)
+end
+
+MMODAL -> UROUTE : fetch POST /api/usuarios/:id_user/\naplicaciones/:id_application/pruebas/4/resultados\n{ score, notes }
+
+UROUTE -> TCTRL : mocaController.postResult(req, res)
+TCTRL -> UC_POST : execute({ id_user, id_application, score, notes })
+
+== Validaciones en Use Case ==
+
+UC_POST -> UC_POST : validate score\n- no vacío\n- es número\n- entre 0 y 30
+
+alt score inválido
+    UC_POST --> TCTRL : throw Error 422\n'score must be a valid number'
+    TCTRL --> MMODAL : HTTP 422 { error }
+    MMODAL --> USR : showApiError(json.error)
+end
+
+alt score fuera de rango
+    UC_POST --> TCTRL : throw Error 422\n'score must be between 0 and 30'
+    TCTRL --> MMODAL : HTTP 422 { error }
+    MMODAL --> USR : showApiError(json.error)
+end
+
+alt notes > 200 caracteres
+    UC_POST --> TCTRL : throw Error 422\n'notes must be 200 characters or less'
+    TCTRL --> MMODAL : HTTP 422 { error }
+    MMODAL --> USR : showApiError(json.error)
+end
+
+UC_POST -> RREPO : fetchResultRow({ id_user, id_application, id_test: 4 })
+RREPO -> DB : SELECT id_results, status\nFROM test_results\nWHERE id_user = ?\n  AND id_application = ?\n  AND id_test = 4
+DB --> RREPO : { id_results, status } | []
+RREPO --> UC_POST : { idResults, status } | null
+
+alt result row not found (null)
+    UC_POST --> TCTRL : throw Error 404\n'Test result row not found'
+    TCTRL --> MMODAL : HTTP 404 { error }
+    MMODAL --> USR : showApiError(json.error)
+end
+
+== Cálculo server-side ==
+
+UC_POST -> RREPO : fetchUserSchooling({ id_user })
+RREPO -> DB : SELECT ii.schooling\nFROM initial_interview ii\nINNER JOIN user_relation ur\n  ON ii.id_user_relation = ur.id_user_relation\nWHERE ur.id_user = ?\nLIMIT 1
+DB --> RREPO : { schooling } | []
+RREPO --> UC_POST : schooling | null
+
+UC_POST -> UC_POST : resolveSchoolingYears(schooling)\n'Sin escolaridad' → 0\n'Primaria'        → 6\n'Secundaria'      → 9\n'Bachillerato'    → 12\n'Licenciatura'    → 16\n'Posgrado'        → 18
+
+UC_POST -> UC_POST : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+
+UC_POST -> UC_POST : resolveInterpretation(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
+
+note right
+  El servidor recalcula el puntaje final
+  y la interpretación de forma independiente
+  para no confiar en el cliente
+end note
+
+== Persistencia ==
+
+UC_POST -> RREPO : saveMOCAResult({ id_results,\nscore: finalScore, interpretation, notes })
+
+RREPO -> DB : UPDATE test_results\nSET status = 3,\n    date_applied = CURDATE()\nWHERE id_results = ?
+DB --> RREPO : OK
+
+RREPO -> DB : INSERT INTO moca_results\n(id_results, score, interpretation, notes)\nVALUES (?, ?, ?, ?)\nON DUPLICATE KEY UPDATE\n  score = VALUES(score),\n  interpretation = VALUES(interpretation),\n  notes = VALUES(notes)
+DB --> RREPO : OK
+
+RREPO -> DB : SELECT * FROM moca_results\nWHERE id_results = ?
+DB --> RREPO : { saved row }
+RREPO --> UC_POST : raw moca_results row
+
+UC_POST -> UC_POST : map row → MocaResultsDTO\n{ idResults, idTest, status: 3,\n  score, interpretation, notes }
+UC_POST --> TCTRL : MocaResultsDTO
+TCTRL --> MMODAL : HTTP 200 { data: MocaResultsDTO }
+
+== Actualizar UI ==
+
+MMODAL -> MMODAL : closeModal()
+MMODAL -> TLIST : updateTestCardStatus(dto)\nnormaliza status 3 → 'Calificada'\nbadge → "Calificada"
+MMODAL -> VEJS : showToast()\n"Resultado guardado con éxito"
+VEJS --> USR : Modal cerrado\nCard actualizada con badge "Calificada"\nToast visible 3s
+
+@enduml

@@ -12,8 +12,11 @@ class GetUsersListClinicalController {
       // Sanitize search input
       const safeSearch = String(search).slice(0, 100);
 
+      const safePage = Math.max(1, parseInt(page) || 1);
+      const safeLimit = Math.max(1, parseInt(limit) || 10);
+
       //Exceute useCase
-      const result = await this.GetUsersClinicalListUseCase.execute({ search: safeSearch, page, limit });
+      const result = await this.GetUsersClinicalListUseCase.execute({ search: safeSearch, page: safePage, limit: safeLimit });
 
       //Successful response
       res.status(200).json(result);
@@ -25,7 +28,7 @@ class GetUsersListClinicalController {
   getUsersPage (req, res) {
     try {
       res.locals.activePage = 'clinical';
-      res.render('clinical/consultUsersClinicalList');
+      res.render('clinical/consultUsersClinicalList', { tutorialModule: 'clinicalList' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

@@ -5,5 +5,18 @@ class clinicalRepository {
   async countActivePatients ({ _search }) {
     throw new Error('countActivePatients() must be implemented');
   }
+  async fetchAll () {
+    throw new Error('fetchAll() must be implemented');
+  }
+  async fetchClinicalUsers () {
+    throw new Error('fetchClinicalUsers() is not working/implemented');
+  }
+  async postUser () {
+    throw new Error('postUser() is must be implemented');
+  }
+  async softDeleteUser () {
+    throw new Error('softDeleteUser() is must be implemented');
+  }
+
 }
 module.exports = clinicalRepository;
