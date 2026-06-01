@@ -14,7 +14,6 @@ class EditUserController {
 
       return res.status(200).json(user);
     } catch (error) {
-      console.log(error);
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         return res.status(409).json({
           error: 'Usuario duplicado: ya hay un usuario con ese folio o nombre de usuario.',

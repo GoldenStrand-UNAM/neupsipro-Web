@@ -48,7 +48,6 @@ class editUserUseCase {
           throw new Error("El nombre de usuario ya está en uso.");
     }
     const saved = await this.userRepository.editUser({ ...cryptedUser, id_user: data.id_user, passwordHash });
-    console.log(saved);
 
     // delete old photo from s3
     if (data.profilePhoto && oldPhoto && oldPhoto !== data.profilePhoto) {

@@ -52,7 +52,7 @@ describe('INTEGRATION — DELETE /clinical/:id_user', () => {
     asAuthenticated(1);
 
     db.query.mockResolvedValueOnce([
-      [{ id_user: '123', first_name: 'Test' }],
+      [{ id_user: '123', first_name: '36a7d02fc41e30ed68943f37:83e1648670f9a5e225a0a4b749c2a377:604a8708d5d5' }],
       [] // userData[0]
     ]);
 
