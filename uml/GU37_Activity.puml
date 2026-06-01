@@ -1,0 +1,36 @@
+@startuml DeleteClinicalActivityDiagram
+title Delete Clinical User - Activity Diagram
+
+start
+
+:User opens clinical detail page;
+:User clicks options menu (⋮);
+:User clicks "Delete";
+:Confirmation modal opens;
+
+if (User confirms?) then (yes)
+    :Send DELETE /clinical/:id_user;
+
+    if (Auth & permissions OK?) then (yes)
+        :Find clinical user in database;
+
+        if (User exists?) then (yes)
+            :Soft delete (eliminated = 1);
+            :Redirect to /clinical list;
+            stop
+        else (no)
+            :Show "User not found" error;
+            stop
+        endif
+
+    else (no)
+        :Reject request (401/403);
+        stop
+    endif
+
+else (no)
+    :Close modal;
+    stop
+endif
+
+@enduml
