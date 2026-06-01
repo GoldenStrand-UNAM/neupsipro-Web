@@ -191,6 +191,15 @@ const userRoutes = require('./presentation/routes/users/getUser.routes');
 
 app.use('/users', userRoutes(authUseCase, authMiddleware));
 
+// Initial Interview — render the form view (data GET/POST wired separately)
+app.get('/users/:id_user/initial-interview', authMiddleware.verifyToken, (req, res) => {
+  res.render('users/initialInterview/getJobSituation', {
+    idUser: req.params.id_user,
+    folio: '',
+    tutorialModule: '',
+  });
+});
+
 const postClinicalUserRoutes = require('./presentation/routes/clinical/postClinicalUser.routes');
 
 app.use('/clinical', postClinicalUserRoutes(authUseCase, authMiddleware));

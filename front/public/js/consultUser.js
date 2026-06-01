@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cardId: 'initialInterviewCard',
     tagId: 'initialInterviewTag',
     iconId: 'initialInterviewIcon',
-    status: user.initialInterview,
+    status: user.initialInterview || 'Por comenzar',
   });
 
   populateLogbook(user);

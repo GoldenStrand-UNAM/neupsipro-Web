@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrevista Inicial - Golondrina</title>
+  <link rel="stylesheet" href="/css/output.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" />
+</head>
+
+<body data-module="<%= typeof tutorialModule !== 'undefined' ? tutorialModule : '' %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+  <script src="/js/main.js"></script>
+
+  <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+  <!-- Sidebar -->
+  <%- include('../../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <%- include('../../partials/header') %>
+
+    <!-- Main -->
+    <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
+      <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
+
+        <!-- Title row -->
+        <div class="flex items-center gap-3">
+          <a href="/users/<%= typeof idUser !== 'undefined' ? idUser : '' %>">
+            <button class="cursor-pointer">
+              <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </button>
+          </a>
+          <h1 class="text-2xl font-bold text-[#1E1E1E]">
+            <span id="userFolio"><%= typeof folio !== 'undefined' ? folio : '' %></span> &gt; Entrevista Inicial
+          </h1>
+        </div>
+
+        <hr class="border-2 rounded-2xl border-[#002B7A]">
+
+        <!-- ===== Top stepper: 3 main sections ===== -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-gray-300 rounded-2xl px-6 py-4">
+          <!-- 1. Ficha de Identificación (active) -->
+          <div class="flex flex-col items-center sm:items-start gap-1" data-main-step="1">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <span>Actual</span>
+              <span class="flex items-center gap-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#002B7A]"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#002B7A]"></span>
+                <span class="w-2.5 h-2.5 rounded-full border border-gray-400"></span>
+              </span>
+            </div>
+            <p class="font-semibold text-[#1E1E1E] border-b-2 border-[#C89B3C] pb-0.5">1. Ficha de Identificación</p>
+          </div>
+          <!-- 2. Nivel Socioeconómico -->
+          <div class="flex flex-col items-center sm:items-start" data-main-step="2">
+            <p class="font-medium text-gray-500">2. Nivel Socioeconómico</p>
+          </div>
+          <!-- 3. Historia Clínica -->
+          <div class="flex flex-col items-center sm:items-start" data-main-step="3">
+            <p class="font-medium text-gray-500">3. Historia Clínica</p>
+          </div>
+        </div>
+
+        <!-- Section title + nav -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 class="text-2xl font-bold text-[#1E1E1E]">1. Ficha de identificación</h2>
+          <div class="flex items-center gap-3">
+            <button id="btnPrev" type="button" class="btn-schedule sm:w-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9 8.25 12m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <span>Anterior</span>
+            </button>
+            <button id="btnNext" type="button" class="btn-schedule sm:w-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <span>Siguiente</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== Body: sub-stepper + form ===== -->
+        <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8 pb-8">
+
+          <!-- Sub-stepper -->
+          <ol class="flex flex-col gap-6">
+            <li class="flex items-start gap-3" data-sub-step="1">
+              <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">1</span>
+              <div>
+                <p class="font-medium text-[#1E1E1E]">Datos personales</p>
+                <p class="text-sm text-gray-400" data-sub-status>Completada</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3" data-sub-step="2">
+              <span class="w-9 h-9 shrink-0 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold text-gray-500">2</span>
+              <div>
+                <p class="font-medium text-[#1E1E1E]">Situación familiar</p>
+                <p class="text-sm text-gray-400" data-sub-status>Completada</p>
+              </div>
+            </li>
+            <li class="flex items-start gap-3" data-sub-step="3">
+              <span class="w-9 h-9 shrink-0 rounded-full bg-[#C89B3C] text-white flex items-center justify-center font-semibold">3</span>
+              <div>
+                <p class="font-medium text-[#1E1E1E]">Situación laboral</p>
+                <p class="text-sm text-[#C89B3C]" data-sub-status>En proceso</p>
+              </div>
+            </li>
+          </ol>
+
+          <!-- ===== Form: 1.3 Situación laboral ===== -->
+          <form id="workSituationForm" class="flex flex-col gap-6 max-w-2xl">
+            <h3 class="text-xl font-bold text-[#1E1E1E]">1.3 Situación laboral</h3>
+
+            <!-- ¿Actualmente, usted está trabajando? -->
+            <div class="flex flex-col gap-2">
+              <label class="font-medium text-gray-800" for="hasJob">¿Actualmente, usted está trabajando?</label>
+              <select id="hasJob" name="has_job" class="input-base w-full border p-2 pr-12 rounded text-gray-400">
+                <option value="" disabled hidden selected>Elige una opción</option>
+                <option value="true" class="text-black">Sí</option>
+                <option value="false" class="text-black">No</option>
+              </select>
+            </div>
+
+            <!-- Tipo de actividad laboral -->
+            <div class="flex flex-col gap-2">
+              <label class="font-medium text-gray-800" for="workActivity">Tipo de actividad laboral:</label>
+              <input id="workActivity" name="work_activity" type="text" maxlength="150"
+                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+            </div>
+
+            <!-- Nivel de estrés en el trabajo -->
+            <div class="flex flex-col gap-2">
+              <label class="font-medium text-gray-800" for="stressWork">Nivel de estrés en el trabajo:</label>
+              <select id="stressWork" name="stress_work" class="input-base w-full border p-2 pr-12 rounded text-gray-400">
+                <option value="" disabled hidden selected>Elige una opción</option>
+                <option value="Bajo" class="text-black">Bajo</option>
+                <option value="Medio" class="text-black">Medio</option>
+                <option value="Alto" class="text-black">Alto</option>
+              </select>
+            </div>
+
+            <!-- Estado laboral actual -->
+            <div class="flex flex-col gap-2">
+              <label class="font-medium text-gray-800" for="employmentStatus">Estado laboral actual:</label>
+              <input id="employmentStatus" name="employment_status" type="text" maxlength="150"
+                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+            </div>
+
+            <!-- Antigüedad -->
+            <div class="flex flex-col gap-2">
+              <label class="font-medium text-gray-800" for="seniority">Antigüedad:</label>
+              <input id="seniority" name="seniority" type="number" min="0"
+                     class="input-base w-full border p-2 pr-12 rounded" placeholder="">
+            </div>
+
+            <!-- Inline error -->
+            <p id="workSituationError" class="text-sm text-red-500 hidden"></p>
+
+            <!-- Bottom nav -->
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button type="button" id="btnPrevBottom" class="btn-schedule sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9 8.25 12m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>Anterior</span>
+              </button>
+              <button type="submit" id="btnNextBottom" class="btn-schedule sm:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>Siguiente</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/sidebar.js"></script>
+</body>
+</html>
