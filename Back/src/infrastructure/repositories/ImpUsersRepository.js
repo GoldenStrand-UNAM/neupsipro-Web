@@ -2,6 +2,7 @@ const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
 const User = require('../../domain/entity/user');
+const crypt = require('../crypt/users/getUser');
 const { v4: uuidv4 } = require('uuid');
 
 class ImpUsersRepository extends usersRepository {
@@ -38,19 +39,21 @@ class ImpUsersRepository extends usersRepository {
       WHERE l.id_user = ?;`,
       [id_user]
     );
-    return userData.map(row => new User(row));
+    const uncrypted = userData.map(row => crypt(row));
+    return uncrypted.map(row => new User(row));
   }
 
-  async fetchActivePatients ({ search, status, protocol, page, limit }) {
+  async fetchActivePatients ({ page, limit }) {
+    // Calculate offset for pagination
     const offset = (page - 1) * limit;
-    const searchParam = search ? `%${search}%` : null;
-    const statusParam = status || null;
-    const protocolParam = protocol || null;
 
+    // Get active Users, rol = 2, with pagination
     const [rows] = await db.query(
       `SELECT 
                 u.id_user AS id,
-                CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
+                u.first_name,
+                u.lastname_p,
+                u.lastname_m,
                 l.reference_number,
                 l.state,
                 l.protocol
@@ -58,32 +61,17 @@ class ImpUsersRepository extends usersRepository {
             LEFT JOIN user_info l ON l.id_user = u.id_user
             WHERE u.id_role = 2
               AND u.eliminated = 0
-              AND (? IS NULL OR l.reference_number LIKE ?)
-              AND (? IS NULL OR l.state = ?)
-              AND (? IS NULL OR l.protocol = ?)
-            ORDER BY l.reference_number ASC
             LIMIT ? OFFSET ?`,
-      [searchParam, searchParam, statusParam, statusParam, protocolParam, protocolParam, Number(limit), Number(offset)]
+      [Number(limit), Number(offset)]
     );
     return rows.map(row => new userSummary(row));
   }
 
-  async countActivePatients ({ search, status, protocol }) {
-    const searchParam = search ? `%${search}%` : null;
-    const statusParam = status || null;
-    const protocolParam = protocol || null;
-
-    const [rows] = await db.query (
-      `SELECT COUNT(*) AS total
+  async countActivePatients  () {
+    const [rows] = await db.query(`SELECT COUNT(*) AS total
             FROM users u
-            LEFT JOIN user_info l ON l.id_user = u.id_user 
             WHERE u.id_role = 2
-              AND u.eliminated = 0
-              AND (? IS NULL OR l.reference_number LIKE ?) 
-              AND (? IS NULL OR l.state = ?)
-              AND (? IS NULL OR l.protocol = ?)`,
-      [searchParam, searchParam, statusParam, statusParam, protocolParam, protocolParam]
-    );
+              AND u.eliminated = 0`);
     return rows[0]?.total ?? 0;
   }
 

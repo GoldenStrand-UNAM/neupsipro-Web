@@ -97,6 +97,9 @@ class User {
     if (protocol === 'Research' || protocol === 'research') {
       return 'Investigación';
     }
+    if (protocol === 'Pending' || protocol === 'research') {
+      return 'Pendiente';
+    }
   }
 }
 
