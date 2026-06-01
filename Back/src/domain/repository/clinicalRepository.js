@@ -20,5 +20,9 @@ class clinicalRepository {
   async updateUser () {
     throw new Error('updateUser() must be implemented');
   }
+  async softDeleteUser () {
+    throw new Error('softDeleteUser() is must be implemented');
+  }
+
 }
 module.exports = clinicalRepository;
