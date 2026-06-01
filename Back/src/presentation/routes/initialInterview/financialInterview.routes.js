@@ -1,10 +1,8 @@
 const express = require('express');
+const { apiLimiter, userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 // Base imports
-const JwtService = require('../../../infrastructure/external/jwt.service');
-const AuthMiddleware = require('../../../infrastructure/auth/auth.middleware');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
-
 const FIRepository = require('../../../infrastructure/repositories/financialInterviewRepository');
 
 // Get
@@ -15,12 +13,9 @@ const GetFIUseCase = require('../../../application/usecase/inicialInterview/fina
 const PFIController = require('../../controller/inicialInterview/postFinancialInterview.controller');
 const PostFIUseCase = require('../../../application/usecase/inicialInterview/postFinancialInterviewUseCase');
 
-module.exports = (authUseCase) => {
+module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router({ mergeParams: true });
 
-  // Bse
-  const jwtService = new JwtService();
-  const authMiddleware = new AuthMiddleware(jwtService);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   const repository = new FIRepository();
@@ -32,6 +27,7 @@ module.exports = (authUseCase) => {
   router.get(
     '/financial',
     authMiddleware.verifyToken,
+    apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
     (req, res) => controller.getFinancialPage(req, res)
   );
@@ -39,21 +35,22 @@ module.exports = (authUseCase) => {
   router.get(
     '/api/:id_user/:step/:subStep',
     authMiddleware.verifyToken,
+    apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
     (req, res) => controller.getFinancialInterview(req, res)
   );
 
-  // POST
+  // PATCH
   const postUseCase = new PostFIUseCase(repository);
   const postController = new PFIController(postUseCase);
 
   router.patch(
     '/api/:id_user/:step/:subStep',
     authMiddleware.verifyToken,
+    userLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'edit'),
     (req, res) => postController.saveFinancialInterview(req, res)
   );
 
   return router;
-
 };

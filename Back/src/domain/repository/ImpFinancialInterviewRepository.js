@@ -1,12 +1,12 @@
 class ImpFinancialInterviewRepository {
 
   // Fetch user id by reference number
-  async fetchUserId ({ refNumber: _refNumber }) {
+  async fetchRefNum ({ id_user: _id_user }) {
     throw new Error('fetchUserId() must be implemented');
   }
 
   // Fetch relation by id
-  async fetchRelation ({ idUser: _idUser }) {
+  async fetchRelation ({ id_user: _id_user }) {
     throw new Error('fetchRelation() must be implemented');
   }
 

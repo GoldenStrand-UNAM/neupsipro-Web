@@ -9,11 +9,10 @@ class financialInterviewController {
   async getFinancialInterview (req, res) {
 
     try {
-      const { step, subStep } = req.params;
-      const refNumber = req.params.id_user;
+      const { id_user, step, subStep } = req.params;
 
       const financialInterview = await this.financialInterviewUseCase.execute({
-        refNumber,
+        id_user,
         step,
         subStep,
       });

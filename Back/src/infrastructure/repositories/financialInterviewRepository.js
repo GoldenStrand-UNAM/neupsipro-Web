@@ -7,22 +7,22 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
 
   // ----- Auxiliar functions -------------------------------------------------
   // Fetch user id by reference number
-  async fetchUserId ({ refNumber }) {
+  async fetchRefNum ({ id_user }) {
     return await db.query(
-      `SELECT id_user
+      `SELECT reference_number
              FROM user_info
-             WHERE reference_number = ?`,
-      [refNumber]
+             WHERE id_user = ?`,
+      [id_user]
     );
   }
 
   // Fetch relation by id
-  async fetchRelation ({ idUser }) {
+  async fetchRelation ({ id_user }) {
     return await db.query(
       `SELECT id_user_relation
              FROM user_relation
              WHERE id_user = ?`,
-      [idUser]
+      [id_user]
     );
   }
 
