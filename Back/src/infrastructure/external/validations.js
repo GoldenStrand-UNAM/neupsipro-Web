@@ -107,4 +107,5 @@ class validation {
 
     return param.toUpperCase();
   }
-} module.exports = validation;
+}
+module.exports = validation;

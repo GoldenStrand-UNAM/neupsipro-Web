@@ -1,3 +1,5 @@
+const { cryptInterventionSession } = require('../../../infrastructure/crypt/intervention/postIntervention');
+
 class addSessionUseCase {
   constructor (interventionRepository) {
     this.interventionRepository = interventionRepository;
@@ -34,15 +36,19 @@ class addSessionUseCase {
     const intervention = await this.interventionRepository.findByUser({ id_user });
     if (!intervention) throw new Error('No existe intervención activa');
 
-
+    const encryptedData = cryptInterventionSession({
+      objectives,
+      development,
+      dqp_task,
+    });
 
     const idSession = await this.interventionRepository.createSession({
       id_intervention: intervention.idIntervention,
       session_number,
       session_date,
-      objectives,
-      development,
-      dqp_task,
+      objectives: encryptedData.objectives,
+      development: encryptedData.development,
+      dqp_task: encryptedData.dqpTask,
     });
 
     return { success: true, idSession, message: 'Sesión agregada' };
