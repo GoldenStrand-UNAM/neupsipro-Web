@@ -125,7 +125,8 @@
   }
 
   // Exposed globally so utils.js can trigger it after every card update.
-  // Shows the export button once all test cards are Calificada or Entregado.
+  // When all tests are graded, redirects to the user view so that check-expiry
+  // runs and promotes test_applications.status to 3 before the export is attempted.
   window._revealExportIfAllGraded = function () {
     const allCards = document.querySelectorAll('[data-id-results]');
     if (allCards.length === 0) return;
@@ -136,12 +137,10 @@
       } catch { return false; }
     });
     if (!allGraded) return;
-    const exportBtn = document.getElementById('btnExportPdf');
-    if (!exportBtn || !exportBtn.classList.contains('hidden')) return;
-    const { idUser, idApplication } = window.__TEST_PAGE__ || {};
-    if (!idUser || !idApplication) return;
-    exportBtn.classList.remove('hidden');
-    exportBtn.onclick = () => exportPdf(idUser, idApplication, exportBtn);
+    const { idUser } = window.__TEST_PAGE__ || {};
+    if (!idUser) return;
+    showToast('¡Todas las pruebas calificadas! Redirigiendo...');
+    setTimeout(() => { window.location.href = `/users/${idUser}`; }, 1500);
   };
 
   // ── Main fetch ──────────────────────────────────────────────────────────────
