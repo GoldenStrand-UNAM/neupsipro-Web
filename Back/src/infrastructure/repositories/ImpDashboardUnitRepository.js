@@ -1,5 +1,7 @@
 const db = require('../database/database');
 const DashboardRepository = require('../../domain/repository/dashboardUnitRepository');
+const { decryptBirthdate , decryptGender, decryptRefNum, decryptDetail } = require('../../infrastructure/crypt/dashboard/getUnitDashboard');
+
 const {
   DashboardCountsEntity,
   AgeBucketEntity,
@@ -56,7 +58,7 @@ class ImpDashboardRepository extends DashboardRepository {
         AND u.birthdate <> ''
         AND (ui.state IS NULL OR ui.state <> 'Declined')
     `);
-    return rows.map(r => r.birthdate);   
+    return rows.map(r => decryptBirthdate(r.birthdate));
   }
 
   // Counts patients by gender
@@ -72,7 +74,7 @@ class ImpDashboardRepository extends DashboardRepository {
         AND (ui.state IS NULL OR ui.state <> 'Declined')
       GROUP BY gender;
     `);
-    return rows.map(r => new GenderBucketEntity(r));
+    return rows.map(r => decryptGender(new GenderBucketEntity(r)));
   }
   // Counts how many results exist per psychological test
   async fetchTestCounts () {
@@ -99,7 +101,7 @@ class ImpDashboardRepository extends DashboardRepository {
         AND ui.state = 'Stand_by'
       ORDER BY ui.reference_number ASC;
     `);
-    return rows.map(r => r.reference_number);
+    return rows.map(r => decryptRefNum(r.reference_number));
   }
 
   // Returns full detail of one standBy user
@@ -142,7 +144,10 @@ class ImpDashboardRepository extends DashboardRepository {
   `, [referenceNumber]);
 
     if (!rows.length) return null;
-    return new StandByDetailEntity(rows[0]);
+    console.log(rows[0]);
+    const data = decryptDetail(new StandByDetailEntity(rows[0]));
+    console.log(data);
+    return data;
   }
 }
 
