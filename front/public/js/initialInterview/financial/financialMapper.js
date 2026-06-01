@@ -224,11 +224,11 @@ function renderFinancialData () {
 
   const info = financial.data;
 
-  document.getElementById('id_user').textContent =
-    info.id_user || '-';
+  const idUserEl = document.getElementById('id_user');
+  if (idUserEl) idUserEl.textContent = info.id_user || '-';
 
-  document.getElementById('refNumber').textContent =
-    info.refNumber || '-';
+  const refNumberEl = document.getElementById('refNumber');
+  if (refNumberEl) refNumberEl.textContent = info.refNumber || '-';
 
   // Incomes
   renderIncomesData(info);
