@@ -276,7 +276,18 @@
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { legend: { display: false }, 
+                    tooltip: {                                         
+                        callbacks: {
+                            label: ctx => {
+                                const value = ctx.parsed.y;
+                                const total = age.data.reduce((a, b) => a + b, 0);
+                                const percentage = total ? Math.round((value / total) * 100) : 0;
+                                return `Usuarios: ${value} (${percentage}%)`;
+                            },
+                        },
+                    },
+                },
                 scales: {
                     y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 14 } } },
                     x: { ticks: { font: { size: 14 } } },
