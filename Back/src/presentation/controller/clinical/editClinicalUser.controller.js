@@ -31,7 +31,6 @@ class EditClinicalUserController {
       const clinicalUser = await this.EditClinicalUserUseCase.execute(id_user, user);
       return res.status(200).json(clinicalUser);
     } catch (error) {
-      console.log(error);
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         return res.status(409).json({ inUse: 'user' });
       }
