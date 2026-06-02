@@ -7,6 +7,8 @@ describe('ExportPdfUseCase — Unit Tests', () => {
     let mockGetBanfeUseCase;
     let mockGetWaisUseCase;
     let mockGetReyUseCase;
+    let mockGetMocaUseCase;  
+    let mockGetNihUseCase; 
     let useCase;
 
     const sampleApplication = {
@@ -39,6 +41,8 @@ describe('ExportPdfUseCase — Unit Tests', () => {
         mockGetBanfeUseCase = { execute: jest.fn() };
         mockGetWaisUseCase = { execute: jest.fn() };
         mockGetReyUseCase = { execute: jest.fn() };
+        mockGetMocaUseCase = { execute: jest.fn() };  
+        mockGetNihUseCase = { execute: jest.fn() }; 
 
         useCase = new ExportPdfUseCase(
             mockTestResultsRepository,
@@ -46,7 +50,9 @@ describe('ExportPdfUseCase — Unit Tests', () => {
             mockPdfService,
             mockGetBanfeUseCase,
             mockGetWaisUseCase,
-            mockGetReyUseCase
+            mockGetReyUseCase,
+            mockGetMocaUseCase,   
+            mockGetNihUseCase 
         );
     });
 
@@ -208,23 +214,6 @@ describe('ExportPdfUseCase — Unit Tests', () => {
         expect(report.results[0].rows[0]).toEqual(['R - C', 30, 75, 120, 60]);
     });
 
-    test('skips MOCA / NIH results (idTest not 1, 2 or 3)', async () => {
-        mockTestResultsRepository.fetchApplicationById.mockResolvedValue(sampleApplication);
-        mockUsersRepository.fetchUserForExport.mockResolvedValue(sampleUser);
-        mockTestResultsRepository.fetchAllResultsForExport.mockResolvedValue([
-            { idResults: 'r-4', idTest: 4, dateApplied: '2026-05-13' },
-            { idResults: 'r-5', idTest: 5, dateApplied: '2026-05-14' },
-        ]);
-        mockPdfService.generate.mockResolvedValue(Buffer.from('pdf'));
-        mockTestResultsRepository.updateApplicationAndTestsStatus.mockResolvedValue();
-
-        await useCase.execute({ id_user: 'u-001', id_application: 'app-001' });
-
-        const report = mockPdfService.generate.mock.calls[0][0];
-        expect(report.results).toEqual([]);
-        expect(mockGetBanfeUseCase.execute).not.toHaveBeenCalled();
-    });
-
     // error handler
 
     test('propagates repository errors to the caller', async () => {
@@ -232,5 +221,51 @@ describe('ExportPdfUseCase — Unit Tests', () => {
 
         await expect(useCase.execute({ id_user: 'u-001', id_application: 'app-001' }))
             .rejects.toThrow('DB error');
+    });
+
+    // Clinical
+    test('builds a MOCA section for idTest 4', async () => {
+        mockTestResultsRepository.fetchApplicationById.mockResolvedValue(sampleApplication);
+        mockUsersRepository.fetchUserForExport.mockResolvedValue({ ...sampleUser, protocol: 'Clinical' });
+        mockTestResultsRepository.fetchAllResultsForExport.mockResolvedValue([
+            { idResults: 'r-moca', idTest: 4, dateApplied: '2026-05-15' },
+        ]);
+        mockGetMocaUseCase.execute.mockResolvedValue({
+            score: 27,
+            interpretation: 'Normal',
+            notes: 'sin deterioro cognitivo',
+        });
+        mockPdfService.generate.mockResolvedValue(Buffer.from('pdf'));
+        mockTestResultsRepository.updateApplicationAndTestsStatus.mockResolvedValue();
+
+        await useCase.execute({ id_user: 'u-001', id_application: 'app-001' });
+
+        expect(mockGetMocaUseCase.execute).toHaveBeenCalledWith({ id_results: 'r-moca' });
+        const report = mockPdfService.generate.mock.calls[0][0];
+        expect(report.protocolLabel).toBe('Clínico');
+        expect(report.results[0].testName).toBe('MOCA');
+        expect(report.results[0].rows).toEqual([['Score Total', 27, 'Normal']]);
+        expect(report.results[0].totalRow).toBeNull();
+        expect(report.results[0].notes).toBe('sin deterioro cognitivo');
+    });
+
+    test('builds a NIH Toolbox section for idTest 5', async () => {
+        mockTestResultsRepository.fetchApplicationById.mockResolvedValue(sampleApplication);
+        mockUsersRepository.fetchUserForExport.mockResolvedValue({ ...sampleUser, protocol: 'Clinical' });
+        mockTestResultsRepository.fetchAllResultsForExport.mockResolvedValue([
+            { idResults: 'r-nih', idTest: 5, dateApplied: '2026-05-16' },
+        ]);
+        mockGetNihUseCase.execute.mockResolvedValue({ notes: 'observaciones NIH' });
+        mockPdfService.generate.mockResolvedValue(Buffer.from('pdf'));
+        mockTestResultsRepository.updateApplicationAndTestsStatus.mockResolvedValue();
+
+        await useCase.execute({ id_user: 'u-001', id_application: 'app-001' });
+
+        expect(mockGetNihUseCase.execute).toHaveBeenCalledWith({ id_results: 'r-nih' });
+        const report = mockPdfService.generate.mock.calls[0][0];
+        expect(report.results[0].testName).toBe('NIH Toolbox');
+        expect(report.results[0].columns).toEqual(['Observaciones']);
+        expect(report.results[0].rows).toEqual([]);
+        expect(report.results[0].notes).toBe('observaciones NIH');
     });
 });
