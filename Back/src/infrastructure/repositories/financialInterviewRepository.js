@@ -230,8 +230,10 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
       [id_user_relation]
     );
 
-    // Insert new contributors
+    // Insert new contributors (skip rows with no name)
     for (const contributor of contributors) {
+
+      if (!contributor.name) continue;
 
       // eslint-disable-next-line no-await-in-loop
       await connection.query(
