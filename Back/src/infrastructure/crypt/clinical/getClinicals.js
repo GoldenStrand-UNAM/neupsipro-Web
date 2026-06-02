@@ -42,6 +42,8 @@ class uncrypt {
       emergency_contact_name: crypt.decrypt(user.emergency_contact_name),
       emergency_contact_phone: crypt.decrypt(user.emergency_contact_phone),
       emergency_contact_relation: crypt.decrypt(user.emergency_contact_relation),
+      start_date: crypt.decrypt(user.start_date),
+      finish_date: crypt.decrypt(user.finish_date),
     };
   }
 
