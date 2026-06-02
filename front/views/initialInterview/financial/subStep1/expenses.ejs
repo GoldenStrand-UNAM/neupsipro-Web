@@ -138,8 +138,8 @@
                 total += getValue(input);
             });
 
-            document.getElementById('totalExpenses').value = total;
-            
+            document.getElementById('totalExpenses').textContent =
+                `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         // Listen changes

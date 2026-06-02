@@ -134,7 +134,8 @@
     }
 
     function setMoney(id, value) {
-        document.getElementById(id).textContent = `$${value.toFixed(2)}`;
+        document.getElementById(id).textContent =
+            `$${value.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     // Calculate totals
