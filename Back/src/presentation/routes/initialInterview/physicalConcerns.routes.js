@@ -2,11 +2,11 @@ const express = require('express');
 const { apiLimiter, userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
-const PhysicalConcernsRepository = require('');
+const PhysicalConcernsRepository = require('../../../infrastructure/repositories/ImpPhysicalConcernsRepository');
 
 // GET
 const GetPhysicalConcernsController = require('../../controller/initialInterview/getPhysicalConcerns.controller');
-const GetPhysicalConcernsUseCase = require('');
+const GetPhysicalConcernsUseCase = require('../../../application/usecase/initialInterview/getPhysicalUseCase');
 // POST
 
 module.exports = (authUseCase, authMiddleware) => {
@@ -20,7 +20,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   // Route to the view
   router.get(
-    '',
+    '/view',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'consultation'),
     (req, res) => getController.getPhysicalConcernsView(req, res)
@@ -28,12 +28,11 @@ module.exports = (authUseCase, authMiddleware) => {
 
   // Route to get the physical concerns previous answers
   router.get(
-    '',
+    '/:idUserRelation',
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'consultation'),
     (req, res) => getController.getPhysicalConcerns(req, res)
   );
-
 
   return router;
 };

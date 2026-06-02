@@ -56,7 +56,7 @@ activate RE
 RE -> I: extends
 deactivate RE
 activate I
-I ->> DB:'SELECT headache, dizziness, urinary_inconsistency, skin_problem, id_user_relation\nFROM clinical_interview\nWHERE id_user_relation = '4545'; '
+I ->> DB:'SELECT headache, dizziness, urinary_inconsistency, skin_problem, id_user_relation\nFROM clinical_interview\nWHERE id_user_relation = '?'; '
 activate DB
 DB -->> I: rows
 deactivate DB

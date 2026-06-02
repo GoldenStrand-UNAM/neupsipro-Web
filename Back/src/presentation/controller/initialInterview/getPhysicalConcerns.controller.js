@@ -10,7 +10,7 @@ class GetPhysicalConcernsController {
 
   async getPhysicalConcerns (req, res) {
     try {
-      const { idUserRelation} = req.params;
+      const { idUserRelation } = req.params;
       const result = await this.getPhysicalConcernsUseCase.execute({ idUserRelation });
       res.status(200).json(result);
     }
