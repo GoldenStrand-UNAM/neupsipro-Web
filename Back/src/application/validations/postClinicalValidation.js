@@ -2,6 +2,9 @@ const Validation = require('./validation');
 
 const validation = new Validation();
 
+const enumActivity = { SOCIAL_SERVICE: 'Servicio social', INTERNSHIP: 'Prácticas profesionales', VOLUNTEER: 'Voluntariado',
+  TITULAR: 'Titular', SUMMER: 'Verano de investigación' };
+
 function validate (user, { passwordRequired = true } = {}) {
   const first = validateFirst(user);
   const second = validateSecond(user, { passwordRequired });
@@ -56,11 +59,9 @@ function validateSecond (user, { passwordRequired }) {
     maxLenght: 20,
     label: 'La afiliación',
     required: true });
-  const activity = validation.validate({
-    value: user.activity,
-    maxLenght: 20,
-    label: 'La afiliación',
-    required: true });
+  const activity = validation.validateEnum(
+    user.activity,
+    enumActivity);
   const startDate = validation.validateDate({
     date: user.startDate,
     label: 'La fecha de inicio',
