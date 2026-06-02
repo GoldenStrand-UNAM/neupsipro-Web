@@ -1,6 +1,7 @@
 const ClinicalUser = require('../../../domain/entity/postClinicalUser');
 const ClinicalUserDTO = require('../../dto/postClinicalUserDTO');
 const validateUser = require('../../validations/postClinicalValidation');
+const crypt = require('../../../infrastructure/crypt/clinical/postUser');
 
 class EditClinicalUserUseCase {
   constructor (clinicalUserRepository, hashingService) {
@@ -28,7 +29,15 @@ class EditClinicalUserUseCase {
       passwordHash = await this.hashingService.hash(user.password.trim());
     }
 
-    const saved = await this.clinicalUserRepository.updateUser({ ...clinicalUser, passwordHash });
+    const cryptedUser = crypt(validatedUser);
+    const duplicate = await this.clinicalUserRepository.checkDuplicate(cryptedUser, idUser);
+    if (duplicate)
+      throw new Error('El usuario ya se encuentra registrado.');
+    else {
+      const saved = await this.clinicalUserRepository.updateUser({ ...cryptedUser, idUser: idUser, passwordHash });
+      // Map saved into clean DTO for the client
+      return ClinicalUserDTO.fromEntity(saved);
+    }
 
     return ClinicalUserDTO.fromEntity(saved);
   }

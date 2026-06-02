@@ -228,6 +228,11 @@
     <%- include('./deleteClinicalModal') %>
 <script>
 
+if (sessionStorage.getItem('modifiedClinicalUser') === 'true') {
+    showToast('Usuario modificado correctamente');
+    sessionStorage.removeItem('modifiedClinicalUser');
+}
+
 // ===== Utilitys =====
 let currentPage   = 1;
 const LIMIT       = 4;

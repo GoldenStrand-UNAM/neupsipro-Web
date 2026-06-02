@@ -193,14 +193,19 @@ class ImpClinicalRepository extends clinicalRepository {
     }
   }
 
-  async checkDuplicate (bindex) {
+  async checkDuplicate (user, id = '') {
     const [rows] = await db.query (
-      `SELECT *
-          FROM users
-          WHERE id_role = '3'
-          AND dup_bindex = ?
-          AND eliminated = '0';`,
-      [bindex]
+      `SELECT 
+          (dup_bindex = ?) AS matched_bindex,
+          (user_name = ?) AS matched_username
+      FROM users
+      WHERE id_user <> ?
+        AND (user_name = ?
+        OR (eliminated = '0'
+        AND dup_bindex = ?
+        )
+    );`,
+      [user.bindex, user.userName, id, id, user.userName, user.bindex]
     );
     return rows[0];
   }
@@ -216,6 +221,8 @@ class ImpClinicalRepository extends clinicalRepository {
       WHERE u.id_user = ? AND u.id_role = 3 AND u.eliminated = 0;`,
       [id_user]
     );
+    if (rows)
+      return uncrypt.uncryptClinical(rows[0]);
     return rows[0];
   }
 
