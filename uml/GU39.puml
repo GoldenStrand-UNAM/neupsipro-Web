@@ -1,0 +1,75 @@
+@startuml GU39_RegistrarPeerSession_Secuencia
+title GU39 - Registrar sesión de grupo de pares - 
+
+actor "Clinical User" as USR
+participant "PeerSessionView\n(historial)" as PSV
+participant "NewSessionModal\n(JS)" as MODAL
+participant "main.js" as MAIN
+participant "PeerSessionRoutes" as ROUTE
+participant "Auth & Permissions\nMiddleware" as AUTH
+participant "PostPeerSessionController" as CTRL
+participant "PostPeerSessionUseCase" as UC
+participant "PeerSession\n(Entity)" as ENT
+participant "PeerSessionRepository\n(interface)" as REPO
+participant "ImpPeerSessionRepository" as IREPO
+database "MySQL DB" as DB
+
+USR -> PSV : Click [+ Registrar sesión]
+activate PSV
+PSV -> MODAL : openModal()
+activate MODAL
+MODAL --> USR : Show form\n(Responsable*, Título*,\nFecha*, Hombres*, Mujeres*,\nNota)
+deactivate PSV
+
+USR -> MODAL : Complete form
+USR -> MODAL : Click [Agregar]
+MODAL -> MODAL : validate required fields
+alt Empty required field
+  MODAL --> USR : Error "Rellene los campos requeridos"
+end
+
+MODAL -> MAIN : submitPeerSession({responsable,\ntitle, date, note,\nmen_count, women_count})
+MAIN -> ROUTE : POST /peer-sessions\n[Authorization: Bearer JWT]
+activate ROUTE
+ROUTE -> AUTH : verifyToken +\nrequirePermission('writing')
+AUTH --> ROUTE : OK
+ROUTE -> CTRL : postPeerSession(req, res)
+activate CTRL
+CTRL -> CTRL : extract req.body
+
+CTRL -> UC : execute({responsable, title,\ndate, note, men_count, women_count})
+activate UC
+UC -> UC : sanitize (trim, empty -> null)
+UC -> UC : validateSession(sanitized)
+alt Validation fails
+  UC --> CTRL : throw DomainError(message)
+  CTRL --> ROUTE : HTTP 400 { error }
+  ROUTE --> MAIN : HTTP 400 { error }
+  MAIN --> MODAL : Show error to user
+end
+
+UC -> ENT : new PeerSession({responsable,\ntitle, date, note,\nmen_count, women_count})
+activate ENT
+ENT -> ENT : _validateDate(date)\n_validateCount(men_count)\n_validateCount(women_count)
+ENT --> UC : peerSessionEntity
+deactivate ENT
+
+UC -> IREPO : postSession(peerSessionEntity)
+activate IREPO
+IREPO -> IREPO : id = uuidv4()
+IREPO -> DB : INSERT INTO peer_session\n(id_peer_session, title,\nresponsable, note, date,\nmen_count, women_count)
+DB --> IREPO : { insertedRow }
+IREPO --> UC : savedSession
+deactivate IREPO
+
+UC -> UC : map Entity -> PeerSessionDTO
+UC --> CTRL : PeerSessionDTO
+deactivate UC
+CTRL --> ROUTE : HTTP 201 Created { data }
+deactivate CTRL
+ROUTE --> MAIN : HTTP 201 Created { data }
+deactivate ROUTE
+MAIN -> PSV : closeModal() + prepend session\nto historial + refresh charts
+MODAL --> USR : Toast "Sesión registrada"
+deactivate MODAL
+@enduml
