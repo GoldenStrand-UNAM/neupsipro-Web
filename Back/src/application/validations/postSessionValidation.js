@@ -18,18 +18,24 @@ function validatePeerSession (session) {
     errors.push('La nota no puede exceder 500 caracteres');
 
   // date
-  if (!session.date) {
+  let isoDate = null;
+  if (!session.session_date) {
     errors.push('La fecha es obligatoria');
   } else {
-    const [day, month, year] = session.date.split('/').map(Number);
+    const [day, month, year] = session.session_date.split('/').map(Number);
     const inputDate = new Date(year, month - 1, day);
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    if (Number.isNaN(inputDate.getTime()) || !day || !month || !year)
+    if (Number.isNaN(inputDate.getTime()) || !day || !month || !year) {
       errors.push('La fecha no es válida');
-    else if (inputDate > now || year < 2000)
-      errors.push('La fecha debe ser válida, anterior o igual a hoy y posterior a 2000');
+    } else if (inputDate > now || year < 1900) {
+      errors.push('La fecha debe ser válida, anterior o igual a hoy y posterior a 1900');
+    } else {
+      const mm = String(month).padStart(2, '0');
+      const dd = String(day).padStart(2, '0');
+      isoDate = `${year}-${mm}-${dd}`;
+    }
   }
 
   // count
