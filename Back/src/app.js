@@ -241,6 +241,10 @@ const initialInterviewRoutes = require('./presentation/routes/initialInterview/f
 
 app.use('/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 
+const physicalConcernsRoutes = require('./presentation/routes/initialInterview/physicalConcerns.routes');
+
+app.use('/physicalConcerns', physicalConcernsRoutes(authUseCase, authMiddleware));
+
 // ======== TUTORIAL ROUTES ========
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
