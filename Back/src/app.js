@@ -215,6 +215,10 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase, authMiddleware));
 
+const peerSessionRoutes = require('./presentation/routes/peerSession/peerSession.routes');
+
+app.use('/peer-sessions', peerSessionRoutes(authUseCase, authMiddleware));
+
 const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
 
 app.use('/', interventionRoutes(authUseCase, authMiddleware));
