@@ -6,7 +6,10 @@
         <!--Schoolarship income-->
         <div>
             <label class="input_label">Recibe algún financiamiento, beca, etc.</label>
-            <input type="number" min="0" id="incomeExtra" class="input" placeholder="$0.00">
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                <input type="number" min="0" max="1000000" id="incomeExtra" class="input pl-7" placeholder="0.00">
+            </div>
         </div>
 
         <!--Schoolarship type-->
@@ -18,13 +21,19 @@
         <!--Salary before-->
         <div>
             <label class="input_label">Salario antes de la enfermedad/amputación</label>
-            <input type="number" min="0" id="salaryBefore" class="input" placeholder="$0.00">
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                <input type="number" min="0" max="1000000" id="salaryBefore" class="input pl-7" placeholder="0.00">
+            </div>
         </div>
 
         <!--Salary after-->
         <div>
             <label class="input_label">Salario después de la enfermedad/amputación</label>
-            <input type="number" min="0" id="salaryAfter" class="input" placeholder="$0.00">
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                <input type="number" min="0" max="1000000" id="salaryAfter" class="input pl-7" placeholder="0.00">
+            </div>
         </div>
 
         <!--Total Section-->
@@ -94,7 +103,10 @@
 
                     <div>
                         <label class="input_label">Cantidad de Ingresos</label>
-                        <input type="number" min="0" class="person-income input" placeholder="$0.00">
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                            <input type="number" min="0" max="1000000" class="person-income input pl-7" placeholder="0.00">
+                        </div>
                     </div>
 
                 </div>
@@ -177,12 +189,20 @@
         calculateTotal();
     });
 
-    // Recalculate on input
-    container.addEventListener('input', calculateTotal);
+    // Recalculate on input + clamp person-income max
+    container.addEventListener('input', (e) => {
+        if (e.target.classList.contains('person-income')) {
+            if (parseFloat(e.target.value) > 1000000) e.target.value = 1000000;
+        }
+        calculateTotal();
+    });
 
-    document.querySelectorAll('#incomeExtra, #salaryAfter')
+    document.querySelectorAll('#incomeExtra, #salaryBefore, #salaryAfter')
         .forEach(input => {
-            input.addEventListener('input', calculateTotal);
+            input.addEventListener('input', () => {
+                if (parseFloat(input.value) > 1000000) input.value = 1000000;
+                calculateTotal();
+            });
         });
 
     // Delete contributor
