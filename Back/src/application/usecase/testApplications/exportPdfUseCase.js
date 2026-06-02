@@ -18,14 +18,17 @@ function formatDate (value) {
 
 // Builds and returns the export PDF for a completed application.
 // Reuses the existing get*UseCase to map each test result to its DTO.
+// Supports both Research (BANFE/WAIS/REY) and Clinical (MOCA/NIH) protocols.
 class ExportPdfUseCase {
-  constructor (testResultsRepository, usersRepository, pdfService, getBanfeUseCase, getWaisUseCase, getReyUseCase) {
+  constructor (testResultsRepository, usersRepository, pdfService, getBanfeUseCase, getWaisUseCase, getReyUseCase, getMocaUseCase = null, getNihUseCase = null) {
     this.testResultsRepository = testResultsRepository;
     this.usersRepository = usersRepository;
     this.pdfService = pdfService;
     this.getBanfeUseCase = getBanfeUseCase;
     this.getWaisUseCase = getWaisUseCase;
     this.getReyUseCase = getReyUseCase;
+    this.getMocaUseCase = getMocaUseCase;
+    this.getNihUseCase = getNihUseCase;
   }
 
   async execute ({ id_user, id_application }) {
@@ -139,7 +142,32 @@ class ExportPdfUseCase {
       };
     }
 
-    // MOCA / NIH are not part of the research export.
+    if (result.idTest === 4 && this.getMocaUseCase) {
+      const dto = await this.getMocaUseCase.execute({ id_results: result.idResults });
+      return {
+        testName: 'MOCA',
+        dateApplied,
+        columns: ['Área', 'Puntuación', 'Interpretación'],
+        rows: [
+          ['Score Total', dto.score, dto.interpretation],
+        ],
+        totalRow: null,
+        notes: dto.notes,
+      };
+    }
+
+    if (result.idTest === 5 && this.getNihUseCase) {
+      const dto = await this.getNihUseCase.execute({ id_results: result.idResults });
+      return {
+        testName: 'NIH Toolbox',
+        dateApplied,
+        columns: ['Observaciones'],
+        rows: [],
+        totalRow: null,
+        notes: dto.notes,
+      };
+    }
+
     return null;
   }
 }
