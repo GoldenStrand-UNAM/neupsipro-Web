@@ -22,8 +22,30 @@
             <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4">
 
                 <!-- header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-h-[34px] md:min-h-[40px]">
-                    <h1 class="text-2xl font-bold text-[#1E1E1E]">Servicio de Neuropsicología</h1>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-h-[34px] md:min-h-[40px]">
+                    <h1 class="text-2xl font-bold text-[#1E1E1E]">
+                        Servicio de Neuropsicología
+                    </h1>
+
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <select
+                            id="testExportType"
+                            class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            <option value="all">Todas las pruebas</option>
+                            <option value="wais">WAIS</option>
+                            <option value="rey">REY</option>
+                            <option value="banfe">BANFE</option>
+                        </select>
+
+                        <button
+                            type="button"
+                            id="btnDownloadResearchTests"
+                            class="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        >
+                            Descargar CSV
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <img src="/assets/Linear-determinate progress indicator.svg"
@@ -103,9 +125,23 @@
     <script>
      // API routes
     const ENDPOINTS = {
-        summary:       '/api/dashboard/summary',
+        summary: '/api/dashboard/summary',
         standByDetail: ref => `/api/dashboard/standby/${encodeURIComponent(ref)}`,
+        researchTestsExport: test => `/api/reports/tests/export?test=${encodeURIComponent(test)}`,
     };
+
+    function initResearchTestsExportButton () {
+        const button = document.getElementById('btnDownloadResearchTests');
+        const select = document.getElementById('testExportType');
+
+        if (!button || !select) return;
+
+        button.addEventListener('click', () => {
+            const selectedTest = select.value || 'all';
+
+            window.location.href = ENDPOINTS.researchTestsExport(selectedTest);
+        });
+    }
 
     // Build cube html util
     function cubeHtml (value, label, variant = null) {
@@ -460,7 +496,7 @@
             console.error('Network error:', err);
         }
     }
-
+    initResearchTestsExportButton();
     loadDashboard();
     </script>
 </body>
