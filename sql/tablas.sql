@@ -777,12 +777,14 @@ CREATE TABLE tutorial (
 );
 
 CREATE TABLE peer_session (
-    id_peer_session  VARCHAR(36)   NOT NULL PRIMARY KEY,
-    title            VARCHAR(258)  NOT NULL,   
-    responsable      VARCHAR(218)  NOT NULL,  
-    note             TEXT          NULL,      
-    date             VARCHAR(96)   NOT NULL,   
-    men_count        VARCHAR(100)  NOT NULL,   
-    women_count      VARCHAR(100)  NOT NULL    
-);
+    id_peer_session VARCHAR(36) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    responsable VARCHAR(80) NOT NULL,
+    note VARCHAR(80) NULL,
+    session_date  DATE NOT NULL,
+    men_count INT NOT NULL,
+    women_count INT NOT NULL,
 
+    CONSTRAINT pk_peer_session
+        PRIMARY KEY (id_peer_session)
+);
