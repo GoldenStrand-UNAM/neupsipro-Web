@@ -11,7 +11,6 @@ class PostClinicalUserController {
       const clinicalUser = await this.PostClinicalUserUseCase.execute(user);
       return res.status(201).json(clinicalUser);
     } catch (error) {
-      console.log(error);
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         return res.status(409).json({
           inUse: 'user',
