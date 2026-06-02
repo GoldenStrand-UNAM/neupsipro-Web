@@ -1,0 +1,171 @@
+@startuml Export_PDF_Clinical
+
+title R13 - Exportar PDF de usuario clínico
+
+actor "Clinic User" as USR
+boundary "testList.js" as TLIST
+control "getTests.routes.js\n/users/:id_user/applications\n/:id_application/export" as UROUTE
+control "ExportPdfController" as TCTRL
+control "ExportPdfUseCase" as UC_EXP
+entity "impTestResultsRepository" as RREPO
+entity "ImpUsersRepository" as UREPO
+entity "PdfService\n(Puppeteer + EJS)" as PDF
+database "DB" as DB
+
+== Boton de exportar ==
+
+note over USR,TLIST
+  El boton existe en getTests.ejs y solo se muestra
+  cuando applicationStatus es 'Calificada' o 'Entregado'.
+end note
+
+USR -> TLIST : Click [Exportar PDF]
+activate TLIST
+
+TLIST -> UROUTE : GET /users/:id_user/applications/:id_application/export
+deactivate TLIST
+activate UROUTE
+
+UROUTE -> TCTRL : export(req, res)
+deactivate UROUTE
+activate TCTRL
+
+TCTRL -> UC_EXP : execute({ id_user, id_application })
+deactivate TCTRL
+activate UC_EXP
+
+== Validaciones ==
+
+UC_EXP -> RREPO : fetchApplicationById({ id_application })
+deactivate UC_EXP
+activate RREPO
+
+RREPO -> DB : SELECT ... FROM test_applications WHERE id_application = ?
+activate DB
+DB --> RREPO : application | null
+deactivate DB
+
+RREPO --> UC_EXP : application | null
+deactivate RREPO
+activate UC_EXP
+
+alt application no existe
+  UC_EXP --> TCTRL : throw Error 404
+  deactivate UC_EXP
+  activate TCTRL
+  TCTRL --> TLIST : HTTP 404 { error }
+  deactivate TCTRL
+  activate TLIST
+  TLIST --> USR : showToast(error)
+  deactivate TLIST
+
+else application.status no es 3 ni 4
+  UC_EXP --> TCTRL : throw Error 422
+  deactivate UC_EXP
+  activate TCTRL
+  TCTRL --> TLIST : HTTP 422 { error }
+  deactivate TCTRL
+  activate TLIST
+  TLIST --> USR : showToast(error)
+  deactivate TLIST
+
+else application valida (status 3 o 4)
+
+  == Datos para reporte ==
+
+  UC_EXP -> UREPO : fetchUserForExport({ id_user })
+  deactivate UC_EXP
+  activate UREPO
+
+  UREPO -> DB : SELECT name, protocol, reference_number ...
+  activate DB
+  DB --> UREPO : user | null
+  deactivate DB
+
+  UREPO --> UC_EXP : user | null
+  deactivate UREPO
+  activate UC_EXP
+
+  alt user no existe
+    UC_EXP --> TCTRL : throw Error 404
+    deactivate UC_EXP
+    activate TCTRL
+    TCTRL --> TLIST : HTTP 404 { error }
+    deactivate TCTRL
+    activate TLIST
+    TLIST --> USR : showToast(error)
+    deactivate TLIST
+
+  else user existe
+
+    UC_EXP -> RREPO : fetchAllResultsForExport({ id_application })
+    deactivate UC_EXP
+    activate RREPO
+
+    RREPO -> DB : SELECT tr.id_results, tr.id_test, ...\nWHERE tr.status IN (3,4)
+    activate DB
+    DB --> RREPO : [ results ]
+    deactivate DB
+
+    RREPO --> UC_EXP : [ results ]
+    deactivate RREPO
+    activate UC_EXP
+
+    note over UC_EXP
+      BANFE (id_test=1), WAIS (id_test=2) y REY (id_test=3)
+      se filtran dentro de buildSection() y no se incluyen
+      en el reporte clinico.
+    end note
+
+    loop buildSection() por cada resultado
+      alt id_test === 4 (MOCA)
+        UC_EXP -> UC_EXP : getMocaUseCase.execute({ id_results })
+      else id_test === 5 (NIH Toolbox)
+        UC_EXP -> UC_EXP : getNihUseCase.execute({ id_results })
+      else id_test === 1, 2 o 3 (BANFE/WAIS/REY)
+        UC_EXP -> UC_EXP : return null
+      end
+    end
+
+    == Generacion y actualizacion ==
+
+    UC_EXP -> PDF : generate(report)
+    deactivate UC_EXP
+    activate PDF
+
+    PDF --> UC_EXP : pdfBuffer
+    deactivate PDF
+    activate UC_EXP
+
+    UC_EXP -> RREPO : updateApplicationAndTestsStatus\n({ id_application, status: 4 })
+    deactivate UC_EXP
+    activate RREPO
+
+    RREPO -> DB : UPDATE test_applications SET status = 4 ...
+    activate DB
+    RREPO -> DB : UPDATE test_results SET status = 4 WHERE status = 3 ...
+    DB --> RREPO : OK
+    deactivate DB
+
+    RREPO --> UC_EXP : OK
+    deactivate RREPO
+    activate UC_EXP
+
+    UC_EXP --> TCTRL : { pdfBuffer, filename }
+    deactivate UC_EXP
+    activate TCTRL
+
+    TCTRL --> TLIST : HTTP 200 PDF (attachment)
+    deactivate TCTRL
+    activate TLIST
+
+    == UI ==
+
+    TLIST -> TLIST : Descargar blob y guardar archivo
+    TLIST -> TLIST : markAllDelivered()
+    TLIST --> USR : Toast exito + badges en 'Entregado'
+    deactivate TLIST
+  end
+end
+
+@enduml
