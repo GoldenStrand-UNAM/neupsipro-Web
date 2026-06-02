@@ -105,7 +105,9 @@ module.exports = (authUseCase, authMiddleware) => {
     pdfService,
     getBanfeUseCase,
     getWaisUseCase,
-    getReyUseCase
+    getReyUseCase,
+    getMocaUseCase,
+    getNihUseCase
   );
   const exportPdfController = new ExportPdfController(exportPdfUseCase);
 
