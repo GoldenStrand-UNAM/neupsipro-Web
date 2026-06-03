@@ -47,7 +47,10 @@
 <!--Family Expenses-->
 <div>
     <label class="input_label">3.- Egreso Familiar</label>
-    <input disabled type="number" min="0" id="familyExpenses" class="input" placeholder="$0.00">
+    <div class="input flex items-center gap-1">
+        <input disabled type="number" min="0" id="familyExpenses" class="w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="0.00">
+        <span class="text-gray-500 shrink-0 text-sm select-none">%</span>
+    </div>
 </div>
 
 <!--Housing-->
