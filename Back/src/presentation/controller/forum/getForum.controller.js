@@ -1,45 +1,34 @@
-
-// Controller function that handles HTTP request to get forum posts
-class forumController {
-  constructor (getForumUseCase, authUseCase) {
-    this.getForumUseCase = getForumUseCase;
-    this.authUseCase = authUseCase;
+class GetForumController {
+  constructor(getForumUseCase) {
+    this.useCase = getForumUseCase;
   }
 
-  async getForum (request, response) {
+  async getForum(req, res) {
     try {
-      let { page = 1, limit = 10 } = request.query;
+      let { page = 1, limit = 10 } = req.query;
 
-      page  = Math.max (1, parseInt(page)  || 1);
-      limit = Math.min (20, Math.max(1, parseInt(limit) || 10));
+      page = Math.max(1, parseInt(page, 10) || 1);
+      limit = Math.min(20, Math.max(1, parseInt(limit, 10) || 10));
 
-      const { posts, total } = await this.getForumUseCase.execute({ page, limit });
-      const totalPages = Math.ceil(total / limit);
+      const dto = await this.useCase.execute({ page, limit });
 
-      const userId = request.user?.userId ?? request.user?.id;
-      let canEliminate = false;
-      if (userId) {
-        try {
-          canEliminate = await this.authUseCase.checkPermission(userId, 'Forum', 'eliminate');
-        } catch {
-          canEliminate = false;
-        }
+      return res.status(200).json({
+        data: dto,
+      });
+    } catch (err) {
+      if (err.status && err.message) {
+        return res.status(err.status).json({
+          error: err.message,
+        });
       }
 
-      response.render ('forum/forum', {
-        activePage: 'forum',   tutorialModule: 'forum',
-        posts,
-        page,
-        limit,
-        totalPages,
-        canEliminate,
-      });
+      console.error('[GetForumController]', err);
 
-    } catch (error) {
-      response.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: 'Internal server error',
+      });
     }
   }
-
 }
 
-module.exports = forumController;
+module.exports = GetForumController;

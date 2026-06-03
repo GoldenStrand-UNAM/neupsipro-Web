@@ -21,7 +21,8 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --verbose",
     "lint": "eslint",
     "prepare": "husky",
-    "dev:css": "tailwindcss -i ./front/src/styles/input.css -o ./front/public/css/output.css --watch"
+    "dev:css": "tailwindcss -i ./front/src/styles/input.css -o ./front/public/css/output.css --watch",
+    "test:edit-user": "jest \"test/ruta/del/archivo.test.js\""
   },
   "lint-staged": {
     "*": "node scripts/check-names.js"

@@ -43,7 +43,7 @@ describe('Integración: DELETE /forum/:idPublication', () => {
     });
 
     const response = await request(app)
-      .delete('/publication/1') 
+      .delete('/api/publication/1') 
       .send();
 
     expect(response.status).toBe(200);
@@ -60,7 +60,7 @@ describe('Integración: DELETE /forum/:idPublication', () => {
     );
 
     const response = await request(app)
-      .delete('/publication/999')
+      .delete('/api/publication/999')
       .send();
 
     expect(response.status).toBe(404); 
@@ -74,7 +74,7 @@ describe('Integración: DELETE /forum/:idPublication', () => {
     );
 
     const response = await request(app)
-      .delete('/publication/1')
+      .delete('/api/publication/1')
       .send();
 
     expect(response.status).toBe(400);
