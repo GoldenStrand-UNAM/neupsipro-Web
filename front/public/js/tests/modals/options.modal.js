@@ -130,9 +130,9 @@ function openOptionsModal (idUser, idApplication, options) {
   if (existing) existing.remove();
 
   const isExpired   = applicationStatus === 'Caducada';
-  const hasScore    = test.status === 'Calificada';
+  const hasScore    = test.status === 'Calificada' || test.status === 'Entregado';
   const canRegister = !hasScore && !isExpired;
-  const canModify   = hasScore && !isExpired;
+  const canModify   = test.status === 'Calificada' && !isExpired;
   const canConsult  = hasScore || isExpired;
   const flags = { canRegister, canModify, canConsult, isExpired, hasScore };
 

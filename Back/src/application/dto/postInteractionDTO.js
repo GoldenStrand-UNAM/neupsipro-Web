@@ -1,6 +1,10 @@
+const Crypt = require('../../infrastructure/crypt/forum/uncryptUsername');
+const crypt = new Crypt();
+
 class postInteractionDTO {
-  constructor (exists, posts, interactions, numberLikes, numberComments) {
+  constructor (exists, rawPosts, interactions, numberLikes, numberComments) {
     this.success = exists;
+    const posts = rawPosts.map (post => crypt.uncryptDetailUsername(post));
     this.publication = posts.map (post => ({
       id: post.id_publication,
       title: post.title,
