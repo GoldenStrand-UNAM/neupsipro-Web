@@ -222,6 +222,11 @@ const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllCl
 
 app.use('/', getAllClinicalsRoutes(authUseCase, authMiddleware));
 
+//export csv
+const exportTestResultsRoutes = require('./presentation/routes/applications/exportTestResults.routes');
+
+app.use('/api/reports/tests', exportTestResultsRoutes(authUseCase, authMiddleware));
+
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');
 });

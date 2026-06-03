@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 24px 28px;
+    }
+
+    /* Letterhead */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .header__logo { width: 88px; height: auto; }
+    .header__titles {
+      flex: 1;
+      text-align: center;
+      color: #36558f;
+      letter-spacing: 1px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .header__enes {
+      text-align: center;
+      color: #36558f;
+      font-weight: bold;
+      font-size: 15px;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 26px;
+    }
+    td, th {
+      border: 1px solid #1a1a1a;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .tbl-head { background: #2e5b9e; color: #ffffff; font-weight: bold; }
+    .tbl-title { background: #2e5b9e; color: #ffffff; font-weight: bold; font-size: 15px; }
+    .label { font-weight: bold; }
+    .notes-cell { height: 130px; vertical-align: top; text-align: left; }
+
+    /* Footer */
+    .footer {
+      margin-top: 42px;
+      text-align: center;
+      color: #9fb0cc;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Letterhead ===== -->
+  <div class="header">
+    <img class="header__logo" src="<%= unamLogo %>" alt="UNAM">
+    <div class="header__titles">
+      UNIVERSIDAD NACIONAL AUTÓNOMA DE MÉXICO<br>
+      ESCUELA NACIONAL DE ESTUDIOS SUPERIORES<br>
+      UNIDAD JURIQUILLA
+    </div>
+    <div>
+      <img class="header__logo" src="<%= unamLogo %>" alt="ENES Juriquilla">
+      <div class="header__enes">ENES<br>JURIQUILLA</div>
+    </div>
+  </div>
+
+  <!-- ===== Application report ===== -->
+  <table>
+    <tr class="tbl-head">
+      <td>Golondrina</td>
+      <td>Reporte de aplicación</td>
+      <td colspan="2">Exportado: <%= report.exportedDate %></td>
+    </tr>
+    <tr>
+      <td class="label">Paciente</td>
+      <td><%= report.patientName %></td>
+      <td class="label">Protocolo:</td>
+      <td><%= report.protocolLabel %></td>
+    </tr>
+    <tr>
+      <td class="label">Aplicación</td>
+      <td><%= report.applicationName %></td>
+      <td class="label">Estado:</td>
+      <td><%= report.statusLabel %></td>
+    </tr>
+  </table>
+
+  <!-- ===== One section per graded test ===== -->
+  <% report.results.forEach(function (r) { %>
+    <table>
+      <tr class="tbl-title"><td colspan="<%= r.columns.length %>">Fecha de aplicación: <%= r.dateApplied %></td></tr>
+      <tr class="tbl-title"><td colspan="<%= r.columns.length %>"><%= r.testName %></td></tr>
+      <tr class="tbl-head">
+        <% r.columns.forEach(function (c) { %><th><%= c %></th><% }) %>
+      </tr>
+      <% r.rows.forEach(function (row) { %>
+        <tr><% row.forEach(function (cell) { %><td><%= cell %></td><% }) %></tr>
+      <% }) %>
+      <% if (r.totalRow) { %>
+        <tr><% r.totalRow.forEach(function (cell) { %><td class="label"><%= cell %></td><% }) %></tr>
+      <% } %>
+      <tr class="tbl-title"><td colspan="<%= r.columns.length %>">Notas</td></tr>
+      <tr><td colspan="<%= r.columns.length %>" class="notes-cell"><%= r.notes || '' %></td></tr>
+    </table>
+  <% }) %>
+
+  <!-- ===== Footer ===== -->
+  <div class="footer">
+    Boulevard Juriquilla 3001, Juriquilla, Querétaro, C.P. 76230<br>
+    www.enesjuriquilla.unam.mx
+  </div>
+
+</body>
+</html>

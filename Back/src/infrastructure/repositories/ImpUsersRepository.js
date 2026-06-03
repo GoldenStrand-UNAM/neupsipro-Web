@@ -362,5 +362,27 @@ class ImpUsersRepository extends usersRepository {
 
     return rows[0];
   }
+
+  // Fetch the minimal patient data needed for the PDF export header.
+  async fetchUserForExport ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS name,
+              ui.protocol,
+              ui.reference_number
+       FROM users u
+       JOIN user_info ui ON u.id_user = ui.id_user
+       WHERE u.id_user = ?
+       LIMIT 1`,
+      [id_user]
+    );
+
+    if (rows.length === 0) return null;
+
+    return {
+      name: rows[0].name.trim(),
+      protocol: rows[0].protocol,
+      referenceNumber: rows[0].reference_number,
+    };
+  }
 }
 module.exports = ImpUsersRepository;
