@@ -44,6 +44,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.22.0",
+    "neupsipro-web": "link:",
     "nodemon": "^3.1.14",
     "puppeteer": "^25.1.0",
     "session": "^0.1.0",

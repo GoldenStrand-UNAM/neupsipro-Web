@@ -10,7 +10,7 @@ class getInterventionUseCase {
 
     let intervention = await this.interventionRepository.findByUser({ id_user });
 
-    // if  there's no intervention , creaate one
+    // if  there's no intervention , create one
     if (!intervention) {
       await this.interventionRepository.createIntervention({ id_user });
       intervention = await this.interventionRepository.findByUser({ id_user });

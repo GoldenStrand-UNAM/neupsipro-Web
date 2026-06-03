@@ -29,17 +29,17 @@ describe('EditUserUseCase', () => {
         userName: 'johndoe',
         firstName: 'John',
         lastnameP: 'Doe',
-        birthdate: '1990-01-01',
-        sex: 'Maculino',
+        birthdate: '01/01/1900',
+        sex: 'Masculino',
         password: 'newSecurePassword123',
         profilePhoto: 'new_photo.jpg',
-        referenceNumber: 'REF123',
+        referenceNumber: '123P-ABC',
         phase:'Preprotésico',
         basePathology: 'Trauma',
         modality: 'En línea',
-        pairs: 'Si',
+        pairs: 'Sí asiste',
         assigned: 'clinic-456',
-        amputationDate: '2020-05-05',
+        amputationDate: '05/05/2000',
         amputationLevel: 'Transtibial',
         laterality: 'Diestra',
         prosthetist: 'CPO Juan David Orozco',
@@ -50,6 +50,7 @@ describe('EditUserUseCase', () => {
 
         mockUserRepository = {
             fetchUserForEdit: jest.fn(),
+            checkDuplicate: jest.fn(),
             editUser: jest.fn(),
         };
 
@@ -65,7 +66,9 @@ describe('EditUserUseCase', () => {
             id_user: '123',
             profile_photo: 'old_photo.jpg',
         });
+        mockUserRepository.checkDuplicate.mockResolvedValue(null);
         mockUserRepository.editUser.mockResolvedValue({ id_user: '123', success: true});
+        mockUserRepository.checkDuplicate.mockResolvedValue(null);
 
         const result = await useCase.execute(validUserData);
         

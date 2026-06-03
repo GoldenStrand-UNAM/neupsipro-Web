@@ -1,34 +1,35 @@
 /**
  * Domain Entity: userProfile
  * Represents the data structure of the user profile for the business logic.
- * This class is independant from the database or from any framework.
+ * This class is independent from the database or from any framework.
  */
 class userProfile {
-  constructor (rows) {
-    const baseRow = rows[0] || {};
+  constructor (data) {
+    this.firstName = data.first_name;
+    this.lastNameP = data.lastname_p;
+    this.lastNameM = data.lastname_m;
+    this.profilePhoto = data.profile_photo;
+    this.birthDate = data.birthdate;
+    this.registrationDate = data.registration_date;
+    this.neuroEntryDate = data.neuro_entry_date;
+    this.neuroStatus = data.neuro_status;
+    this.protocol = data.protocol;
+    this.state = data.state;
+    this.stage = data.stage;
+    this.prosthetist = data.prosthetist;
 
-    this.firstName = baseRow.first_name;
-    this.lastNameP = baseRow.lastname_p;
-    this.lastNameM = baseRow.lastname_m;
-    this.profilePhoto = baseRow.profile_photo;
-    this.birthDate = baseRow.birthdate;
-    this.registrationDate = baseRow.registration_date;
-    this.neuroEntryDate = baseRow.neuro_entry_date;
-    this.neuroStatus = baseRow.neuro_status;
-    this.protocol = baseRow.protocol;
-    this.state = baseRow.state;
-    this.stage = baseRow.stage;
-    this.prosthetist = baseRow.prosthetist;
-    this.idUserRelation = baseRow.id_user_relation;
+    const relations = data.relations || [];
 
-    const assignedRow = rows.find(r => r.type === 'assigned');
-    this.assignedClinic = assignedRow ? assignedRow.assigned_clinic_name : null;
+    const assignedRelation = relations.find(r => r.type === 'assigned');
+    this.assignedClinic = assignedRelation ? assignedRelation.assignedClinic : null;
 
-    const appointmentRow = rows.find(r => r.type === 'appointment');
-    this.nextAppointmentDate = appointmentRow ? appointmentRow.next_appointment_date : null;
-    this.nextAppointmentTime = appointmentRow ? appointmentRow.next_appointment_time : null;
+    const appointmentRelation = relations.find(r => r.type === 'appointment');
+    this.nextAppointmentDate = appointmentRelation ? appointmentRelation.nextAppointmentDate :
+      data.next_appointment_date || null;
+    this.nextAppointmentTime = appointmentRelation ? appointmentRelation.nextAppointmentTime :
+      data.next_appointment_time || null;
 
-    this.age = this._calculateAge(baseRow.birthdate);
+    this.age = this._calculateAge(data.birthdate);
   }
 
   _calculateAge (birthDate) {
