@@ -31,6 +31,8 @@ class FinancialInterview {
 
   // ----- Auxiliary functions ------------------------------------------------
 
+  static MAX_MONEY = 1_000_000;
+
   // Get number or null if the value isn't registered
   static numberOrNull (value) {
     return value === null ||
@@ -38,6 +40,16 @@ class FinancialInterview {
     value === ''
       ? null
       : Number(value);
+  }
+
+  // Money field: null if empty, capped at MAX_MONEY, throws if negative
+  static moneyOrNull (value) {
+    if (value === null || value === undefined || value === '') return null;
+    const num = Number(value);
+    if (isNaN(num)) return null;
+    if (num < 0) throw new Error('Los valores monetarios no pueden ser negativos');
+    if (num > FinancialInterview.MAX_MONEY) throw new Error(`El valor no puede superar $${FinancialInterview.MAX_MONEY.toLocaleString('es-MX')}`);
+    return num;
   }
 
   // Get text or null if the value isn't registered
@@ -282,10 +294,10 @@ class FinancialInterview {
   // Validate incomes
   static validateIncomes (data) {
     return {
-      incomeExtra: this.numberOrNull(data.incomes?.incomeExtra),
+      incomeExtra: this.moneyOrNull(data.incomes?.incomeExtra),
       financialType: this.textOrNull(data.incomes?.financialType),
-      salaryBefore: this.numberOrNull(data.incomes?.salaryBefore),
-      salaryAfter: this.numberOrNull(data.incomes?.salaryAfter),
+      salaryBefore: this.moneyOrNull(data.incomes?.salaryBefore),
+      salaryAfter: this.moneyOrNull(data.incomes?.salaryAfter),
 
       totalIncomes: this.numberOrNull(data.incomes?.totalIncomes),
     };
@@ -294,17 +306,17 @@ class FinancialInterview {
   // Validate expenses
   static validateExpenses (data) {
     return {
-      foodExpenses: this.numberOrNull(data.expenses?.foodExpenses),
-      rentExpenses: this.numberOrNull(data.expenses?.rentExpenses),
-      servicesExpenses: this.numberOrNull(data.expenses?.servicesExpenses),
-      gasExpenses: this.numberOrNull(data.expenses?.gasExpenses),
-      educationExpenses: this.numberOrNull(data.expenses?.educationExpenses),
-      wardrobeExpenses: this.numberOrNull(data.expenses?.wardrobeExpenses),
-      medicalExpenses: this.numberOrNull(data.expenses?.medicalExpenses),
-      transportExpenses: this.numberOrNull(data.expenses?.transportExpenses),
-      creditcardExpenses: this.numberOrNull(data.expenses?.creditcardExpenses),
-      phoneExpenses: this.numberOrNull(data.expenses?.phoneExpenses),
-      othersExpenses: this.numberOrNull(data.expenses?.othersExpenses),
+      foodExpenses: this.moneyOrNull(data.expenses?.foodExpenses),
+      rentExpenses: this.moneyOrNull(data.expenses?.rentExpenses),
+      servicesExpenses: this.moneyOrNull(data.expenses?.servicesExpenses),
+      gasExpenses: this.moneyOrNull(data.expenses?.gasExpenses),
+      educationExpenses: this.moneyOrNull(data.expenses?.educationExpenses),
+      wardrobeExpenses: this.moneyOrNull(data.expenses?.wardrobeExpenses),
+      medicalExpenses: this.moneyOrNull(data.expenses?.medicalExpenses),
+      transportExpenses: this.moneyOrNull(data.expenses?.transportExpenses),
+      creditcardExpenses: this.moneyOrNull(data.expenses?.creditcardExpenses),
+      phoneExpenses: this.moneyOrNull(data.expenses?.phoneExpenses),
+      othersExpenses: this.moneyOrNull(data.expenses?.othersExpenses),
 
       economicSituation: this.textOrNull(data.expenses?.economicSituation),
       numEconomicDependents: this.numberOrNull(data.expenses?.numEconomicDependents),
@@ -324,7 +336,7 @@ class FinancialInterview {
         ? data.contributors.map(c => ({
           name: c.name ?? null,
           relation: c.relation ?? null,
-          income: this.numberOrNull(c.income),
+          income: this.moneyOrNull(c.income),
         }))
         : [],
     };
