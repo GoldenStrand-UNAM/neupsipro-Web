@@ -173,7 +173,7 @@ function buildExpenses () {
       getNumberOrNull('numDependants'),
 
     totalExpenses:
-      getNumberOrNull('totalExpenses'),
+      getSpanMoneyOrNull('totalExpenses'),
   };
 }
 
