@@ -124,7 +124,7 @@ class FinancialInterview {
         transportExpenses:
           FinancialInterview.numberOrNull(base.transport_expenses),
         creditcardExpenses:
-          FinancialInterview.numberOrNull(base.creditcard_expenses),
+          FinancialInterview.numberOrNull(base.creditcard_payment_expenses),
         phoneExpenses:
           FinancialInterview.numberOrNull(base.phone_expenses),
         othersExpenses:
