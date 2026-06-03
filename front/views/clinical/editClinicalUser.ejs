@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modificar Usuario Clínico - Golondrina</title>
+  <link rel="stylesheet" href="/css/output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+  <script src="/js/main.js"></script>
+
+  <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+  <%- include('../partials/sidebar') %>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <%- include('../partials/header') %>
+
+    <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
+      <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4 overflow-auto">
+        <div class="flex sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <a href="/clinical/<%= usuario.id_user %>">
+              <button class="cursor-pointer pb">
+                <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </button>
+            </a>
+            <h1 class="text-2xl font-bold text-[#1E1E1E]">Modificar Usuario Clínico</h1>
+          </div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="resetFormBtn()"
+                    class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 text-sm md:text-base font-medium hover:bg-gray-50 hover:scale-[1.05] active:scale-95 transition-all duration-200 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356M2.985 19.644v-4.992h4.992m0 0-3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    <span>Restablecer cambios</span>
+                </button>
+                <button type="button" onclick="clearFormBtn()" class="btn-clear">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span>Limpiar</span>
+                </button>
+            </div>
+        </div>
+        <div> 
+          <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator" class="w-full">         
+        </div>
+
+        <form id="formUser" class="px-6 pt-6 pb-0 flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">      
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Nombre(s) <span style="color: #FF0404">*</span></label>
+            <div class="inputs w-full relative flex items-center">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="firstName" id="firstName" maxlength="30" value="<%= usuario.first_name || '' %>">
+              <span id="charactersNames" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">      
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Apellido paterno <span style="color: #FF0404">*</span></label>
+            <div class="inputs w-full relative flex items-center">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="lastnameP" id="lastnameP" maxlength="30" value="<%= usuario.lastname_p || '' %>">
+              <span id="charactersLastnameP" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">       
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Apellido materno</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="lastnameM" id="lastnameM" maxlength="30" value="<%= usuario.lastname_m || '' %>">
+              <span id="charactersLastnameM" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Fecha de nacimiento <span style="color: #FF0404">*</span></label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input required type="text" id="birthdate" name="birthdate" placeholder="DD/MM/AAAA" class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white" value="<%= usuario.birthdate || '' %>">
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">E-mail</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="email" id="email" maxlength="50" value="<%= usuario.email || '' %>">
+              <span id="charactersEmail" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/50</span>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Afiliación <span style="color: #FF0404">*</span></label>
+            <div class="inputs w-full relative flex items-center">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="affiliation" id="affiliation" maxlength="20" value="<%= usuario.affiliation || '' %>">
+              <span id="charactersAffiliation" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/20</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Actividad <span style="color: #FF0404">*</span></label>
+            <div class="inputs w-full relative flex items-center">
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.activity ? 'text-black' : 'text-gray-400' %>"
+                name="activity"
+                id="activity"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Servicio social"         class="text-black" <%= usuario.activity === 'Servicio social'         ? 'selected' : '' %>>Servicio social</option>
+                <option value="Prácticas profesionales" class="text-black" <%= usuario.activity === 'Prácticas profesionales' ? 'selected' : '' %>>Prácticas profesionales</option>
+                <option value="Voluntariado"            class="text-black" <%= usuario.activity === 'Voluntariado'            ? 'selected' : '' %>>Voluntariado</option>
+                <option value="Titular"                 class="text-black" <%= usuario.activity === 'Titular'                 ? 'selected' : '' %>>Titular</option>
+                <option value="Verano de investigación" class="text-black" <%= usuario.activity === 'Verano de investigación' ? 'selected' : '' %>>Verano de investigación</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Fecha de inicio <span style="color: #FF0404">*</span></label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input required type="text" id="startDate" name="startDate" placeholder="DD/MM/AAAA" class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white" value="<%= usuario.start_date || '' %>">
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Fecha de fin <span style="color: #FF0404">*</span></label>
+            <div class="relative w-full sm:flex-1 flex items-center">
+              <input required type="text" id="finishDate" name="finishDate" placeholder="DD/MM/AAAA" class="input-base w-full border p-2 pr-10 rounded outline-none focus:ring-2 focus:ring-blue-500 bg-white" value="<%= usuario.finish_date || '' %>">
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Horas</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="hours" id="hours" maxlength="4" value="<%= usuario.hours || '' %>">
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Usuario <span style="color: #FF0404">*</span></label>
+            <div class="inputs w-full relative flex items-center">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="username" id="username" maxlength="30" value="<%= usuario.user_name || '' %>">
+              <span id="charactersUserName" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Contraseña</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="password" name="password" id="password" placeholder="Deja vacío para conservar la actual" maxlength="30">
+              <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Confirma contraseña</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="password" name="confirmPassword" id="confirmPassword" placeholder="Repite la nueva contraseña" maxlength="30">
+              <span id="charactersConfirmPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/30</span>
+            </div>
+          </div>
+          <div class="mb-8 flex flex-col sm:flex-row w-full">
+            <div class="sm:block sm:w-1/4 shrink-0"></div>
+            <div class="flex flex-row w-full justify-between px-4">
+              <button type="button" id="showPw" style="color: #0600b7" class="text-sm"><span id="showHide">Mostrar</span> Contraseña</button>
+              <div id="validation" style="color: #ff1f0b" class="text-sm"></div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 shrink-0"></label>
+            <div class="relative w-full sm:flex-1 flex items-center font-semibold text-lg">Contacto de emergencia</div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Nombre completo</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="emergencyContactName" id="emergencyContactName" maxlength="50" value="<%= usuario.emergency_contact_name || '' %>">
+              <span id="charactersEmergencyContactName" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/50</span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Teléfono</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="emergencyContactPhone" id="emergencyContactPhone" maxlength="15" value="<%= usuario.emergency_contact_phone || '' %>">
+              <span id="charactersEmergencyContactPhone" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/15</span>
+            </div>
+          </div>
+          <div class="mb-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Relación</label>
+            <div class="inputs w-full relative flex items-center">
+              <input class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="emergencyContactRelation" id="emergencyContactRelation" maxlength="25" value="<%= usuario.emergency_contact_relation || '' %>">
+              <span id="charactersEmergencyContactRelation" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/25</span>
+            </div>
+          </div>
+
+          <div class="mb-8 hidden md:flex md:justify-end pt-2">
+            <button id="btnSave" class="btn-mini bg-[#3350A9]">
+              <svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
+              </svg>
+              <span>Guardar</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <button type="submit" form="formUser" class="md:hidden fixed bottom-6 right-6 z-30 btn-mini bg-[#3350A9] shadow-xl" style="padding: 0.875rem 1.5rem; height: auto; font-size: 1rem;">Guardar</button>
+
+  <script src="/js/sidebar.js"></script>
+  <script>
+    window.__CSRF_TOKEN__ = "<%= csrfToken %>";
+    window.__USER_ID__    = "<%= usuario.id_user %>";
+  </script>
+  </body>
+
+  <script>
+    const form = document.getElementById('formUser');
+    const passInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+
+    function resetFormBtn(){
+      if (form) form.reset();
+      passInput.value = '';
+      confirmInput.value = '';
+      document.querySelectorAll('input[maxlength]').forEach(i => i.dispatchEvent(new Event('input')));
+      showToast('Cambios restablecidos');
+    }
+    
+    function clearFormBtn(){
+        if (!form) return;
+
+        form.querySelectorAll('input:not([type="hidden"]), textarea').forEach(field => {
+            field.value = '';
+        });
+
+        document.querySelectorAll('input[maxlength]').forEach(input => {
+            input.dispatchEvent(new Event('input'));
+        });
+
+        showToast('Campos limpiados');
+        }
+
+    function setupCounter(inputId, counterId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      if (!input || !counter) return;
+      const max = input.getAttribute('maxlength');
+      counter.textContent = `${input.value.length}/${max}`;
+      input.addEventListener('input', () => { counter.textContent = `${input.value.length}/${max}`; });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      try {
+        const res = await fetch(`/clinical/${window.__USER_ID__}/edit`, {
+          method: 'POST',
+          headers: { 'x-csrf-token': window.__CSRF_TOKEN__ },
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          sessionStorage.setItem('modifiedUser', 'true');
+          window.location.href = `/clinical/${window.__USER_ID__}`;
+        } else if (res.status === 429) {
+          showToast('Has alcanzado el límite de operaciones. Intenta más tarde.', 'error');
+        } else if (res.status === 409 && data.inUse === 'user') {
+          const u = document.getElementById('username');
+          u.setCustomValidity("El nombre de usuario ya está en uso");
+          u.style.border = '2px solid red';
+          u.reportValidity();
+        } else {
+          showToast((data.error || 'Error desconocido'), 'error');
+        }
+      } catch (error) {
+        showToast(`Error de conexión: ${error}`, 'error');
+      }
+    });
+
+    document.getElementById('username').addEventListener('input', (e) => {
+      e.target.setCustomValidity("");
+      e.target.style.border = '';
+    });
+
+    function validateDates(id){
+      flatpickr(document.getElementById(id), { dateFormat: "d/m/Y", allowInput: true, maxDate: "today", minDate: "01/01/1900", disableMobile: true });
+      document.getElementById(id).addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, ''); let finalValue = "";
+        const actualYear = new Date().getFullYear();
+        if (v.length > 0) {
+          let day = v.substring(0, 2), month = v.substring(2, 4), year = v.substring(4, 8);
+          if (parseInt(day) > 31) day = "31";
+          if (parseInt(month) > 12) month = "12";
+          if (parseInt(year) > 2026) year = actualYear;
+          if (parseInt(year) < 1900 && v.length == 8) year = 1900;
+          if (v.length <= 2) finalValue = day;
+          else if (v.length <= 4) finalValue = day + "/" + month;
+          else finalValue = day + "/" + month + "/" + year;
+        }
+        e.target.value = finalValue;
+      });
+    }
+    function validateFutureDates(id){
+      flatpickr(document.getElementById(id), { dateFormat: "d/m/Y", allowInput: true, maxDate: "31/12/2100", minDate: "today", disableMobile: true });
+      document.getElementById(id).addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, ''); let finalValue = "";
+        const actualYear = new Date().getFullYear();
+        if (v.length > 0) {
+          let day = v.substring(0, 2), month = v.substring(2, 4), year = v.substring(4, 8);
+          if (parseInt(day) > 31) day = "31";
+          if (parseInt(month) > 12) month = "12";
+          if (parseInt(year) < 2026 && v.length == 8) year = actualYear;
+          if (parseInt(year) > 2100) year = 2100;
+          if (v.length <= 2) finalValue = day;
+          else if (v.length <= 4) finalValue = day + "/" + month;
+          else finalValue = day + "/" + month + "/" + year;
+        }
+        e.target.value = finalValue;
+      });
+    }
+    function validateNumber(id) {
+      document.getElementById(id).addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+    }
+
+    const phoneInput = document.getElementById('emergencyContactPhone');
+    const allowedCharRegex = /^[0-9+()\s-]$/;
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!allowedCharRegex.test(e.key)) { e.preventDefault(); showToast('Solo se permiten números, guiones y paréntesis', 'error'); }
+    });
+
+    function changeDefaultColor(id) {
+      const inputSelect = document.getElementById(id);
+
+      inputSelect.addEventListener('change', function() {
+        if (this.value !== "") {
+          this.classList.remove('text-gray-400');
+          this.classList.add('text-black');
+        } else {
+          this.classList.remove('text-black');
+          this.classList.add('text-gray-400');
+        }
+      });
+    }
+
+    function validateMatch() {
+      const val = passInput.value, confVal = confirmInput.value;
+      if (val === '' && confVal === '') { document.getElementById('validation').textContent = ""; confirmInput.setCustomValidity(""); return; }
+      if (val === confVal) { document.getElementById('validation').textContent = ""; confirmInput.setCustomValidity(""); }
+      else { document.getElementById('validation').textContent = "Las contraseñas no coinciden"; confirmInput.setCustomValidity("Las contraseñas no coinciden"); }
+    }
+    passInput.addEventListener('input', validateMatch);
+    confirmInput.addEventListener('input', validateMatch);
+
+    document.getElementById('showPw').addEventListener('click', () => {
+      const type = passInput.type === 'password' ? 'text' : 'password';
+      passInput.type = type; confirmInput.type = type;
+      document.getElementById('showHide').textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
+    });
+
+    setupCounter('firstName', 'charactersNames');
+    setupCounter('lastnameP', 'charactersLastnameP');
+    setupCounter('lastnameM', 'charactersLastnameM');
+    setupCounter('email', 'charactersEmail');
+    setupCounter('affiliation', 'charactersAffiliation');
+    setupCounter('username', 'charactersUserName');
+    setupCounter('password', 'charactersPassword');
+    setupCounter('confirmPassword', 'charactersConfirmPassword');
+    setupCounter('emergencyContactName', 'charactersEmergencyContactName');
+    setupCounter('emergencyContactPhone', 'charactersEmergencyContactPhone');
+    setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
+    changeDefaultColor('activity');
+    validateDates('birthdate');
+    validateDates('startDate');
+    validateFutureDates('finishDate');
+    validateNumber('hours');
+  </script>
+</html>

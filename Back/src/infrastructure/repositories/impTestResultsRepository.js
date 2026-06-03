@@ -122,6 +122,77 @@ class impTestResultsRepository extends resultRepository {
     }));
   }
 
+  // ================= EXPORT PDF =================
+
+  // Fetch the graded/delivered test results of an application, for the PDF export.
+  async fetchAllResultsForExport ({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT tr.id_results,
+              tr.id_test,
+              pt.test_name,
+              tr.status,
+              tr.date_applied
+       FROM test_results tr
+       JOIN psych_tests pt ON tr.id_test = pt.id_test
+       WHERE tr.id_application = ?
+         AND tr.status IN (3, 4)
+       ORDER BY tr.id_test`,
+      [id_application]
+    );
+    return rows.map(row => ({
+      idResults: row.id_results,
+      idTest: row.id_test,
+      testName: row.test_name,
+      status: row.status,
+      dateApplied: row.date_applied ?? null,
+    }));
+  }
+
+  // Mark an application and its graded tests as Entregado (status 4) after a successful export.
+  async updateApplicationAndTestsStatus ({ id_application, status }) {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      await conn.query(
+        'UPDATE test_applications SET status = ? WHERE id_application = ?',
+        [status, id_application]
+      );
+
+      await conn.query(
+        'UPDATE test_results SET status = ? WHERE id_application = ? AND status = 3',
+        [status, id_application]
+      );
+
+      await conn.commit();
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  }
+
+  // Promotes test_applications.status to 3 (Calificada) once every test_result
+  // for that application is graded (3), delivered (4), or expired (5).
+  // Idempotent — does nothing when the application is already completed or delivered.
+  async #promoteApplicationIfAllGraded ({ id_results, conn: db_ = null }) {
+    const executor = db_ ?? db;
+    await executor.query(
+      `UPDATE test_applications ta
+       INNER JOIN test_results tr_trigger ON tr_trigger.id_results = ?
+       SET ta.status = 3
+       WHERE ta.id_application = tr_trigger.id_application
+         AND ta.status = 2
+         AND NOT EXISTS (
+           SELECT 1 FROM test_results tr_check
+           WHERE tr_check.id_application = tr_trigger.id_application
+             AND tr_check.status NOT IN (3, 4, 5)
+         )`,
+      [id_results]
+    );
+  }
+
   // ================= BANFE  ==================
 
   // Upserts into banfe_results
@@ -181,6 +252,7 @@ class impTestResultsRepository extends resultRepository {
        WHERE br.id_results = ?`,
       [id_results]
     );
+    await this.#promoteApplicationIfAllGraded({ id_results });
     return rows[0];
   }
 
@@ -257,6 +329,7 @@ class impTestResultsRepository extends resultRepository {
         [id_results]
       );
 
+      await this.#promoteApplicationIfAllGraded({ id_results, conn });
       await conn.commit();
 
       const [rows] = await conn.query(
@@ -360,6 +433,7 @@ class impTestResultsRepository extends resultRepository {
       'SELECT * FROM rey_results WHERE id_results = ?',
       [id_results]
     );
+    await this.#promoteApplicationIfAllGraded({ id_results });
     return rows[0];
 
   }
@@ -408,6 +482,7 @@ class impTestResultsRepository extends resultRepository {
       'SELECT * FROM moca_results WHERE id_results = ?',
       [id_results]
     );
+    await this.#promoteApplicationIfAllGraded({ id_results });
     return rows[0];
   }
 
@@ -454,6 +529,7 @@ class impTestResultsRepository extends resultRepository {
       'SELECT * FROM nih_results WHERE id_results = ?',
       [id_results]
     );
+    await this.#promoteApplicationIfAllGraded({ id_results });
     return rows[0];
   }
 

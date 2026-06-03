@@ -1,0 +1,121 @@
+@startuml EditClinicalUserSequence
+title Edit Clinical User - Sequence Diagram
+
+actor "Clinical User" as USR
+participant "consultClinical.ejs\n(Browser)" as ConsultView
+participant "editClinicalUser.ejs\n(Browser)" as EditView
+participant "Express Router\n(clinicalUser.Routes)" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "editClinicalUser\nController" as Ctrl
+participant "editClinicalUserUseCase" as EditUC
+participant "postClinicalValidation" as Valid
+participant "ClinicalUser\n(Entity)" as ENT
+participant "HashingService" as Hash
+participant "ImpClinicalRepository" as Repo
+database "MySQL DB" as DB
+
+USR -> ConsultView : Click "Editar"
+activate ConsultView
+ConsultView -> Router : GET /clinical/:id_user/edit
+deactivate ConsultView
+activate Router
+
+Router -> Auth : verifyToken + requirePermission\n('user management', 'consultation')
+Auth --> Router : OK
+
+Router -> Ctrl : editClinicalUserView(req, res)
+activate Ctrl
+Ctrl -> Repo : fetchClinical({ id_user })
+activate Repo
+Repo -> DB : SELECT users + user_clinical
+DB --> Repo : row
+Repo --> Ctrl : new Clinical(row)
+deactivate Repo
+
+alt User not found
+  Ctrl --> EditView : 404 { error }
+  EditView --> USR : Error toast
+else User exists
+  Ctrl --> Router : render editClinicalUser.ejs\n(usuario)
+  deactivate Ctrl
+  Router --> EditView : HTML with pre-filled values
+  deactivate Router
+  activate EditView
+  EditView --> USR : Form ready
+end
+
+USR -> EditView : Modify fields\n(optional: new password)
+USR -> EditView : Click "Guardar"
+
+EditView -> EditView : validate required fields\n+ password match
+alt Empty / invalid fields
+  EditView --> USR : Error "Llene los campos requeridos"
+end
+
+EditView -> Router : POST /clinical/:id_user/edit\n[x-csrf-token]\n(firstName, lastnameP, lastnameM,\nbirthdate, username, password,\nemail, affiliation, activity,\nemergencyContactName,\nemergencyContactPhone,\nemergencyContactRelation,\nstartDate, finishDate, hours)
+deactivate EditView
+activate Router
+
+Router -> Auth : verifyToken + requirePermission\n('user management', 'writing')
+Auth --> Router : OK
+
+Router -> Ctrl : editClinicalUser(req, res)
+activate Ctrl
+Ctrl -> Ctrl : user = { ...req.body }
+Ctrl -> EditUC : execute(id_user, user)
+activate EditUC
+
+EditUC -> EditUC : sanitize (trim, strip __proto__)
+EditUC -> Valid : validateUser(sanitizedUser)
+alt Validation fails
+  Valid --> EditUC : throw error
+  EditUC --> Ctrl : throw DomainError(message)
+  Ctrl --> EditView : 400 { error }
+  EditView --> USR : Error toast
+end
+Valid --> EditUC : validatedUser
+
+EditUC -> ENT : new ClinicalUser({ ...validatedUser, idUser })
+ENT --> EditUC : clinicalUserEntity
+
+EditUC -> Repo : checkDuplicateOnEdit(clinicalUserEntity)
+activate Repo
+Repo -> DB : SELECT ... WHERE id_user <> ?
+DB --> Repo : row | null
+Repo --> EditUC : duplicate?
+deactivate Repo
+alt Duplicate exists
+  EditUC --> Ctrl : throw "El usuario ya se encuentra registrado."
+  Ctrl --> EditView : 400 { error }
+  EditView --> USR : Error toast
+end
+
+opt Password provided
+  EditUC -> Hash : hash(password)
+  Hash --> EditUC : passwordHash
+end
+
+EditUC -> Repo : updateUser({ ...clinicalUser, passwordHash })
+activate Repo
+Repo -> DB : BEGIN TRANSACTION
+Repo -> DB : UPDATE users\n(+ password_hash if provided)
+Repo -> DB : UPDATE user_clinical
+Repo -> DB : COMMIT
+DB --> Repo : updated row
+Repo --> EditUC : saved
+deactivate Repo
+
+EditUC -> EditUC : map row -> EditClinicalUserDTO
+EditUC --> Ctrl : ClinicalUserDTO
+deactivate EditUC
+
+Ctrl --> Router : HTTP 200 OK { user }
+deactivate Ctrl
+Router --> EditView : HTTP 200 OK { user }
+deactivate Router
+activate EditView
+EditView -> ConsultView : Redirect to /users/:id_user
+EditView --> USR : Success toast\n"Usuario actualizado correctamente"
+deactivate EditView
+
+@enduml
