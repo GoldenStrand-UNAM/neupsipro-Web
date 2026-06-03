@@ -87,4 +87,7 @@ function updateTestCardStatus (dto) {
       card.dataset.test = JSON.stringify(testData);
     } catch { /* datos corruptos, se ignoran */}
   }
+
+  // If this save completed the last pending test, reveal the export button without a page reload.
+  window._revealExportIfAllGraded?.();
 }

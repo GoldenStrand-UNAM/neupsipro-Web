@@ -17,13 +17,12 @@ class Clinical {
 
   formatDate (rawDate) {
     if (!rawDate) return null;
-    let date;
     let day; let month; let year;
     if (typeof rawDate === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate))
       [day, month, year] = rawDate.split('/').map(Number);
     else
       [year, month, day] = rawDate.split('-').map(Number);
-    date = new Date(`${year}-${month}-${day}`);
+    const date = new Date(`${year}-${month}-${day}`);
     if (isNaN(date.getTime())) return null;
     const dd = String(day).padStart(2, '0');
     const mm = String(month).padStart(2, '0');
