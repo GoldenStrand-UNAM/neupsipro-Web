@@ -46,7 +46,7 @@ describe('Database error', () => {
     jest.spyOn(ForumRepository.prototype, 'fetchAll').mockRejectedValueOnce(new Error('DB error'));
     jest.spyOn(ForumRepository.prototype, 'count').mockRejectedValueOnce(new Error('DB error'));
 
-    const res = await request(app).get('/forum');
+    const res = await request(app).get('/api/forum');
     expect(res.status).toBe(500);
   });
 });
@@ -73,4 +73,3 @@ describe('Invalid pagination parameters', () => {
     expect(res.status).toBe(200);
   });
 });
-
