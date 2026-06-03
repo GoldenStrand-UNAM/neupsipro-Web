@@ -266,7 +266,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          sessionStorage.setItem('modifiedUser', 'true');
+          sessionStorage.setItem('modifiedClinicalUser', 'true');
           window.location.href = `/clinical/${window.__USER_ID__}`;
         } else if (res.status === 429) {
           showToast('Has alcanzado el límite de operaciones. Intenta más tarde.', 'error');
