@@ -203,18 +203,18 @@ describe('UNIT — postEmotionUseCase', () => {
     expect(mockRepository.saveEmotionResult).not.toHaveBeenCalled();
   });
 
-  test('5.1 422 when notes exceeds 200 characters', async () => {
-    const notesLargas = 'a'.repeat(201);
+  test('5.1 422 when notes exceeds 2000 characters', async () => {
+    const notesLargas = 'a'.repeat(2001);
     await expect(useCase.execute(validInput({ notes: notesLargas })))
-      .rejects.toMatchObject({ status: 422, message: 'notes must be 200 characters or less' });
+      .rejects.toMatchObject({ status: 422, message: 'notes must be 2000 characters or less' });
     expect(mockRepository.saveEmotionResult).not.toHaveBeenCalled();
   });
 
-  test('5.2 422 when notes has exactly 200 characters', async () => {
+  test('5.2 422 when notes has exactly 2000 characters', async () => {
     mockRepository.fetchResultRow.mockResolvedValue(mockRow());
     mockRepository.saveEmotionResult.mockResolvedValue(mockSaved());
 
-    const notesExactas = 'a'.repeat(200);
+    const notesExactas = 'a'.repeat(2000);
     await expect(useCase.execute(validInput({ notes: notesExactas }))).resolves.toBeDefined();
   });
 
