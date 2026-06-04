@@ -706,7 +706,7 @@ CREATE TABLE user_clinical (
 );
 
 ALTER TABLE users 
-ADD COLUMN gender VARCHAR(108) DEFAULT 'Sin especificar'
+ADD COLUMN gender VARCHAR(108)
 NOT NULL AFTER birthdate;
 
 ALTER TABLE test_sessions RENAME TO test_applications;
@@ -876,6 +876,9 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
+ALTER TABLE user_info
+ALTER state SET DEFAULT 'Stand_by';
+
 ALTER TABLE user_clinical
     MODIFY COLUMN start_date varchar(50) NOT NULL,
     MODIFY COLUMN finish_date varchar(50) NOT NULL,
@@ -885,3 +888,14 @@ ALTER TABLE user_clinical
     MODIFY COLUMN hours INT NULL;
     
 ALTER TABLE user_info ADD COLUMN phone VARCHAR(118);
+
+ALTER TABLE intervention 
+MODIFY COLUMN contract_link VARCHAR(568) DEFAULT NULL;
+
+
+ALTER TABLE user_clinical
+    MODIFY COLUMN start_date varchar(80) NOT NULL,
+    MODIFY COLUMN finish_date varchar(80) NOT NULL,
+    MODIFY COLUMN emergency_contact_name VARCHAR(160) NULL,
+    MODIFY COLUMN emergency_contact_phone VARCHAR(88) NULL,
+    MODIFY COLUMN emergency_contact_relation VARCHAR(115) NULL;

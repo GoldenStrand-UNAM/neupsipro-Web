@@ -131,7 +131,7 @@
             <div class="inputs w-full relative flex items-center">
               <input
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                type="email"
                 name="email"
                 id="email"
                 placeholder="ejemplo@gmail.com"
@@ -480,9 +480,7 @@
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
-
       const data = await res.json();
-
       if (res.ok) {
         sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
@@ -555,7 +553,6 @@
         minDate: "01/01/1900",
         disableMobile: true
       });
-
       inputFecha.addEventListener('input', (e) => {
         let v = e.target.value.replace(/\D/g, '');
         let finalValue = "";
