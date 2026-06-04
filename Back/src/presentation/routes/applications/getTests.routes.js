@@ -43,6 +43,13 @@ const postMocaController = require('../../controller/testApplications/postMoca.c
 const getMocaResultUseCase        = require('../../../application/usecase/testApplications/getMocaUseCase');
 const getMocaResultController     = require('../../controller/testApplications/getMoca.controller');
 
+//Emotion
+
+const postEmotionUseCase        = require('../../../application/usecase/testApplications/postEmotionUseCase');
+const postEmotionController     = require('../../controller/testApplications/postEmotion.controller');
+const getEmotionResultUseCase   = require('../../../application/usecase/testApplications/getEmotionResultUseCase');
+const getEmotionResultController = require('../../controller/testApplications/getEmotion.controller');
+
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
@@ -95,6 +102,13 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getMocaUseCase    = new getMocaResultUseCase(testResultsRepo);
   const getMocaController = new getMocaResultController(getMocaUseCase);
+
+  //Emotion
+  const emotionUseCase    = new postEmotionUseCase(testResultsRepo);
+  const emotionController = new postEmotionController(emotionUseCase);
+
+  const getEmotionUseCase    = new getEmotionResultUseCase(testResultsRepo);
+  const getEmotionController = new getEmotionResultController(getEmotionUseCase);
 
   // Export PDF
   const usersRepo = new ImpUsersRepository();
@@ -200,6 +214,21 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken,
     permissionsMiddleware.requirePermission('Tests', 'consultation'),
     (req, res) => getMocaController.getResult(req, res)
+  );
+
+  // ======================== EMOTION ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/6/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => emotionController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/6/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getEmotionController.getResult(req, res)
   );
 
   // ======================== AUXILIARY ENDPOINTS FOR Moca & REY ===============================
