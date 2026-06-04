@@ -48,11 +48,19 @@ class postEmotionUseCase {
       throw err;
     }
 
-    // 3. Validate notes length
-    if (notes && String(notes).length > 200) {
-      const err = new Error('notes must be 200 characters or less');
-      err.status = 422;
-      throw err;
+    // 3. Validate notes
+    if (notes) {
+      if (String(notes).length > 200) {
+        const err = new Error('notes must be 200 characters or less');
+        err.status = 422;
+        throw err;
+      }
+      // Reject emoji characters (Unicode ranges for emoticons, symbols, etc.)
+      if (/\p{Emoji}/u.test(String(notes))) {
+        const err = new Error('notes must not contain emojis');
+        err.status = 422;
+        throw err;
+      }
     }
 
     // 4. Verify result row exists for this application and test
