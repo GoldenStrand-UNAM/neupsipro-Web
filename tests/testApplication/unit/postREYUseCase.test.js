@@ -49,7 +49,7 @@ describe('postREYUseCase', () => {
       .mockResolvedValue('Licenciatura');
 
     resultsRepository.fetchUserAge
-      .mockResolvedValue('1996-01-15');
+      .mockResolvedValue('15/01/1996');
 
     resultsRepository.saveREYResult.mockResolvedValue({
       id_results: 'r-001',
