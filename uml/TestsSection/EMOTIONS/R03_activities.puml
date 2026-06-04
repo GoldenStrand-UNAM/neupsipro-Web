@@ -1,0 +1,32 @@
+@startuml diagrama de actividades Emotion
+
+title Adaptación Socioemocional a la Discapacidad
+
+|User|
+start
+:Opens Adaptación Socioemocional test card;
+:Selects an option\nRegister / Modify / Consult;
+
+if (Option selected?) then (Consult)
+  |System|
+  :Fetches and displays existing results\nIAB score and interpretation\nIDB score and interpretation\nSCL-90 notes;
+  |User|
+  :Exits;
+  stop
+else (Register or Modify)
+  :Enters IAB score and IDB score;
+  |System|
+  :Shows live interpretation per score\nIAB: Mínima / Leve / Moderada / Grave\nIDB: Mínima / Leve / Moderada / Grave;
+  |User|
+  :Enters SCL-90 notes (optional);
+  if (Wants to save?) then (yes)
+    |System|
+    :Saves results;
+    stop
+  else (no)
+    :Exits;
+    stop
+  endif
+endif
+
+@enduml
