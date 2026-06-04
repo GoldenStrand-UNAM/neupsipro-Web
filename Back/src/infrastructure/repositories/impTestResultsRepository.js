@@ -532,6 +532,68 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
+  // ================= EMOTION ==================
+
+  async fetchEmotionResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT er.*,
+              tr.status,
+              tr.date_applied
+       FROM emotion_results er
+       JOIN test_results tr ON er.id_results = tr.id_results
+       WHERE er.id_results = ?
+       LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  async saveEmotionResult ({
+    id_results,
+    score_anxiety_beck,    inter_anxiety_beck,
+    score_depression_beck, inter_depression_beck,
+    notes,
+  }) {
+    await db.query(
+      `UPDATE test_results
+       SET status       = 3,
+           date_applied = CURDATE()
+       WHERE id_results = ?`,
+      [id_results]
+    );
+
+    await db.query(
+      `INSERT INTO emotion_results
+         (id_results,
+          score_anxiety_beck,    inter_anxiety_beck,
+          score_depression_beck, inter_depression_beck,
+          notes)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         score_anxiety_beck    = VALUES(score_anxiety_beck),
+         inter_anxiety_beck    = VALUES(inter_anxiety_beck),
+         score_depression_beck = VALUES(score_depression_beck),
+         inter_depression_beck = VALUES(inter_depression_beck),
+         notes                 = VALUES(notes)`,
+      [
+        id_results,
+        score_anxiety_beck,    inter_anxiety_beck,
+        score_depression_beck, inter_depression_beck,
+        notes ?? null,
+      ]
+    );
+
+    const [rows] = await db.query(
+      `SELECT er.*, tr.date_applied
+       FROM emotion_results er
+       JOIN test_results tr ON er.id_results = tr.id_results
+       WHERE er.id_results = ?`,
+      [id_results]
+    );
+    await this.#promoteApplicationIfAllGraded({ id_results });
+    return rows[0];
+  }
+
   // ================= schooling and age ==================
 
   // Fetch schooling level for a user from their initial interview.
