@@ -1,0 +1,66 @@
+@startuml Get_Emotion
+
+actor "Clinic User" as USR
+participant "emotion.modal.js" as EMODAL
+participant "options.modal.js" as OMODAL
+participant "testList.js" as TLIST
+participant "getTestsRoutes.js" as UROUTE
+participant "getEmotionController" as TCTRL
+participant "getEmotionResultUseCase" as UC_GET
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de opciones ==
+
+USR -> TLIST : Click [card Adaptación Socioemocional]\n(status === 'Calificada')
+TLIST -> OMODAL : openOptionsModal(idUser, idApplication, test, applicationStatus)
+OMODAL --> USR : Modal con opciones visible\nModificar habilitado si activa y calificada\nConsultar habilitado si calificada\n(funciona incluso en aplicación caducada)
+
+== Fetch previo al modal ==
+
+USR -> OMODAL : Click [Modificar] o [Consultar]
+OMODAL -> OMODAL : closeModal()
+OMODAL -> EMODAL : config.openModify() o config.openConsult()\n→ openEmotionModal(idUser, idApplication, test, mode)
+
+EMODAL -> UROUTE : fetch GET /api/usuarios/:id_user/\naplicaciones/:id_application/\npruebas/6/resultados/:id_results
+UROUTE -> TCTRL : getEmotionController.getResult(req, res)
+TCTRL -> UC_GET : execute({ id_results })
+
+UC_GET -> RREPO : fetchEmotionResult({ id_results })
+RREPO -> DB : SELECT er.*,\n       tr.status,\n       tr.date_applied\nFROM emotion_results er\nJOIN test_results tr ON er.id_results = tr.id_results\nWHERE er.id_results = ?
+DB --> RREPO : { emotion row } | null
+
+alt result not found
+    RREPO --> UC_GET : null
+    UC_GET --> TCTRL : throw Error 404\n'Emotion result not found'
+    TCTRL --> EMODAL : HTTP 404 { error }
+    EMODAL --> USR : showToast(json.error)\nmodal no se abre
+end
+
+RREPO --> UC_GET : raw emotion_results row
+UC_GET -> UC_GET : map row → EmotionResultsDTO\n{ idResults, idTest, status,\n  dateApplied,\n  scoreAnxietyBeck, interAnxietyBeck,\n  scoreDepressionBeck, interDepressionBeck,\n  notes }
+UC_GET --> TCTRL : EmotionResultsDTO
+TCTRL --> EMODAL : HTTP 200 { data: EmotionResultsDTO }
+
+== Renderizar modal ==
+
+EMODAL -> EMODAL : merge fetchedTest = { ...test, ...json.data }\nconstruye prefill desde fetchedTest
+
+alt mode === 'consult'
+    EMODAL -> EMODAL : buildEmotionConsultHTML(fetchedTest)\ncampos solo lectura\nfecha, IAB score + interp,\nIDB score + interp, notas SCL-90
+    EMODAL --> USR : Modal consulta visible\n[Cerrar]
+end
+
+alt mode === 'modify'
+    EMODAL -> EMODAL : buildEmotionFormHTML('modify', prefill)\ninputs con valores precargados\ninterpretaciones precargadas
+    EMODAL --> USR : Modal modificar visible\ninputs editables con datos existentes\n[Cancelar] [Guardar]
+end
+
+note right of EMODAL
+  En modify, el usuario puede editar
+  y guardar — flujo continúa
+  en Post_Emotion desde
+  "Guardar resultados"
+end note
+
+@enduml
