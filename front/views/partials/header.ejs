@@ -1,0 +1,100 @@
+<header class="h-12 md:h-20 shrink-0 flex items-center justify-between pr-6 md:gap-0 gap-4 text-white bg-[#0A2472] overflow-hidden touch-none">
+
+    <div class="flex items-center gap-3">
+        <button id="menuBtn" class="md:hidden text-white p-4">
+            <svg class="w-6 h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="flex items-center gap-2 text-white text-xl w-max relative rounded-br-xl md:hidden">
+            <img src="/assets/enes-white-logo1.svg" class="h-12 shrink-0" alt="Logo">
+            <h1 class="font-semibold whitespace-nowrap ">Golondrina</h1>
+        </div>
+    </div>
+
+<div class="flex items-center gap-3">
+
+      <button onclick="startTutorial()" title="Ayuda" class="cursor-pointer">
+        <svg class="w-6 h-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+        </svg>
+    </button>
+
+    <button id="openLogoutModal" title="Cerrar Sesión">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
+        </svg>
+    </button>
+</div>
+</header>
+
+<script src="/js/tutorial.js"></script>
+
+
+<div id="logoutModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full border-4 border-gray-100 mb-6">
+                <span class="text-4xl font-light text-gray-800">!</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Confirmar cierre de sesión</h2>
+            <p class="text-gray-600 mb-8 px-4">  
+                ¿Estás seguro de querer cerrar sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button class="btn-cancel" id="cancelLogout">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span class="whitespace-nowrap">Cancelar</span>
+                </button>
+                <button class="btn-logout" id="confirmLogout">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
+                    </svg>
+                    <span class="whitespace-nowrap">Cerrar sesión</span>
+                </button>
+            </div>
+    </div>
+</div>
+
+<script>
+const logoutModal = document.getElementById('logoutModal');
+const openBtn = document.getElementById('openLogoutModal');
+const closeBtn = document.getElementById('cancelLogout');
+const confirmBtn = document.getElementById('confirmLogout');
+
+openBtn.addEventListener('click', () => {
+    logoutModal.classList.remove('hidden');
+});
+
+closeBtn.addEventListener('click', () => {
+    logoutModal.classList.add('hidden');
+});
+
+confirmBtn.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            localStorage.removeItem('token');
+            window.location.href = '/auth/'; 
+        } else {
+            const errorData = await response.json();
+            alert('Error al cerrar sesión: ' + (errorData.error || 'Intente de nuevo'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión');
+    }
+});
+</script>
+<script>
+  const _csrfToken = "<%= locals.csrfToken || '' %>";
+</script>
+

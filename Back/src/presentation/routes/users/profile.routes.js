@@ -1,0 +1,23 @@
+const express = require('express');
+const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
+
+const ImpProfileRepository = require('../../../infrastructure/repositories/ImpProfileRepository');
+const GetProfileUseCase = require('../../../application/usecase/users/getProfileUseCase');
+const ProfileController = require('../../controller/users/profile.controller');
+const db = require('../../../infrastructure/database/database');
+
+module.exports = (_authUseCase, authMiddleware) => {
+  const router = express.Router();
+  const impProfileRepository = new ImpProfileRepository(db);
+  const getProfileUseCase = new GetProfileUseCase(impProfileRepository);
+  const profileController = new ProfileController(getProfileUseCase);
+
+  router.get(
+    '/:userId',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    (req, res) => profileController.getProfile(req, res)
+  );
+
+  return router;
+};

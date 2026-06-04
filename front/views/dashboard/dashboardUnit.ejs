@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
+</head>
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+    <script src="/js/main.js"></script>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4">
+
+                <!-- header -->
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-h-[34px] md:min-h-[40px]">
+                    <h1 class="text-2xl font-bold text-[#1E1E1E]">
+                        Servicio de Neuropsicología
+                    </h1>
+
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <select
+                            id="testExportType"
+                            class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            <option value="all">Todas las pruebas</option>
+                            <option value="wais">WAIS</option>
+                            <option value="rey">REY</option>
+                            <option value="banfe">BANFE</option>
+                        </select>
+
+                        <button
+                            type="button"
+                            id="btnDownloadResearchTests"
+                            class="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-md transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        >
+                            Descargar CSV
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <img src="/assets/Linear-determinate progress indicator.svg"
+                        alt="Progress indicator" class="w-full">
+                </div>
+
+                <!-- Scrollable content -->
+                <div class="flex-1 overflow-auto pb-6 flex flex-col gap-5">
+
+                    <!-- TOP CUBES -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="topCubes">
+                        <div class="col-span-full text-center text-gray-400 py-4">Cargando...</div>
+                    </div>
+
+                    <!-- ROW: polar chart + standby users -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-2">Así luce tu flujo de usuarios:</h2>
+                            <div class="relative h-[280px]">
+                                <canvas id="flowChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#E5E8FA] rounded-xl p-5 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-3">Pendientes Junta general</h2>
+                            <div id="standByPanel" class="text-sm text-gray-700">
+                                <p class="text-gray-400">Cargando...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW: age + gender -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-2">Distribución por edad</h2>
+                            <div class="relative h-[220px]">
+                                <canvas id="ageChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-2">Distribución por género</h2>
+                            <div class="relative h-[220px]">
+                                <canvas id="genderChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM CUBES -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="bottomCubes">
+                        <div class="col-span-full text-center text-gray-400 py-4">Cargando...</div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+    <script>
+        const tutorialElements = {
+        1: null,            
+        2: '#topCubes',     
+        3: '#flowChart',   
+        4: '#standByPanel', 
+        5: '#ageChart',    
+        6: '#genderChart',  
+        7: '#bottomCubes',  
+        };
+    </script>
+    <script src="/js/tutorial.js"></script>
+
+    <!-- NOTE: The following script especally the carts rendering part was made with AI help,
+               although it was customized and I try to document it as much as possible-->
+    <script>
+     // API routes
+    const ENDPOINTS = {
+        summary: '/api/dashboard/summary',
+        standByDetail: ref => `/api/dashboard/standby/${encodeURIComponent(ref)}`,
+        researchTestsExport: test => `/api/reports/tests/export?test=${encodeURIComponent(test)}`,
+    };
+
+    function initResearchTestsExportButton () {
+        const button = document.getElementById('btnDownloadResearchTests');
+        const select = document.getElementById('testExportType');
+
+        if (!button || !select) return;
+
+        button.addEventListener('click', () => {
+            const selectedTest = select.value || 'all';
+
+            window.location.href = ENDPOINTS.researchTestsExport(selectedTest);
+        });
+    }
+
+    // Build cube html util
+    function cubeHtml (value, label, variant = null) {
+        const className = variant ? `cube cube--${variant}` : 'cube';
+        return `
+            <div class="${className}">
+                <span class="cube__value">${escapeHtml(value)}</span>
+                <span class="cube__label">${escapeHtml(label)}</span>
+            </div>
+        `;
+    }
+
+    // Render cubes inside container
+    function renderCubes (items, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container) return;
+        container.innerHTML = items
+            .map(({ value, label, variant }) => cubeHtml(value, label, variant))
+            .join('');
+    }
+
+    // Render top dashboard stats
+    function renderTopCubes (counts) {
+        renderCubes([
+            { value: counts.research,       label: 'En Protocolo Investigación' },
+            { value: counts.clinical,       label: 'En Protocolo Clínico' },
+            { value: counts.inIntervention, label: 'En Intervención' },
+            { value: counts.noProtocol,     label: 'Sin Protocolo' },
+            { value: counts.standBy,        label: 'Stand by' },
+            { value: counts.discharged,     label: 'Alta' },
+        ], '#topCubes');
+    }
+
+    // Render test counters
+    function renderBottomCubes (testCounts) {
+        const map = {};
+        testCounts.items.forEach(t => {
+            const key = t.testName === 'REY' ? 'ROFC' : t.testName;
+            map[key] = t.total;
+        });
+
+        const cubeFor = (label, value) => ({
+            value, label, variant: value === 0 ? 'muted' : null,
+        });
+
+        renderCubes([
+            cubeFor('Cuestionario SE', map['Cuestionario SE'] ?? 0),
+            cubeFor('BANFE',           map.BANFE              ?? 0),
+            cubeFor('WAIS',            map.WAIS               ?? 0),
+            cubeFor('ROFC',            map.ROFC               ?? 0),
+            cubeFor('Devolución',      map['Devolución']      ?? 0),
+            { value: testCounts.totalProtocols, label: 'Total Protocolos', variant: 'accent' },
+        ], '#bottomCubes');
+    }
+
+    // ============== CHARTS ==============
+    let flowChartInstance, ageChartInstance, genderChartInstance;
+
+    function renderFlowChart (counts) {
+        const labels = ['Investigación', 'Clínico', 'Intervención', 'Sin Protocolo', 'Stand By', 'Alta'];
+        const values = [counts.research, counts.clinical, counts.inIntervention, counts.noProtocol, counts.standBy, counts.discharged];
+        const total  = values.reduce((a, b) => a + b, 0); // Total users for percentages
+
+        if (flowChartInstance) flowChartInstance.destroy(); // Prevent duplicated charts
+        flowChartInstance = new Chart(document.getElementById('flowChart'), {
+            type: 'polarArea',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        'rgba(51, 80, 169, 0.7)',
+                        'rgba(92, 124, 250, 0.7)',
+                        'rgba(66, 165, 245, 0.7)',
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(31, 137, 58, 0.7)',
+                        'rgba(224, 50, 50, 0.7)',
+                    ],
+                    borderColor: '#fff',
+                }],
+            },
+            options: {
+                // make the chart adapt to its container size
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    // Bottom legend
+                    legend: { position: 'bottom', 
+                    labels: { boxWidth: 14, font: { size: 14 }, padding: 10 },
+                    onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+                    onLeave: (event) => { event.native.target.style.cursor = 'default'; }},
+                    // Tooltip with percentage
+                    tooltip: {
+                        callbacks: {
+                            // Customize tooltip text to show both count and percentage
+                            label: ctx => {
+                                // Current value of the hovered section
+                                 // Polar charts use ctx.parse.r for the value
+                                const value  = ctx.parsed?.r ?? ctx.parsed ?? 0;
+                                
+                                // Calculate percentage based on total
+                                const percentage = total ? Math.round((value / total) * 100) : 0;
+
+                                // Final tooltip text
+                                return `${ctx.label}: ${value } (${percentage}%)`;
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    r: {
+                        ticks: { display: false, stepSize: 1 },
+                        grid:  { color: 'rgba(0,0,0,0.06)' },
+                        angleLines: { color: 'rgba(0,0,0,0.06)' },
+                    },
+                },
+            },
+        });
+    }
+
+    function renderAgeChart (age) {
+        if (ageChartInstance) ageChartInstance.destroy();
+        ageChartInstance = new Chart(document.getElementById('ageChart'), {
+            type: 'bar',
+            data: {
+                labels: age.labels,
+                datasets: [{
+                    label: 'Usuarios',
+                    data: age.data,
+                    backgroundColor: '#BA8700',
+                    borderRadius: 6,
+                }],
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, 
+                    tooltip: {                                         
+                        callbacks: {
+                            label: ctx => {
+                                const value = ctx.parsed.y;
+                                const total = age.data.reduce((a, b) => a + b, 0);
+                                const percentage = total ? Math.round((value / total) * 100) : 0;
+                                return `Usuarios: ${value} (${percentage}%)`;
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 14 } } },
+                    x: { ticks: { font: { size: 14 } } },
+                },
+            },
+        });
+    }
+
+    function renderGenderChart (gender) {
+        const labelMap = { Man: 'Hombres', Woman: 'Mujeres', Other: 'Otro', 'Not specified': 'Sin especificar' };
+        const colorMap = {
+            Masculino:             '#3350A9',
+            Femenino:           '#E91E63',
+            'Sin especificar': '#9CA3AF',
+        };
+
+        // Build chart labels
+        const labels = gender.items.map(i => labelMap[i.gender] || i.gender);
+        const values = gender.items.map(i => i.total);
+        const colors = gender.items.map(i => colorMap[i.gender] || '#999');
+        const total  = values.reduce((a, b) => a + b, 0);
+
+        //Destroy previous instance if exists to prevent duplication
+        if (genderChartInstance) genderChartInstance.destroy();
+
+        genderChartInstance = new Chart(document.getElementById('genderChart'), {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 1 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', 
+                    labels: { boxWidth: 10, font: { size: 14 } },
+                    onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
+                    onLeave: (event) => { event.native.target.style.cursor = 'default'; } },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const value   = ctx.parsed;
+                                const percentage = total ? Math.round((value / total) * 100) : 0;
+                                return `${ctx.label}: ${value} (${percentage}%)`;
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
+
+    // ============== STAND BY USER ==============
+    function initStandByPanel (list) {
+        // Main container for the standby section
+        const container = document.getElementById('standByPanel');
+
+        // Show empty state if there are no users in standby and active
+        if (!list || !list.length) {
+            container.innerHTML = `<p class="text-gray-500 italic">No hay usuarios en Stand by.</p>`;
+            return;
+        }
+
+        // Render selector and detail container
+        container.innerHTML = `
+            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <span class="text-sm">
+                    Hay <strong>${list.length}</strong> usuario${list.length === 1 ? '' : 's'} en Stand By, selecciona uno:
+                </span>
+                <div class="flex items-center gap-1.5">
+                <span class="text-sm text-gray-500 font-medium">Folio:</span>
+
+                <select id="standBySelect"
+                    class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white shadow-sm
+                           focus:outline-none focus:ring-2 focus:ring-[#3350A9]/30 focus:border-[#3350A9]
+                           transition-all cursor-pointer">
+                    ${list.map(ref => `<option value="${escapeHtml(ref)}">${escapeHtml(ref)}</option>`).join('')}
+                </select>
+                </div>
+            </div>
+            <div id="standByDetail"></div>
+        `;
+
+        // Load selected user detail on change
+        document.getElementById('standBySelect')
+                .addEventListener('change', e => loadStandByDetail(e.target.value));
+
+        // By default load the first user and call the function
+        loadStandByDetail(list[0]);
+    }
+
+    // Load stand by user detail from API
+    async function loadStandByDetail (referenceNumber) {
+        // Detail container where the user info will be rendered
+        const target = document.getElementById('standByDetail');
+        target.innerHTML = `<p class="text-gray-400 text-sm">Cargando...</p>`;
+
+        try {
+            // Fetch user detail from API
+            const res  = await fetch(ENDPOINTS.standByDetail(referenceNumber));
+            const data = await res.json();
+
+            //Error handling
+            if (!res.ok) {
+                target.innerHTML = `<p class="text-red-500 text-sm">${escapeHtml(data.error || 'Error')}</p>`;
+                return;
+            }
+
+            const ageStr = data.age
+                ? `${data.age.years} años · ${data.age.months} meses · ${data.age.days} días`
+                : 'sin datos de edad';
+
+            const protocolMap  = { Clinical: 'Clínico', Research: 'Investigación', Pending: 'Pendiente' };
+            const protocolText = protocolMap[data.protocol] || '—';
+
+            // Render profile image or fallback avatar
+            const avatarHtml = data.photo
+                ? `
+                    <img 
+                        class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" 
+                        src="${escapeHtml(data.photo)}" 
+                        alt="${escapeHtml(data.fullName)}"
+                    >
+                `
+                : `
+                    <div class="w-12 h-12 rounded-full bg-gray-200 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
+                        <svg 
+                            class="w-6 h-6 text-gray-500" 
+                            fill="currentColor" 
+                            viewBox="0 0 20 20" 
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path 
+                                fill-rule="evenodd" 
+                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" 
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                    </div>
+                `;
+
+            // Render assigned clinics
+            const clinicsHtml = (data.assignedClinics && data.assignedClinics.length)
+                ? data.assignedClinics.map(c => `<span class="pill">${escapeHtml(c)}</span>`).join('')
+                : `<span class="text-xs text-gray-400 italic">Sin asignación</span>`;
+
+            target.innerHTML = `
+                <div class="space-y-2">
+                    <!-- Avatar + name -->
+                    <div class="flex items-center gap-3 pb-2 border-b border-gray-200">
+                        ${avatarHtml}
+                        <div class="min-w-0 flex-1">
+                            <p class="font-bold text-gray-800 truncate">${escapeHtml(data.fullName)}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">${escapeHtml(ageStr)}</p>
+                        </div>
+                        <span class="text-[10px] uppercase tracking-wider font-bold text-[#3350A9] bg-white border border-[#3350A9]/30 rounded px-2 py-0.5">
+                            ${escapeHtml(data.referenceNumber)}
+                        </span>
+                    </div>
+
+                    <!-- Info rows -->
+                    <div class="space-y-0">
+                        <div class="info-row">
+                            <span class="info-row__label">Escolaridad</span>
+                            <span class="info-row__value">${escapeHtml(data.schooling || 'Sin datos')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row__label">Protocolo</span>
+                            <span class="info-row__value">${escapeHtml(protocolText)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row__label">Fecha amputación</span>
+                            <span class="info-row__value">${escapeHtml(data.amputationDate || 'Sin datos')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row__label">Ingreso a NP</span>
+                            <span class="info-row__value">${escapeHtml(data.neuroEntryDate || 'Sin datos')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row__label">Ingreso a Unidad</span>
+                            <span class="info-row__value">${escapeHtml(data.unitEntryDate || 'Sin datos')}</span>
+                        </div>
+                    </div>
+
+                    <!-- Assigned clinics -->
+                    <div class="pt-2 border-t border-gray-200">
+                        <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-2">Asignado a</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${clinicsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (err) {
+            console.error('Network error:', err);
+            target.innerHTML = `<p class="text-red-500 text-sm">No se pudo conectar al servidor.</p>`;
+        }
+    }
+
+    // ============== MAIN ==============
+    async function loadDashboard () {
+        try {
+            // Fetch dashboard summary
+            const res  = await fetch(ENDPOINTS.summary);
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error('Server error:', data.error);
+                return;
+            }
+
+            renderTopCubes(data.counts);
+            renderBottomCubes(data.testCounts);
+            renderFlowChart(data.counts);
+            renderAgeChart(data.ageDistribution);
+            renderGenderChart(data.genderDistribution);
+            initStandByPanel(data.standByList);
+
+        } catch (err) {
+            console.error('Network error:', err);
+        }
+    }
+    initResearchTestsExportButton();
+    loadDashboard();
+    </script>
+</body>
+</html>
