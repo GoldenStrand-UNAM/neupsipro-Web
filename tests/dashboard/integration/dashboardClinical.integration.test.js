@@ -37,7 +37,13 @@ jest.mock('../../../Back/src/infrastructure/repositories/ImpClinicalDashboardRep
 
 jest.mock('../../../Back/src/infrastructure/repositories/ImpAppointmentRepository', () =>
   jest.fn().mockImplementation(() => ({
-    fecthAppointmentWithClinical: mockExecute 
+    fecthAppointmentWithClinical: mockExecute
+  }))
+);
+
+jest.mock('../../../Back/src/infrastructure/repositories/ImpClinicalRepository', () =>
+  jest.fn().mockImplementation(() => ({
+    fetchClinicalUsers: jest.fn().mockResolvedValue([]),
   }))
 );
 
