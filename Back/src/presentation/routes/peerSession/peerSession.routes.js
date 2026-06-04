@@ -6,6 +6,10 @@ const PostPeerSessionUseCase = require('../../../application/usecase/peers/postP
 const PostPeerSessionController = require('../../controller/peerSession/postPeerSession.controller');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
+const GetPeerSessionsUseCase = require('../../../application/usecase/peers/getPeerSessionsUseCase');
+const GetPeerSessionsController = require('../../controller/peerSession/getPeerSession.controller');
+
+
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
@@ -14,6 +18,10 @@ module.exports = (authUseCase, authMiddleware) => {
   const controller = new PostPeerSessionController(useCase);
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
+
+  const listUseCase = new GetPeerSessionsUseCase(repository);
+  const listController = new GetPeerSessionsController(listUseCase);
+
 
   router.get(
     '/',
@@ -29,6 +37,14 @@ module.exports = (authUseCase, authMiddleware) => {
     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => controller.postPeerSession(req, res)
+  );
+
+  router.get(
+    '/list',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => listController.getPeerSessions(req, res)
   );
 
   return router;
