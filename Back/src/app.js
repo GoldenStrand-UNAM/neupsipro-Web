@@ -175,14 +175,19 @@ const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashb
 app.use('/dashboardClinical', dashRoutes(authUseCase, authMiddleware));
 
 // Forum
-const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+const forumViewRoutes = require('./presentation/routes/forum/forumView.routes');
 
-app.use('/forum', forumRoutes(authUseCase, authMiddleware));
+app.use('/forum', forumViewRoutes(authUseCase, authMiddleware));
 
-const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
+const forumApiRoutes = require('./presentation/routes/forum/forumApi.routes');
 
-app.use('/publication', publicationRoutes(authUseCase, authMiddleware));
+app.use('/api/forum', forumApiRoutes(authUseCase, authMiddleware));
 
+const publicationApiRoutes = require('./presentation/routes/forum/publicationApi.routes');
+
+app.use('/api/publication', publicationApiRoutes(authUseCase, authMiddleware));
+
+//users
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase, authMiddleware));
@@ -206,10 +211,6 @@ app.use('/clinical', clinicalUserRoutes(authUseCase, authMiddleware));
 const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClinical.routes');
 
 app.use('/', clinicalRoutes(authUseCase, authMiddleware));
-
-const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
-
-app.use('/', postPublicationRoutes(authUseCase, authMiddleware));
 
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 

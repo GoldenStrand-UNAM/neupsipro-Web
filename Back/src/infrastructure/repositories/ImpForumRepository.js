@@ -1,6 +1,8 @@
 const db = require ('../database/database');
 const forumRepository = require('../../domain/repository/forumRepository');
+const Crypt = require('../crypt/forum/uncryptUsername');
 const { v4: uuidv4 } = require('uuid');
+const crypt = new Crypt();
 
 // Repository responsable for fetching publications from the database with author info and pagination
 class ImpForumRepository extends forumRepository {
@@ -20,7 +22,9 @@ class ImpForumRepository extends forumRepository {
                 p.content,
                 p.image,
                 p.time_and_date,
-                CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+                u.first_name,
+                u.lastname_p,
+                u.lastname_m,
                 u.profile_photo
             FROM publication p
             INNER JOIN users u 
@@ -29,7 +33,8 @@ class ImpForumRepository extends forumRepository {
             LIMIT ?, ?`,
       [Number(offset), Number(limit)]
     );
-    return rows;
+    if (rows) return rows.map(row => crypt.uncryptUsername(row));
+    else return rows;
   }
   // Inserts a new publication, return its generated id
   async save ({ id_usuario, titulo, contenido, image }) {

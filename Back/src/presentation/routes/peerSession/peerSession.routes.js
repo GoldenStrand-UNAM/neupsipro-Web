@@ -6,7 +6,7 @@ const ImpPeerSessionRepository = require('../../../infrastructure/repositories/I
 const PostPeerSessionUseCase = require('../../../application/usecase/peers/postPeerSessionUseCase');
 const PostPeerSessionController = require('../../controller/peerSession/postPeerSession.controller');
 
-const GetPeerStatsUseCase = require('../../../application/usecase/peerSession/getPeerStatsUseCase');
+const GetPeerStatsUseCase = require('../../../application/usecase/peers/getPeerStatsUseCase');
 const GetPeerStatsController = require('../../controller/peerSession/getPeerStats.controller');
 
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');

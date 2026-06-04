@@ -1,34 +1,35 @@
 const ForumPostDTO = require('../../dto/forumPostDTO');
+const ForumDTO = require('../../dto/forumDTO');
 const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
 
-// Use case to get forum posts
-class getForumUseCase {
-  constructor (forumRepository) {
-
-    // Inject repository (data access layer)
+class GetForumUseCase {
+  constructor(forumRepository) {
     this.forumRepository = forumRepository;
   }
 
-  async execute (params) {
-    // Fetch posts and total count in parallel
+  async execute({ page = 1, limit = 10 }) {
     const [posts, total] = await Promise.all([
-      this.forumRepository.fetchAll (params),
-      this.forumRepository.count (),
+      this.forumRepository.fetchAll({ page, limit }),
+      this.forumRepository.count(),
     ]);
 
-    // Convert raw data to DTOs
-    const dtos = ForumPostDTO.fromArray (posts);
+    const postDtos = ForumPostDTO.fromArray(posts);
 
-    const resolved = await Promise.all(dtos.map(async dto => ({
-      ...dto,
-      image: await getPresignedUrl(dto.image),
-      pp: await getPresignedUrl(dto.pp),
-    })));
+    const resolvedPosts = await Promise.all(
+      postDtos.map(async post => ({
+        ...post,
+        image: await getPresignedUrl(post.image),
+        pp: await getPresignedUrl(post.pp),
+      }))
+    );
 
-    // Return formatted posts and total count
-    return { posts: resolved, total };
-
+    return new ForumDTO({
+      posts: resolvedPosts,
+      page,
+      limit,
+      total,
+    });
   }
 }
 
-module.exports = getForumUseCase;
+module.exports = GetForumUseCase;
