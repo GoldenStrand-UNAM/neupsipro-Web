@@ -94,7 +94,7 @@
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Afiliación <span style="color: #FF0404">*</span></label>
             <div class="inputs w-full relative flex items-center">
-              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="affiliation" id="affiliation" maxlength="20" value="<%= usuario.affiliation || '' %>">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="affiliation" id="affiliation" maxlength="20" value="<%= usuario.affiliation || '' %>" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gu, '')">
               <span id="charactersAffiliation" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/20</span>
             </div>
           </div>
@@ -329,7 +329,8 @@
     }
 
     const phoneInput = document.getElementById('emergencyContactPhone');
-    const allowedCharRegex = /^[0-9+()\s-]$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
       if (!allowedCharRegex.test(e.key)) { e.preventDefault(); showToast('Solo se permiten números, guiones y paréntesis', 'error'); }

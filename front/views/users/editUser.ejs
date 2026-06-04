@@ -804,8 +804,8 @@
     }
     const phoneInput = document.getElementById('phone');
 
-    const allowedCharRegex = /^[0-9+()\s-]$/;
-    const allowedStringRegex = /^[0-9+()\s-]+$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
