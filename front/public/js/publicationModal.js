@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmDeleteBtn.disabled = true;
       confirmDeleteBtn.innerHTML = '<span class="whitespace-nowrap">Eliminando...</span>';
 
-      const res = await fetch(`/publication/${currentPostId}`, {
+      const res = await fetch(`/api/publication/${currentPostId}`, {
         method: 'DELETE',
         headers: { 'x-csrf-token': _csrfToken },
         credentials: 'include',
@@ -171,27 +171,42 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmDeleteBtn.innerHTML = original;
     }
   });
-  publications.forEach (publication => {
-    publication.addEventListener('click', async (e) =>{
-      const idModified = e.currentTarget.id;
-      const id = idModified.replace('p-', '');
-      currentPostId = id;
-      publicationBox.classList.remove('hidden');
-      try {
-        const publication = await fetch(`/publication/${id}`);
-        if (!publication.ok) throw new Error('Error al buscar publicación');
-        publicationModal.innerHTML =
-          `<p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all"> Publicación no encontrada!</p>
-          `;
-        const result = await publication.json();
-        if (result.success) {
-          publicationModal.innerHTML = modalHTML(result.dto);
-        }
+  document.addEventListener('click', async (e) => {
+    const card = e.target.closest('[id^="p-"]');
+
+    if (!card) return;
+
+    const id = card.id.replace('p-', '');
+
+    currentPostId = id;
+    publicationBox.classList.remove('hidden');
+
+    try {
+      const publication = await fetch(`/api/publication/${id}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!publication.ok) {
+        throw new Error('Error al buscar publicación');
       }
-      catch (error) {
-        console.error('Error:', error);
+
+      publicationModal.innerHTML = `
+        <p class="text-left font-['Roboto'] text-2xl sm:text-3xl text-black font-semibold leading-tight break-all">
+          Publicación no encontrada!
+        </p>
+      `;
+
+      const result = await publication.json();
+
+      if (result.success) {
+        publicationModal.innerHTML = modalHTML(result.dto);
       }
-    });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   });
 
 });

@@ -1,5 +1,6 @@
 const db = require('../database/database');
 const TestExportRepository = require('../../domain/repository/testExportRepository');
+const uncrypt = require('../crypt/exports/exports');
 
 class ImpTestExportRepository extends TestExportRepository {
   async fetchBanfeResults() {
@@ -35,7 +36,7 @@ class ImpTestExportRepository extends TestExportRepository {
         ON pt.id_test = tr.id_test
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -74,7 +75,7 @@ class ImpTestExportRepository extends TestExportRepository {
         ON pt.id_test = tr.id_test
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -115,7 +116,7 @@ class ImpTestExportRepository extends TestExportRepository {
         ON pt.id_test = tr.id_test
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -295,7 +296,7 @@ class ImpTestExportRepository extends TestExportRepository {
 
       ORDER BY date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 }
