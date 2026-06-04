@@ -1,3 +1,5 @@
+const { cryptIntervention } = require('../../../infrastructure/crypt/intervention/postIntervention');
+
 class updateContractUseCase {
   constructor (interventionRepository) {
     this.interventionRepository = interventionRepository;
@@ -20,10 +22,14 @@ class updateContractUseCase {
     const intervention = await this.interventionRepository.findByUser({ id_user });
     if (!intervention) throw new Error('No existe intervención activa');
 
-    const updated = await this.interventionRepository.updateContract({
-      id_user,
+    const encryptedData = cryptIntervention({
       contract_link,
       neuro_profile,
+    });
+    const updated = await this.interventionRepository.updateContract({
+      id_user,
+      contract_link: encryptedData.contractLink,
+      neuro_profile: encryptedData.neuroProfile,
     });
 
     if (!updated) throw new Error('No se pudo actualizar');
@@ -31,4 +37,5 @@ class updateContractUseCase {
     return { success: true, message: 'Datos guardados' };
   }
 }
+
 module.exports = updateContractUseCase;

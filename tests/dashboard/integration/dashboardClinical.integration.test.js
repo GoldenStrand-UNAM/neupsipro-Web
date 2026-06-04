@@ -23,10 +23,32 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
   userLimiter:       (req, res, next) => next(),
 }));
 
+const mockExecute = jest.fn();
+const mockExecute2 = jest.fn();
+
+jest.mock('../../../Back/src/infrastructure/repositories/ImpClinicalDashboardRepository', () =>
+  jest.fn().mockImplementation(() => ({
+    fetchNumberUsers: mockExecute,
+    fetchAllWithClinical: mockExecute,
+    fetchHistoricalNumberUsers: mockExecute,
+    fetchInfoUser: mockExecute2
+  }))
+);
+
+jest.mock('../../../Back/src/infrastructure/repositories/ImpAppointmentRepository', () =>
+  jest.fn().mockImplementation(() => ({
+    fecthAppointmentWithClinical: mockExecute 
+  }))
+);
+
 const app = require('../../../Back/src/app');
 
 
 describe('GET /dashboardClinical routes', () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
  
  test('returns status 200 and dashboard data', async () => {
         const res = await request(app).get('/dashboardClinical/view');
@@ -34,12 +56,14 @@ describe('GET /dashboardClinical routes', () => {
     });
  
   test('GET /api/:idClinicalUser returns status 200 with a valid id', async () => {
-    const res = await request(app).get(`/dashboardClinical/api/3`);  // works for the moment but if the users change this will fail
+    mockExecute.mockResolvedValue([{ idUser: '3' }]);
+    const res = await request(app).get(`/dashboardClinical/api/3`);
     expect(res.status).toBe(200);
   });
  
   test('GET /api/user/:idUser returns status 200 with a valid id', async () => {
-    const res = await request(app).get(`/dashboardClinical/api/user/u-006`); // works for the moment but if the users change this will fail
+    mockExecute2.mockResolvedValue([{ idUser: 'u-006' }]);
+    const res = await request(app).get(`/dashboardClinical/api/user/u-006`);
     expect(res.status).toBe(200);
   });
  

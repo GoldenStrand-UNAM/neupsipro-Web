@@ -1,4 +1,3 @@
-
 jest.mock('../../Back/src/infrastructure/external/s3.config', () => ({
     uploadToS3: jest.fn()
 }));
@@ -83,7 +82,7 @@ describe('POST /upload (with mocked s3 service) SUCCESS', () => {
         const imageBuffer = fs.readFileSync(imagePath);
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo','publicationFakeTitle')
         .field('contenido','contentFake')
         .attach('imagen', imageBuffer, 'testImage.jpg');
@@ -110,7 +109,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imageBuffer = fs.readFileSync(imagePath);
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo','publicationFakeTitle')
         .field('contenido','contentFake')
         .attach('imagen', imageBuffer, 'testImage.exe');
@@ -127,7 +126,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imageBuffer = fs.readFileSync(imagePath);
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('contenido','contentFake')
         .attach('imagen', imageBuffer, 'testImage.jpg');
 
@@ -143,7 +142,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imageBuffer = fs.readFileSync(imagePath);
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo',"' OR '1'='1")
         .field('contenido','contentFake')
         .attach('imagen', imageBuffer, 'testImage.jpg');
@@ -162,7 +161,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const imageBuffer = fs.readFileSync(imagePath);
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo','publicationFakeTitle')
         .field('contenido',"' OR '1'='1")
         .attach('imagen', imageBuffer, 'testImage.jpg');
@@ -183,7 +182,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const longText = 'a'.repeat(10000000)
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo',longText)
         .field('contenido','contentFake')
         .attach('imagen', imageBuffer, 'testImage.jpg');
@@ -202,7 +201,7 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         const longText = 'a'.repeat(100000000)
 
         const res = await request(app)
-        .post('/forum/post')
+        .post('/api/publication')
         .field('titulo','FakeTitle')
         .field('contenido',longText)
         .attach('imagen', imageBuffer, 'testImage.jpg');

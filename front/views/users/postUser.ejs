@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Usuario - NeuPsi-Pro</title>
+  <title>Registrar Usuario - Golondrina</title>
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css"/>
@@ -392,7 +392,7 @@
 
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Fase <span style="color: #FF0404">*</span>
+              Fase de rehabilitación <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
               <select
@@ -565,7 +565,13 @@
     const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
     const btnSave = document.getElementById('btnSave');
-    const saveIcon = document.getElementById('saveIcon')
+    const saveIcon = document.getElementById('saveIcon');
+    const userInput = document.getElementById('userName');
+    const referenceNumberInput = document.getElementById('referenceNumber');
+    const nameInput = document.getElementById('firstName');
+    const lastamePInput = document.getElementById('lastnameP');
+    const lastameMInput = document.getElementById('lastnameM');
+    const birthdateInput = document.getElementById('birthdate');
 
     function escapeHTML(text) {
       return text
@@ -631,7 +637,6 @@
       });
 
       const data = await res.json();
-      console.log(res.status);
 
       if (res.ok) {
         sessionStorage.setItem('userSaved', 'true');
@@ -644,6 +649,28 @@
               </svg>`
       } else {
         showToast((data.error || 'Error desconocido'), 'error');
+        if (data.error === 'El usuario ya se encuentra registrado.') {
+          lastamePInput.style.border = '2px solid red';
+          lastamePInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          lastameMInput.style.border = '2px solid red';
+          lastameMInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          birthdateInput.style.border = '2px solid red';
+          birthdateInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          nameInput.setCustomValidity("Usuario registrado, cambia un campo");
+          nameInput.style.border = '2px solid red';
+          nameInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          nameInput.reportValidity();
+        } else if (data.error === 'El número de referencia ya pertenece a otro usuario.') {
+          referenceNumberInput.setCustomValidity("Usuario registrado, cambia un campo");
+          referenceNumberInput.style.border = '2px solid red';
+          referenceNumberInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          referenceNumberInput.reportValidity();
+        } else if (data.error === 'El nombre de usuario ya está en uso.') {
+          userInput.setCustomValidity("Usuario registrado, cambia un campo");
+          userInput.style.border = '2px solid red';
+          userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+          userInput.reportValidity();
+        }
         btnSave.querySelector('span').textContent = 'Guardar';
         saveIcon.innerHTML = `<svg class="white-icon-mini" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
@@ -656,6 +683,30 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9" />
               </svg>`
       }
+    });
+
+    const duplicateInputs = [nameInput, lastamePInput, lastameMInput, birthdateInput];
+
+    duplicateInputs.forEach(input => {
+      input.addEventListener('input', (e) => {
+        nameInput.setCustomValidity("");
+        duplicateInputs.forEach(inp => {
+          inp.style.border = '';
+          inp.style.boxShadow = '';
+        });
+      });
+    });
+
+    referenceNumberInput.addEventListener('input', (e) => {
+      referenceNumberInput.setCustomValidity("");
+      referenceNumberInput.style.border = '';
+      referenceNumberInput.style.boxShadow = '';
+    });
+
+    userInput.addEventListener('input', (e) => {
+      userInput.setCustomValidity("");
+      userInput.style.border = '';
+      userInput.style.boxShadow = '';
     });
 
     async function fetchUsers() {
