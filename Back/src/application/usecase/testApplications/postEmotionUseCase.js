@@ -51,7 +51,7 @@ class postEmotionUseCase {
     // 3. Validate notes
     if (notes) {
       if (String(notes).length > 2000) {
-        const err = new Error('notes must be 200 characters or less');
+        const err = new Error('notes must be 2000 characters or less');
         err.status = 422;
         throw err;
       }
