@@ -29,8 +29,8 @@ class postEmotionUseCase {
       err.status = 422;
       throw err;
     }
-    if (anxiety < 0 || anxiety > 63) {
-      const err = new Error('score_anxiety_beck must be between 0 and 63');
+    if (anxiety < 0 || anxiety > 100) {
+      const err = new Error('score_anxiety_beck must be between 0 and 100');
       err.status = 422;
       throw err;
     }
@@ -42,8 +42,8 @@ class postEmotionUseCase {
       err.status = 422;
       throw err;
     }
-    if (depression < 0 || depression > 63) {
-      const err = new Error('score_depression_beck must be between 0 and 63');
+    if (depression < 0 || depression > 100) {
+      const err = new Error('score_depression_beck must be between 0 and 100');
       err.status = 422;
       throw err;
     }
