@@ -198,7 +198,7 @@ function buildEmotionFormHTML (mode, prefill) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700">
-                IAB — Puntaje Ansiedad <span class="text-red-500">*</span>
+                Inventario de ansiedad de Beck <span class="text-red-500">*</span>
               </label>
               <input
                 id="inputAnxietyBeck"
@@ -226,7 +226,7 @@ function buildEmotionFormHTML (mode, prefill) {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700">
-                IDB — Puntaje Depresión <span class="text-red-500">*</span>
+                Inventario de depresión de Beck <span class="text-red-500">*</span>
               </label>
               <input
                 id="inputDepressionBeck"
