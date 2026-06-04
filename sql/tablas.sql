@@ -795,6 +795,7 @@ CREATE TABLE banfe_results (
     score_d_lateral             INT          NULL,
     inter_d_lateral             VARCHAR(36),
     score_total                 INT          NULL,
+    inter_total              VARCHAR(36),
     notes                       VARCHAR(200),
     CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
