@@ -3,7 +3,7 @@ class DeletePeerSessionUseCase {
     this.peerSessionRepository = peerSessionRepository;
   }
 
-  async execute ({ idPeerSession }) {
+  async execute ({ id_peer_session: idPeerSession }) {
     if (!idPeerSession)
       throw new Error('El identificador de la sesión es obligatorio');
 

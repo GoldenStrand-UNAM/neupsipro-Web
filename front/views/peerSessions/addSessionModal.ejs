@@ -1,0 +1,234 @@
+<div id="addSessionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Nueva sesión de pares</h2>
+            <button id="closeAddSession" class="text-gray-400 hover:text-gray-700 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionDateInput">Fecha</label>
+                    <div class="search-input">
+                        <input id="sessionDateInput" type="text" placeholder="Selecciona fecha" class="search-input_field"/>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionResponsableInput">Realizó la sesión</label>
+                    <div class="search-input relative flex items-center">
+                        <input id="sessionResponsableInput" type="text" maxlength="80"
+                            placeholder="Nombre del orador" class="search-input_field pr-14"/>
+                        <span id="charSessionResponsable" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/80</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionTitleInput">Título / Tema</label>
+                <div class="search-input relative flex items-center">
+                    <input id="sessionTitleInput" type="text" maxlength="100"
+                        placeholder="Ej. Manejo del dolor fantasma" class="search-input_field pr-14"/>
+                    <span id="charSessionTitle" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/100</span>
+                </div>
+                <span id="sessionTitleError" class="text-xs text-red-500 hidden mt-1 block"></span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionMenInput">Hombres</label>
+                    <div class="search-input">
+                        <input id="sessionMenInput" type="text" inputmode="numeric" maxlength="3"
+                            placeholder="0" class="search-input_field"/>
+                    </div>
+                    <span id="sessionMenError" class="text-xs text-red-500 hidden mt-1 block"></span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionWomenInput">Mujeres</label>
+                    <div class="search-input">
+                        <input id="sessionWomenInput" type="text" inputmode="numeric" maxlength="3"
+                            placeholder="0" class="search-input_field"/>
+                    </div>
+                    <span id="sessionWomenError" class="text-xs text-red-500 hidden mt-1 block"></span>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2" for="sessionNoteInput">Nota / De qué trató</label>
+                <div class="w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#3350A9] focus-within:border-[#3350A9] bg-white overflow-hidden">
+                    <textarea id="sessionNoteInput" rows="3" maxlength="500" placeholder="Breve descripción de la sesión..."
+                        class="w-full pl-4 pt-3 pr-4 text-sm bg-transparent border-none outline-none focus:outline-none focus:border-none focus:ring-0 resize-none block"></textarea>
+                    <div class="bg-white pb-2 pr-3 pt-1 flex justify-end select-none pointer-events-none">
+                        <span id="charSessionNote" class="text-xs text-gray-400">0/500</span>
+                    </div>
+                </div>
+            </div>
+
+            <p id="addSessionError" class="text-sm text-red-500 hidden"></p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+            <button class="btn-cancel flex-1" id="cancelAddSession">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="whitespace-nowrap">Cancelar</span>
+            </button>
+            <button id="confirmAddSession" class="btn-add flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span class="whitespace-nowrap">Agregar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script>
+(function () {
+    const btnOpen    = document.getElementById('btnAddSession');
+    const modal      = document.getElementById('addSessionModal');
+    const btnClose   = document.getElementById('closeAddSession');
+    const btnCancel  = document.getElementById('cancelAddSession');
+    const btnConfirm = document.getElementById('confirmAddSession');
+    const errorBox   = document.getElementById('addSessionError');
+
+    const inputDate        = document.getElementById('sessionDateInput');
+    const inputResponsable = document.getElementById('sessionResponsableInput');
+    const inputTitle       = document.getElementById('sessionTitleInput');
+    const inputMen         = document.getElementById('sessionMenInput');
+    const inputWomen       = document.getElementById('sessionWomenInput');
+    const inputNote        = document.getElementById('sessionNoteInput');
+
+    const titleError = document.getElementById('sessionTitleError');
+    const menError   = document.getElementById('sessionMenError');
+    const womenError = document.getElementById('sessionWomenError');
+
+    let picker = null;
+
+    function showError (msg) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+    function hideError ()    { errorBox.classList.add('hidden'); errorBox.textContent = ''; }
+
+    // validate numeric inputs and show error if non-numeric characters are entered
+    [ [inputMen, menError], [inputWomen, womenError] ].forEach(([input, err]) => {
+        input.addEventListener('input', () => {
+            const clean = input.value.replace(/\D/g, '');
+            if (clean !== input.value) {
+                err.textContent = 'Solo se permiten números';
+                err.classList.remove('hidden');
+                input.value = clean;
+            } else {
+                err.classList.add('hidden');
+            }
+        });
+    });
+
+    // initialize flatpickr on the date input, with Spanish locale and max date of today
+    function initPicker () {
+        if (picker) return;
+        picker = flatpickr(inputDate, {
+            dateFormat: 'd/m/Y',
+            maxDate: 'today', 
+            locale: 'es',
+            appendTo: document.querySelector('#addSessionModal .relative'),
+            static: true,
+            disableMobile: true,
+        });
+    }
+
+    // character counters for inputs with maxlength
+    function setupCounter (inputId, counterId) {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        const max = input.getAttribute('maxlength');
+        input.addEventListener('input', () => {
+            counter.textContent = `${input.value.length}/${max}`;
+        });
+    }
+
+    // Initialize counters
+    setupCounter('sessionResponsableInput', 'charSessionResponsable');
+    setupCounter('sessionTitleInput', 'charSessionTitle');
+    setupCounter('sessionNoteInput', 'charSessionNote');
+
+    // Reset form fields and errors
+    function resetForm () {
+        inputResponsable.value = '';
+        inputTitle.value = '';
+        inputMen.value = '';
+        inputWomen.value = '';
+        inputNote.value = '';
+        if (picker) picker.clear(); else inputDate.value = '';
+        [inputResponsable, inputTitle, inputMen, inputWomen, inputNote].forEach(el => el.dispatchEvent(new Event('input')));
+        titleError.classList.add('hidden');
+        hideError();
+    }
+
+    const close = () => { resetForm(); modal.classList.add('hidden'); };
+    btnClose?.addEventListener('click', close);
+    btnCancel?.addEventListener('click', close);
+
+    btnOpen?.addEventListener('click', () => {
+        hideError();
+        initPicker();
+        modal.classList.remove('hidden');
+    });
+
+    // Handle form submission to create a new peer session
+    btnConfirm?.addEventListener('click', async () => {
+        hideError();
+
+        const sessionDate = inputDate.value;
+        const responsable = inputResponsable.value.trim();
+        const title       = inputTitle.value.trim();
+        const menCount    = inputMen.value.trim();
+        const womenCount  = inputWomen.value.trim();
+        const note        = inputNote.value.trim();
+
+        if (!sessionDate) return showError('Selecciona la fecha de la sesión');
+        if (!title)       { titleError.textContent = 'El título es obligatorio'; titleError.classList.remove('hidden'); return; }
+
+        const original = btnConfirm.innerHTML;
+        try {
+            btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<span>Agregando...</span>';
+
+            // send POST request to create a new session
+            const res = await fetch('/peer-sessions/post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
+                credentials: 'include',
+
+                body: JSON.stringify({
+                    title,
+                    responsable: responsable || null,
+                    note: note || null,
+                    session_date: sessionDate,
+                    men_count: menCount === '' ? 0 : Number(menCount),
+                    women_count: womenCount === '' ? 0 : Number(womenCount),
+                }),
+            });
+
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || 'Error al agregar sesión');
+
+            showToast('Sesión agregada con éxito', 'success');
+            setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+            showError(err.message);
+            btnConfirm.disabled = false;
+            btnConfirm.innerHTML = original;
+        }
+    });
+})();
+</script>
