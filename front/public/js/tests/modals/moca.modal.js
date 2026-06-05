@@ -12,13 +12,13 @@ function interpretMOCA (finalScore) {
 }
 
 // ── Final score resolution ───────────────────────────────────────────────────
-// Applies +2 bonus if schooling <= 12 years and raw score <= 28.
+// Applies +2 bonus if schooling <= 12 years and raw score <= 29.
 // Mirrors server-side logic — used only for live display, never trusted.
 
 function resolveMOCAFinalScore (raw, schoolingYears) {
   const n = Number(raw);
   if (isNaN(n)) return null;
-  if (schoolingYears !== null && schoolingYears <= 12 && n <= 28) {
+  if (schoolingYears !== null && schoolingYears <= 12 && n <= 29) {
     return Math.min(n + 2, 30);
   }
   return Math.min(n, 30);
