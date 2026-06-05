@@ -876,6 +876,18 @@ CREATE TABLE tutorial (
     content      VARCHAR(300)  NOT NULL
 );
 
+CREATE TABLE peer_session (
+    id_peer_session VARCHAR(36) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    responsable VARCHAR(80) NOT NULL,
+    note VARCHAR(80) NULL,
+    session_date  DATE NOT NULL,
+    men_count INT NOT NULL,
+    women_count INT NOT NULL,
+
+    CONSTRAINT pk_peer_session
+        PRIMARY KEY (id_peer_session)
+);
 ALTER TABLE user_info
 ALTER state SET DEFAULT 'Stand_by';
 

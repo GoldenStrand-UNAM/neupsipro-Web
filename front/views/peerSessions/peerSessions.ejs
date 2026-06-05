@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo de pares - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body data-module="<%= tutorialModule %>" class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+    <script src="/js/main.js"></script>
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <%- include('../partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <%- include('../partials/header') %>
+
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
+            <div class="w-full h-full bg-white rounded-tl-3xl rounded-tr-3xl px-6 pt-6 pb-0 flex flex-col gap-4">
+
+                <!-- header -->
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-h-[34px] md:min-h-[40px]">
+                    <h1 class="text-2xl font-bold text-[#1E1E1E]">Grupo de pares</h1>
+
+                    <button
+                        type="button"
+                        id="btnAddSession"
+                        class="btn-mini w-full sm:w-[260px] md:w-[306px] bg-[#C89B3C] cursor-pointer"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 13.125V11.25H11.25V0H13.125V11.25H24.375V13.125H13.125V24.375H11.25V13.125H0Z" fill="white"/>
+                        </svg>
+                        <span>Registrar sesión</span>
+                    </button>
+                </div>
+
+                <div>
+                    <img src="/assets/Linear-determinate progress indicator.svg" alt="Progress indicator" class="w-full">
+                </div>
+
+                <!-- Scrollable content -->
+                <div class="flex-1 overflow-auto pb-6 flex flex-col gap-5">
+
+                    <!-- KPIs -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3" id="kpiCubes">
+                        <div class="col-span-full text-center text-gray-400 py-4">Cargando...</div>
+                    </div>
+
+                    <!-- ROW: gender bars + attendance line -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-2">Hombres vs Mujeres</h2>
+                            <div class="relative h-[260px]">
+                                <canvas id="genderBarChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm">
+                            <h2 class="text-base font-semibold text-gray-700 mb-2">Asistencia histórica</h2>
+                            <div class="relative h-[260px]">
+                                <canvas id="attendanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Previous sessions -->
+                    <div>
+                        <h2 class="text-lg font-bold text-[#1E1E1E] mb-3">Sesiones anteriores</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="sessionsList">
+                            <div class="col-span-full text-center text-gray-400 py-4">Cargando...</div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="flex items-center justify-center gap-4 mt-5" id="pagination"></div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal partials-->
+    <%- include('./addSessionModal') %>
+    <%- include('./deleteSessionModal') %>
+
+        <!-- NOTE: The following script especally the carts rendering part was made with AI help,
+               although it was customized and I try to document it as much as possible-->
+
+    <script src="/js/sidebar.js"></script>
+
+    <script>
+    // API endpoints used by the page
+    const ENDPOINTS = {
+        stats: '/peer-sessions/stats', // general stats for the cubes totals
+        list:  (page, limit) => `/peer-sessions/list?page=${page}&limit=${limit}`, // paginated cards
+        del:   id => `/peer-sessions/${encodeURIComponent(id)}`, // delete session by id
+    };
+
+    const PAGE_SIZE = 4;
+    let currentPage = 1;
+    let totalPages  = 1;
+
+    // cubes info
+    function cubeHtml (value, label) {
+        return `
+            <div class="cube">
+                <span class="cube__value">${escapeHtml(String(value))}</span>
+                <span class="cube__label">${escapeHtml(label)}</span>
+            </div>`;
+    }
+
+    // render the cubes
+    function renderKpis (kpis) {
+        const container = document.getElementById('kpiCubes');
+        container.innerHTML = [
+            cubeHtml(kpis.totalSessions,  'Sesiones registradas'),
+            cubeHtml(kpis.totalAttendees, 'Asistencias totales'),
+            cubeHtml(kpis.avgPerSession,  'Promedio por sesión'),
+            cubeHtml(`${kpis.totalMen}/${kpis.totalWomen}`, 'Hombres / Mujeres'),
+        ].join('');
+    }
+
+    // ============== CHARTS ==============
+    let genderBarInstance, attendanceInstance;
+
+    function formatDate (iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        if (isNaN(d)) return iso;
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}`;
+    }
+
+    // men v woman chart
+    function renderGenderBar (series) {
+        const labels = series.map(s => formatDate(s.date));
+        const men    = series.map(s => s.men);
+        const women  = series.map(s => s.women);
+
+        if (genderBarInstance) genderBarInstance.destroy();
+        genderBarInstance = new Chart(document.getElementById('genderBarChart'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Hombres', data: men,   backgroundColor: '#3350A9', borderRadius: 5 },
+                    { label: 'Mujeres', data: women, backgroundColor: '#8B5CF6', borderRadius: 5 },
+                ],
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,  // fill the fixed-height wrapper
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 13 }, padding: 10 } },
+                    tooltip: {
+                        callbacks: {
+                            // Use the session title as the tooltip title when available
+                            title: items => {
+                                const i = items[0]?.dataIndex;
+                                return series[i]?.title || labels[i];
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 13 } } },
+                    x: { ticks: { font: { size: 13 } } },
+                },
+            },
+        });
+    }
+
+    // attendance line chart
+    function renderAttendance (series) {
+        const labels = series.map(s => formatDate(s.date));
+        const totals = series.map(s => s.total);
+
+        if (attendanceInstance) attendanceInstance.destroy();
+        attendanceInstance = new Chart(document.getElementById('attendanceChart'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Asistencia',
+                    data: totals,
+                    borderColor: '#3350A9',
+                    backgroundColor: 'rgba(51, 80, 169, 0.12)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#3350A9',
+                }],
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 4, font: { size: 13 } } },
+                    x: { ticks: { font: { size: 13 } } },
+                },
+            },
+        });
+    }
+
+    // ============== SESSION CARDS ==============
+    // Build the HTML for one session card (title, date, counts, speaker, delete)
+    function sessionCard (s) {
+        const total = (s.menCount || 0) + (s.womenCount || 0);
+        return `
+            <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm flex flex-col gap-2">
+                <div class="flex items-start justify-between gap-2">
+                    <h3 class="font-semibold text-gray-800">${escapeHtml(s.title || 'Sin título')}</h3>
+                    <span class="text-[11px] text-gray-400 bg-white rounded px-2 py-0.5 whitespace-nowrap">
+                        ${escapeHtml(s.date || '')}
+                    </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pill">${s.menCount || 0} H</span>
+                    <span class="pill">${s.womenCount || 0} M</span>
+                    <span class="pill pill--accent">${total} total</span>
+                </div>
+                <div class="flex items-center justify-between mt-1">
+                    <span class="text-xs text-gray-500 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                        ${escapeHtml(s.responsable || 'Sin orador')}
+                    </span>
+                    <button class="text-red-500 hover:text-red-700 text-xs font-medium cursor-pointer js-delete-session" data-id="${escapeHtml(s.id)}">
+                        Eliminar
+                    </button>
+                </div>
+            </div>`;
+    }
+
+    // Render the list of session cards, or an empty-state message
+    function renderSessions (sessions) {
+        const container = document.getElementById('sessionsList');
+        if (!sessions.length) {
+            container.innerHTML = `<p class="col-span-full text-gray-400 italic text-center py-6">No hay sesiones registradas.</p>`;
+            return;
+        }
+        container.innerHTML = sessions.map(sessionCard).join('');
+        container.querySelectorAll('.js-delete-session').forEach(btn => {
+            btn.addEventListener('click', () => window.openDeletePeerSession(btn.dataset.id));
+        });
+    }
+
+    // pagination as the consult user list one
+   function renderPagination () {
+        const c = document.getElementById('pagination');
+        c.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const btn = (label, disabled, onClick) => {
+            const b = document.createElement('button');
+            b.textContent = label;
+            b.disabled = disabled;
+            b.onclick = onClick;
+            b.className = 'btn-mini bg-[#002B7A] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none';
+            return b;
+        };
+
+        const info = document.createElement('span');
+        info.className = 'text-sm text-gray-500';
+        info.textContent = `Página ${currentPage} de ${totalPages}`;
+
+        c.append(
+            btn('Anterior', currentPage <= 1, () => { if (currentPage > 1) loadSessions(currentPage - 1); }),
+            info,
+            btn('Siguiente', currentPage >= totalPages, () => { if (currentPage < totalPages) loadSessions(currentPage + 1); })
+        );
+    }
+
+    // ============== DATA LOADERS ==============
+    async function loadStats () {
+        try {
+            const res  = await fetch(ENDPOINTS.stats);
+            const json = await res.json();
+            if (!res.ok) { console.error(json.error); return; }
+            const { kpis, genderSeries, attendanceSeries } = json.data;
+            renderKpis(kpis);
+            renderGenderBar(genderSeries);
+            renderAttendance(attendanceSeries);
+        } catch (err) {
+            console.error('Network error:', err);
+        }
+    }
+
+    // Fetch one page of sessions and render the cards + pagination
+    async function loadSessions (page = 1) {
+        const container = document.getElementById('sessionsList');
+        container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-4">Cargando...</div>`;
+        try {
+            const res  = await fetch(ENDPOINTS.list(page, PAGE_SIZE));
+            const json = await res.json();
+            if (!res.ok) { container.innerHTML = `<p class="col-span-full text-red-500 text-center">${escapeHtml(json.error || 'Error')}</p>`; return; }
+            currentPage = json.data.page;
+            totalPages  = json.data.totalPages;
+            renderSessions(json.data.sessions);
+            renderPagination();
+        } catch (err) {
+            console.error('Network error:', err);
+            container.innerHTML = `<p class="col-span-full text-red-500 text-center">No se pudo conectar al servidor.</p>`;
+        }
+    }
+
+    // Called by the delete modal after a successful delete.
+    window.onPeerSessionDeleted = async () => {
+        await Promise.all([loadStats(), loadSessions(currentPage)]);
+    };
+
+    // ============== INIT ==============
+    loadStats();
+    loadSessions(1);
+    </script>
+</body>
+</html>
