@@ -31,6 +31,15 @@ class ImpPeerSessionRepository extends peerSessionRepository {
     return rows[0];
   }
 
+  async fetchAllForStats () {
+    const [rows] = await db.query(
+      `SELECT title, session_date, men_count, women_count
+         FROM peer_session
+        ORDER BY session_date ASC`
+    );
+    return rows;
+  }
+  
   async deleteSession (id_peer_session) {
       const [result] = await db.query(
         `DELETE FROM peer_session
