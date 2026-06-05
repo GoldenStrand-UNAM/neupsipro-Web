@@ -54,9 +54,9 @@ function validateFirst (user) {
 }
 
 function validateSecond (user, { passwordRequired }) {
-  const affiliation = validation.validate({
+  const affiliation = validation.validateAffiliation({
     value: user.affiliation,
-    maxLenght: 20,
+    requiredLength: 20,
     label: 'La afiliación',
     required: true });
   const activity = validation.validateEnum(

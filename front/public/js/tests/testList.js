@@ -17,7 +17,7 @@
     // eslint-disable-next-line security/detect-object-injection
     const statusIcon = _variantIcons[variant] ?? _variantIcons.neutral;
     const dateFormatted = test.dateApplied
-      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
       : 'Sin fecha';
 
     const isClickable = !!TEST_REGISTRY[test.idTest];
@@ -48,7 +48,7 @@
                     a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <h3 class="application-card__title">${escapeHTML(test.testName)}</h3>
-          <p class="application-card__date">Aplicada: ${dateFormatted}</p>
+          <p class="application-card__date">Registrada: ${dateFormatted}</p>
         </div>
       </div>
     `;
