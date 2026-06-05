@@ -23,5 +23,8 @@ class interventionRepository {
   async findSessionById ({ _id_session }) {
     throw new Error('findSessionById() must be implemented');
   }
+  async updateSession ({ _id_session, _session_number, _session_date, _objectives, _development, _dqp_task }) {
+    throw new Error('updateSession() must be implemented');
+  }
 }
 module.exports = interventionRepository;

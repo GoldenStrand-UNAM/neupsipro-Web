@@ -6,8 +6,11 @@ const updateContractUseCase = require('../../../application/usecase/intervention
 const addSessionUseCase = require('../../../application/usecase/interventions/addSessionUseCase');
 const deleteSessionUseCase = require('../../../application/usecase/interventions/deleteSessionUseCase');
 const InterventionController = require('../../controller/interventions/intervention.controller');
+const updateSessionUseCase = require('../../../application/usecase/interventions/updateSessionUseCase');
+
 
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
+
 
 const {  apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
@@ -19,8 +22,10 @@ module.exports = (authUseCase, authMiddleware) => {
   const updateNeuroContract = new updateContractUseCase(repo);
   const Session = new addSessionUseCase(repo);
   const DeleteSession = new deleteSessionUseCase(repo);
-  const controller = new InterventionController(intervention, updateNeuroContract, Session, DeleteSession);
+  const UpdateSession = new updateSessionUseCase(repo);
+  const controller = new InterventionController(intervention, updateNeuroContract, Session, DeleteSession, UpdateSession);
 
+  
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   router.get(
@@ -49,6 +54,13 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken, apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => controller.deleteSession(req, res)
+  );
+
+  router.patch(
+    '/users/:id_user/intervention/sessions/:id_session',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'edit'),
+    (req, res) => controller.updateSession(req, res)
   );
 
   return router;

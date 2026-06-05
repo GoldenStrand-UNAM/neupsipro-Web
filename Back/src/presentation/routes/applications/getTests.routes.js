@@ -238,8 +238,9 @@ module.exports = (authUseCase, authMiddleware) => {
         .then(birthdate => {
           if (!birthdate) return res.status(200).json({ age: null });
           const today = new Date();
-          const parts = String(birthdate).split(/[-\/]/).map(Number);
-          const birth = new Date(parts[0], parts[1] - 1, parts[2]);
+          const [day, month, year] = String(birthdate).split('/').map(Number);
+          const birth = new Date(year, month - 1, day);
+          if (isNaN(birth.getTime())) return res.status(200).json({ age: null });
           let years = today.getFullYear() - birth.getFullYear();
           const m = today.getMonth() - birth.getMonth();
           if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;

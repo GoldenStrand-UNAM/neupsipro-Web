@@ -1,4 +1,6 @@
 const db = require('../database/database');
+const crypt = require('../crypt/dashboard/dashboardClinicalUsersInfo');
+const crypt2 = require('../crypt/dashboard/dashboardClinicalUsers.js');
 const clinicalDashboardRepository = require('../../domain/repository/clinicalDashboardRepository');
 
 class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
@@ -77,7 +79,8 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
       WHERE ur.id_clinic_user = ? AND ur.type = 'assigned' AND u.eliminated = '0' AND u.id_role = 2`,
       [idClinicalUser]
     );
-    return users;
+    const uncrypted = users.map(row => crypt2(row));
+    return uncrypted;
   }
 
   async fetchInfoUser ({ idUser }) {
@@ -85,7 +88,9 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
       SELECT
         u.id_user,
         ui.reference_number,
-        CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS full_name,
+        u.first_name,  
+        u.lastname_p,
+        u.lastname_m,
         u.birthdate,
         u.profile_photo, 
         (
@@ -117,7 +122,8 @@ class ImpClinicalDashboardRepository extends clinicalDashboardRepository {
         LIMIT 1;
       `, [idUser]);
     if (!userInfo.length) return null;
-    return userInfo;
+    const uncrypted = userInfo.map(row => crypt(row));
+    return uncrypted;
   }
 }
 module.exports = ImpClinicalDashboardRepository;

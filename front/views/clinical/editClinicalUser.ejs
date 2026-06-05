@@ -94,7 +94,7 @@
           <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Afiliación <span style="color: #FF0404">*</span></label>
             <div class="inputs w-full relative flex items-center">
-              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="affiliation" id="affiliation" maxlength="20" value="<%= usuario.affiliation || '' %>">
+              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="affiliation" id="affiliation" maxlength="20" value="<%= usuario.affiliation || '' %>" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gu, '')">
               <span id="charactersAffiliation" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/20</span>
             </div>
           </div>
@@ -102,8 +102,19 @@
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
             <label class="sm:w-1/4 font-medium sm:text-right shrink-0">Actividad <span style="color: #FF0404">*</span></label>
             <div class="inputs w-full relative flex items-center">
-              <input required class="input-base w-full sm:flex-1 border p-2 pr-12 rounded" type="text" name="activity" id="activity" maxlength="20" value="<%= usuario.activity || '' %>">
-              <span id="charactersActivity" class="absolute right-3 text-xs text-gray-500 pointer-events-none">0/20</span>
+              <select
+                required
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded <%= usuario.activity ? 'text-black' : 'text-gray-400' %>"
+                name="activity"
+                id="activity"
+              >
+                <option disabled hidden value="">Elige una opción</option>
+                <option value="Servicio social"         class="text-black" <%= usuario.activity === 'Servicio social'         ? 'selected' : '' %>>Servicio social</option>
+                <option value="Prácticas profesionales" class="text-black" <%= usuario.activity === 'Prácticas profesionales' ? 'selected' : '' %>>Prácticas profesionales</option>
+                <option value="Voluntariado"            class="text-black" <%= usuario.activity === 'Voluntariado'            ? 'selected' : '' %>>Voluntariado</option>
+                <option value="Titular"                 class="text-black" <%= usuario.activity === 'Titular'                 ? 'selected' : '' %>>Titular</option>
+                <option value="Verano de investigación" class="text-black" <%= usuario.activity === 'Verano de investigación' ? 'selected' : '' %>>Verano de investigación</option>
+              </select>
             </div>
           </div>
 
@@ -255,7 +266,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          sessionStorage.setItem('modifiedUser', 'true');
+          sessionStorage.setItem('modifiedClinicalUser', 'true');
           window.location.href = `/clinical/${window.__USER_ID__}`;
         } else if (res.status === 429) {
           showToast('Has alcanzado el límite de operaciones. Intenta más tarde.', 'error');
@@ -318,11 +329,26 @@
     }
 
     const phoneInput = document.getElementById('emergencyContactPhone');
-    const allowedCharRegex = /^[0-9+()\s-]$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
       if (!allowedCharRegex.test(e.key)) { e.preventDefault(); showToast('Solo se permiten números, guiones y paréntesis', 'error'); }
     });
+
+    function changeDefaultColor(id) {
+      const inputSelect = document.getElementById(id);
+
+      inputSelect.addEventListener('change', function() {
+        if (this.value !== "") {
+          this.classList.remove('text-gray-400');
+          this.classList.add('text-black');
+        } else {
+          this.classList.remove('text-black');
+          this.classList.add('text-gray-400');
+        }
+      });
+    }
 
     function validateMatch() {
       const val = passInput.value, confVal = confirmInput.value;
@@ -344,13 +370,13 @@
     setupCounter('lastnameM', 'charactersLastnameM');
     setupCounter('email', 'charactersEmail');
     setupCounter('affiliation', 'charactersAffiliation');
-    setupCounter('activity', 'charactersActivity');
     setupCounter('username', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('emergencyContactName', 'charactersEmergencyContactName');
     setupCounter('emergencyContactPhone', 'charactersEmergencyContactPhone');
     setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
+    changeDefaultColor('activity');
     validateDates('birthdate');
     validateDates('startDate');
     validateFutureDates('finishDate');

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modificar Usuario - NeuPsi-Pro</title>
+  <title>Modificar Usuario - Golondrina</title>
   <link rel="stylesheet" href="/css/output.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
@@ -804,8 +804,8 @@
     }
     const phoneInput = document.getElementById('phone');
 
-    const allowedCharRegex = /^[0-9+()\s-]$/;
-    const allowedStringRegex = /^[0-9+()\s-]+$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
