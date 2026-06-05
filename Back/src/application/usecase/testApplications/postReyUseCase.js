@@ -20,7 +20,8 @@ class postREYUseCase {
 
   #calculateAge (birthdate) {
     if (!birthdate) return null;
-    const [day, month, year] = String(birthdate).split('/').map(Number);
+    const [day, month, year] = String(birthdate).trim().split('/').map(Number);
+    if (!day || !month || !year) return null;
     const birth = new Date(year, month - 1, day);
     if (isNaN(birth.getTime())) return null;
     const today = new Date();
