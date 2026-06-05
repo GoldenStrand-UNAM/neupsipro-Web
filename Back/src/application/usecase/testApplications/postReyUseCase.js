@@ -169,8 +169,12 @@ class postREYUseCase {
       throw err;
     }
 
-    const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
-    const birthdate      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    const schooling   = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
+    const rawAge      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+
+    // uncryptUser devuelve objeto completo — extraer birthdate
+    const birthdate   = rawAge?.birthdate ?? rawAge;
+
     const schoolingYears = this.#resolveSchoolingYears(schooling);
     const age            = this.#calculateAge(birthdate);
     const educationBlock = this.#resolveEducationBlock(schoolingYears);
