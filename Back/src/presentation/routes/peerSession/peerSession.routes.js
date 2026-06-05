@@ -2,6 +2,13 @@ const express = require('express');
 const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 const ImpPeerSessionRepository = require('../../../infrastructure/repositories/ImpPeerSessionRepository');
+
+const PostPeerSessionUseCase = require('../../../application/usecase/peers/postPeerSessionUseCase');
+const PostPeerSessionController = require('../../controller/peerSession/postPeerSession.controller');
+
+const GetPeerStatsUseCase = require('../../../application/usecase/peers/getPeerStatsUseCase');
+const GetPeerStatsController = require('../../controller/peerSession/getPeerStats.controller');
+
 const PostPeerSessionUseCase = require('../../../application/usecase/peers/postPeerSessionUseCase');
 const PostPeerSessionController = require('../../controller/peerSession/postPeerSession.controller');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
@@ -16,6 +23,13 @@ module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpPeerSessionRepository();
+  
+  const useCase = new PostPeerSessionUseCase(repository);
+  const controller = new PostPeerSessionController(useCase);
+
+  const statsUseCase = new GetPeerStatsUseCase(repository);
+  const statsController = new GetPeerStatsController(statsUseCase);
+
   const useCase = new PostPeerSessionUseCase(repository);
   const controller = new PostPeerSessionController(useCase);
 
@@ -33,6 +47,14 @@ module.exports = (authUseCase, authMiddleware) => {
     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getPeerSessionsView(req, res)
+  );
+
+  router.get(
+    '/stats',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => statsController.getPeerStats(req, res)
   );
 
   router.post(
