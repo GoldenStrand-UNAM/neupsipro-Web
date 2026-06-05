@@ -2,6 +2,9 @@ const db = require ('../database/database');
 const Tests = require('../../domain/entity/tests');
 const resultRepository = require('../../domain/repository/resultRepository');
 const { v4: uuidv4 } = require('uuid');
+const Crypt = require('../crypt/users/getAge');
+
+const crypt = new Crypt();
 
 class impTestResultsRepository extends resultRepository {
 
@@ -556,7 +559,7 @@ class impTestResultsRepository extends resultRepository {
        WHERE id_user = ?`,
       [id_user]
     );
-    return rows.length ? rows[0].birthdate : null;
+    return rows.length ? crypt.uncryptUser(rows[0].birthdate) : null;
   }
 
 }

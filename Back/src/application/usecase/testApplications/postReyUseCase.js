@@ -20,7 +20,8 @@ class postREYUseCase {
 
   #calculateAge (birthdate) {
     if (!birthdate) return null;
-    const [day, month, year] = String(birthdate).split('/').map(Number);
+    const [day, month, year] = String(birthdate).trim().split('/').map(Number);
+    if (!day || !month || !year) return null;
     const birth = new Date(year, month - 1, day);
     if (isNaN(birth.getTime())) return null;
     const today = new Date();
@@ -168,8 +169,12 @@ class postREYUseCase {
       throw err;
     }
 
-    const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
-    const birthdate      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    const schooling   = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
+    const rawAge      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+
+    // uncryptUser devuelve objeto completo — extraer birthdate
+    const birthdate   = rawAge?.birthdate ?? rawAge;
+
     const schoolingYears = this.#resolveSchoolingYears(schooling);
     const age            = this.#calculateAge(birthdate);
     const educationBlock = this.#resolveEducationBlock(schoolingYears);
