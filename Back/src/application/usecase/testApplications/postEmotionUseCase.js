@@ -56,7 +56,7 @@ class postEmotionUseCase {
         throw err;
       }
       // Reject emoji characters (Unicode ranges for emoticons, symbols, etc.)
-      if (/\p{Emoji}/u.test(String(notes))) {
+      if (/\p{Extended_Pictographic}/u.test(String(notes))) {
         const err = new Error('notes must not contain emojis');
         err.status = 422;
         throw err;

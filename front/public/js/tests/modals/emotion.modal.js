@@ -65,7 +65,7 @@ function buildEmotionConsultHTML (test) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">Cuestionario SocioEmocional</h2>
+        <h2 class="modal__title">Cuestionario SE</h2>
         <button id="btnCloseEmotion" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -163,7 +163,7 @@ function buildEmotionFormHTML (mode, prefill) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">Cuestionario SocioEmocional — ${title}</h2>
+        <h2 class="modal__title">Cuestionario SE — ${title}</h2>
         <button id="btnCloseEmotion" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
