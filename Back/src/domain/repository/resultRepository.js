@@ -130,6 +130,10 @@ class resultRepository {
 
   }
 
+  async deleteAllResults ({ _id_application }) {
+    throw new Error('deleteAllResults() not implemented');
+  }
+
 }
 
 module.exports = resultRepository;
