@@ -1,4 +1,4 @@
-/* global openBANFEModal, openWAISModal, openREYModal, openMOCAModal */
+/* global openBANFEModal, openWAISModal, openREYModal, openMOCAModal, openEmotionModal */
 // eslint-disable-next-line no-unused-vars
 const TEST_REGISTRY = {
 
@@ -76,6 +76,20 @@ const TEST_REGISTRY = {
       openNIHModal(idUser, idApplication, test, 'consult'),
     endpoint: (idUser, idApplication) =>
       `/api/users/${idUser}/applications/${idApplication}/tests/5/results`,
+  },
+
+  // Adaptación Socioemocional
+
+  6: {
+    name: 'Cuestionario SocioEmocional',
+    openRegister: (idUser, idApplication, test) =>
+      openEmotionModal(idUser, idApplication, test, 'register'),
+    openModify: (idUser, idApplication, test) =>
+      openEmotionModal(idUser, idApplication, test, 'modify'),
+    openConsult: (idUser, idApplication, test) =>
+      openEmotionModal(idUser, idApplication, test, 'consult'),
+    endpoint: (idUser, idApplication) =>
+      `/api/users/${idUser}/applications/${idApplication}/tests/6/results`,
   },
 
 };
