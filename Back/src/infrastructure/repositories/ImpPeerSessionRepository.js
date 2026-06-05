@@ -31,6 +31,15 @@ class ImpPeerSessionRepository extends peerSessionRepository {
     return rows[0];
   }
 
+  async deleteSession (id_peer_session) {
+      const [result] = await db.query(
+        `DELETE FROM peer_session
+          WHERE id_peer_session = ?`,
+        [id_peer_session]
+      );
+      return result.affectedRows > 0;
+    }
+
   async fetchSessions ({ page, limit, from, to }) {
     const offset = (page - 1) * limit;
     const fromParam = from || null;
