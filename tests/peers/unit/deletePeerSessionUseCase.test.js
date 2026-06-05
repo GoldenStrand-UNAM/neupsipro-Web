@@ -14,7 +14,7 @@ describe('DeletePeerSessionUseCase — Unit Tests', () => {
     test('Happy Path, the session is deleted without errors', async() => {
       mockPeerSessionRepository.deleteSession.mockResolvedValue({id_peer_session: "s-111"});
       const result = await useCase.execute({idPeerSession: "s-111"});
-      expect(result).toBe({success: true});
+      expect(result).toEqual({success: true});
     })
 
     test('The system sends no id for the session to delete', async() => {
