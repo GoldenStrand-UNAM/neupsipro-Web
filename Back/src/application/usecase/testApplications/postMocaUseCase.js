@@ -20,11 +20,11 @@ class postMocaUseCase {
     return map[schooling] ?? null;
   }
 
-  // Applies +2 bonus if schooling <= 12 years and raw score <= 28.
+  // Applies +2 bonus if schooling <= 12 years and raw score <= 29.
   // Final score is capped at 30.
   resolveScore (rawScore, schoolingYears) {
     let final = rawScore;
-    if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 28) {
+    if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 29) {
       final = rawScore + 2;
     }
     return Math.min(final, 30);
