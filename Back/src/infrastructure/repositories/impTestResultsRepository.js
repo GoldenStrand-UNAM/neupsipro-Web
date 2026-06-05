@@ -180,15 +180,15 @@ class impTestResultsRepository extends resultRepository {
     const executor = db_ ?? db;
     await executor.query(
       `UPDATE test_applications ta
-       INNER JOIN test_results tr_trigger ON tr_trigger.id_results = ?
-       SET ta.status = 3
-       WHERE ta.id_application = tr_trigger.id_application
-         AND ta.status = 2
-         AND NOT EXISTS (
-           SELECT 1 FROM test_results tr_check
-           WHERE tr_check.id_application = tr_trigger.id_application
-             AND tr_check.status NOT IN (3, 4, 5)
-         )`,
+      INNER JOIN test_results tr_trigger ON tr_trigger.id_results = ?
+      SET ta.status = 3
+      WHERE ta.id_application = tr_trigger.id_application
+        AND ta.status IN (1, 2)
+        AND NOT EXISTS (
+          SELECT 1 FROM test_results tr_check
+          WHERE tr_check.id_application = tr_trigger.id_application
+            AND tr_check.status NOT IN (3, 4, 5)
+        )`,
       [id_results]
     );
   }

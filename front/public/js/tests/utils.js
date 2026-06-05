@@ -87,7 +87,9 @@ function updateTestCardStatus (dto) {
       card.dataset.test = JSON.stringify(testData);
     } catch { /* datos corruptos, se ignoran */}
   }
+  // Verificar si todas las pruebas están calificadas y habilitar/recargar
+  if (typeof window._revealExportIfAllGraded === 'function') {
+    window._revealExportIfAllGraded();
+  }
 
-  // If this save completed the last pending test, reveal the export button without a page reload.
-  window._revealExportIfAllGraded?.();
 }
