@@ -68,25 +68,32 @@ class validation {
   }
 
   validatePhone (param) {
-    this.validate({
-      value: param.value,
-      minLength: 8,
-      maxLength: 20,
-      label: param.label,
-      required: param.required,
-    });
-    const emojiRegex =
-      /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+    if (!param.required && !param.value) return param.value;
+    const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
     if (emojiRegex.test(param.value))
       throw new Error(`${param.label} no puede contener emojis`);
-    if (!param.required && !param.value) return param.value;
     const phoneStr = String(param.value).trim();
-    const phoneRegex = /^\+?[0-9() -]+$/;
-    if (phoneStr.length < 8)
-      throw new Error(`${param.label} debe tener al menos 8 caracteres`);
+    const phoneRegex = /^\+?[0-9()-]+$/;   
+    if (phoneStr.length < 10)
+      throw new Error(`${param.label} debe tener al menos 10 caracteres`);
+    if (phoneStr.length > 20)
+      throw new Error(`${param.label} no puede superar los 20 caracteres`);
     if (phoneRegex.test(phoneStr))
       return phoneStr;
     throw new Error(`${param.label} solo debe contener números y + - ( )`);
+  }
+
+  validateAffiliation (param) {
+    if (!param.value || param.value.trim().length === 0) {
+      if (param.required) throw new Error(`${param.label} debe llenarse`);
+      return null;
+    }
+    const value = param.value.trim();
+    if (value.length > param.requiredLength)
+      throw new Error(`${param.label} no puede superar los ${param.requiredLength} caracteres`);
+    if (!/^[A-ZÁÉÍÓÚÜÑ\s]+$/u.test(value))
+      throw new Error(`${param.label} solo puede contener letras mayúsculas`);
+    return value;
   }
 
   validateEmail (param) {

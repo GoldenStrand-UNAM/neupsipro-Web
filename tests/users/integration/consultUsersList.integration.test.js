@@ -24,6 +24,13 @@ jest.mock('../../../Back/src/infrastructure/external/rateLimiting', () => ({
   userLimiter:       (req, res, next) => next(),
 }));
 
+jest.mock('../../../Back/src/infrastructure/repositories/ImpUsersRepository', () =>
+  jest.fn().mockImplementation(() => ({
+    fetchActivePatients: jest.fn().mockResolvedValue([]),
+    countActivePatients: jest.fn().mockResolvedValue(0),
+  }))
+);
+
 const app = require('../../../Back/src/app');
 
 

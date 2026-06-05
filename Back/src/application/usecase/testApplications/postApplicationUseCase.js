@@ -40,7 +40,7 @@ class postApplicationUseCase {
     const existingApps = await this.impTestApplicationsRepository
       .fetchTestApplications({ id_user });
 
-    if (existingApps.length >= 5) {
+    if (existingApps.length >= 10) {
       const err = new Error('User has reached the maximum of 5 applications');
       err.status = 422;
       throw err;

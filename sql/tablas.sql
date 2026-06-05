@@ -765,6 +765,106 @@ ALTER TABLE user_clinical
     ADD COLUMN finish_date DATE NOT NULL, 
     ADD COLUMN hours INT NOT NULL;
 
+
+-- ===========================================================
+-- Test changes
+-- ===========================================================
+ 
+ALTER TABLE test_results
+DROP COLUMN score;
+ 
+ALTER TABLE test_results
+DROP COLUMN interpretation;
+
+ALTER TABLE test_results
+DROP COLUMN notes;
+ 
+ALTER TABLE psych_tests
+ADD COLUMN result_table VARCHAR(50) NOT NULL;
+ 
+-- -----------------------------------------------------------
+-- BANFE
+-- -----------------------------------------------------------
+CREATE TABLE banfe_results (
+    id_banfe                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                  VARCHAR(36)  NOT NULL UNIQUE,
+    score_orbit_frontal         INT          NULL,
+    inter_orbit_frontal         VARCHAR(36),
+    score_prefrontal_before     INT          NULL,
+    inter_prefrontal_before     VARCHAR(36),
+    score_d_lateral             INT          NULL,
+    inter_d_lateral             VARCHAR(36),
+    score_total                 INT          NULL,
+    inter_total              VARCHAR(36),
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_banfe_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+
+-- -----------------------------------------------------------
+-- WAIS
+-- -----------------------------------------------------------
+CREATE TABLE wais_results (
+    id_wais                  INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36)  NOT NULL UNIQUE,
+    score_com_verbal         INT          NULL,
+    inter_com_verbal         VARCHAR(36),
+    score_razon_perceptual   INT          NULL,
+    inter_razon_perceptual   VARCHAR(36),
+    score_mem_work           INT          NULL,
+    inter_mem_work           VARCHAR(36),
+    score_velo_proce         INT          NULL,
+    inter_velo_proce         VARCHAR(36),
+    score_total              INT          NULL,
+    inter_total              VARCHAR(36),
+    notes                    VARCHAR(200),
+    CONSTRAINT fk_wais_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- MOCA
+-- -----------------------------------------------------------
+CREATE TABLE moca_results (
+    id_moca                  INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results               VARCHAR(36) NOT NULL UNIQUE,
+    score                    INT NOT NULL,
+    interpretation VARCHAR(36),
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_moca_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+
+-- -----------------------------------------------------------
+-- NIH 
+-- -----------------------------------------------------------
+CREATE TABLE nih_results (
+    id_nih                    INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36) NOT NULL UNIQUE,
+    notes                       VARCHAR(500),
+    CONSTRAINT fk_nih_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
+-- -----------------------------------------------------------
+-- REY
+-- -----------------------------------------------------------
+CREATE TABLE rey_results (
+    id_rey                    INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36)  NOT NULL UNIQUE,
+    score_rc                  DECIMAL(5,2) NULL,
+    pc_rc                     INT          NULL,
+    time_rc                   DECIMAL(5,2) NULL,
+    pc_time_rc                INT          NULL,
+    score_mcp                 DECIMAL(5,2) NULL,
+    pc_mcp                    INT          NULL,
+    time_mcp                  DECIMAL(5,2) NULL,
+    pc_time_mcp               INT          NULL,
+    score_mlp                 DECIMAL(5,2) NULL,
+    pc_mlp                    INT          NULL,
+    time_mlp                  DECIMAL(5,2) NULL,
+    pc_time_mlp               INT          NULL,
+    notes                       VARCHAR(200),
+    CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
+);
+ 
 ALTER TABLE tutorial DROP FOREIGN KEY fk_tutorial_module;
 DROP TABLE tutorial;
 

@@ -9,6 +9,8 @@ const PostPeerSessionController = require('../../controller/peerSession/postPeer
 const GetPeerStatsUseCase = require('../../../application/usecase/peers/getPeerStatsUseCase');
 const GetPeerStatsController = require('../../controller/peerSession/getPeerStats.controller');
 
+const PostPeerSessionUseCase = require('../../../application/usecase/peers/postPeerSessionUseCase');
+const PostPeerSessionController = require('../../controller/peerSession/postPeerSession.controller');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const GetPeerSessionsUseCase = require('../../../application/usecase/peers/getPeerSessionsUseCase');
@@ -26,6 +28,9 @@ module.exports = (authUseCase, authMiddleware) => {
   const statsUseCase = new GetPeerStatsUseCase(repository);
   const statsController = new GetPeerStatsController(statsUseCase);
 
+  const useCase = new PostPeerSessionUseCase(repository);
+  const controller = new PostPeerSessionController(useCase);
+
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
 
   const listUseCase = new GetPeerSessionsUseCase(repository);
@@ -40,7 +45,7 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => controller.getPeerSessionsView(req, res)
   );
 
-    router.get(
+  router.get(
     '/stats',
     authMiddleware.verifyToken,
     apiLimiter,
