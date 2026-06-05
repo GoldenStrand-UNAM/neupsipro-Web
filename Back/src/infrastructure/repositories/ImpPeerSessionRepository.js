@@ -39,6 +39,44 @@ class ImpPeerSessionRepository extends peerSessionRepository {
     );
     return rows;
   }
+  
+  async fetchSessions ({ page, limit, from, to }) {
+    const offset = (page - 1) * limit;
+    const fromParam = from || null;
+    const toParam = to || null;
+
+    const [rows] = await db.query(
+      `SELECT id_peer_session,
+              title,
+              responsable,
+              note,
+              DATE_FORMAT(session_date, '%Y-%m-%d') AS session_date,
+              men_count,
+              women_count
+         FROM peer_session
+        WHERE (? IS NULL OR session_date >= ?)
+          AND (? IS NULL OR session_date <= ?)
+        ORDER BY session_date DESC
+        LIMIT ? OFFSET ?`,
+      [fromParam, fromParam, toParam, toParam, Number(limit), Number(offset)]
+    );
+    return rows;
+  }
+
+  async countSessions ({ from, to }) {
+    const fromParam = from || null;
+    const toParam = to || null;
+
+    const [rows] = await db.query(
+      `SELECT COUNT(*) AS total
+         FROM peer_session
+        WHERE (? IS NULL OR session_date >= ?)
+          AND (? IS NULL OR session_date <= ?)`,
+      [fromParam, fromParam, toParam, toParam]
+    );
+    return rows[0]?.total ?? 0;
+  }
+  
 }
 
 module.exports = ImpPeerSessionRepository;
