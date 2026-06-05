@@ -1,0 +1,99 @@
+@startuml EditSessionSequence
+title Edit Session - Sequence Diagram
+
+actor User as U
+participant "intervention.ejs\n(Browser)" as View
+participant "sessionDetailModal.ejs\n(JS)" as Detail
+participant "addSessionModal.ejs\n(JS)" as Modal
+participant "Flatpickr\n(Date Picker)" as Picker
+participant "Router" as Router
+participant "Auth & Permissions\nMiddleware" as Auth
+participant "intervention\nController" as Ctrl
+participant "updateSessionUseCase" as UseCase
+participant "ImpIntervention\nRepository" as Repo
+database "MySQL DB" as DB
+
+U -> View: Clicks a session row
+activate View
+View -> Detail: openSessionDetailModal(...)
+activate Detail
+Detail --> U: Show session detail
+deactivate View
+
+U -> Detail: Clicks pencil (edit)
+Detail -> Detail: clean('—' -> '')
+Detail -> Modal: openEditSession({ sessionId, date, ... })
+deactivate Detail
+activate Modal
+
+Modal -> Picker: initPicker()
+activate Picker
+Picker --> Modal: Date picker ready
+deactivate Picker
+Modal -> Modal: editingSessionId = sessionId
+Modal --> U: Show form in edit mode\n(title "Editar sesión", btn "Guardar")
+
+U -> Modal: Edits fields
+U -> Modal: Clicks "Guardar"
+Modal -> Modal: Validate date is required
+Modal -> Modal: method = PATCH (editingSessionId exists)
+Modal -> Modal: Disable button, show "Guardando..."
+
+Modal -> Router: PATCH /users/:id_user/intervention/sessions/:id_session
+activate Router
+
+Router -> Auth: verifyToken + requirePermission('edit')
+Auth --> Router: OK
+
+Router -> Ctrl: updateSession(req, res)
+activate Ctrl
+Ctrl -> UseCase: execute({ id_user, id_session,\nsession_number, session_date, ... })
+activate UseCase
+
+UseCase -> UseCase: Validate id_session + session_date required
+UseCase -> UseCase: Validate campos\n(número, longitudes, fecha <= 2100)
+
+UseCase -> Repo: findByUser({ id_user })
+activate Repo
+Repo -> DB: SELECT intervention
+DB --> Repo: row
+Repo --> UseCase: Intervention
+deactivate Repo
+
+alt No active intervention
+    UseCase --> Ctrl: throw "No existe intervención"
+    Ctrl --> Router: 400 { error }
+    Router --> Modal: 400 response
+    Modal --> U: Show error
+else Intervention exists
+    UseCase -> Repo: findSessionById({ id_session })
+    activate Repo
+    Repo -> DB: SELECT intervention_session
+    DB --> Repo: row
+    Repo --> UseCase: Session
+    deactivate Repo
+
+    alt Session not found or not owned by user
+        UseCase --> Ctrl: throw "La sesión no existe\no no pertenece a este usuario"
+        Ctrl --> Router: 400 { error }
+        Router --> Modal: 400 response
+        Modal --> U: Show error
+    else Session belongs to user
+        UseCase -> Repo: updateSession({ id_session,\nsession_number, session_date, ... })
+        activate Repo
+        Repo -> DB: UPDATE intervention_session
+        DB --> Repo: affectedRows
+        Repo --> UseCase: affectedRows > 0
+        deactivate Repo
+
+        UseCase --> Ctrl: { success, message }
+        deactivate UseCase
+        Ctrl --> Router: 200 OK
+        deactivate Ctrl
+        Router --> Modal: 200 OK
+        deactivate Router
+
+        Modal -> Modal: showToast("Sesión actualizada")
+        Modal -> View: window.location.reload()
+        deactivate Modal
+        View --> U: Refresh page with updated session\
