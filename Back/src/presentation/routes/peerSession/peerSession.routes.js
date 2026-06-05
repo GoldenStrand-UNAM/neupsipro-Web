@@ -8,6 +8,8 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 
 const DeletePeerSessionUseCase = require('../../../application/usecase/peers/deletePeerSessionUseCase');
 const DeletePeerSessionController = require('../../controller/peerSession/deletePeerSession.controller');
+const GetPeerSessionsUseCase = require('../../../application/usecase/peers/getPeerSessionsUseCase');
+const GetPeerSessionsController = require('../../controller/peerSession/getPeerSession.controller');
 
 
 module.exports = (authUseCase, authMiddleware) => {
@@ -21,6 +23,8 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const deleteUseCase = new DeletePeerSessionUseCase(repository);
   const deleteController = new DeletePeerSessionController(deleteUseCase);
+  const listUseCase = new GetPeerSessionsUseCase(repository);
+  const listController = new GetPeerSessionsController(listUseCase);
 
 
   router.get(
@@ -45,6 +49,13 @@ module.exports = (authUseCase, authMiddleware) => {
     apiLimiter,
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteController.deletePeerSession(req, res)
+  );
+  router.get(
+    '/list',
+    authMiddleware.verifyToken,
+    apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    (req, res) => listController.getPeerSessions(req, res)
   );
 
   return router;
