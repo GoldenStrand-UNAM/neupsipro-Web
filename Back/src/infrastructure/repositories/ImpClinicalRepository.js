@@ -3,23 +3,24 @@ const clinicalRepository = require('../../domain/repository/clinicalRepository')
 const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
 const ClinicalPatient = require('../../domain/entity/clinicalPatient');
+const Uncrypt = require('../crypt/clinical/getClinicals');
+const uncrypt = new Uncrypt();
 const { v4: uuidv4 } = require('uuid');
 
 class ImpClinicalRepository extends clinicalRepository {
-  async fetchActivePatients ({ search, page, limit }) {
+  async fetchActivePatients ({ page, limit }) {
     // Calculate offset for pagination
     const offset = (page - 1) * limit;
 
-    // Prepare search parameter for SQL
-    const searchParam = search ? `%${search}%` : null;
-
-    // Get active Users, rol = 2, with pagination and a optional search filter
+    // Get active Users, rol = 2, with pagination
     const [rows] = await db.query (
       `SELECT 
             u.id_user AS id,
-            CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
-            uc.affiliation AS affiliation,
-            uc.activity    AS activity,
+            u.first_name,
+            u.lastname_p,
+            u.lastname_m,
+            uc.affiliation,
+            uc.activity,
             (
               SELECT COUNT(*)
               FROM user_relation ur
@@ -34,38 +35,34 @@ class ImpClinicalRepository extends clinicalRepository {
         LEFT JOIN user_clinical uc ON uc.id_user = u.id_user
         WHERE u.id_role = 3
           AND u.eliminated = 0
-          AND (? IS NULL 
-              OR CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) LIKE ?)
-        ORDER BY u.user_name ASC
         LIMIT ? OFFSET ?`,
-      [searchParam, searchParam, Number(limit), Number(offset)]
+      [Number(limit), Number(offset)]
     );
-    return rows.map(row => new userClinicalSummary(row));
+    if (!rows || rows.legth === 0) return rows.map(row => new userClinicalSummary(row));
+    const uncrypted = rows.map(row => uncrypt.uncryptUser(row));
+    return uncrypted.map(row => new userClinicalSummary(row));
   }
 
-  async countActivePatients ({ search }) {
-    // Prepare search parameter for SQL
-    const searchParam = search ? `%${search}%` : null;
-
-    const [rows] = await db.query (
-      `SELECT COUNT(*) AS total
+  async countActivePatients () {
+    const [rows] = await db.query (`SELECT COUNT(*) AS total
             FROM users
             WHERE id_role = 3
-              AND eliminated = 0
-              AND (? IS NULL OR CONCAT_WS(' ', first_name, lastname_p, lastname_m) LIKE ?)`,
-      [searchParam, searchParam]
-    );
+              AND eliminated = 0`);
     return rows[0]?.total ?? 0;
   }
   //get all clinical users
   async fetchAll () {
     const [rows] = await db.query(`SELECT 
-        u.id_user AS id,
-        CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name
+      u.id_user AS id,
+      u.first_name,
+      u.lastname_p,
+      u.lastname_m
      FROM users u
      WHERE u.id_role = 3 AND u.eliminated = 0
      ORDER BY u.first_name ASC`);
-    return rows;
+    if (!rows || rows.legth === 0) return rows;
+    const uncrypted = rows.map(row => uncrypt.uncryptAll(row));
+    return uncrypted;
   }
 
   async fetchClinical ({ id_user }) {
@@ -87,28 +84,31 @@ class ImpClinicalRepository extends clinicalRepository {
   FROM users u
   LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
   WHERE u.id_user = ?;`, [id_user]);
-    return clinicalData.map(row => new Clinical(row));
+    if (!clinicalData || clinicalData.length === 0)
+      return clinicalData.map(row => new Clinical(row));
+    return clinicalData.map(row => new Clinical(uncrypt.uncryptClinical(row)));
   }
 
   async fetchPatientsAssigned ({ id_user, page, limit }) {
     // Calculate offset for pagination
     const offset = (page - 1) * limit;
 
-    const [patientsData] = await db.query (`SELECT 
-    p.id_user,
-    p.first_name, 
-    p.lastname_p, 
-    p.lastname_m,
-    ui.state,
-    ui.reference_number,
-    ur.assignment_date,
-    ur.type
-FROM user_relation ur
-INNER JOIN users p ON ur.id_user = p.id_user
-LEFT JOIN user_info ui ON p.id_user = ui.id_user
-WHERE ur.id_clinic_user = ? 
-  AND p.eliminated = 0 
-LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
+    const [patientsData] = await db.query (`
+    SELECT 
+      p.id_user,
+      p.first_name, 
+      p.lastname_p, 
+      p.lastname_m,
+      ui.state,
+      ui.reference_number,
+      ur.assignment_date,
+      ur.type
+    FROM user_relation ur
+    INNER JOIN users p ON ur.id_user = p.id_user
+    LEFT JOIN user_info ui ON p.id_user = ui.id_user
+    WHERE ur.id_clinic_user = ? 
+      AND p.eliminated = 0 
+    LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
       FROM user_relation ur
@@ -119,8 +119,15 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
 
     const totalPages = Math.ceil(total / limit);
 
+    if (!patientsData && patientsData.length === 0)
+      return {
+        patients: patientsData.map(row => new ClinicalPatient(row)),
+        totalPages,
+        page,
+      };
+    const uncrypted = patientsData.map(row => uncrypt.uncryptPatients(row));
     return {
-      patients: patientsData.map(row => new ClinicalPatient(row)),
+      patients: uncrypted.map(row => new ClinicalPatient(row)),
       totalPages,
       page,
     };
@@ -129,12 +136,15 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
   async fetchClinicalUsers () {
     const [rows] = await db.query (`SELECT 
         id_user AS id,
-          CONCAT_WS( ' ', first_name, lastname_p, lastname_m) AS full_name
+        first_name,
+        lastname_p,
+        lastname_m
         FROM users
         WHERE id_role = 3
-          AND eliminated = 0
-          ORDER BY user_name ASC`);
-    return rows.map(row => new userClinicalSummary(row));
+          AND eliminated = 0`);
+    if (!rows || rows.legth === 0) rows.map(row => new userClinicalSummary(row));
+    const uncrypted = rows.map(row => uncrypt.uncryptAll(row));
+    return uncrypted.map(row => new userClinicalSummary(row));
   }
 
   async postUser (user) {
@@ -145,9 +155,11 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
       await connection.query('START TRANSACTION');
 
       await connection.query(
-        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate, password_hash, email)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.passwordHash, user.email]
+        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, birthdate,
+        password_hash, email, dup_bindex)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, '3', user.username, user.firstName, user.lastnameP, user.lastnameM, user.birthdate,
+          user.passwordHash, user.email, user.bindex]
       );
 
       await connection.query(
@@ -181,19 +193,102 @@ LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     }
   }
 
-  async checkDuplicate (user) {
+  async checkDuplicate (user, id = '') {
     const [rows] = await db.query (
-      `SELECT *
-          FROM users
-          WHERE id_role = '3'
-          AND first_name = ?
-          AND lastname_p = ?
-          AND (lastname_m = ? OR (? IS NULL AND lastname_m IS NULL))
-          AND birthdate = ?
-          AND eliminated = '0';`,
-      [user.firstName, user.lastnameP, user.lastnameM, user.lastnameM, user.birthdate]
+      `SELECT 
+          (dup_bindex = ?) AS matched_bindex,
+          (user_name = ?) AS matched_username
+      FROM users
+      WHERE id_user <> ?
+        AND (user_name = ?
+        OR (eliminated = '0'
+        AND dup_bindex = ?
+        )
+    );`,
+      [user.bindex, user.userName, id, id, user.userName, user.bindex]
     );
     return rows[0];
+  }
+  
+  async fetchClinicalForEdit ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT 
+          u.id_user, u.first_name, u.lastname_p, u.lastname_m, u.user_name, u.email, u.birthdate,
+          uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone,
+          uc.emergency_contact_relation, uc.start_date, uc.finish_date, uc.hours
+      FROM users u
+      LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
+      WHERE u.id_user = ? AND u.id_role = 3 AND u.eliminated = 0;`,
+      [id_user]
+    );
+    if (rows)
+      return uncrypt.uncryptClinical(rows[0]);
+    return rows[0];
+  }
+
+  async updateUser (user) {
+    const connection = await db.getConnection();
+
+    try {
+      await connection.query('START TRANSACTION');
+
+      if (user.passwordHash) {
+        await connection.query(
+          `UPDATE users
+            SET first_name = ?, lastname_p = ?, lastname_m = ?, birthdate = ?, email = ?, user_name = ?, password_hash = ?
+          WHERE id_user = ? AND id_role = 3 AND eliminated = 0`,
+          [user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.email,
+            user.username, user.passwordHash, user.idUser]
+        );
+      } else {
+        await connection.query(
+          `UPDATE users
+            SET first_name = ?, lastname_p = ?, lastname_m = ?, birthdate = ?, email = ?, user_name = ?
+          WHERE id_user = ? AND id_role = 3 AND eliminated = 0`,
+          [user.firstName, user.lastnameP, user.lastnameM, user.birthdate, user.email,
+            user.username, user.idUser]
+        );
+      }
+
+      await connection.query(
+        `UPDATE user_clinical
+          SET affiliation = ?, activity = ?, emergency_contact_name = ?,
+              emergency_contact_phone = ?, emergency_contact_relation = ?,
+              start_date = ?, finish_date = ?, hours = ?
+        WHERE id_user = ?`,
+        [user.affiliation, user.activity, user.emergencyContactName, user.emergencyContactPhone,
+          user.emergencyContactRelation, user.startDate, user.finishDate, user.hours, user.idUser]
+      );
+
+      const [rows] = await connection.query(
+        `SELECT 
+          u.id_role, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.email, u.user_name,
+          uc.affiliation, uc.activity, uc.emergency_contact_name, uc.emergency_contact_phone, uc.emergency_contact_relation,
+          uc.start_date, uc.finish_date, uc.hours
+        FROM users u
+        LEFT JOIN user_clinical uc ON u.id_user = uc.id_user
+        WHERE u.id_user = ?;`,
+        [user.idUser]
+      );
+
+      await connection.query('COMMIT');
+      return new Clinical(rows[0]);
+    } catch (error) {
+      await connection.query('ROLLBACK');
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+  async softDeleteUser ({ id_user }) {
+    const [result] = await db.query(
+      `UPDATE users 
+        SET eliminated = 1 
+      WHERE id_user = ? 
+        AND eliminated = 0`,
+      [id_user]
+    );
+    return result.affectedRows > 0;
   }
 }
 module.exports = ImpClinicalRepository;

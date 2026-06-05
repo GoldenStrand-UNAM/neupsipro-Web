@@ -17,7 +17,7 @@
     // eslint-disable-next-line security/detect-object-injection
     const statusIcon = _variantIcons[variant] ?? _variantIcons.neutral;
     const dateFormatted = test.dateApplied
-      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
       : 'Sin fecha';
 
     const isClickable = !!TEST_REGISTRY[test.idTest];
@@ -48,11 +48,103 @@
                     a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <h3 class="application-card__title">${escapeHTML(test.testName)}</h3>
-          <p class="application-card__date">Aplicada: ${dateFormatted}</p>
+          <p class="application-card__date">Registrada: ${dateFormatted}</p>
         </div>
       </div>
     `;
   }
+
+  // ── Export PDF ────────────────────────────────────────────────────────────────
+
+  // Marks every test card as "Entregado" after a successful export.
+  function markAllDelivered () {
+    const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
+    document.querySelectorAll('.application-card').forEach(card => {
+      const badge = card.querySelector('.application-card__badge');
+      if (!badge) return;
+      const text = badge.querySelector('p');
+      if (text) text.textContent = 'Entregado';
+      variants.forEach(v => {
+        badge.classList.remove(`application-card__badge--${v}`);
+        card.classList.remove(`application-card--${v}`);
+      });
+      badge.classList.add('application-card__badge--complete');
+      card.classList.add('application-card--complete');
+    });
+  }
+
+  // Downloads the application report PDF and updates the UI to "Entregado".
+  async function exportPdf (idUser, idApplication, button) {
+    const btn     = button;
+    const iconEl  = document.getElementById('exportPdfIcon');
+    const labelEl = btn.querySelector('span');
+
+    btn.disabled = true;
+    if (iconEl) iconEl.innerHTML = `<svg class="animate-spin w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" class="stroke-current opacity-25" stroke-width="3"/>
+      <path d="M12 2a10 10 0 0 1 10 10" class="stroke-current" stroke-width="3" stroke-linecap="round"/>
+    </svg>`;
+    if (labelEl) labelEl.textContent = 'Cargando...';
+
+    try {
+      const res = await fetch(`/users/${idUser}/applications/${idApplication}/export`);
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        showToast(json.error || 'No se pudo exportar el PDF');
+        return;
+      }
+
+      const blob = await res.blob();
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="?([^"]+)"?/);
+      const filename = match ? match[1] : 'reporte.pdf';
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast('PDF exportado con éxito');
+      markAllDelivered();
+    } catch (err) {
+      showToast('No se pudo conectar con el servidor');
+      // eslint-disable-next-line no-console
+      console.error('[exportPdf] error:', err);
+    } finally {
+      btn.disabled = false;
+      if (iconEl) iconEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+      </svg>`;
+      if (labelEl) labelEl.textContent = 'Exportar PDF';
+    }
+  }
+
+  // Exposed globally so utils.js can trigger it after every card update.
+  // When all tests are graded, redirects to the user view so that check-expiry
+  // runs and promotes test_applications.status to 3 before the export is attempted.
+  window._revealExportIfAllGraded = function () {
+    const allCards = document.querySelectorAll('[data-id-results]');
+    if (allCards.length === 0) return;
+    const allGraded = [...allCards].every(card => {
+      try {
+        const data = JSON.parse(card.dataset.test || '{}');
+        return data.status === 'Calificada' || data.status === 'Entregado';
+      } catch { return false; }
+    });
+    if (!allGraded) return;
+    const { idUser } = window.__TEST_PAGE__ || {};
+    if (!idUser) return;
+    sessionStorage.setItem('pendingToast', JSON.stringify({
+      message: '¡Todas los resultados han sido registrados!',
+      type: 'success',
+    }));
+    setTimeout(() => { window.location.href = `/users/${idUser}`; }, 1500);
+  };
 
   // ── Main fetch ──────────────────────────────────────────────────────────────
 
@@ -92,6 +184,13 @@
           createTestCard(test, { idUser, idApplication, applicationStatus })
         );
       });
+
+      // Show the export button once the application is graded or delivered
+      const exportBtn = document.getElementById('btnExportPdf');
+      if (exportBtn && (applicationStatus === 'Calificada' || applicationStatus === 'Entregado')) {
+        exportBtn.classList.remove('hidden');
+        exportBtn.onclick = () => exportPdf(idUser, idApplication, exportBtn);
+      }
 
     } catch (err) {
       removeSkeletons();

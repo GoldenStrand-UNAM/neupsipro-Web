@@ -28,7 +28,7 @@ describe('PostClinicalUserUseCase', () => {
     birthdate: '01/01/1990',
     email: 'maria@example.com',
     affiliation: 'UNAM',
-    activity: 'Fisioterapia',
+    activity: 'Voluntariado',
     startDate: '01/01/2024',
     finishDate: '01/01/2027',
     hours: 40,

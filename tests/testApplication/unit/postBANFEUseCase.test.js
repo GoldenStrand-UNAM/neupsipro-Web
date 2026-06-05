@@ -10,6 +10,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
         score_orbit_frontal: 100,
         score_prefrontal_before: 95,
         score_d_lateral: 90,
+        score_total: 285,
         notes: 'Paciente colaborador',
     };
 
@@ -22,7 +23,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
         score_orbit_frontal: 100,     inter_orbit_frontal: 'Normal',
         score_prefrontal_before: 95,  inter_prefrontal_before: 'Normal',
         score_d_lateral: 90,          inter_d_lateral: 'Normal',
-        score_total: 285,
+        score_total: 285,             inter_total: 'Normal alto',
         notes: 'Paciente colaborador',
         status: 3,
         date_applied: '2026-05-19',
@@ -146,6 +147,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
             score_orbit_frontal: 100,
             score_prefrontal_before: 95,
             score_d_lateral: 90,
+            score_total: 285,
         });
 
         const callArgs = mockResultsRepository.saveBanfeResult.mock.calls[0][0];
