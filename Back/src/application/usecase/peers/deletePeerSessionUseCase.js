@@ -3,11 +3,11 @@ class DeletePeerSessionUseCase {
     this.peerSessionRepository = peerSessionRepository;
   }
 
-  async execute ({ id_peer_session }) {
-    if (!id_peer_session)
+  async execute ({ idPeerSession }) {
+    if (!idPeerSession)
       throw new Error('El identificador de la sesión es obligatorio');
 
-    const deleted = await this.peerSessionRepository.deleteSession(id_peer_session);
+    const deleted = await this.peerSessionRepository.deleteSession(idPeerSession);
 
     if (!deleted) {
       const error = new Error('La sesión no existe');
