@@ -82,6 +82,31 @@ class impTestApplicationsRepository extends TestApplicationRepository {
       [status, id_application]
     );
   }
+
+  async fetchApplicationById ({ id_application }) {
+    const [rows] = await db.query(
+      `SELECT id_application, id_user, application_name, status, created_at
+       FROM test_applications
+       WHERE id_application = ?`,
+      [id_application]
+    );
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+      idApplication: row.id_application,
+      idUser:        row.id_user,
+      applicationName: row.application_name,
+      status:        row.status,
+      createdAt:     row.created_at,
+    };
+  }
+
+  async deleteApplication ({ id_application }) {
+    await db.query(
+      'DELETE FROM test_applications WHERE id_application = ?',
+      [id_application]
+    );
+  }
 }
 
 module.exports = impTestApplicationsRepository;

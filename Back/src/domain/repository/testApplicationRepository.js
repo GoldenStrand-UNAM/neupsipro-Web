@@ -33,6 +33,14 @@ class testApplicationRepository {
   async updateApplicationStatus ({ _id_application, _status }) {
     throw new Error('updateApplicationStatus() not implemented');
   }
+
+  async fetchApplicationById ({ _id_application }) {
+    throw new Error('fetchApplicationById() not implemented');
+  }
+
+  async deleteApplication ({ _id_application }) {
+    throw new Error('deleteApplication() not implemented');
+  }
 }
 
 module.exports = testApplicationRepository;

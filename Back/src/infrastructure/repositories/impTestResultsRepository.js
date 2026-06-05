@@ -559,6 +559,26 @@ class impTestResultsRepository extends resultRepository {
     return rows.length ? rows[0].birthdate : null;
   }
 
+  async deleteAllResults ({ id_application }) {
+    const tables = [
+      'banfe_results', 'wais_results', 'rey_results',
+      'moca_results', 'nih_results', 'emotion_results',
+    ];
+    for (const table of tables) {
+      await db.query(
+        `DELETE FROM ${table}
+         WHERE id_results IN (
+           SELECT id_results FROM test_results WHERE id_application = ?
+         )`,
+        [id_application]
+      );
+    }
+    await db.query(
+      'DELETE FROM test_results WHERE id_application = ?',
+      [id_application]
+    );
+  }
+
 }
 
 module.exports = impTestResultsRepository;
