@@ -1,3 +1,5 @@
+const { cryptInterventionSession } = require('../../../infrastructure/crypt/intervention/postIntervention');
+
 class addSessionUseCase {
   constructor (interventionRepository) {
     this.interventionRepository = interventionRepository;
@@ -28,16 +30,25 @@ class addSessionUseCase {
     if (dqp_task && dqp_task.length > 2000)
       throw new Error('El DQP / tarea terapéutica no puede superar los 2000 caracteres');
 
+    if (session_date && new Date(session_date) > new Date('2100-12-31'))
+      throw new Error('La fecha de la sesión no puede ser posterior al año 2100');
+
     const intervention = await this.interventionRepository.findByUser({ id_user });
     if (!intervention) throw new Error('No existe intervención activa');
+
+    const encryptedData = cryptInterventionSession({
+      objectives,
+      development,
+      dqp_task,
+    });
 
     const idSession = await this.interventionRepository.createSession({
       id_intervention: intervention.idIntervention,
       session_number,
       session_date,
-      objectives,
-      development,
-      dqp_task,
+      objectives: encryptedData.objectives,
+      development: encryptedData.development,
+      dqp_task: encryptedData.dqpTask,
     });
 
     return { success: true, idSession, message: 'Sesión agregada' };

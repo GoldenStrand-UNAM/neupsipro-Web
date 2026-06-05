@@ -1,7 +1,3 @@
-const Crypt = require('../external/crypt');
-
-const crypt = new Crypt();
-
 class validation {
   validateEnum (param, enumOptions) {
     if (!Object.values(enumOptions).includes(param))
@@ -111,4 +107,5 @@ class validation {
 
     return param.toUpperCase();
   }
-} module.exports = validation;
+}
+module.exports = validation;

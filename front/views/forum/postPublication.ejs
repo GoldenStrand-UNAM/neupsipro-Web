@@ -258,7 +258,7 @@ form.addEventListener('submit', async (e) => {
 </svg>`
       btnPublish.querySelector('span').textContent = 'Cargando...';
 
-      const res = await fetch('/forum/post', {
+      const res = await fetch('/api/publication', {
         method: 'POST',
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,

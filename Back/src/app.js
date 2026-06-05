@@ -175,14 +175,19 @@ const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashb
 app.use('/dashboardClinical', dashRoutes(authUseCase, authMiddleware));
 
 // Forum
-const forumRoutes = require('./presentation/routes/forum/getForum.routes');
+const forumViewRoutes = require('./presentation/routes/forum/forumView.routes');
 
-app.use('/forum', forumRoutes(authUseCase, authMiddleware));
+app.use('/forum', forumViewRoutes(authUseCase, authMiddleware));
 
-const publicationRoutes = require('./presentation/routes/forum/getPublication.routes');
+const forumApiRoutes = require('./presentation/routes/forum/forumApi.routes');
 
-app.use('/publication', publicationRoutes(authUseCase, authMiddleware));
+app.use('/api/forum', forumApiRoutes(authUseCase, authMiddleware));
 
+const publicationApiRoutes = require('./presentation/routes/forum/publicationApi.routes');
+
+app.use('/api/publication', publicationApiRoutes(authUseCase, authMiddleware));
+
+//users
 const usersRoutes = require('./presentation/routes/users/getUsersList.routes');
 
 app.use('/', usersRoutes(authUseCase, authMiddleware));
@@ -207,10 +212,6 @@ const clinicalRoutes = require('./presentation/routes/clinical/getUsersListClini
 
 app.use('/', clinicalRoutes(authUseCase, authMiddleware));
 
-const postPublicationRoutes = require('./presentation/routes/forum/postPublication.routes');
-
-app.use('/', postPublicationRoutes(authUseCase, authMiddleware));
-
 const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.routes');
 
 app.use('/', dashboardRoutes(authUseCase, authMiddleware));
@@ -221,6 +222,11 @@ app.use('/', interventionRoutes(authUseCase, authMiddleware));
 const getAllClinicalsRoutes   = require('./presentation/routes/clinical/getAllClinicals.routes');
 
 app.use('/', getAllClinicalsRoutes(authUseCase, authMiddleware));
+
+//export csv
+const exportTestResultsRoutes = require('./presentation/routes/applications/exportTestResults.routes');
+
+app.use('/api/reports/tests', exportTestResultsRoutes(authUseCase, authMiddleware));
 
 app.get('/test', authMiddleware.verifyToken, (req, res) => {
   res.render('test');

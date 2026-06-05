@@ -1,14 +1,17 @@
 const { DashboardSummaryDTO } = require('../../dto/dashboardUnitDTO');
-const { AgeBucketEntity } = require('../../../domain/entity/dashboardUnitEntity');
+const { AgeBucketEntity, GenderBucketEntity } = require('../../../domain/entity/dashboardUnitEntity');
 
 // Ages buckets for the age distribution
 const AGE_BUCKETS = [
-  { label: '0-17',  min: 0,   max: 17  },
-  { label: '18-30', min: 18,  max: 30  },
-  { label: '31-50', min: 31,  max: 50  },
-  { label: '51-60', min: 51,  max: 60  },
-  { label: '61-80', min: 61,  max: 80  },
-  { label: '81+',   min: 81,  max: Infinity },
+  { label: '0-10',  min: 0,   max: 10  },
+  { label: '11-17', min: 11,  max: 17  },
+  { label: '18-29', min: 18,  max: 29  },
+  { label: '30-39', min: 30,  max: 39  },
+  { label: '40-49', min: 40,  max: 49  },
+  { label: '50-59', min: 50,  max: 59  },
+  { label: '60-69', min: 60,  max: 69  },
+  { label: '70-79', min: 70,  max: 79  },
+  { label: '80+',   min: 80,  max: Infinity },
 ];
 
 class GetDashboardSummaryUseCase {
@@ -45,8 +48,20 @@ class GetDashboardSummaryUseCase {
     });
   }
 
+  // Classify and count genders into buckets
+  _groupGenders (gendersList) {
+    const counts = gendersList.reduce((acc, gender) => {
+      const g = gender || 'Not specified';
+      // eslint-disable-next-line security/detect-object-injection, no-param-reassign
+      acc[g] = (acc[g] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.keys(counts).map(key => new GenderBucketEntity({ gender: key, total: counts[key] }));
+  }
+
   async execute () {
-    const [counts, birthdates, gender, tests, standByList] = await Promise.all([
+    const [counts, birthdates, rawGenders, tests, standByList] = await Promise.all([
       this.repo.fetchCounts(),
       this.repo.fetchAgeDistribution(),
       this.repo.fetchGenderDistribution(),
@@ -59,6 +74,8 @@ class GetDashboardSummaryUseCase {
       .map(b => this._calculateAge(b))
       .filter(age => age !== null);
     const age = this._bucketAges(ages);
+
+    const gender = this._groupGenders(rawGenders);
 
     return new DashboardSummaryDTO({ counts, age, gender, tests, standByList });
   }

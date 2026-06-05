@@ -2,9 +2,12 @@ const Validation = require('./validation');
 
 const validation = new Validation();
 
-function validate (user) {
+const enumActivity = { SOCIAL_SERVICE: 'Servicio social', INTERNSHIP: 'Prácticas profesionales', VOLUNTEER: 'Voluntariado',
+  TITULAR: 'Titular', SUMMER: 'Verano de investigación' };
+
+function validate (user, { passwordRequired = true } = {}) {
   const first = validateFirst(user);
-  const second = validateSecond(user);
+  const second = validateSecond(user, { passwordRequired });
   const third = validateThird(user);
 
   return {
@@ -50,17 +53,15 @@ function validateFirst (user) {
   };
 }
 
-function validateSecond (user) {
-  const affiliation = validation.validate({
+function validateSecond (user, { passwordRequired }) {
+  const affiliation = validation.validateAffiliation({
     value: user.affiliation,
-    maxLenght: 20,
+    requiredLength: 20,
     label: 'La afiliación',
     required: true });
-  const activity = validation.validate({
-    value: user.activity,
-    maxLenght: 20,
-    label: 'La afiliación',
-    required: true });
+  const activity = validation.validateEnum(
+    user.activity,
+    enumActivity);
   const startDate = validation.validateDate({
     date: user.startDate,
     label: 'La fecha de inicio',
@@ -82,16 +83,9 @@ function validateSecond (user) {
     value: user.password,
     maxLenght: 30,
     label: 'La contraseña',
-    required: true });
-  return {
-    affiliation,
-    activity,
-    startDate,
-    finishDate,
-    hours,
-    username,
-    password,
-  };
+    required: passwordRequired,
+  });
+  return { affiliation, activity, startDate, finishDate, hours, username, password };
 }
 
 function validateThird (user) {

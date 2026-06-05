@@ -46,6 +46,12 @@ const getMocaResultController     = require('../../controller/testApplications/g
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
+// Export PDF
+const ImpUsersRepository = require('../../../infrastructure/repositories/ImpUsersRepository');
+const PdfService = require('../../../infrastructure/external/pdf.service');
+const ExportPdfUseCase = require('../../../application/usecase/testApplications/exportPdfUseCase');
+const ExportPdfController = require('../../controller/testApplications/exportPdf.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
@@ -89,6 +95,21 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getMocaUseCase    = new getMocaResultUseCase(testResultsRepo);
   const getMocaController = new getMocaResultController(getMocaUseCase);
+
+  // Export PDF
+  const usersRepo = new ImpUsersRepository();
+  const pdfService = new PdfService();
+  const exportPdfUseCase = new ExportPdfUseCase(
+    testResultsRepo,
+    usersRepo,
+    pdfService,
+    getBanfeUseCase,
+    getWaisUseCase,
+    getReyUseCase,
+    getMocaUseCase,
+    getNihUseCase
+  );
+  const exportPdfController = new ExportPdfController(exportPdfUseCase);
 
   // Only manage the render
   router.get(
@@ -217,8 +238,9 @@ module.exports = (authUseCase, authMiddleware) => {
         .then(birthdate => {
           if (!birthdate) return res.status(200).json({ age: null });
           const today = new Date();
-          const parts = String(birthdate).split(/[-\/]/).map(Number);
-          const birth = new Date(parts[0], parts[1] - 1, parts[2]);
+          const [day, month, year] = String(birthdate).split('/').map(Number);
+          const birth = new Date(year, month - 1, day);
+          if (isNaN(birth.getTime())) return res.status(200).json({ age: null });
           let years = today.getFullYear() - birth.getFullYear();
           const m = today.getMonth() - birth.getMonth();
           if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;
@@ -226,6 +248,14 @@ module.exports = (authUseCase, authMiddleware) => {
         })
         .catch(err => res.status(500).json({ error: err.message }));
     }
+  );
+
+  // ======================== EXPORT PDF ===============================
+  router.get(
+    '/users/:id_user/applications/:id_application/export',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => exportPdfController.export(req, res)
   );
 
   return router;

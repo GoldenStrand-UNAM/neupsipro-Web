@@ -1,4 +1,5 @@
 const UserSummaryDTO = require('../../dto/userSummaryDTO');
+const crypt = require('../../../infrastructure/crypt/users/getUserList');
 
 /* Use case to fetch the folio + name of the active "usuarios" patients */
 class GetUsersListUseCase {
@@ -6,16 +7,27 @@ class GetUsersListUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute ({ search = '', page = 1, limit = 10 }) {
+  async execute ({ search, page = 1, limit = 10 }) {
     const [users, total] = await Promise.all([
       // Run queries in parallel
-      this.userRepository.fetchActivePatients ({ search, page, limit }),
-      this.userRepository.countActivePatients ({ search }),
+      this.userRepository.fetchActivePatients ({ page, limit }),
+      this.userRepository.countActivePatients (),
     ]);
+
+    const filteredUsers = users
+      .map(u => crypt(u))
+      .filter(user => {
+        if (!search) return true;
+
+        const searchLower = search.toLowerCase();
+        const fullName = user.fullName.toLowerCase();
+        const referenceNumber = (user.referenceNumber || '').toLowerCase();
+        return (fullName.includes(searchLower) || referenceNumber.includes(searchLower));
+      });
 
     return {
       // Map raw data to DTO for the output contract
-      users: users.map (u => new UserSummaryDTO(u)),
+      users: filteredUsers.map (u => new UserSummaryDTO(u)),
 
       // Pagination metadata
       total,
