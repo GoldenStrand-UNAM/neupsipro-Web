@@ -47,6 +47,9 @@ const editUserUseCase = require('../../../application/usecase/users/editUserUseC
 const editUserController = require('../../controller/users/editUser.controller');
 const loadEditUserController = require('../../controller/users/loadEditUser.controller');
 
+const deleteApplicationUseCase    = require('../../../application/usecase/testApplications/deleteApplicationUseCase');
+const deleteApplicationController = require('../../controller/testApplications/deleteApplication.controller');
+
 module.exports = (authUseCase, authMiddleware) => {
 
   const usersRepository    = new UsersRepository();
@@ -86,6 +89,9 @@ module.exports = (authUseCase, authMiddleware) => {
   const editUseCase = new editUserUseCase(usersRepository, hashingService);
   const loadEditController = new loadEditUserController(loadEditUser);
   const editController = new editUserController(editUseCase);
+
+  const delAppUseCase = new deleteApplicationUseCase(testAppRepository, testResultsRepository);
+  const delAppCtrl    = new deleteApplicationController(delAppUseCase);
 
   router.get(
     '/:id_user/applications/check-expiry',
@@ -130,6 +136,13 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'eliminate'),
     (req, res) => deleteAppointmentCtrl.deleteAppointment(req, res)
   );
+  router.delete(
+    '/:id_user/applications/:id_application',
+    authMiddleware.verifyToken, apiLimiter,
+    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    (req, res) => delAppCtrl.delete(req, res)
+  );
+
   router.delete(
     '/:id_user',
     authMiddleware.verifyToken, apiLimiter,
