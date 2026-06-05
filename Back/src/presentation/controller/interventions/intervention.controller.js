@@ -1,9 +1,10 @@
 class interventionController {
-  constructor (getInterventionUseCase, updateContractUseCase, addSessionUseCase, deleteLastSessionUseCase) {
+  constructor (getInterventionUseCase, updateContractUseCase, addSessionUseCase, deleteLastSessionUseCase, updateSessionUseCase) {
     this.usecase = getInterventionUseCase;
     this.updateUsecase = updateContractUseCase;
     this.addSessionUC = addSessionUseCase;
     this.deleteSessionUC = deleteLastSessionUseCase;
+    this.updateSessionUC = updateSessionUseCase;
   }
 
   async getPage (req, res) {
@@ -51,6 +52,19 @@ class interventionController {
     try {
       const { id_user, id_session } = req.params;
       const result = await this.deleteSessionUC.execute({ id_user, id_session });
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+  async updateSession (req, res) {
+    try {
+      const { id_user, id_session } = req.params;
+      const { session_number, session_date, objectives, development, dqp_task } = req.body;
+
+      const result = await this.updateSessionUC.execute({
+        id_user, id_session, session_number, session_date, objectives, development, dqp_task,
+      });
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ error: error.message });

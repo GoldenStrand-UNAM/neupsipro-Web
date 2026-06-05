@@ -2,8 +2,10 @@ const db = require('../database/database');
 const usersRepository = require('../../domain/repository/usersRepository');
 const userSummary = require('../../domain/entity/userSummaryEntity');
 const User = require('../../domain/entity/user');
-const crypt = require('../crypt/users/getUser');
+const Crypt = require('../crypt/users/getUser');
 const { v4: uuidv4 } = require('uuid');
+
+const crypt = new Crypt();
 
 class ImpUsersRepository extends usersRepository {
 
@@ -39,7 +41,7 @@ class ImpUsersRepository extends usersRepository {
       WHERE l.id_user = ?;`,
       [id_user]
     );
-    return userData.map(row => new User(crypt(row)));
+    return userData.map(row => new User(crypt.uncryptUser(row)));
   }
 
   async fetchActivePatients ({ page, limit }) {
@@ -222,7 +224,7 @@ class ImpUsersRepository extends usersRepository {
       WHERE u.id_user = ? AND u.eliminated = 0`,
       [id_user]
     );
-    if (rows) return crypt(rows[0]);
+    if (rows) return crypt.uncryptUser(rows[0]);
     else return null;
   }
 
@@ -304,7 +306,9 @@ class ImpUsersRepository extends usersRepository {
   // Fetch the minimal patient data needed for the PDF export header.
   async fetchUserForExport ({ id_user }) {
     const [rows] = await db.query(
-      `SELECT CONCAT(u.first_name, ' ', u.lastname_p, ' ', COALESCE(u.lastname_m, '')) AS name,
+      `SELECT u.first_name,
+              u.lastname_p,
+              u.lastname_m,
               ui.protocol,
               ui.reference_number
        FROM users u
@@ -315,12 +319,14 @@ class ImpUsersRepository extends usersRepository {
     );
 
     if (rows.length === 0) return null;
+    const newRows = rows.map(row => crypt.forPDF(row));
 
     return {
-      name: rows[0].name.trim(),
-      protocol: rows[0].protocol,
-      referenceNumber: rows[0].reference_number,
+      name: newRows[0].name,
+      protocol: newRows[0].protocol,
+      referenceNumber: newRows[0].reference_number,
     };
   }
 }
+
 module.exports = ImpUsersRepository;

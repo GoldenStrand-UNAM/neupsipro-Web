@@ -109,6 +109,15 @@ class ImpInterventionRepository extends interventionRepository {
     );
     return rows.length ? decryptInterventionSession(new InterventionSession(rows[0])) : null;
   }
+  async updateSession ({ id_session, session_number, session_date, objectives, development, dqp_task }) {
+    const [result] = await db.query(
+      `UPDATE intervention_session
+          SET session_number = ?, session_date = ?, objectives = ?, development = ?, dqp_task = ?
+        WHERE id_session = ?`,
+      [session_number, session_date, objectives, development, dqp_task, id_session]
+    );
+    return result.affectedRows > 0;
+  }
 }
 
 module.exports = ImpInterventionRepository;

@@ -156,6 +156,8 @@
                 id="affiliation"
                 placeholder="UNAM"
                 maxlength="20"
+                style="text-transform: uppercase;"
+                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gu, '')"
               >
               <span id="charactersAffiliation" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/20 
@@ -576,8 +578,8 @@
     }
     const phoneInput = document.getElementById('emergencyContactPhone');
 
-    const allowedCharRegex = /^[0-9+()\s-]$/;
-    const allowedStringRegex = /^[0-9+()\s-]+$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
