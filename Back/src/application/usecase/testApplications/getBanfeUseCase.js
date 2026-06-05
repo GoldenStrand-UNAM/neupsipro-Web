@@ -29,6 +29,7 @@ class getBanfeResultUseCase {
         dLateral: { score: row.score_d_lateral,         interpretation: row.inter_d_lateral         },
       },
       scoreTotal: row.score_total,
+      interTotal: row.inter_total ?? null,
       notes: row.notes ?? null,
     });
   }

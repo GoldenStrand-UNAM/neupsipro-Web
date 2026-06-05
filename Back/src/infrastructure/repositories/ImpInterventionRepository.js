@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../database/database');
 const interventionRepository = require('../../domain/repository/interventionRepository');
 const { Intervention, InterventionSession } = require('../../domain/entity/intervention');
+const { decryptIntervention , decryptInterventionSession } = require('../../infrastructure/crypt/intervention/getIntervention');
 
 class ImpInterventionRepository extends interventionRepository {
 
@@ -28,7 +29,7 @@ class ImpInterventionRepository extends interventionRepository {
        LIMIT 1`,
       [id_user]
     );
-    return rows.length ? new Intervention(rows[0]) : null;
+    return rows.length ? decryptIntervention(new Intervention(rows[0])) : null;
   }
 
   // Creates a new empty intervention
@@ -62,8 +63,7 @@ class ImpInterventionRepository extends interventionRepository {
         ORDER BY session_date ASC, id_session ASC`,
       [id_intervention]
     );
-    return rows.map(r => new InterventionSession(r));
-  }
+    return rows.map(r => decryptInterventionSession(new InterventionSession(r)));  }
 
   // Returns last session of an intervention id
   async findLastSession ({ id_intervention }) {
@@ -76,7 +76,7 @@ class ImpInterventionRepository extends interventionRepository {
         LIMIT 1`,
       [id_intervention]
     );
-    return rows.length ? new InterventionSession(rows[0]) : null;
+    return rows.length ? decryptInterventionSession(new InterventionSession(rows[0])) : null;
   }
 
   // New session
@@ -90,7 +90,7 @@ class ImpInterventionRepository extends interventionRepository {
     );
     return idSession;
   }
-  // delte session with their id
+  // delete session with their id
   async deleteSession ({ id_session }) {
     const [result] = await db.query(
       'DELETE FROM intervention_session WHERE id_session = ?',
@@ -107,7 +107,16 @@ class ImpInterventionRepository extends interventionRepository {
         LIMIT 1`,
       [id_session]
     );
-    return rows.length ? new InterventionSession(rows[0]) : null;
+    return rows.length ? decryptInterventionSession(new InterventionSession(rows[0])) : null;
+  }
+  async updateSession ({ id_session, session_number, session_date, objectives, development, dqp_task }) {
+    const [result] = await db.query(
+      `UPDATE intervention_session
+          SET session_number = ?, session_date = ?, objectives = ?, development = ?, dqp_task = ?
+        WHERE id_session = ?`,
+      [session_number, session_date, objectives, development, dqp_task, id_session]
+    );
+    return result.affectedRows > 0;
   }
 }
 

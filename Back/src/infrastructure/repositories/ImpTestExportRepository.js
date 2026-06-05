@@ -1,5 +1,6 @@
 const db = require('../database/database');
 const TestExportRepository = require('../../domain/repository/testExportRepository');
+const uncrypt = require('../crypt/exports/exports');
 
 class ImpTestExportRepository extends TestExportRepository {
   async fetchBanfeResults() {
@@ -33,9 +34,10 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -72,9 +74,10 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -113,9 +116,10 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 
@@ -176,6 +180,7 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
 
       UNION ALL
 
@@ -234,6 +239,7 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
 
       UNION ALL
 
@@ -292,10 +298,11 @@ class ImpTestExportRepository extends TestExportRepository {
         ON u.id_user = tr.id_user
       LEFT JOIN psych_tests pt
         ON pt.id_test = tr.id_test
+      WHERE u.eliminated = 0
 
       ORDER BY date_applied DESC
     `);
-
+    if(rows) return uncrypt(rows);
     return rows;
   }
 }

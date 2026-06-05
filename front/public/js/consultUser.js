@@ -126,7 +126,7 @@ function populateLogbook (user) {
 }
 
 // Max applications allowed per user
-const MAX_APPLICATIONS_UI = 5;
+const MAX_APPLICATIONS_UI = 10;
 
 // When the limit is reached, swap the "Nueva aplicación" button for a disabled placeholder.
 function enforceApplicationLimit (container) {

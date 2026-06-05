@@ -131,7 +131,7 @@
             <div class="inputs w-full relative flex items-center">
               <input
                 class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                type="email"
                 name="email"
                 id="email"
                 placeholder="ejemplo@gmail.com"
@@ -156,6 +156,8 @@
                 id="affiliation"
                 placeholder="UNAM"
                 maxlength="20"
+                style="text-transform: uppercase;"
+                oninput="this.value = this.value.toUpperCase().replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gu, '')"
               >
               <span id="charactersAffiliation" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
                 0/20 
@@ -168,18 +170,19 @@
               Actividad <span style="color: #FF0404">*</span>
             </label>
             <div class="inputs w-full relative flex items-center">
-              <input
+              <select
                 required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
+                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded text-gray-400"
                 name="activity"
                 id="activity"
-                placeholder="Trabajo"
-                maxlength="20"
               >
-              <span id="charactersActivity" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/20 
-              </span>
+                <option disabled selected hidden value="">Elige una opción</option>
+                <option value="Servicio social" class="text-black">Servicio social</option>
+                <option value="Prácticas profesionales" class="text-black">Prácticas profesionales</option>
+                <option value="Voluntariado" class="text-black">Voluntariado</option>
+                <option value="Titular" class="text-black">Titular</option>
+                <option value="Verano de investigación" class="text-black">Verano de investigación</option>
+              </select>
             </div>
           </div>
           <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
@@ -417,13 +420,13 @@
     setupCounter('lastnameM', 'charactersLastnameM');
     setupCounter('email', 'charactersEmail');
     setupCounter('affiliation', 'charactersAffiliation');
-    setupCounter('activity', 'charactersActivity');
     setupCounter('username', 'charactersUserName');
     setupCounter('password', 'charactersPassword');
     setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('emergencyContactName', 'charactersEmergencyContactName');
     setupCounter('emergencyContactPhone', 'charactersEmergencyContactPhone');
     setupCounter('emergencyContactRelation', 'charactersEmergencyContactRelation');
+    changeDefaultColor('activity');
     validateDates('birthdate');
     validateDates('startDate');
     validateFutureDates('finishDate');
@@ -456,6 +459,20 @@
       });
     }
 
+    function changeDefaultColor(id) {
+      const inputSelect = document.getElementById(id);
+
+      inputSelect.addEventListener('change', function() {
+        if (this.value !== "") {
+          this.classList.remove('text-gray-400');
+          this.classList.add('text-black');
+        } else {
+          this.classList.remove('text-black');
+          this.classList.add('text-gray-400');
+        }
+      });
+    }
+
     form.addEventListener('submit', async (e) => {
       event.preventDefault();
       const formData = new FormData(form);
@@ -465,9 +482,7 @@
         headers: { 'x-csrf-token': _csrfToken },
         body: formData,
       });
-
       const data = await res.json();
-
       if (res.ok) {
         sessionStorage.setItem('savedUser', 'true');
         window.location.href = '/clinical';
@@ -540,7 +555,6 @@
         minDate: "01/01/1900",
         disableMobile: true
       });
-
       inputFecha.addEventListener('input', (e) => {
         let v = e.target.value.replace(/\D/g, '');
         let finalValue = "";
@@ -564,8 +578,8 @@
     }
     const phoneInput = document.getElementById('emergencyContactPhone');
 
-    const allowedCharRegex = /^[0-9+()\s-]$/;
-    const allowedStringRegex = /^[0-9+()\s-]+$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;

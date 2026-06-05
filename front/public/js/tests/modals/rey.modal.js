@@ -234,7 +234,7 @@ function reyAreaSection (title, area) {
 function buildREYConsultHTML (test) {
   const notes     = test.notes ?? '';
   const dateLabel = test.dateApplied
-    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
     : '—';
   return `
     <div class="modal">
