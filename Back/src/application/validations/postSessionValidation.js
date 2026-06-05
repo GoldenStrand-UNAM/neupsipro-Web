@@ -53,7 +53,10 @@ function validatePeerSession (session) {
   if (errors.length > 0)
     throw new Error(errors.join('. '));
 
-  return session;
+  return {
+    ...session,
+    date: isoDate,
+  };
 }
 
 module.exports = validatePeerSession;
