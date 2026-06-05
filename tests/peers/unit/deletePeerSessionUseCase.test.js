@@ -13,7 +13,7 @@ describe('DeletePeerSessionUseCase — Unit Tests', () => {
 
     test('Happy Path, the session is deleted without errors', async() => {
       mockPeerSessionRepository.deleteSession.mockResolvedValue({id_peer_session: "s-111"});
-      const result = await useCase.execute({idPeerSession: "s-111"});
+      const result = await useCase.execute({id_peer_session: "s-111"});
       expect(result).toEqual({success: true});
     })
 
@@ -23,7 +23,7 @@ describe('DeletePeerSessionUseCase — Unit Tests', () => {
 
     test('The database founds no id matching the session sent to delete it', async() => {
       mockPeerSessionRepository.deleteSession.mockResolvedValue(null);
-      await expect(useCase.execute({ idPeerSession: "s-11" }))
+      await expect(useCase.execute({ id_peer_session: "s-11" }))
       .rejects.toThrow('La sesión no existe'); 
     }) 
 
