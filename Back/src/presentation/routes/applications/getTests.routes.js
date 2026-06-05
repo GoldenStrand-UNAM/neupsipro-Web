@@ -224,7 +224,7 @@ module.exports = (authUseCase, authMiddleware) => {
           res.status(200).json({ schooling, years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
-    }
+    } 
   );
 
   // GET REY age for modal
@@ -235,15 +235,23 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => {
       const { id_user } = req.params;
       testResultsRepo.fetchUserAge({ id_user })
-        .then(birthdate => {
-          if (!birthdate) return res.status(200).json({ age: null });
-          const today = new Date();
-          const [day, month, year] = String(birthdate).split('/').map(Number);
+        .then(result => {
+          // uncryptUser devuelve el objeto completo — extraer birthdate
+          const birthdate = result?.birthdate ?? result;
+          if (!birthdate || typeof birthdate !== 'string') 
+            return res.status(200).json({ age: null });
+
+          const [day, month, year] = birthdate.trim().split('/').map(Number);
+          if (!day || !month || !year) return res.status(200).json({ age: null });
+
           const birth = new Date(year, month - 1, day);
           if (isNaN(birth.getTime())) return res.status(200).json({ age: null });
+
+          const today = new Date();
           let years = today.getFullYear() - birth.getFullYear();
           const m = today.getMonth() - birth.getMonth();
           if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;
+
           res.status(200).json({ age: years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
