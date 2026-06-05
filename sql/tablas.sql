@@ -865,6 +865,19 @@ CREATE TABLE rey_results (
     CONSTRAINT fk_rey_results FOREIGN KEY (id_results) REFERENCES test_results (id_results)
 );
  
+CREATE TABLE emotion_results (
+    id_emotion                INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_results                VARCHAR(36)  NOT NULL UNIQUE,
+    score_anxiety_beck        DECIMAL(5,2) NULL,
+    inter_anxiety_beck        VARCHAR(36)  NULL,
+    score_depression_beck     DECIMAL(5,2) NULL,
+    inter_depression_beck     VARCHAR(36)  NULL,
+    notes                     VARCHAR(2000) NULL,
+    CONSTRAINT fk_emotion_results
+        FOREIGN KEY (id_results)
+        REFERENCES test_results (id_results)
+);
+
 ALTER TABLE tutorial DROP FOREIGN KEY fk_tutorial_module;
 DROP TABLE tutorial;
 
