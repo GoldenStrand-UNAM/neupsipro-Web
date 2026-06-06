@@ -13,6 +13,8 @@
 
 @import './components/molecules/_btn-molecules.css';
 @import './components/molecules/_input-molecules.css';
+@import './components/molecules/_steps-container.css';
+@import './components/molecules/_timeline.css';
 @import './components/molecules/_informative_molecules.css';
 
 @import './components/organisms/_login-form.css';

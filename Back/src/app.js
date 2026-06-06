@@ -245,6 +245,13 @@ app.use('/api/profile', profileRoutes(authUseCase, authMiddleware));
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase, authMiddleware));
+
+// ======== INITIAL INTERVIEW ROUTES ========
+const initialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
+
+app.use('/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
+
+// ======== TUTORIAL ROUTES ========
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
 app.use('/api/tutorial', tutorialRoutes(authMiddleware));

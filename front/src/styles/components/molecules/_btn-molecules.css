@@ -20,6 +20,17 @@
     @apply text-base md:text-xl;
     @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
+  /* Boton mid (icon + text)*/
+  .btn-mid {
+    @apply flex flex-row items-center justify-center gap-1;
+    @apply px-3 py-2 md:px-4 text-white font-medium rounded-lg;
+
+    @apply w-[200px];
+    @apply h-auto; /* 👈 importante */
+
+    @apply text-sm md:text-base text-center;
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
+  }
   /* Boton pequeño (icono + texto)*/
   .btn-mini {
     @apply flex items-center justify-center gap-2;

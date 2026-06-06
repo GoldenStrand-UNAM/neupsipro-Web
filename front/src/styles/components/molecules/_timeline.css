@@ -1,0 +1,21 @@
+@layer components {
+
+  .timeline-step {
+    @apply flex items-start gap-3 relative;
+  }
+
+  .timeline-circle {
+    @apply w-5 h-5 rounded-full;
+    @apply flex items-center justify-center;
+    @apply text-[10px] font-medium z-10;
+  }
+
+  .timeline-title {
+    @apply text-sm font-medium leading-tight;
+  }
+
+  .timeline-status {
+    @apply text-[11px] mt-0.5;
+  }
+
+}

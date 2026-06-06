@@ -1,0 +1,542 @@
+<!--Min Income-->
+<div>
+    <label> 
+        <p>1.- Salario Mínimo</p>
+        <p class="text-gray-400 text-sm">Ingresa el salario mínimo de la zona geográfica</p>
+    </label>
+    <input disabled type="number" min="0" id="minIncome" class="input" placeholder="$0.00">
+</div>
+
+<!--Ocupation-->
+<div>
+    <label class="input_label">2.- Ocupación</label>
+
+    <div>
+        <select id="ocupation" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">Sin ocupación</option>
+            <option value="1">Trabajadores no calificados</option>
+            <option value="2">Jubilados y pensionados</option>
+            <option value="3">
+                Becarios/as, trabajadores de servicios y vendedores de comercio y mercados
+            </option>
+            <option value="4">
+                Oficiales, operarios y artesanos de artes mecánicas y otros oficios
+            </option>
+            <option value="5">
+                Operadores de instalaciones, maquinarias y montadores
+            </option>
+            <option value="6">
+                Agricultores y trabajadores no calificados agropecuarios y pesqueros
+            </option>
+            <option value="7">Empleados/as de oficina</option>
+            <option value="8">
+                Técnicos/as profesionistas de nivel medio
+            </option>
+            <option value="9">
+                Profesionistas, científicos/as e intelectuales
+            </option>
+            <option value="10">
+                Fuerzas armadas y ejecutivos e inversionistas
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Family Expenses-->
+<div>
+    <label class="input_label">3.- Egreso Familiar</label>
+    <div class="input flex items-center gap-1">
+        <input disabled type="number" min="0" id="familyExpenses" class="w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="0.00">
+        <span class="text-gray-500 shrink-0 text-sm select-none">%</span>
+    </div>
+</div>
+
+<!--Housing-->
+<label class="input_label">4.- Vivienda</label>
+
+<div>
+    <!--Real Right-->
+    <div>
+        <label class="input_label text-sm">Derechos reales (uso, goce, disfrute)</label>
+
+        <div>
+            <select id="realRight" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Otros (institucional, albergues, reclusorios, casas de retiro o sin vivienda)
+                </option>
+                <option value="1">
+                    Rentada, hipotecada o con gravamen
+                </option>
+                <option value="2">
+                    Prestada (comodato)
+                </option>
+                <option value="3">
+                    Propia pagada
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Housing Type-->
+    <div>
+        <label class="input_label text-sm">
+            Tipo de vivienda: características de la vivienda que habita el grupo familiar
+        </label>
+
+        <div>
+            <select id="housingType" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Grupo 1 Institución de proteccióno social, vivienda móvil, casa rural, refugio, sin vivienda o local no construido para habitación
+                </option>
+                <option value="1">
+                    Grupo 2: Vecindad o cuarto de servicio/azotea
+                </option>
+                <option value="2">
+                    Grupo 3: Departamento o casa popular en unidades habitacionales (interés social)
+                </option>
+                <option value="3">
+                    Grupo 4: Departamento o casa clase media con financiamiento propio o hipoteca
+                </option>
+                <option value="5">
+                    Grupo 5: Departamento o casa residencial
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Public Services-->
+    <div>
+        <label class="input_label text-sm">
+            Servicios públicos: numero de servicios públicos con los que cuenta la localidad donde se encuentra ubicado el domicilio: agua, alcantarillado, alumbrado público, pavimentación, servicio de recolección de basura, etc.
+        </label>
+
+        <div>
+            <select id="publicServices" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    De 0 a 1 servicio público
+                </option>
+                <option value="1">
+                    2 servicios públicos
+                </option>
+                <option value="2">
+                    3 servicios públicos
+                </option>
+                <option value="3">
+                    4 ó más servicios públicos
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Inhome Services-->
+    <div>
+        <label class="input_label text-sm">
+            Servicios intradomiciliarios: servicios con los que cuenta dentro de la vivienda: agua, luz, drenaje, teléfono.
+        </label>
+
+        <div>
+            <select id="inhomeServices" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    De 0 a 1 servicio
+                </option>
+                <option value="1">
+                    2 servicios
+                </option>
+                <option value="2">
+                    3 servicios
+                </option>
+                <option value="3">
+                    4 ó más servicios
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Construction Material-->
+    <div>
+        <label class="input_label text-sm">
+            Material de construcción: tipo de material prevaleciente en la construcción de la vivienda
+        </label>
+
+        <div>
+            <select id="constructionMaterial" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Lámina, madera, material de la región
+                </option>
+                <option value="1">
+                    Mixta
+                </option>
+                <option value="2">
+                    Mampostería
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Number of Bedrooms-->
+    <div>
+        <label class="input_label text-sm">
+            Número de dormitorios: total de habitaciones utilizadas para dormir	
+        </label>
+
+        <div>
+            <select id="numBedrooms" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    1 ó 2
+                </option>
+                <option value="1">
+                    3 ó 4
+                </option>
+                <option value="2">
+                    5 ó más
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Persons Per Bedroom-->
+    <div>
+        <label class="input_label text-sm">
+            Numero de personas por dormitorio: se tomará en cuenta el número máximo de personas que ocupa un dormitorio
+        </label>
+
+        <div>
+            <select id="personsPerBedroom" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    4 ó más
+                </option>
+                <option value="1">
+                    3 personas
+                </option>
+                <option value="2">
+                    1-2 personas
+                </option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!--Family Conditions-->
+<label class="input_label">5.- Salud Familiar</label>
+
+<div>
+    <!--Treatment Time-->
+    <div>
+        <label class="input_label text-sm">
+            Tiempo de tratamiento de la enfermedad del paciente	
+        </label>
+
+        <div>
+            <select id="treatmentTime" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Más de 6 meses
+                </option>
+                <option value="1">
+                    De 3 a 6 meses
+                </option>
+                <option value="2">
+                    Menos de 3 meses o sin comorbilidad
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Other Problems-->
+    <div>
+        <label class="input_label text-sm">
+            Otros problemas de salud del paciente, que se atienda en otra institución
+        </label>
+
+        <div>
+            <select id="otherProblems" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Sí
+                </option>
+                <option value="1">
+                    No
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!--Family Health-->
+    <div>
+        <label class="input_label text-sm">
+            Estado de salud de los integrantes de la familia	
+        </label>
+
+        <div>
+            <select id="familyHealth" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="0">
+                    Dos o principal proveedor económico enfermo
+                </option>
+                <option value="1">
+                    Un enfermo
+                </option>
+                <option value="2">
+                    Ningún enfermo
+                </option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Total Puntuation-->
+<div class="grid grid-cols-3">
+    <div></div>
+    <div class="total">
+        <span class="font-bold">Puntuación Obtenida: </span>
+        <span class="level">
+            <span id="totalPuntuation"></span>
+            puntos
+        </span>
+    </div>
+</div>
+
+<!-- Level-->
+<div class="grid grid-cols-3">
+    <div></div>
+    <div class="total">
+        <span class="font-bold">Nivel Socioeconómico: </span>
+        <span class="level" id="socioeconomicLevel"></span>
+    </div>
+</div>
+
+<script>
+
+    function calculateMinIncomePoints() {
+
+        const minIncome =
+            parseFloat(document.getElementById('minIncome').value) || 0;
+
+        if (minIncome <= 0) return 0;
+
+        // datos del backend
+        const totalIncome =
+            window.financialData?.data?.extra?.totalIncome || 0;
+
+        const economicDependents =
+            window.financialData?.data?.extra?.economicDependents || 0;
+
+        // ingreso disponible dividido entre salario mínimo
+        const result = totalIncome / minIncome;
+
+        // convertir resultado a puntos
+        if (result >= 19) {
+            if (economicDependents >= 9) return 35;
+            else if (economicDependents >= 7) return 40;
+            else if (economicDependents >= 5) return 45;
+            else if (economicDependents >= 3) return 50;
+            else return 55;
+        } else if (result >= 16 ) {
+            if (economicDependents >= 9) return 30;
+            else if (economicDependents >= 7) return 35;
+            else if (economicDependents >= 5) return 40;
+            else if (economicDependents >= 3) return 45;
+            else return 50;
+        } else if (result >= 13 ) {
+            if (economicDependents >= 9) return 25;
+            else if (economicDependents >= 7) return 30;
+            else if (economicDependents >= 5) return 35;
+            else if (economicDependents >= 3) return 40;
+            else return 45;
+        } else if (result >= 10 ) {
+            if (economicDependents >= 9) return 20;
+            else if (economicDependents >= 7) return 25;
+            else if (economicDependents >= 5) return 30;
+            else if (economicDependents >= 3) return 35;
+            else return 40;
+        } else if (result >= 8 ) {
+            if (economicDependents >= 9) return 15;
+            else if (economicDependents >= 7) return 20;
+            else if (economicDependents >= 5) return 25;
+            else if (economicDependents >= 3) return 30;
+            else return 35;
+        } else if (result >= 6 ) {
+            if (economicDependents >= 9) return 10;
+            else if (economicDependents >= 7) return 15;
+            else if (economicDependents >= 5) return 20;
+            else if (economicDependents >= 3) return 25;
+            else return 30;
+        } else if (result >= 4.5 ) {
+            if (economicDependents >= 9) return 5;
+            else if (economicDependents >= 7) return 10;
+            else if (economicDependents >= 5) return 15;
+            else if (economicDependents >= 3) return 20;
+            else return 25;
+        } else if (result >= 3 ) {
+            if (economicDependents >= 9) return 0;
+            else if (economicDependents >= 7) return 5;
+            else if (economicDependents >= 5) return 10;
+            else if (economicDependents >= 3) return 15;
+            else return 20;
+        } else if (result >= 1.5 ) {
+            if (economicDependents >= 9) return 0;
+            else if (economicDependents >= 7) return 0;
+            else if (economicDependents >= 5) return 5;
+            else if (economicDependents >= 3) return 10;
+            else return 15;
+        } else if (result >= 1 ) {
+            if (economicDependents >= 9) return 0;
+            else if (economicDependents >= 7) return 0;
+            else if (economicDependents >= 5) return 0;
+            else if (economicDependents >= 3) return 5;
+            else return 10;
+        } else return 0;
+
+    }
+
+    function calculateFamExpensesPoints() {
+        const result =
+            parseFloat(document.getElementById('familyExpenses').value) || 0;
+
+        if(result > 70) return 0;
+        else if(result > 60) return 2;
+        else if(result > 50) return 4;
+        else if(result > 40) return 6;
+        else if(result > 30) return 8;
+        else return 10;
+    }
+
+    function getPoints(element) {
+
+        if (!element) return 0;
+
+        const value = parseInt(element.value);
+
+        return isNaN(value) ? 0 : value;
+    }
+
+    function calculateESCTotal() {
+        //calculates values
+        const minIncomePoints = calculateMinIncomePoints();
+
+        const familyExpensesPoints = calculateFamExpensesPoints();
+
+        // Inputs
+        const ocupation =
+            getPoints(document.getElementById('ocupation'));
+
+        const realRight =
+            getPoints(document.getElementById('realRight'));
+
+        const housingType =
+            getPoints(document.getElementById('housingType'));
+
+        const publicServices =
+            getPoints(document.getElementById('publicServices'));
+
+        const inhomeServices =
+            getPoints(document.getElementById('inhomeServices'));
+
+        const constructionMaterial =
+            getPoints(document.getElementById('constructionMaterial'));
+
+        const numBedrooms =
+            getPoints(document.getElementById('numBedrooms'));
+
+        const personsPerBedroom =
+            getPoints(document.getElementById('personsPerBedroom'));
+
+        const treatmentTime =
+            getPoints(document.getElementById('treatmentTime'));
+
+        const otherProblems =
+            getPoints(document.getElementById('otherProblems'));
+
+        const familyHealth =
+            getPoints(document.getElementById('familyHealth'));
+
+        // Total
+        const total =
+            minIncomePoints +
+            ocupation +
+            familyExpensesPoints +
+            realRight +
+            housingType +
+            publicServices +
+            inhomeServices +
+            constructionMaterial +
+            numBedrooms +
+            personsPerBedroom +
+            treatmentTime +
+            otherProblems +
+            familyHealth;
+
+        // Render total
+        document.getElementById('totalPuntuation').textContent =
+            total;
+
+        // Level
+        let level = '-';
+
+        if (total < 13) {
+            level = 'E';
+        } else if (total < 25) {
+            level = 'D';
+        } else if (total < 37) {
+            level = 'D+';
+        } else if (total < 53) {
+            level = 'C-';
+        } else if (total < 69) {
+            level = 'C';
+        } else if (total < 85) {
+            level = 'C+';
+        } else if (total <= 100) {
+            level = 'A/B';
+        } 
+
+        document.getElementById('socioeconomicLevel').textContent =
+            level;
+    }
+
+    function updateSelectColor(select) {
+
+        if (select.value !== '') {
+            select.classList.remove('text-gray-400');
+            select.classList.add('text-black');
+        } else {
+            select.classList.remove('text-black');
+            select.classList.add('text-gray-400');
+        }
+    }
+
+    // Detect changes automatically
+    document.querySelectorAll('select').forEach(select => {
+
+        // inicial color 
+        updateSelectColor(select);
+
+        // Calculate the color chance
+        select.addEventListener('change', () => {
+            updateSelectColor(select);
+            calculateESCTotal();
+        });
+    });
+
+    // Initial calculation
+    calculateESCTotal();
+
+</script>
