@@ -93,9 +93,10 @@
                         <label class="input_label">Relación</label>
                         <div>
                             <select class="person-relation input text-gray-400">
-                                <option disabled selected>Selecciona una opción</option>
+                                <option disabled selected value="">Selecciona una opción</option>
                                 <option>Madre</option>
                                 <option>Padre</option>
+                                <option>Hijo/a</option>
                                 <option>Otro</option>
                             </select>
                         </div>
@@ -214,6 +215,24 @@
 
             updateTitles();
             calculateTotal();
+        }
+    });
+
+    // update dropdown color
+    function updateSelectColor(select) {
+        if (select.selectedIndex > 0) {
+            select.classList.remove('text-gray-400');
+            select.classList.add('text-black');
+        } else {
+            select.classList.remove('text-black');
+            select.classList.add('text-gray-400');
+        }
+    }
+
+    // listener for update select color
+    container.addEventListener('change', (e) => {
+        if (e.target.classList.contains('person-relation')) {
+            updateSelectColor(e.target);
         }
     });
 
