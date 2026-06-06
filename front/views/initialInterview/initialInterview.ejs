@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <!-- Sidebar -->
+     <%- include('../partials/sidebar.ejs') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- Header -->
+        <%- include('../partials/header.ejs') %>
+
+        <!-- Main -->
+        <main class="flex-1 p-3 sm:p-4 md:p-6 pb-0 md:pl-0 overflow-hidden min-w-0 flex flex-col mt-3 md:mt-6">
+
+            <div class="flex-1 min-h-0 overflow-y-auto flex flex-col">
+
+            <div class="w-full bg-white rounded-t-2xl md:rounded-t-3xl px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-6">
+                <div class="flex items-center gap-4 mb-5">
+                    <a href="/users/<%= id_user %>">
+                        <button class="cursor-pointer pb">
+                            <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </button>
+                    </a>
+                    <h1 class="text-2xl font-bold text-[#1E1E1E]">
+                        Entrevista inicial
+                    </h1>
+                </div>
+                <hr class="border-3 rounded-2xl border-[#002B7A] mb-4">
+                <div id="sections-stepper">
+                    <%- include('../partials/sections.ejs') %>
+                </div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex-1 bg-white rounded-b-2xl md:rounded-b-3xl
+                        px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6">
+                <div class="w-full pt-0 p-3">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 pb-3">
+                        <!--Step title-->
+                        <div>
+                            <h1 id="step-title" class="font-bold section_title"></h1>
+                        </div>
+
+                        <!--Navegation buttons-->
+                        <%- include('../partials/navButtons.ejs') %>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col lg:grid lg:grid-cols-5 gap-6">
+
+                        <!-- Sidebar -->
+                        <div id="sidebar-timeline" class="z-10">
+                            <%- include('../partials/sectionsSidebar.ejs') %>
+                        </div>
+
+                        <div id="dynamic-content" class="md:col-span-4 min-w-0">
+                            <!-- Substep Title -->
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                <h2 id="subStep-title" class="section_title"></h2>
+                            </div>
+
+                            <!-- FINANCIAL 2.1 -->
+                            <div id="financial-section-1" class="financial-content hidden">
+                                <div class="grid md:grid-cols-2 gap-4">
+
+                                    <div>
+                                        <%- include('./financial/subStep1/incomes.ejs') %>
+                                    </div>
+
+                                    <div>
+                                        <%- include('./financial/subStep1/expenses.ejs') %>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- FINANCIAL 2.2 -->
+                            <div id="financial-section-2"
+                                class="financial-content hidden">
+
+                                <div>
+                                    <%- include('./financial/subStep2/esc.ejs') %>
+                                </div>
+
+                            </div>
+
+                            <!-- FINANCIAL 2.3 -->
+                            <div id="financial-section-3"
+                                class="financial-content hidden">
+
+                                <div>
+                                    <%- include('./financial/subStep3/amai.ejs') %>
+                                </div>
+                            </div>
+
+                            <!-- FINANCIAL 2.4 -->
+                            <div id="financial-section-4"
+                                class="financial-content hidden">
+
+                                <div>
+                                    <%- include('./financial/subStep4/results.ejs') %>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!--Navegation buttons-->
+                    <%- include('../partials/navButtons.ejs') %>
+                </div>
+            </div><!-- fin contenido -->
+
+            </div><!-- fin scroll wrapper -->
+        </main>
+
+    </div>
+
+    <!-- Script -->
+    <script src="/js/initialInterview/financial/financialMapper.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/initialInterview/sectionsStepper.js"></script>
+    <script src="/js/initialInterview/sidebarTimeline.js"></script>
+    <script src="/js/initialInterview/financial/financialBuilder.js"></script>
+
+    <!------------------------ Load Content Functions ------------------------>
+    <script>
+        // Update nav buttons, just for futher funcionality
+        function updateNavigationButtons(currentSection) {
+
+            document.querySelectorAll('.prevBtn').forEach(button => {
+
+                if (currentSection === 1) {
+                    button.classList.add('opacity-0', 'pointer-events-none');
+                } else {
+                    button.classList.remove('opacity-0', 'pointer-events-none');
+                }
+            });
+
+            document.querySelectorAll('.nextBtn').forEach(button => {
+
+                if (currentSection === 4) {
+                    button.classList.add('opacity-0', 'pointer-events-none');
+                } else {
+                    button.classList.remove('opacity-0', 'pointer-events-none');
+                }
+            });
+        }
+
+        // ----- Functions that set titles ------------------------------------
+
+        // Set by step
+        function setStepTitle(data) {
+            const steptitle = document.getElementById('step-title');
+
+            if (data.current_step === 1) {
+
+                steptitle.textContent =
+                    '1. Ficha de Identificación';
+
+            } else if (data.current_step === 2) {
+
+                steptitle.textContent =
+                    '2. Nivel Socioeconómico';
+
+            } else if (data.current_step === 3) {
+
+                steptitle.textContent =
+                    '3. Historia Clínica';
+
+            } else {
+
+                steptitle.textContent =
+                    'Sección no encontrada';
+            }
+        }
+
+        // Set by Substep
+        function setSubStepTitle(data) {
+            const subStepTitle = document.getElementById('subStep-title');
+
+            if (data.current_step === 2) {
+
+                if (data.current_section === 1) {
+                    subStepTitle.textContent = '2.1 Ingresos y Egresos';
+
+                } else if (data.current_section === 2) {
+                    subStepTitle.textContent = '2.2 ESC Gubernamental';
+
+                } else if (data.current_section === 3) {
+                    subStepTitle.textContent = '2.3 Cuestionario AMAI';
+
+                } else if (data.current_section === 4) {
+                    subStepTitle.textContent = '2.4 Resumen de Resultados';
+                }
+            }
+        }
+
+        // Get content by substep ---------------------------------------------
+        async function loadSection(section) {
+
+            try {
+                const res = await fetch(
+                    `/users/${id_user}/initial-interview/api/${id_user}/financial/${section}`
+                );
+
+                const data = await res.json();
+                console.log('DATA: ', data);
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return;
+                }
+
+                window.financialData = data;
+
+                // update sections state
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                // update sidebar state
+                window.sidebarState = {
+                    currentStep: data.current_section,
+                    completedSteps: data.data.completedSubSteps,
+                };
+
+                setSubStepTitle(data);
+                setFinancialContent(data);
+                updateNavigationButtons(data.current_section);
+
+                window.sidebarState.currentStep = section;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+                setTimeout(() => {
+                    window.renderFinancialData?.();
+                }, 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ----- Functions that set content -----------------------------------
+
+        // Financial step Content
+        function setFinancialContent(data) {
+
+            // Hidde all
+            document.querySelectorAll('.financial-content')
+                .forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+            // Chance the correct substep
+            const activeSection =
+                document.getElementById(
+                    `financial-section-${data.current_section}`
+                );
+
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+        }
+        
+        // Set Content
+        function setContent(data) {
+            if(data.current_step === 1){
+                // missing
+            } else if (data.current_step === 2) {
+                setFinancialContent(data);
+            } 
+        }
+
+        // Load financial step content 
+        async function loadFinancial() {
+            try {
+
+                await loadSection(1);
+
+                const data = window.financialData;
+
+                // Set titles
+                setStepTitle(data);
+
+                const refEl = document.getElementById("refNumber");
+                if (refEl) refEl.textContent = data.refNumber || "";
+
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        const id_user = "<%= id_user %>";
+        loadFinancial();
+
+        // ---------------------------- LISTENERS ----------------------------
+
+        // Listener for change substep
+        document.querySelectorAll('.timeline-step').forEach(step => {
+            step.addEventListener('click', async () => {
+                
+                // Save current section before changing
+                const currentSection = window.financialData.current_section;
+                await saveSection(currentSection);
+
+                // Load new section
+                const section = Number(step.dataset.step);
+                await loadSection(section);
+
+                // update titles
+                setSubStepTitle(window.financialData);
+
+                // update content
+                setFinancialContent(window.financialData);
+
+                // update sidebar
+                window.sidebarState.currentStep = section;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+            });
+        });
+
+        // NEXT buttons
+        document.querySelectorAll('.nextBtn').forEach(button => {
+
+            button.addEventListener('click', async () => {
+
+                let current = window.financialData.current_section;
+
+                await saveSection(current);
+
+                current++;
+
+                await loadSection(current);
+
+                setSubStepTitle(window.financialData);
+                setFinancialContent(window.financialData);
+
+                window.sidebarState.currentStep = current;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+            });
+        });
+
+        // PREVIOUS buttons
+        document.querySelectorAll('.prevBtn').forEach(button => {
+
+            button.addEventListener('click', async () => {
+
+                let current = window.financialData.current_section;
+
+                // Save current section before changing
+                await saveSection(current);
+
+                current--;
+
+                await loadSection(current);
+
+                setSubStepTitle(window.financialData);
+                setFinancialContent(window.financialData);
+
+                window.sidebarState.currentStep = current;
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+            });
+        });
+
+        // No negative values
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+
+            input.addEventListener('keydown', (e) => {
+
+                if (e.key === '-' || e.key === '+' || e.key === 'e') {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+
+    <!------------------------ Save Content Functions ------------------------>
+    <script>
+
+        // PATCH Section Content
+        async function saveSection (section) {
+            try {
+                
+                const body = buildSection(section);
+                console.log('body: ', body);
+                const res = await fetch(
+                `/users/${id_user}/initial-interview/api/${id_user}/financial/${section}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return false;
+                }
+
+                return true;
+
+            } catch (err) {
+
+                console.error(err);
+                return false;
+            }
+        }
+    </script>
+
+</body>
+</html>
