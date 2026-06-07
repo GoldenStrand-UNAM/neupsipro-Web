@@ -1,0 +1,45 @@
+@startuml GU42_ConsultarEstadisticas_Secuencia
+title GU42 - Consultar estadísticas de grupo de pares
+
+actor "Clinical User" as USR
+participant "PeerSessionView\n(charts)" as PSV
+participant "main.js" as MAIN
+participant "PeerSessionRoutes" as ROUTE
+participant "Auth & Permissions\nMiddleware" as AUTH
+participant "GetPeerStatsController" as CTRL
+participant "GetPeerStatsUseCase" as UC
+participant "ImpPeerSessionRepository" as IREPO
+database "MySQL DB" as DB
+
+USR -> PSV : Entra a Grupo de Pares\n(carga de gráficas)
+activate PSV
+PSV -> MAIN : loadStats()
+MAIN -> ROUTE : GET /peer-sessions/stats\n[Authorization: Bearer JWT]
+activate ROUTE
+ROUTE -> AUTH : verifyToken +\nrequirePermission('consultation')
+AUTH --> ROUTE : OK
+ROUTE -> CTRL : getPeerStats(req, res)
+activate CTRL
+
+CTRL -> UC : execute()
+activate UC
+UC -> IREPO : fetchAllForStats()
+activate IREPO
+IREPO -> DB : SELECT title, date,\nmen_count, women_count\nFROM peer_session\nORDER BY date ASC
+DB --> IREPO : rows
+IREPO --> UC : rows
+deactivate IREPO
+
+UC -> UC : build genderSeries[]\n(hombres vs mujeres por fecha)
+UC -> UC : build attendanceSeries[]\n(total por fecha)
+UC -> UC : compute KPIs\n(totalSessions, totalMen,\ntotalWomen, avgPerSession)
+UC --> CTRL : { genderSeries,\nattendanceSeries, kpis }
+deactivate UC
+CTRL --> ROUTE : HTTP 200 { data }
+deactivate CTRL
+ROUTE --> MAIN : HTTP 200 { data }
+deactivate ROUTE
+MAIN -> PSV : render BarChart + LineChart\n+ KPI cards
+PSV --> USR : Muestra estadísticas
+deactivate PSV
+@enduml
