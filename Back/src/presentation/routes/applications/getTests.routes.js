@@ -43,6 +43,13 @@ const postMocaController = require('../../controller/testApplications/postMoca.c
 const getMocaResultUseCase        = require('../../../application/usecase/testApplications/getMocaUseCase');
 const getMocaResultController     = require('../../controller/testApplications/getMoca.controller');
 
+//Emotion
+
+const postEmotionUseCase        = require('../../../application/usecase/testApplications/postEmotionUseCase');
+const postEmotionController     = require('../../controller/testApplications/postEmotion.controller');
+const getEmotionResultUseCase   = require('../../../application/usecase/testApplications/getEmotionResultUseCase');
+const getEmotionResultController = require('../../controller/testApplications/getEmotion.controller');
+
 //AUTH & PERMISSIONS
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
@@ -95,6 +102,13 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const getMocaUseCase    = new getMocaResultUseCase(testResultsRepo);
   const getMocaController = new getMocaResultController(getMocaUseCase);
+
+  //Emotion
+  const emotionUseCase    = new postEmotionUseCase(testResultsRepo);
+  const emotionController = new postEmotionController(emotionUseCase);
+
+  const getEmotionUseCase    = new getEmotionResultUseCase(testResultsRepo);
+  const getEmotionController = new getEmotionResultController(getEmotionUseCase);
 
   // Export PDF
   const usersRepo = new ImpUsersRepository();
@@ -202,6 +216,21 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => getMocaController.getResult(req, res)
   );
 
+  // ======================== EMOTION ===============================
+  router.post(
+    '/api/users/:id_user/applications/:id_application/tests/6/results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => emotionController.postResult(req, res)
+  );
+
+  router.get(
+    '/api/users/:id_user/applications/:id_application/tests/6/results/:id_results',
+    authMiddleware.verifyToken,
+    permissionsMiddleware.requirePermission('Tests', 'consultation'),
+    (req, res) => getEmotionController.getResult(req, res)
+  );
+
   // ======================== AUXILIARY ENDPOINTS FOR Moca & REY ===============================
 
   router.get(
@@ -224,7 +253,7 @@ module.exports = (authUseCase, authMiddleware) => {
           res.status(200).json({ schooling, years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
-    }
+    } 
   );
 
   // GET REY age for modal
@@ -235,15 +264,23 @@ module.exports = (authUseCase, authMiddleware) => {
     (req, res) => {
       const { id_user } = req.params;
       testResultsRepo.fetchUserAge({ id_user })
-        .then(birthdate => {
-          if (!birthdate) return res.status(200).json({ age: null });
-          const today = new Date();
-          const [day, month, year] = String(birthdate).split('/').map(Number);
+        .then(result => {
+          // uncryptUser devuelve el objeto completo — extraer birthdate
+          const birthdate = result?.birthdate ?? result;
+          if (!birthdate || typeof birthdate !== 'string') 
+            return res.status(200).json({ age: null });
+
+          const [day, month, year] = birthdate.trim().split('/').map(Number);
+          if (!day || !month || !year) return res.status(200).json({ age: null });
+
           const birth = new Date(year, month - 1, day);
           if (isNaN(birth.getTime())) return res.status(200).json({ age: null });
+
+          const today = new Date();
           let years = today.getFullYear() - birth.getFullYear();
           const m = today.getMonth() - birth.getMonth();
           if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;
+
           res.status(200).json({ age: years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
