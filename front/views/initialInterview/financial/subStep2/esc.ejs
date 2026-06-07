@@ -2,7 +2,6 @@
 <div>
     <label> 
         <p>1.- Salario Mínimo</p>
-        <p class="text-gray-400 text-sm">Ingresa el salario mínimo de la zona geográfica</p>
     </label>
     <input disabled type="number" min="0" id="minIncome" class="input" placeholder="$0.00">
 </div>
@@ -47,9 +46,17 @@
 <!--Family Expenses-->
 <div>
     <label class="input_label">3.- Egreso Familiar</label>
-    <div class="input flex items-center gap-1">
-        <input disabled type="number" min="0" id="familyExpenses" class="w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="0.00">
-        <span class="text-gray-500 shrink-0 text-sm select-none">%</span>
+    <div class="flex items-center gap-2">
+        <div class="input flex items-center gap-1 flex-1">
+            <input disabled type="number" min="0" id="familyExpenses" class="w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="0.00">
+            <span class="text-gray-500 shrink-0 text-sm select-none">%</span>
+        </div>
+        <div class="relative shrink-0">
+            <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#BA8700] text-[#BA8700] bg-transparent text-xs leading-none">?</button>
+            <div class="hidden absolute right-0 z-10 mt-2 w-56 rounded-lg border border-[#BA8700] bg-white p-2 text-xs text-gray-600 shadow-lg">
+                Egreso familiar es un valor calculado a partir del total de ingresos y egresos
+            </div>
+        </div>
     </div>
 </div>
 
