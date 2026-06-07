@@ -15,7 +15,8 @@
         <!--Schoolarship type-->
         <div>
             <label class="input_label">Describa el tipo de financiamiento</label>
-            <input type="text" id="financialType" class="input" placeholder="Crédito educativo, beca, etc">
+            <input type="text" id="financialType" maxlength="30" class="input" placeholder="Crédito educativo, beca, etc">
+            <p class="text-xs text-gray-400 mt-1">Máximo 30 caracteres</p>
         </div>
 
         <!--Salary before-->
@@ -86,13 +87,14 @@
                     
                     <div>
                         <label class="input_label">Nombre</label>
-                        <input type="text" class="person-name input" placeholder="María Luisa">
+                        <input type="text" class="person-name input" maxlength="30" placeholder="María Luisa">
+                        <p class="text-xs text-gray-400 mt-1">Máximo 30 caracteres</p>
                     </div>
 
                     <div>
                         <label class="input_label">Relación</label>
                         <div>
-                            <select class="person-relation input text-gray-400">
+                            <select class="person-relation input text-black">
                                 <option disabled selected value="">Selecciona una opción</option>
                                 <option>Madre</option>
                                 <option>Padre</option>

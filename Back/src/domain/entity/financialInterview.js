@@ -32,6 +32,8 @@ class FinancialInterview {
   // ----- Auxiliary functions ------------------------------------------------
 
   static MAX_MONEY = 1_000_000;
+  static MAX_TEXT_LENGTH = 30;
+  static MAX_NOTES_LENGTH = 500;
 
   // Get number or null if the value isn't registered
   static numberOrNull (value) {
@@ -52,13 +54,14 @@ class FinancialInterview {
     return num;
   }
 
-  // Get text or null if the value isn't registered
-  static textOrNull (value) {
-    return value === null ||
-    value === undefined ||
-    value === ''
-      ? null
-      : String(value);
+  // Get text or null if the value isn't registered, throws if it exceeds maxLength
+  static textOrNull (value, maxLength = FinancialInterview.MAX_TEXT_LENGTH) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const text = String(value);
+    if (text.length > maxLength) throw new Error(`El texto no puede superar ${maxLength} caracteres`);
+
+    return text;
   }
 
   // =============================== Funtions ===============================
@@ -240,7 +243,7 @@ class FinancialInterview {
     const data = Array.isArray(datas) ? datas[0] : datas;
 
     return {
-      notes: FinancialInterview.textOrNull(data.notes),
+      notes: FinancialInterview.textOrNull(data.notes, FinancialInterview.MAX_NOTES_LENGTH),
       protesisBudget: FinancialInterview.numberOrNull(data.protesis_budget),
       totalIncome: FinancialInterview.numberOrNull(data.total_income),
       totalExpenses: FinancialInterview.numberOrNull(data.total_expenses),
@@ -334,8 +337,8 @@ class FinancialInterview {
       contributors:
       Array.isArray(data.contributors)
         ? data.contributors.map(c => ({
-          name: c.name ?? null,
-          relation: c.relation ?? null,
+          name: this.textOrNull(c.name),
+          relation: this.textOrNull(c.relation),
           income: this.moneyOrNull(c.income),
         }))
         : [],
@@ -389,7 +392,7 @@ class FinancialInterview {
   static validateResults (data) {
     return {
       protesisBudget: this.numberOrNull(data.protesisBudget),
-      notes: this.textOrNull(data.notes),
+      notes: this.textOrNull(data.notes, this.MAX_NOTES_LENGTH),
     };
   }
 }
