@@ -10,12 +10,12 @@ describe('Configuración de ambiente', () => {
         expect(process.env.NODE_ENV).toBe('test');
     });
 
-    test('el puerto de test es 3001', () => {
-        expect(process.env.PORT).toBe('3001');
+    test('el puerto de test es 3000', () => {
+        expect(process.env.PORT).toBe('3000');
     });
 
-    test('el nombre de la app contiene Test', () => {
-        expect(process.env.APP_NAME).toContain('Test');
+    test('el nombre de la app es Local', () => {
+        expect(process.env.APP_NAME).toBe('Local');
     });
 
 });
