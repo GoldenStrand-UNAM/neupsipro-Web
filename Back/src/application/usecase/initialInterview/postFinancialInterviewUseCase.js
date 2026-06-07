@@ -193,6 +193,10 @@ class postFinancialInterviewUseCase {
     const relationResult = await this.financialInterviewRepository.fetchRelation({ id_user });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
 
+    if (!id_user_relation) {
+      throw new Error('Initial interview relation not found');
+    }
+
     // validate step
     if (step !== 'financial') {
       throw new Error('Section not found');
@@ -203,7 +207,7 @@ class postFinancialInterviewUseCase {
 
     await this.updateData({ id_user_relation, subStep, validatedData });
 
-    await this.updateProgress({ id_user_relation });
+    await this.updateProgress(id_user_relation);
 
     return {
       current_section: subStep + 1,

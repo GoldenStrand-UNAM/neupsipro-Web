@@ -27,7 +27,7 @@ class financialInterviewController {
 
     } catch (err) {
 
-      res.status(500).json({
+      res.status(err.status || 500).json({
         success: false,
         error: err.message,
       });
