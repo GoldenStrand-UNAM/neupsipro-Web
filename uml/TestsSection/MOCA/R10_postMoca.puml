@@ -45,7 +45,7 @@ alt Input inválido
     MMODAL --> USR : showScoreError(msg)\n"El puntaje debe estar entre 0 y 30"
 end
 
-MMODAL -> MMODAL : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+MMODAL -> MMODAL : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 29 → raw + 2\n- Math.min(final, 30)
 MMODAL -> MMODAL : interpretMOCA(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
 MMODAL --> USR : Puntaje final + interpretación\nen vivo (sin submit)
 
@@ -111,7 +111,7 @@ RREPO --> UC_POST : schooling | null
 
 UC_POST -> UC_POST : resolveSchoolingYears(schooling)\n'Sin escolaridad' → 0\n'Primaria'        → 6\n'Secundaria'      → 9\n'Bachillerato'    → 12\n'Licenciatura'    → 16\n'Posgrado'        → 18
 
-UC_POST -> UC_POST : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 28 → raw + 2\n- Math.min(final, 30)
+UC_POST -> UC_POST : resolveFinalScore(raw, schoolingYears)\n- si years <= 12 AND raw <= 29 → raw + 2\n- Math.min(final, 30)
 
 UC_POST -> UC_POST : resolveInterpretation(finalScore)\n≥26 → "Rendimiento cognitivo normal"\n≥18 → "Deterioro cognitivo leve"\n≥10 → "Deterioro cognitivo moderado"\n<10  → "Deterioro cognitivo grave"
 
