@@ -8,7 +8,7 @@ describe('postApplicationUseCase — Unit Tests', () => {
 
     const validInput = {
         id_user: 'user-001',
-        application_name: 'barcelona',
+        application_name: 'Evaluación 0',
     };
 
     const fakeProtocolTests = [
@@ -21,7 +21,7 @@ describe('postApplicationUseCase — Unit Tests', () => {
     const savedEntity = {
         idApplication: 'app-001',
         idUser: 'user-001',
-        applicationName: 'barcelona',
+        applicationName: 'Evaluación 0',
         status: 'Por comenzar',
         createdAt: '2026-05-19',
         _rawStatus: 1,
@@ -75,31 +75,34 @@ describe('postApplicationUseCase — Unit Tests', () => {
         mockAppRepo.fetchUserProtocol.mockResolvedValue({ protocol: 'Research' });
 
         await expect(useCase.execute({ ...validInput, application_name: undefined }))
-            .rejects.toMatchObject({ status: 422, message: 'application_name is required' });
+            .rejects.toMatchObject({ status: 422, message: 'Nombre de aplicación no válido' });
     });
 
     test('throws 422 if application_name is only whitespace', async () => {
         mockAppRepo.fetchUserProtocol.mockResolvedValue({ protocol: 'Research' });
 
         await expect(useCase.execute({ ...validInput, application_name: '   ' }))
-            .rejects.toMatchObject({ status: 422 });
+            .rejects.toMatchObject({ status: 422, message: 'Nombre de aplicación no válido' });
     });
 
-    test('throws 422 if application_name exceeds 20 characters', async () => {
+    test('throws 422 if application_name is not in the allowed list', async () => {
         mockAppRepo.fetchUserProtocol.mockResolvedValue({ protocol: 'Research' });
 
-        await expect(useCase.execute({ ...validInput, application_name: 'a'.repeat(21) }))
-            .rejects.toMatchObject({ status: 422, message: 'application_name must be 20 characters or less' });
+        await expect(useCase.execute({ ...validInput, application_name: 'nombre inventado' }))
+            .rejects.toMatchObject({ status: 422, message: 'Nombre de aplicación no válido' });
     });
 
-    test('accepts application_name of exactly 20 characters', async () => {
-        const exactlyMax = 'a'.repeat(20);
+    test('accepts every allowed application name', async () => {
         mockAppRepo.fetchUserProtocol.mockResolvedValue({ protocol: 'Research' });
         mockAppRepo.fetchProtocolTests.mockResolvedValue(fakeProtocolTests);
-        mockAppRepo.saveApplication.mockResolvedValue({ ...savedEntity, applicationName: exactlyMax });
 
-        await expect(useCase.execute({ ...validInput, application_name: exactlyMax }))
-            .resolves.toBeDefined();
+        for (let i = 0; i <= 9; i++) {
+            const name = `Evaluación ${i}`;
+            mockAppRepo.saveApplication.mockResolvedValue({ ...savedEntity, applicationName: name });
+
+            await expect(useCase.execute({ ...validInput, application_name: name }))
+                .resolves.toBeDefined();
+        }
     });
 
 
@@ -125,19 +128,19 @@ describe('postApplicationUseCase — Unit Tests', () => {
         // Verify persistence layer interaction
         expect(mockAppRepo.saveApplication).toHaveBeenCalledWith({
             id_user: 'user-001',
-            application_name: 'barcelona',
+            application_name: 'Evaluación 0',
         });
 
         expect(mockResultsRepo.createResults).toHaveBeenCalledWith(
-            'app-001',        
-            'user-001',         
-            [1, 2, 5],         
+            'app-001',
+            'user-001',
+            [1, 2, 5],
         );
 
         // 3) DTO returned — never raw entity
         expect(dto).toBeInstanceOf(testApplicationDTO);
         expect(dto.idApplication).toBe('app-001');
-        expect(dto.applicationName).toBe('barcelona');
+        expect(dto.applicationName).toBe('Evaluación 0');
     });
 
    
