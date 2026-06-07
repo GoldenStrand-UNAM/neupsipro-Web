@@ -1,7 +1,7 @@
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
-// key generator for rate limiting, always by IP
-const keyByIp = (req) => req.ip;
+// key generator for rate limiting, always by IP (IPv6-safe)
+const keyByIp = (req) => ipKeyGenerator(req.ip);
 
 // response
 const response = (req, res) => {
