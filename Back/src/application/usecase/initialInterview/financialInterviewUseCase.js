@@ -1,4 +1,4 @@
-const FinancialInterview = require('../../../domain/entity/FinancialInterview');
+const FinancialInterview = require('../../../domain/entity/financialInterview');
 
 class FinancialInterviewUseCase {
   constructor (financialInterviewRepository) {
