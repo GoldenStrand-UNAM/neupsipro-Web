@@ -130,6 +130,9 @@ class resultRepository {
 
   }
 
+  async deleteAllResults ({ _id_application }) {
+    throw new Error('deleteAllResults() not implemented');
+    
   //========= EMOTION ========================
 
   async fetchEmotionResult ({ _id_results }) {
