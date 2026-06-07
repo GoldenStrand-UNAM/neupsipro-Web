@@ -1,0 +1,105 @@
+
+<div id="sessionDetailModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+    <!-- Modal -->
+    <div class="relative bg-white rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-4 gap-3">
+            <div class="min-w-0">
+                <!-- Session title -->
+                <h2 id="detailTitle" class="text-xl font-semibold text-gray-900 break-words">—</h2>
+                <!-- Session date -->
+                <p id="detailDate" class="text-sm text-gray-400 mt-1">—</p>
+            </div>
+            <button id="closeSessionDetail" class="text-gray-400 hover:text-gray-700 cursor-pointer shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Attendance pills: men / women / total -->
+        <div class="flex flex-wrap items-center gap-2 mb-5">
+            <span id="detailMen"   class="pill">0 H</span>
+            <span id="detailWomen" class="pill">0 M</span>
+            <span id="detailTotal" class="pill pill--accent">0 total</span>
+        </div>
+
+        <!-- Info rows -->
+        <div class="space-y-3">
+            <!-- Speaker / responsible -->
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Realizó la sesión</p>
+                <p id="detailResponsable" class="text-sm text-gray-800">—</p>
+            </div>
+
+            <!-- Note / description -->
+            <div>
+                <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Nota / De qué trató</p>
+                <p id="detailNote" class="text-sm text-gray-800 whitespace-pre-line break-words">—</p>
+            </div>
+        </div>
+
+        <!-- Footer: close button -->
+        <div class="flex justify-end mt-6">
+            <button id="dismissSessionDetail" class="btn-cancel">
+                <span class="whitespace-nowrap">Cerrar</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal       = document.getElementById('sessionDetailModal');
+    const btnClose    = document.getElementById('closeSessionDetail');
+    const btnDismiss  = document.getElementById('dismissSessionDetail');
+
+    // Cached references to elements that will display session details
+    const elTitle       = document.getElementById('detailTitle');
+    const elDate        = document.getElementById('detailDate');
+    const elMen         = document.getElementById('detailMen');
+    const elWomen       = document.getElementById('detailWomen');
+    const elTotal       = document.getElementById('detailTotal');
+    const elResponsable = document.getElementById('detailResponsable');
+    const elNote        = document.getElementById('detailNote');
+
+    const setText = (el, value, fallback = '—') => {
+        el.textContent = (value === null || value === undefined || value === '') ? fallback : value;
+    };
+
+    // Public API
+    window.openSessionDetail = (session) => {
+        const men   = Number(session.menCount)   || 0;
+        const women = Number(session.womenCount) || 0;
+
+        setText(elTitle,       session.title);
+        setText(elDate,        session.date);
+        setText(elResponsable, session.responsable, 'Sin orador');
+        setText(elNote,        session.note, 'Sin nota');
+
+        elMen.textContent   = `${men} H`;
+        elWomen.textContent = `${women} M`;
+        elTotal.textContent = `${men + women} total`;
+
+        modal.classList.remove('hidden');
+    };
+
+    // Close handlers
+    const close = () => modal.classList.add('hidden');
+    btnClose?.addEventListener('click', close);
+    btnDismiss?.addEventListener('click', close);
+
+    // Click outside the modal content closes it
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.classList.contains('backdrop-blur-sm')) close();
+    });
+
+    // Esc closes the modal when it is open
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
+    });
+})();
+</script>
