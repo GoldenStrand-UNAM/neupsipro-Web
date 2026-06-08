@@ -25,12 +25,32 @@ class postIdentificationInterviewUseCase {
       field !== null && field !== undefined && field !== '');
   }
 
+  isSubStep2Complete (data) {
+    const requiredFields = [
+      data.inRelationship,
+      data.hasChildren,
+      data.numberFamilyMembers,
+    ];
+
+    const baseComplete = requiredFields.every(field =>
+      field !== null && field !== undefined && field !== '');
+
+    if (!baseComplete) return false;
+
+    // Claiming children but registering none leaves the substep incomplete
+    if (data.hasChildren && data.children.length === 0) return false;
+
+    return true;
+  }
+
   // Validate Section Data by substep
   validateSectionData ({ subStep, body }) {
     try {
       switch (subStep) {
         case 1:
           return IdentificationInterview.validateSubStep1(body);
+        case 2:
+          return IdentificationInterview.validateSubStep2(body);
         default:
           throw new Error('Invalid section');
       }
@@ -52,6 +72,10 @@ class postIdentificationInterviewUseCase {
     switch (subStep) {
       case 1:
         completed = this.isSubStep1Complete(validatedData);
+        break;
+
+      case 2:
+        completed = this.isSubStep2Complete(validatedData);
         break;
     }
 
@@ -96,13 +120,9 @@ class postIdentificationInterviewUseCase {
     subStep,
     body,
   }) {
-    console.log('[identification useCase] executeUpdate:', { id_user, step, subStep });
-
     // fetch relation
     const relationResult = await this.identificationInterviewRepository.fetchRelation({ id_user });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
-
-    console.log('[identification useCase] id_user_relation:', id_user_relation);
 
     if (!id_user_relation) {
       throw new Error('Initial interview relation not found');
@@ -115,13 +135,10 @@ class postIdentificationInterviewUseCase {
 
     // validate entity
     const validatedData = this.validateSectionData({ subStep, body });
-    console.log('[identification useCase] validatedData:', validatedData);
 
     await this.updateData({ id_user_relation, subStep, validatedData });
-    console.log('[identification useCase] updateData done');
 
     await this.updateProgress(id_user_relation);
-    console.log('[identification useCase] updateProgress done');
 
     return {
       current_section: subStep + 1,

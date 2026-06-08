@@ -10,6 +10,10 @@ class IdentificationInterview {
         this.data = this.mapSubStep1(initialProgress, readOnlyFields, data);
         break;
 
+      case 2:
+        this.data = this.mapSubStep2(initialProgress, data);
+        break;
+
       default:
         throw new Error('Invalid section');
     }
@@ -96,6 +100,44 @@ class IdentificationInterview {
     return value;
   }
 
+  // Boolean for display: null if empty, otherwise a real boolean
+  static booleanOrNull (value) {
+    return value === null || value === undefined
+      ? null
+      : Boolean(value);
+  }
+
+  // Required boolean field, throws if missing
+  static requiredBoolean (value, label) {
+    if (value === null || value === undefined || value === '') {
+      throw new Error(`${label} es obligatorio`);
+    }
+
+    return Boolean(value);
+  }
+
+  // Integer within [min, max] (max optional), or null if empty
+  static integerOrNull (value, min, max, label) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const num = Number(value);
+
+    if (!Number.isInteger(num)) throw new Error(`${label} debe ser un número entero`);
+    if (num < min) throw new Error(`${label} debe ser mayor o igual a ${min}`);
+    if (max !== null && num > max) throw new Error(`${label} debe estar entre ${min} y ${max}`);
+
+    return num;
+  }
+
+  // Required integer within [min, max] (max optional), throws if missing
+  static requiredInteger (value, min, max, label) {
+    if (value === null || value === undefined || value === '') {
+      throw new Error(`${label} es obligatorio`);
+    }
+
+    return this.integerOrNull(value, min, max, label);
+  }
+
   // ================================= Map =================================
 
   // Datos Personales
@@ -142,6 +184,38 @@ class IdentificationInterview {
     };
   }
 
+  // Situación Familiar
+  mapSubStep2 (initialProgress, data) {
+    const base = data || {};
+    const children = Array.isArray(base.children) ? base.children : [];
+
+    return {
+      familySituation: {
+        inRelationship: IdentificationInterview.booleanOrNull(base.in_relationship),
+        relationshipDuration: IdentificationInterview.numberOrNull(base.relationship_duration),
+        partnersName: IdentificationInterview.textOrNull(base.partners_name, 50),
+        partnersAge: IdentificationInterview.numberOrNull(base.partners_age),
+        partnersOcupation: IdentificationInterview.textOrNull(base.partners_ocupation, 50),
+        partnersHealth: IdentificationInterview.textOrNull(base.partners_health, 150),
+        hasChildren: IdentificationInterview.booleanOrNull(base.has_children),
+        numberFamilyMembers: IdentificationInterview.numberOrNull(base.number_family_members),
+        roomieInfo: IdentificationInterview.textOrNull(base.roomie_info, 150),
+        aditionalInfo: IdentificationInterview.textOrNull(base.aditional_info, 400),
+      },
+
+      children: children.map(child => ({
+        childName: IdentificationInterview.textOrNull(child.child_name, 80),
+        childAge: IdentificationInterview.numberOrNull(child.child_age),
+        childSchooling: IdentificationInterview.textOrNull(child.child_schooling, 30),
+        childOccupation: IdentificationInterview.textOrNull(child.child_occupation, 80),
+      })),
+
+      completedSteps: this.mapInitialProgress(initialProgress),
+
+      id_user: this.id_user,
+    };
+  }
+
   // Initial Interview Progress
   mapInitialProgress (initialProgress) {
     const data = initialProgress[0];
@@ -179,6 +253,58 @@ class IdentificationInterview {
       mothersSchooling: this.enumOrNull(data.mothersSchooling, this.SCHOOLING_OPTIONS),
       ocupation: this.textOrNull(data.ocupation, 50),
     };
+  }
+
+  // Validate Situación Familiar
+  static validateSubStep2 (data) {
+    const inRelationship = this.requiredBoolean(data.inRelationship, '¿Tiene pareja?');
+    const hasChildren = this.requiredBoolean(data.hasChildren, '¿Tiene hijos?');
+
+    return {
+      inRelationship,
+      relationshipDuration: inRelationship
+        ? this.integerOrNull(data.relationshipDuration, 0, null, 'La duración de la relación')
+        : null,
+      partnersName: inRelationship
+        ? this.textOrNull(data.partnersName, 50)
+        : null,
+      partnersAge: inRelationship
+        ? this.integerOrNull(data.partnersAge, 15, 120, 'La edad de la pareja')
+        : null,
+      partnersOcupation: inRelationship
+        ? this.textOrNull(data.partnersOcupation, 50)
+        : null,
+      partnersHealth: inRelationship
+        ? this.textOrNull(data.partnersHealth, 150)
+        : null,
+
+      hasChildren,
+      numberFamilyMembers: this.requiredInteger(data.numberFamilyMembers, 0, null, 'El número de integrantes de la familia'),
+      roomieInfo: this.textOrNull(data.roomieInfo, 150),
+      aditionalInfo: this.textOrNull(data.aditionalInfo, 400),
+
+      children: hasChildren
+        ? this.validateChildren(data.children)
+        : [],
+    };
+  }
+
+  // Validate the children array: drop rows without a name and cap at 20 rows
+  static validateChildren (children) {
+    if (!Array.isArray(children)) return [];
+
+    if (children.length > 20) {
+      throw new Error('No se pueden registrar más de 20 hijos');
+    }
+
+    return children
+      .filter(child => child && String(child.childName ?? '').trim() !== '')
+      .map(child => ({
+        childName: this.requiredText(child.childName, 80, 'El nombre del hijo'),
+        childAge: this.integerOrNull(child.childAge, 0, null, 'La edad del hijo'),
+        childSchooling: this.enumOrNull(child.childSchooling, this.SCHOOLING_OPTIONS),
+        childOccupation: this.textOrNull(child.childOccupation, 80),
+      }));
   }
 }
 

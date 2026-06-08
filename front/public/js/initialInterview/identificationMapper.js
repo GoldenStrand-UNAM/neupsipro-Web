@@ -32,6 +32,12 @@ function setSelectValue (id, value) {
   select.classList.add('text-gray-900');
 }
 
+// Set a "true"/"false" <select> from a boolean (or null), with the same
+// gray/dark visual indicator as setSelectValue
+function setBooleanSelectValue (id, value) {
+  setSelectValue(id, value === null || value === undefined ? null : String(value));
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEP 1 MAPPER -----------------------------
 
@@ -89,4 +95,39 @@ function mapSubStep1 (data) {
   mapImcFields(info.personalData, info.readOnly);
 }
 
+// ----------------------------------------------------------------------------
+// ----------------------------- SUBSTEP 2 MAPPER -----------------------------
+
+// Couple and household fields (Situación Familiar)
+function mapFamilySituation (familySituation) {
+  const info = familySituation || {};
+
+  setBooleanSelectValue('inRelationship', info.inRelationship);
+  setFieldValue('relationshipDuration', info.relationshipDuration);
+  setFieldValue('partnersName', info.partnersName);
+  setFieldValue('partnersAge', info.partnersAge);
+  setFieldValue('partnersOcupation', info.partnersOcupation);
+  setFieldValue('partnersHealth', info.partnersHealth);
+
+  setBooleanSelectValue('hasChildren', info.hasChildren);
+  setFieldValue('numberFamilyMembers', info.numberFamilyMembers);
+  setFieldValue('roomieInfo', info.roomieInfo);
+  setFieldValue('aditionalInfo', info.aditionalInfo);
+
+  // Re-trigger the inline toggle scripts in _coupleFields.ejs/_childrenTable.ejs,
+  // so the detail blocks show/hide according to the loaded values
+  // (same dispatch pattern mapImcFields uses for weight/size)
+  document.getElementById('inRelationship')?.dispatchEvent(new Event('change'));
+  document.getElementById('hasChildren')?.dispatchEvent(new Event('change'));
+}
+
+// Populate the DOM with the GET payload of subStep 2 (Situación Familiar)
+function mapSubStep2 (data) {
+  const info = data || {};
+
+  mapFamilySituation(info.familySituation);
+  window.childrenTable?.init(info.children || []);
+}
+
 window.mapSubStep1 = mapSubStep1;
+window.mapSubStep2 = mapSubStep2;

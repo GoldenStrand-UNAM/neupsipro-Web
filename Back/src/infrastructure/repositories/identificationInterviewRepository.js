@@ -124,18 +124,61 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     return rows[0] || null;
   }
 
+  // Fetch the children rows for a relation, ordered for stable rendering
+  async fetchChildren ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
+              id_child,
+              child_name,
+              child_age,
+              child_schooling,
+              child_occupation
+            FROM initial_interview_children
+            WHERE id_user_relation = ?
+            ORDER BY id_child ASC`,
+      [id_user_relation]
+    );
+
+    return rows;
+  }
+
+  // Fetch Situación Familiar by relation (initial_interview fields + children[])
+  async fetchSubStep2Data ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
+              in_relationship,
+              relationship_duration,
+              partners_name,
+              partners_age,
+              partners_ocupation,
+              partners_health,
+              has_children,
+              number_family_members,
+              roomie_info,
+              aditional_info
+            FROM initial_interview
+            WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    const children = await this.fetchChildren({ id_user_relation });
+
+    return {
+      ...(rows[0] || {}),
+      children,
+    };
+  }
+
   // --------------------------------------------------------------------------
   // ----------------------------- PATCH Functions ----------------------------
 
   // Save Datos Personales
   async saveSubStep1 ({ connection, id_user_relation, data }) {
-    console.log('[identification repo] saveSubStep1:', { id_user_relation, data });
-
     // No row exists in `initial_interview` until the first identification save:
     // upsert so the row is created on first save and merged on later ones.
     // `interview_date` is NOT NULL, so a missing value falls back to today's date
     // on insert, and keeps the stored value (instead of being nulled out) on update.
-    const [result] = await connection.query(
+    await connection.query(
       `INSERT INTO initial_interview (
           id_user_relation, interview_date, interviewer_name, support_student_name,
           companions_name, companion_relation, address, proof_address, healthcare_system,
@@ -185,10 +228,91 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.interviewDate,
       ]
     );
+  }
 
-    console.log('[identification repo] saveSubStep1 result:', {
-      affectedRows: result.affectedRows,
-      changedRows: result.changedRows,
+  // Save Situación Familiar info (pareja + familia) — same UPSERT pattern as
+  // saveSubStep1, in case the relation reaches this substep before subStep1's first save
+  async saveFamilySituationInfo ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `INSERT INTO initial_interview (
+          id_user_relation, interview_date, in_relationship, relationship_duration,
+          partners_name, partners_age, partners_ocupation, partners_health,
+          has_children, number_family_members, roomie_info, aditional_info
+      ) VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          in_relationship = VALUES(in_relationship),
+          relationship_duration = VALUES(relationship_duration),
+          partners_name = VALUES(partners_name),
+          partners_age = VALUES(partners_age),
+          partners_ocupation = VALUES(partners_ocupation),
+          partners_health = VALUES(partners_health),
+          has_children = VALUES(has_children),
+          number_family_members = VALUES(number_family_members),
+          roomie_info = VALUES(roomie_info),
+          aditional_info = VALUES(aditional_info)`,
+      [
+        id_user_relation,
+        data.inRelationship,
+        data.relationshipDuration,
+        data.partnersName,
+        data.partnersAge,
+        data.partnersOcupation,
+        data.partnersHealth,
+        data.hasChildren,
+        data.numberFamilyMembers,
+        data.roomieInfo,
+        data.aditionalInfo,
+      ]
+    );
+  }
+
+  // Save children rows (delete + insert, same pattern as contributing_people in financiera)
+  async saveChildren ({ connection, id_user_relation, children }) {
+    // Delete old children
+    await connection.query(
+      `DELETE FROM initial_interview_children
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    // Insert new children (rows without a name were already discarded by validateSubStep2)
+    for (const child of children) {
+
+      // eslint-disable-next-line no-await-in-loop
+      await connection.query(
+        `INSERT INTO initial_interview_children
+          (
+            id_user_relation,
+            child_name,
+            child_age,
+            child_schooling,
+            child_occupation
+          )
+          VALUES (?, ?, ?, ?, ?)`,
+        [
+          id_user_relation,
+          child.childName,
+          child.childAge,
+          child.childSchooling,
+          child.childOccupation,
+        ]
+      );
+    }
+  }
+
+  // Save Situación Familiar substep info for a user relation
+  async saveSubStep2 ({ connection, id_user_relation, data }) {
+
+    await this.saveFamilySituationInfo({
+      connection,
+      id_user_relation,
+      data,
+    });
+
+    await this.saveChildren({
+      connection,
+      id_user_relation,
+      children: data.children,
     });
   }
 
@@ -217,8 +341,6 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // ---- MAIN PATCH Function -------------------------------------------------
   async saveIdentificationSection ({ subStep, id_user_relation, data, completed }) {
-    console.log('[identification repo] saveIdentificationSection:', { subStep, id_user_relation, completed });
-
     // Connection for secure async queries
     const connection = await db.getConnection();
 
@@ -231,6 +353,22 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         case 1:
 
           await this.saveSubStep1({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateIdentificationCompleted({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 2:
+
+          await this.saveSubStep2({
             connection,
             id_user_relation,
             data,
