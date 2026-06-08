@@ -1,0 +1,109 @@
+<div>
+    <h2 class="section_title">Hijos</h2>
+
+    <div class="mt-4 space-y-4">
+        <!--Has children-->
+        <div>
+            <label class="input_label">¿Tiene hijos?</label>
+
+            <select id="hasChildren" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+
+        <!--Children table (hidden when hasChildren = false)-->
+        <div id="childrenTableSection" class="hidden">
+            <div class="overflow-x-auto rounded-xl border border-gray-300">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr class="text-left input_label">
+                            <th class="px-3 py-2">Nombre</th>
+                            <th class="px-3 py-2">Edad</th>
+                            <th class="px-3 py-2">Escolaridad</th>
+                            <th class="px-3 py-2">Ocupación</th>
+                            <th class="px-3 py-2"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="childrenTableBody"></tbody>
+                </table>
+            </div>
+
+            <button id="addChildBtn" type="button"
+                class="btn-mid bg-[#3350A9] mx-auto mt-4 disabled:opacity-60 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+
+                <span>Agregar hijo</span>
+            </button>
+
+            <p id="childrenLimitWarning" class="hidden text-xs text-[#BA8700] mt-2 text-center">
+                Límite máximo de hijos alcanzado
+            </p>
+        </div>
+    </div>
+</div>
+
+<template id="childRowTemplate">
+    <tr class="child-row align-top">
+        <td class="px-3 py-2">
+            <input type="text" class="child-name input" maxlength="80" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
+        </td>
+
+        <td class="px-3 py-2">
+            <input type="number" min="0" step="1" class="child-age input" placeholder="Edad">
+        </td>
+
+        <td class="px-3 py-2">
+            <select class="child-schooling select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="Sin escolaridad">Sin escolaridad</option>
+                <option value="Primaria">Primaria</option>
+                <option value="Secundaria">Secundaria</option>
+                <option value="Bachillerato">Bachillerato</option>
+                <option value="Licenciatura">Licenciatura</option>
+                <option value="Posgrado">Posgrado</option>
+            </select>
+        </td>
+
+        <td class="px-3 py-2">
+            <input type="text" class="child-occupation input" maxlength="80" placeholder="Ocupación">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
+        </td>
+
+        <td class="px-3 py-2">
+            <button type="button" class="btn-mini bg-[#FF0404] remove-child-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+
+                <span>Eliminar</span>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    // Show/hide the children table based on hasChildren and clear it on "No"
+    // (childrenTable.js owns all row logic — this only toggles visibility)
+    (function () {
+        const select = document.getElementById('hasChildren');
+        const section = document.getElementById('childrenTableSection');
+
+        if (!select || !section) return;
+
+        select.addEventListener('change', () => {
+            const hasChildren = select.value === 'true';
+
+            section.classList.toggle('hidden', !hasChildren);
+
+            if (!hasChildren) window.childrenTable?.init([]);
+        });
+    })();
+</script>

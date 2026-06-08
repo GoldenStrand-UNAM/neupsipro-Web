@@ -72,6 +72,11 @@
                                 <%- include('./identification/subStep1/subStep1.ejs') %>
                             </div>
 
+                            <!-- IDENTIFICATION 1.2 -->
+                            <div id="identification-section-2" class="identification-content hidden">
+                                <%- include('./identification/subStep2/subStep2.ejs') %>
+                            </div>
+
                             <!-- FINANCIAL 2.1 -->
                             <div id="financial-section-1" class="financial-content hidden">
                                 <div class="grid md:grid-cols-2 gap-4">
@@ -129,6 +134,7 @@
 
     <!-- Script -->
     <script src="/js/initialInterview/identification/imcCalculator.js"></script>
+    <script src="/js/initialInterview/childrenTable.js"></script>
     <script src="/js/initialInterview/identificationMapper.js"></script>
     <script src="/js/initialInterview/identificationBuilder.js"></script>
     <script src="/js/initialInterview/financial/financialMapper.js"></script>
@@ -203,6 +209,9 @@
 
                 if (data.current_section === 1) {
                     subStepTitle.textContent = '1.1 Datos Personales';
+
+                } else if (data.current_section === 2) {
+                    subStepTitle.textContent = '1.2 Situación Familiar';
                 }
 
             } else if (data.current_step === 2) {
@@ -379,7 +388,11 @@
                 }
 
                 setTimeout(() => {
-                    window.mapSubStep1?.(window.identificationData.data);
+                    if (data.current_section === 1) {
+                        window.mapSubStep1?.(data.data);
+                    } else if (data.current_section === 2) {
+                        window.mapSubStep2?.(data.data);
+                    }
                 }, 0);
 
             } catch (err) {
