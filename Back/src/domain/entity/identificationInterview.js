@@ -1,9 +1,10 @@
 
 class IdentificationInterview {
-  constructor ({ id_user, current_step, current_section, initialProgress, readOnlyFields, data }) {
+  constructor ({ id_user, current_step, current_section, initialProgress, readOnlyFields, completedSubSteps, data }) {
     this.id_user = id_user;
     this.current_step = current_step;
     this.current_section = current_section;
+    this.completedSubSteps = completedSubSteps || [];
 
     switch (current_section) {
       case 1:
@@ -16,6 +17,10 @@ class IdentificationInterview {
 
       case 3:
         this.data = this.mapSubStep3(initialProgress, data);
+        break;
+
+      case 4:
+        this.data = this.mapSubStep4(initialProgress, data);
         break;
 
       default:
@@ -222,7 +227,7 @@ class IdentificationInterview {
     };
   }
 
-  // Situación Laboral + Conclusiones
+  // Situación Laboral
   mapSubStep3 (initialProgress, data) {
     const base = data || {};
 
@@ -236,9 +241,22 @@ class IdentificationInterview {
         workProblems: IdentificationInterview.textOrNull(base.work_problems, 150),
       },
 
+      completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
+
+      id_user: this.id_user,
+    };
+  }
+
+  // Conclusiones
+  mapSubStep4 (initialProgress, data) {
+    const base = data || {};
+
+    return {
       conclusions: IdentificationInterview.textOrNull(base.conclusions, 1000),
 
       completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
 
       id_user: this.id_user,
     };

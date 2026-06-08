@@ -176,7 +176,7 @@ function buildSubStep2Payload () {
   };
 }
 
-// ----- Situación Laboral + Conclusiones ---------------------------------------
+// ----- Situación Laboral -------------------------------------------------------
 
 function buildSubStep3Payload () {
 
@@ -202,7 +202,14 @@ function buildSubStep3Payload () {
 
     workProblems:
       hasJob ? getIdentificationTextOrNull('workProblems') : null,
+  };
+}
 
+// ----- Conclusiones -------------------------------------------------------------
+
+function buildSubStep4Payload () {
+
+  return {
     conclusions:
       getIdentificationTextOrNull('conclusions'),
   };
@@ -224,6 +231,9 @@ function buildIdentificationSection (subStep) {
     case 3:
       return buildSubStep3Payload();
 
+    case 4:
+      return buildSubStep4Payload();
+
     default:
       return {};
   }
@@ -232,4 +242,5 @@ function buildIdentificationSection (subStep) {
 window.buildSubStep1Payload = buildSubStep1Payload;
 window.buildSubStep2Payload = buildSubStep2Payload;
 window.buildSubStep3Payload = buildSubStep3Payload;
+window.buildSubStep4Payload = buildSubStep4Payload;
 window.buildIdentificationSection = buildIdentificationSection;

@@ -155,11 +155,19 @@ function mapEmploymentSituation (employmentSituation) {
   document.getElementById('hasJob')?.dispatchEvent(new Event('change'));
 }
 
-// Populate the DOM with the GET payload of subStep 3 (Situación Laboral + Conclusiones)
+// Populate the DOM with the GET payload of subStep 3 (Situación Laboral)
 function mapSubStep3 (data) {
   const info = data || {};
 
   mapEmploymentSituation(info.employmentSituation);
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------- SUBSTEP 4 MAPPER -----------------------------
+
+// Populate the DOM with the GET payload of subStep 4 (Conclusiones)
+function mapSubStep4 (data) {
+  const info = data || {};
 
   setFieldValue('conclusions', info.conclusions);
 
@@ -171,3 +179,4 @@ function mapSubStep3 (data) {
 window.mapSubStep1 = mapSubStep1;
 window.mapSubStep2 = mapSubStep2;
 window.mapSubStep3 = mapSubStep3;
+window.mapSubStep4 = mapSubStep4;
