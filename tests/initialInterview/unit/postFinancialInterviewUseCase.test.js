@@ -345,7 +345,7 @@ describe('PostFinancialInterviewUseCase', () => {
           subStep: 1,
           body,
         })
-      ).rejects.toThrow('Los valores monetarios no pueden ser negativos');
+      ).rejects.toThrow('no puede ser negativo');
 
       expect(mockFinancialInterviewRepository.saveFinancialSection).not.toHaveBeenCalled();
     });
@@ -366,7 +366,7 @@ describe('PostFinancialInterviewUseCase', () => {
           subStep: 1,
           body,
         })
-      ).rejects.toThrow('El valor no puede superar');
+      ).rejects.toThrow('no puede superar');
 
       expect(mockFinancialInterviewRepository.saveFinancialSection).not.toHaveBeenCalled();
     });

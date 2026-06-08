@@ -67,13 +67,66 @@ class validation {
     return number;
   }
 
+  // Money: null if empty; integer >= 0, capped at max (default 1,000,000)
+  validateMoney (param) {
+    const label = param.label || 'El valor';
+    const max = param.max ?? 1_000_000;
+
+    if (param.value === undefined || param.value === null || param.value === '') {
+      if (param.required) throw new Error(`${label} es obligatorio`);
+      return null;
+    }
+    const number = Number(param.value);
+    if (Number.isNaN(number))
+      throw new Error(`${label} debe ser un número válido`);
+    if (!Number.isInteger(number))
+      throw new Error(`${label} debe ser un número entero (sin decimales)`);
+    if (number < 0)
+      throw new Error(`${label} no puede ser negativo`);
+    if (number > max)
+      throw new Error(`${label} no puede superar $${max.toLocaleString('es-MX')}`);
+    return number;
+  }
+
+  // Free text: null if empty; rejects emojis and invisible/control characters,
+  // capped at requiredLength (default 30)
+  validateText (param) {
+    const label = param.label || 'El texto';
+    const requiredLength = param.requiredLength ?? 30;
+
+    if (param.value === undefined || param.value === null || String(param.value).trim() === '') {
+      if (param.required) throw new Error(`${label} debe llenarse`);
+      return null;
+    }
+
+    const value = String(param.value).trim();
+
+    // Covers pictographs, flags (regional indicators), skin-tone modifiers,
+    // keycaps, variation selectors and ZWJ sequences — without touching plain digits.
+    const emojiRegex = /\p{Extended_Pictographic}|\p{Emoji_Presentation}|\p{Regional_Indicator}/u;
+    const emojiModifiers = /\u{1F3FB}|\u{1F3FC}|\u{1F3FD}|\u{1F3FE}|\u{1F3FF}|\u{FE0F}|\u{20E3}|\u{200D}/u;
+    if (emojiRegex.test(value) || emojiModifiers.test(value))
+      throw new Error(`${label} no puede contener emojis`);
+
+    // Control chars + zero-width / invisible characters
+    // eslint-disable-next-line no-control-regex
+    const invisibleRegex = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/u;
+    if (invisibleRegex.test(value))
+      throw new Error(`${label} contiene caracteres no permitidos`);
+
+    if (value.length > requiredLength)
+      throw new Error(`${label} no puede superar los ${requiredLength} caracteres`);
+
+    return value;
+  }
+
   validatePhone (param) {
     if (!param.required && !param.value) return param.value;
     const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
     if (emojiRegex.test(param.value))
       throw new Error(`${param.label} no puede contener emojis`);
     const phoneStr = String(param.value).trim();
-    const phoneRegex = /^\+?[0-9()-]+$/;   
+    const phoneRegex = /^\+?[0-9()-]+$/;
     if (phoneStr.length < 10)
       throw new Error(`${param.label} debe tener al menos 10 caracteres`);
     if (phoneStr.length > 20)

@@ -8,7 +8,7 @@
             <label class="input_label">Recibe algún financiamiento, beca, etc.</label>
             <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
-                <input type="number" min="0" max="1000000" id="incomeExtra" class="input pl-7" placeholder="0.00">
+                <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="incomeExtra" class="input pl-7" placeholder="mensual">
             </div>
         </div>
 
@@ -16,7 +16,7 @@
         <div>
             <label class="input_label">Describa el tipo de financiamiento</label>
             <input type="text" id="financialType" maxlength="30" class="input" placeholder="Crédito educativo, beca, etc">
-            <p class="text-xs text-gray-400 mt-1">Máximo 30 caracteres</p>
+            <p class="text-xs text-gray-400 mt-1"><span class="char-counter" data-target="financialType" data-max="30">0/30</span> caracteres</p>
         </div>
 
         <!--Salary before-->
@@ -24,7 +24,7 @@
             <label class="input_label">Salario antes de la enfermedad/amputación</label>
             <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
-                <input type="number" min="0" max="1000000" id="salaryBefore" class="input pl-7" placeholder="0.00">
+                <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="salaryBefore" class="input pl-7" placeholder="mensual">
             </div>
         </div>
 
@@ -33,7 +33,7 @@
             <label class="input_label">Salario después de la enfermedad/amputación</label>
             <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
-                <input type="number" min="0" max="1000000" id="salaryAfter" class="input pl-7" placeholder="0.00">
+                <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="salaryAfter" class="input pl-7" placeholder="mensual">
             </div>
         </div>
 
@@ -108,7 +108,7 @@
                         <label class="input_label">Cantidad de Ingresos</label>
                         <div class="relative">
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
-                            <input type="number" min="0" max="1000000" class="person-income input pl-7" placeholder="0.00">
+                            <input type="number" min="0" max="1000000" step="1" inputmode="numeric" class="person-income input pl-7" placeholder="mensual">
                         </div>
                     </div>
 
@@ -192,10 +192,12 @@
         calculateTotal();
     });
 
-    // Recalculate on input + clamp person-income max
+    // Recalculate on input + enforce integer / max on person-income
     container.addEventListener('input', (e) => {
-        if (e.target.classList.contains('person-income')) {
-            if (parseFloat(e.target.value) > 1000000) e.target.value = 1000000;
+        if (e.target.classList.contains('person-income') && e.target.value !== '') {
+            const digits = e.target.value.replace(/[^\d]/g, '');
+            let num = digits === '' ? '' : Math.min(Math.floor(Number(digits)), 1000000);
+            e.target.value = num === '' ? '' : String(num);
         }
         calculateTotal();
     });

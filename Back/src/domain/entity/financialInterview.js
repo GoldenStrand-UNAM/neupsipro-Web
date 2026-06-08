@@ -1,4 +1,8 @@
 /* eslint-disable max-lines */
+const Validation = require('../../application/validations/validation');
+
+const validator = new Validation();
+
 class FinancialInterview {
   constructor ({ id_user, refNumber, current_step, current_section, initialProgress, financialProgress, data }) {
     this.id_user = id_user;
@@ -44,24 +48,39 @@ class FinancialInterview {
       : Number(value);
   }
 
-  // Money field: null if empty, capped at MAX_MONEY, throws if negative
+  // ----- Display helpers (lenient) — used when mapping stored DB data -------
+  // These must NOT throw: stored data may predate stricter rules.
+
+  // Money for display: null if empty, otherwise the numeric value
   static moneyOrNull (value) {
     if (value === null || value === undefined || value === '') return null;
     const num = Number(value);
-    if (isNaN(num)) return null;
-    if (num < 0) throw new Error('Los valores monetarios no pueden ser negativos');
-    if (num > FinancialInterview.MAX_MONEY) throw new Error(`El valor no puede superar $${FinancialInterview.MAX_MONEY.toLocaleString('es-MX')}`);
-    return num;
+    return isNaN(num) ? null : num;
   }
 
-  // Get text or null if the value isn't registered, throws if it exceeds maxLength
-  static textOrNull (value, maxLength = FinancialInterview.MAX_TEXT_LENGTH) {
+  // Text for display: null if empty, otherwise the stored string
+  static textOrNull (value) {
     if (value === null || value === undefined || value === '') return null;
+    return String(value);
+  }
 
-    const text = String(value);
-    if (text.length > maxLength) throw new Error(`El texto no puede superar ${maxLength} caracteres`);
+  // ----- Validation helpers (strict) — used when validating user input ------
+  // Delegate to the shared validation.js class (single source of truth).
 
-    return text;
+  static validateMoneyInput (value, label) {
+    return validator.validateMoney({
+      value,
+      label,
+      max: FinancialInterview.MAX_MONEY,
+    });
+  }
+
+  static validateTextInput (value, label, maxLength = FinancialInterview.MAX_TEXT_LENGTH) {
+    return validator.validateText({
+      value,
+      label,
+      requiredLength: maxLength,
+    });
   }
 
   // =============================== Funtions ===============================
@@ -297,10 +316,10 @@ class FinancialInterview {
   // Validate incomes
   static validateIncomes (data) {
     return {
-      incomeExtra: this.moneyOrNull(data.incomes?.incomeExtra),
-      financialType: this.textOrNull(data.incomes?.financialType),
-      salaryBefore: this.moneyOrNull(data.incomes?.salaryBefore),
-      salaryAfter: this.moneyOrNull(data.incomes?.salaryAfter),
+      incomeExtra: this.validateMoneyInput(data.incomes?.incomeExtra, 'El financiamiento/beca'),
+      financialType: this.validateTextInput(data.incomes?.financialType, 'El tipo de financiamiento'),
+      salaryBefore: this.validateMoneyInput(data.incomes?.salaryBefore, 'El salario antes de la enfermedad'),
+      salaryAfter: this.validateMoneyInput(data.incomes?.salaryAfter, 'El salario después de la enfermedad'),
 
       totalIncomes: this.numberOrNull(data.incomes?.totalIncomes),
     };
@@ -309,19 +328,19 @@ class FinancialInterview {
   // Validate expenses
   static validateExpenses (data) {
     return {
-      foodExpenses: this.moneyOrNull(data.expenses?.foodExpenses),
-      rentExpenses: this.moneyOrNull(data.expenses?.rentExpenses),
-      servicesExpenses: this.moneyOrNull(data.expenses?.servicesExpenses),
-      gasExpenses: this.moneyOrNull(data.expenses?.gasExpenses),
-      educationExpenses: this.moneyOrNull(data.expenses?.educationExpenses),
-      wardrobeExpenses: this.moneyOrNull(data.expenses?.wardrobeExpenses),
-      medicalExpenses: this.moneyOrNull(data.expenses?.medicalExpenses),
-      transportExpenses: this.moneyOrNull(data.expenses?.transportExpenses),
-      creditcardExpenses: this.moneyOrNull(data.expenses?.creditcardExpenses),
-      phoneExpenses: this.moneyOrNull(data.expenses?.phoneExpenses),
-      othersExpenses: this.moneyOrNull(data.expenses?.othersExpenses),
+      foodExpenses: this.validateMoneyInput(data.expenses?.foodExpenses, 'Alimentación/despensa'),
+      rentExpenses: this.validateMoneyInput(data.expenses?.rentExpenses, 'Renta/hipoteca'),
+      servicesExpenses: this.validateMoneyInput(data.expenses?.servicesExpenses, 'Luz, agua, gas e internet'),
+      gasExpenses: this.validateMoneyInput(data.expenses?.gasExpenses, 'Gasolina'),
+      educationExpenses: this.validateMoneyInput(data.expenses?.educationExpenses, 'Educación'),
+      wardrobeExpenses: this.validateMoneyInput(data.expenses?.wardrobeExpenses, 'Vestido'),
+      medicalExpenses: this.validateMoneyInput(data.expenses?.medicalExpenses, 'Atención médica'),
+      transportExpenses: this.validateMoneyInput(data.expenses?.transportExpenses, 'Transporte'),
+      creditcardExpenses: this.validateMoneyInput(data.expenses?.creditcardExpenses, 'Abonos/crédito'),
+      phoneExpenses: this.validateMoneyInput(data.expenses?.phoneExpenses, 'Teléfono'),
+      othersExpenses: this.validateMoneyInput(data.expenses?.othersExpenses, 'Otros gastos'),
 
-      economicSituation: this.textOrNull(data.expenses?.economicSituation),
+      economicSituation: this.validateTextInput(data.expenses?.economicSituation, 'La situación económica'),
       numEconomicDependents: this.numberOrNull(data.expenses?.numEconomicDependents),
 
       totalExpenses: this.numberOrNull(data.expenses?.totalExpenses),
@@ -337,9 +356,9 @@ class FinancialInterview {
       contributors:
       Array.isArray(data.contributors)
         ? data.contributors.map(c => ({
-          name: this.textOrNull(c.name),
-          relation: this.textOrNull(c.relation),
-          income: this.moneyOrNull(c.income),
+          name: this.validateTextInput(c.name, 'El nombre del aportante'),
+          relation: this.validateTextInput(c.relation, 'La relación del aportante'),
+          income: this.validateMoneyInput(c.income, 'El ingreso del aportante'),
         }))
         : [],
     };
@@ -392,7 +411,7 @@ class FinancialInterview {
   static validateResults (data) {
     return {
       protesisBudget: this.numberOrNull(data.protesisBudget),
-      notes: this.textOrNull(data.notes, this.MAX_NOTES_LENGTH),
+      notes: this.validateTextInput(data.notes, 'Las notas', this.MAX_NOTES_LENGTH),
     };
   }
 }
