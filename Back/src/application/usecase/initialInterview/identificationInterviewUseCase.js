@@ -19,6 +19,10 @@ class IdentificationInterviewUseCase {
         readOnlyFields = await this.identificationInterviewRepository.fetchReadOnlyFields({ id_user });
         formattedData = await this.identificationInterviewRepository.fetchSubStep1Data({ id_user_relation });
         break;
+
+      case 2:
+        formattedData = await this.identificationInterviewRepository.fetchSubStep2Data({ id_user_relation });
+        break;
     }
 
     return new IdentificationInterview({

@@ -25,12 +25,32 @@ class postIdentificationInterviewUseCase {
       field !== null && field !== undefined && field !== '');
   }
 
+  isSubStep2Complete (data) {
+    const requiredFields = [
+      data.inRelationship,
+      data.hasChildren,
+      data.numberFamilyMembers,
+    ];
+
+    const baseComplete = requiredFields.every(field =>
+      field !== null && field !== undefined && field !== '');
+
+    if (!baseComplete) return false;
+
+    // Claiming children but registering none leaves the substep incomplete
+    if (data.hasChildren && data.children.length === 0) return false;
+
+    return true;
+  }
+
   // Validate Section Data by substep
   validateSectionData ({ subStep, body }) {
     try {
       switch (subStep) {
         case 1:
           return IdentificationInterview.validateSubStep1(body);
+        case 2:
+          return IdentificationInterview.validateSubStep2(body);
         default:
           throw new Error('Invalid section');
       }
@@ -52,6 +72,10 @@ class postIdentificationInterviewUseCase {
     switch (subStep) {
       case 1:
         completed = this.isSubStep1Complete(validatedData);
+        break;
+
+      case 2:
+        completed = this.isSubStep2Complete(validatedData);
         break;
     }
 
