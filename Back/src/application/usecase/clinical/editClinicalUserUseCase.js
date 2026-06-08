@@ -34,7 +34,7 @@ class EditClinicalUserUseCase {
     if (duplicate)
       throw new Error('El usuario ya se encuentra registrado.');
     else {
-      const saved = await this.clinicalUserRepository.updateUser({ ...cryptedUser, idUser, passwordHash });
+      const saved = await this.clinicalUserRepository.updateUser({ ...cryptedUser, idUser: idUser, passwordHash });
       // Map saved into clean DTO for the client
       return ClinicalUserDTO.fromEntity(saved);
     }

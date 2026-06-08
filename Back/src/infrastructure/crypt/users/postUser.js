@@ -4,7 +4,7 @@ const crypt = new Crypt();
 
 function cryptUser (user) {
   const encrypted = encrypt(user);
-  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ''} ${user.birthdate}
+  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ""} ${user.birthdate}
     `.replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
@@ -17,8 +17,8 @@ function cryptUser (user) {
     assigned: user.assigned,
     passwordHash: user.passwordHash,
     profilePhoto: user.profilePhoto,
-    bindex,
-    refBindex,
+    bindex: bindex,
+    refBindex: refBindex,
   };
 }
 

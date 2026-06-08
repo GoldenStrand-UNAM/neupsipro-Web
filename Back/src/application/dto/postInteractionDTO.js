@@ -1,5 +1,4 @@
 const Crypt = require('../../infrastructure/crypt/forum/uncryptUsername');
-
 const crypt = new Crypt();
 
 class postInteractionDTO {

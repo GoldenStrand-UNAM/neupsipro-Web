@@ -225,7 +225,7 @@ class ImpUsersRepository extends usersRepository {
       [id_user]
     );
     if (rows) return crypt.uncryptUser(rows[0]);
-    return null;
+    else return null;
   }
 
   async softDeleteUser ({ id_user }) {
@@ -302,15 +302,17 @@ class ImpUsersRepository extends usersRepository {
     );
     return rows[0];
   }
-
+  
   // Fetch the minimal patient data needed for the PDF export header.
   async fetchUserForExport ({ id_user }) {
     const [rows] = await db.query(
       `SELECT u.first_name,
               u.lastname_p,
               u.lastname_m,
+              u.birthdate,
               ui.protocol,
-              ui.reference_number
+              ui.reference_number,
+              ui.laterality
        FROM users u
        JOIN user_info ui ON u.id_user = ui.id_user
        WHERE u.id_user = ?
@@ -325,6 +327,8 @@ class ImpUsersRepository extends usersRepository {
       name: newRows[0].name,
       protocol: newRows[0].protocol,
       referenceNumber: newRows[0].reference_number,
+      laterality: newRows[0].laterality,
+      birthdate: newRows[0].birthdate,
     };
   }
 }

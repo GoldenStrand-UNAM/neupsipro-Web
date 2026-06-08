@@ -2,7 +2,6 @@ const db = require ('../database/database');
 const forumRepository = require('../../domain/repository/forumRepository');
 const Crypt = require('../crypt/forum/uncryptUsername');
 const { v4: uuidv4 } = require('uuid');
-
 const crypt = new Crypt();
 
 // Repository responsable for fetching publications from the database with author info and pagination
@@ -35,7 +34,7 @@ class ImpForumRepository extends forumRepository {
       [Number(offset), Number(limit)]
     );
     if (rows) return rows.map(row => crypt.uncryptUsername(row));
-    return rows;
+    else return rows;
   }
   // Inserts a new publication, return its generated id
   async save ({ id_usuario, titulo, contenido, image }) {

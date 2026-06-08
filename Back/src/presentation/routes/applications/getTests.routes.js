@@ -121,7 +121,8 @@ module.exports = (authUseCase, authMiddleware) => {
     getWaisUseCase,
     getReyUseCase,
     getMocaUseCase,
-    getNihUseCase
+    getNihUseCase,
+    getEmotionUseCase
   );
   const exportPdfController = new ExportPdfController(exportPdfUseCase);
 
@@ -253,7 +254,7 @@ module.exports = (authUseCase, authMiddleware) => {
           res.status(200).json({ schooling, years });
         })
         .catch(err => res.status(500).json({ error: err.message }));
-    }
+    } 
   );
 
   // GET REY age for modal
@@ -267,7 +268,7 @@ module.exports = (authUseCase, authMiddleware) => {
         .then(result => {
           // uncryptUser devuelve el objeto completo — extraer birthdate
           const birthdate = result?.birthdate ?? result;
-          if (!birthdate || typeof birthdate !== 'string')
+          if (!birthdate || typeof birthdate !== 'string') 
             return res.status(200).json({ age: null });
 
           const [day, month, year] = birthdate.trim().split('/').map(Number);

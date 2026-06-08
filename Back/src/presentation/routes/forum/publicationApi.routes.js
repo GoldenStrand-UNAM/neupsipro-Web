@@ -38,18 +38,26 @@ module.exports = (authUseCase, authMiddleware) => {
     userRepository
   );
 
-  const getPublicationController = new PublicationController(getPublicationUseCase);
+  const getPublicationController = new PublicationController(
+    getPublicationUseCase
+  );
 
-  const postPublicationUseCase = new RegPublicationUseCase(publicationRepository);
+  const postPublicationUseCase = new RegPublicationUseCase(
+    publicationRepository
+  );
 
-  const postPublicationController = new PostPublicationController(postPublicationUseCase);
+  const postPublicationController = new PostPublicationController(
+    postPublicationUseCase
+  );
 
   const deletePublicationUseCase = new DeletePublicationUseCase(
     publicationRepository,
     interactionRepository
   );
 
-  const deletePublicationController = new DeletePublicationController(deletePublicationUseCase);
+  const deletePublicationController = new DeletePublicationController(
+    deletePublicationUseCase
+  );
 
   router.get(
     '/:idPublication',

@@ -14,7 +14,7 @@ class GetPeerStatsUseCase {
       women: Number(row.women_count) || 0,
     }));
 
-    // attendance
+    // attendance 
     const attendanceSeries = rows.map(row => ({
       date: row.session_date,
       total: (Number(row.men_count) || 0) + (Number(row.women_count) || 0),

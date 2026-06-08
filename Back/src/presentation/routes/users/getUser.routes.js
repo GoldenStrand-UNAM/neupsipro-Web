@@ -110,7 +110,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   router.get(
     '/:id_user', authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    permissionsMiddleware.requirePermission('user management', 'consultation'), 
     (req, res) => controller.getUser(req, res)
   );
 
@@ -189,9 +189,6 @@ module.exports = (authUseCase, authMiddleware) => {
   );
 
   //INITIAL INTERVIEW
-  const identificationInterviewRoutes = require('../initialInterview/identificationInterview.routes');
-  router.use('/:id_user/initial-interview', identificationInterviewRoutes(authUseCase, authMiddleware));
-
   const initialInterviewRoutes = require('../initialInterview/financialInterview.routes');
   router.use('/:id_user/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 

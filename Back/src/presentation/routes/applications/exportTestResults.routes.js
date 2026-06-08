@@ -14,9 +14,13 @@ module.exports = (authUseCase, authMiddleware) => {
 
   const testExportRepository = new ImpTestExportRepository();
 
-  const exportTestResultsCsvUseCase = new ExportTestResultsCsvUseCase(testExportRepository);
+  const exportTestResultsCsvUseCase = new ExportTestResultsCsvUseCase(
+    testExportRepository
+  );
 
-  const exportTestResultsCsvController = new ExportTestResultsCsvController(exportTestResultsCsvUseCase);
+  const exportTestResultsCsvController = new ExportTestResultsCsvController(
+    exportTestResultsCsvUseCase
+  );
 
   router.get(
     '/export',

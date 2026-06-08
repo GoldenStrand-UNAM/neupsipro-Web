@@ -41,11 +41,11 @@ class editUserUseCase {
     const duplicate = await this.userRepository.checkDuplicate(cryptedUser, data.id_user);
     if (duplicate) {
       if (duplicate.matched_bindex === 1)
-        throw new Error('El usuario ya se encuentra registrado.');
+          throw new Error("El usuario ya se encuentra registrado.");
       if (duplicate.matched_reference === 1)
-        throw new Error('El número de referencia ya pertenece a otro usuario.');
+          throw new Error("El número de referencia ya pertenece a otro usuario.");
       if (duplicate.matched_username === 1)
-        throw new Error('El nombre de usuario ya está en uso.');
+          throw new Error("El nombre de usuario ya está en uso.");
     }
     const saved = await this.userRepository.editUser({ ...cryptedUser, id_user: data.id_user, passwordHash });
 

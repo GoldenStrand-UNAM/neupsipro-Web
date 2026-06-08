@@ -8,15 +8,17 @@ class PostPeerSessionUseCase {
   }
 
   async execute (session) {
-    const sanitized = Object.fromEntries(Object.entries(session)
-      .filter(([key]) => key !== '__proto__' && key !== 'constructor')
-      .map(([key, value]) => {
-        if (typeof value === 'string') {
-          const trimmed = value.trim();
-          return [key, trimmed.length === 0 ? null : trimmed];
-        }
-        return [key, value];
-      }));
+    const sanitized = Object.fromEntries(
+      Object.entries(session)
+        .filter(([key]) => key !== '__proto__' && key !== 'constructor')
+        .map(([key, value]) => {
+          if (typeof value === 'string') {
+            const trimmed = value.trim();
+            return [key, trimmed.length === 0 ? null : trimmed];
+          }
+          return [key, value];
+        })
+    );
 
     const validated = validatePeerSession(sanitized);
 

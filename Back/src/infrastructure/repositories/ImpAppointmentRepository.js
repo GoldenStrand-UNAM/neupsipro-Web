@@ -61,9 +61,9 @@ class ImpAppointmentRepository extends appointmentRepository {
     return idAppointment;
   }
   // Deletes the upcoming appointment of a user, returns true if deleted
-  async deleteUpcomingByUser ({ id_user }) {
-    const [rows] = await db.query(
-      `SELECT a.id_appointment
+async deleteUpcomingByUser ({ id_user }) {
+  const [rows] = await db.query(
+    `SELECT a.id_appointment
      FROM appointment a
      JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
      WHERE ur.id_user = ?
@@ -71,20 +71,20 @@ class ImpAppointmentRepository extends appointmentRepository {
        AND a.date_time >= NOW() - INTERVAL 6 HOUR
      ORDER BY a.date_time ASC
      LIMIT 1`,
-      [id_user]
-    );
+    [id_user]
+  );
 
-    if (rows.length === 0) {
-      return false;
-    }
-
-    await db.query(
-      'DELETE FROM appointment WHERE id_appointment = ?',
-      [rows[0].id_appointment]
-    );
-
-    return true;
+  if (rows.length === 0) {
+    return false;
   }
+
+  await db.query(
+    'DELETE FROM appointment WHERE id_appointment = ?',
+    [rows[0].id_appointment]
+  );
+
+  return true;
+}
   async fecthAppointmentWithClinical ({ idClinicalUser }) {
     const [users] = await db.query (`SELECT a.id_appointment, a.date_time, a.issue, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
       CASE

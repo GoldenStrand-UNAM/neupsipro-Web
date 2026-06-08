@@ -20,7 +20,7 @@ module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpPeerSessionRepository();
-
+  
   const useCase = new PostPeerSessionUseCase(repository);
   const controller = new PostPeerSessionController(useCase);
 

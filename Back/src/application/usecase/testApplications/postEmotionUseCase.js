@@ -82,25 +82,25 @@ class postEmotionUseCase {
 
     // 6. Persist into emotion_results
     const saved = await this.impTestResultsRepository.saveEmotionResult({
-      id_results: row.idResults,
-      score_anxiety_beck: anxiety,
-      inter_anxiety_beck: interAnxietyBeck,
+      id_results:            row.idResults,
+      score_anxiety_beck:    anxiety,
+      inter_anxiety_beck:    interAnxietyBeck,
       score_depression_beck: depression,
       inter_depression_beck: interDepressionBeck,
-      notes: notes ?? null,
+      notes:                 notes ?? null,
     });
 
     // 7. Map to DTO — never expose raw DB row across boundaries
     return new EmotionResultsDTO({
-      idResults: row.idResults,
-      idTest: 6,
-      status: 3,
-      dateApplied: saved.date_applied ?? null,
-      scoreAnxietyBeck: saved.score_anxiety_beck,
-      interAnxietyBeck: saved.inter_anxiety_beck,
+      idResults:           row.idResults,
+      idTest:              6,
+      status:              3,
+      dateApplied:         saved.date_applied ?? null,
+      scoreAnxietyBeck:    saved.score_anxiety_beck,
+      interAnxietyBeck:    saved.inter_anxiety_beck,
       scoreDepressionBeck: saved.score_depression_beck,
       interDepressionBeck: saved.inter_depression_beck,
-      notes: saved.notes ?? null,
+      notes:               saved.notes ?? null,
     });
   }
 }

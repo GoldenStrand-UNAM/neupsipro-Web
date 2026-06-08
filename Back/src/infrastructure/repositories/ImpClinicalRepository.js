@@ -4,7 +4,6 @@ const userClinicalSummary = require('../../domain/entity/userClinicalSummary');
 const Clinical = require('../../domain/entity/clinical');
 const ClinicalPatient = require('../../domain/entity/clinicalPatient');
 const Uncrypt = require('../crypt/clinical/getClinicals');
-
 const uncrypt = new Uncrypt();
 const { v4: uuidv4 } = require('uuid');
 
@@ -210,7 +209,7 @@ class ImpClinicalRepository extends clinicalRepository {
     );
     return rows[0];
   }
-
+  
   async fetchClinicalForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 

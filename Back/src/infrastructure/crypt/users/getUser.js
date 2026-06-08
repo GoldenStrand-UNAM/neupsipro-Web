@@ -2,7 +2,7 @@ const Crypt = require('../crypt');
 
 const crypt = new Crypt();
 
-class uncrypt {
+class uncrypt{
   uncryptUser (user) {
     return {
       ...user,
@@ -36,7 +36,10 @@ class uncrypt {
     return {
       ...user,
       name: fullname,
-    };
+      reference_number: user.reference_number ? crypt.decrypt(user.reference_number) : user.reference_number,
+      laterality: user.laterality ? crypt.decrypt(user.laterality) : user.laterality,
+      birthdate: user.birthdate ? crypt.decrypt(user.birthdate) : user.birthdate,
+    }
   }
 }
 
