@@ -225,7 +225,7 @@ class ImpUsersRepository extends usersRepository {
       [id_user]
     );
     if (rows) return crypt.uncryptUser(rows[0]);
-    else return null;
+    return null;
   }
 
   async softDeleteUser ({ id_user }) {
@@ -302,7 +302,7 @@ class ImpUsersRepository extends usersRepository {
     );
     return rows[0];
   }
-  
+
   // Fetch the minimal patient data needed for the PDF export header.
   async fetchUserForExport ({ id_user }) {
     const [rows] = await db.query(

@@ -3,7 +3,7 @@ const TestExportRepository = require('../../domain/repository/testExportReposito
 const uncrypt = require('../crypt/exports/exports');
 
 class ImpTestExportRepository extends TestExportRepository {
-  async fetchBanfeResults() {
+  async fetchBanfeResults () {
     const [rows] = await db.query(`
       SELECT
         'BANFE' AS test_type,
@@ -37,11 +37,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-    if(rows) return uncrypt(rows);
+    if (rows) return uncrypt(rows);
     return rows;
   }
 
-  async fetchWaisResults() {
+  async fetchWaisResults () {
     const [rows] = await db.query(`
       SELECT
         'WAIS' AS test_type,
@@ -77,11 +77,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-    if(rows) return uncrypt(rows);
+    if (rows) return uncrypt(rows);
     return rows;
   }
 
-  async fetchReyResults() {
+  async fetchReyResults () {
     const [rows] = await db.query(`
       SELECT
         'REY' AS test_type,
@@ -119,11 +119,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-    if(rows) return uncrypt(rows);
+    if (rows) return uncrypt(rows);
     return rows;
   }
 
-  async fetchAllResults() {
+  async fetchAllResults () {
     const [rows] = await db.query(`
       SELECT
         'BANFE' AS test_type,
@@ -302,7 +302,7 @@ class ImpTestExportRepository extends TestExportRepository {
 
       ORDER BY date_applied DESC
     `);
-    if(rows) return uncrypt(rows);
+    if (rows) return uncrypt(rows);
     return rows;
   }
 }
