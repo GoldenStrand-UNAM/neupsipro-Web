@@ -384,11 +384,11 @@
                     subStep: data.current_section
                 };
 
-                // update sidebar state (identification has no per-subStep completion list)
+                // update sidebar state
                 window.sidebarState = {
                     phase: data.current_step,
                     currentStep: data.current_section,
-                    completedSteps: [],
+                    completedSteps: data.data.completedSubSteps,
                 };
 
                 setSubStepTitle(data);
