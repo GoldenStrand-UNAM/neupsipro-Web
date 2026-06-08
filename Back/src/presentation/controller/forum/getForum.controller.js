@@ -1,9 +1,9 @@
 class GetForumController {
-  constructor(getForumUseCase) {
+  constructor (getForumUseCase) {
     this.useCase = getForumUseCase;
   }
 
-  async getForum(req, res) {
+  async getForum (req, res) {
     try {
       let { page = 1, limit = 10 } = req.query;
 

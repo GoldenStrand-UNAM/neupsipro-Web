@@ -3,11 +3,11 @@ const ForumDTO = require('../../dto/forumDTO');
 const { getPresignedUrl } = require('../../../infrastructure/external/s3.config');
 
 class GetForumUseCase {
-  constructor(forumRepository) {
+  constructor (forumRepository) {
     this.forumRepository = forumRepository;
   }
 
-  async execute({ page = 1, limit = 10 }) {
+  async execute ({ page = 1, limit = 10 }) {
     const [posts, total] = await Promise.all([
       this.forumRepository.fetchAll({ page, limit }),
       this.forumRepository.count(),
@@ -15,13 +15,11 @@ class GetForumUseCase {
 
     const postDtos = ForumPostDTO.fromArray(posts);
 
-    const resolvedPosts = await Promise.all(
-      postDtos.map(async post => ({
-        ...post,
-        image: await getPresignedUrl(post.image),
-        pp: await getPresignedUrl(post.pp),
-      }))
-    );
+    const resolvedPosts = await Promise.all(postDtos.map(async post => ({
+      ...post,
+      image: await getPresignedUrl(post.image),
+      pp: await getPresignedUrl(post.pp),
+    })));
 
     return new ForumDTO({
       posts: resolvedPosts,

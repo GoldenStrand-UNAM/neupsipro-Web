@@ -27,11 +27,17 @@ class postIdentificationInterviewUseCase {
 
   // Validate Section Data by substep
   validateSectionData ({ subStep, body }) {
-    switch (subStep) {
-      case 1:
-        return IdentificationInterview.validateSubStep1(body);
-      default:
-        throw new Error('Invalid section');
+    try {
+      switch (subStep) {
+        case 1:
+          return IdentificationInterview.validateSubStep1(body);
+        default:
+          throw new Error('Invalid section');
+      }
+    } catch (err) {
+      // Validation failures are client errors (missing/invalid fields), not server errors
+      err.status = 400;
+      throw err;
     }
   }
 

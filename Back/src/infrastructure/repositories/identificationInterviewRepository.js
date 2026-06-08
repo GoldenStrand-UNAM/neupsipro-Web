@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+
 const db = require ('../database/database');
 const ImpIdentificationInterviewRepository = require('../../domain/repository/ImpIdentificationInterviewRepository');
 const { safeDecrypt } = require('../crypt/profile/getProfile');
@@ -131,7 +131,7 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
   async saveSubStep1 ({ connection, id_user_relation, data }) {
     await connection.query(
       `UPDATE initial_interview
-      SET interview_date = ?,
+      SET interview_date = COALESCE(?, interview_date),
           interviewer_name = ?,
           support_student_name = ?,
           companions_name = ?,

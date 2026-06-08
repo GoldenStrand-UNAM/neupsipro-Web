@@ -73,7 +73,7 @@ class validation {
     if (emojiRegex.test(param.value))
       throw new Error(`${param.label} no puede contener emojis`);
     const phoneStr = String(param.value).trim();
-    const phoneRegex = /^\+?[0-9()-]+$/;   
+    const phoneRegex = /^\+?[0-9()-]+$/;
     if (phoneStr.length < 10)
       throw new Error(`${param.label} debe tener al menos 10 caracteres`);
     if (phoneStr.length > 20)

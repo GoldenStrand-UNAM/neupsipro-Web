@@ -31,15 +31,15 @@ class PostUserUseCase {
     const duplicate = await this.userRepository.checkDuplicate(cryptedUser);
     if (duplicate) {
       if (duplicate.matched_bindex === 1)
-          throw new Error("El usuario ya se encuentra registrado.");
+        throw new Error('El usuario ya se encuentra registrado.');
       if (duplicate.matched_reference === 1)
-          throw new Error("El número de referencia ya pertenece a otro usuario.");
+        throw new Error('El número de referencia ya pertenece a otro usuario.');
       if (duplicate.matched_username === 1)
-          throw new Error("El nombre de usuario ya está en uso.");
+        throw new Error('El nombre de usuario ya está en uso.');
     }
-      const saved = await this.userRepository.postUser({ ...cryptedUser, passwordHash });
-      // Map saved into clean DTO for the client
-      return UsersDTO.fromEntity(saved);
+    const saved = await this.userRepository.postUser({ ...cryptedUser, passwordHash });
+    // Map saved into clean DTO for the client
+    return UsersDTO.fromEntity(saved);
   }
 }
 module.exports = PostUserUseCase;

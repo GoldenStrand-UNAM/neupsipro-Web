@@ -399,7 +399,7 @@ function bindEmotionFormListeners (idUser, idApplication, closeModal) {
     errorAnxiety.classList.add('hidden');
     anxietyInput.value = anxietyInput.value.replace(/[^0-9.]/g, '');
     const parts = anxietyInput.value.split('.');
-    if (parts.length > 2) anxietyInput.value = parts[0] + '.' + parts.slice(1).join('');
+    if (parts.length > 2) anxietyInput.value = `${parts[0]  }.${  parts.slice(1).join('')}`;
     const n = parseFloat(anxietyInput.value);
     if (!isNaN(n) && n > 100) anxietyInput.value = '100';
     interpAnxiety.textContent = (anxietyInput.value.trim() === '' || isNaN(parseFloat(anxietyInput.value)))
@@ -413,7 +413,7 @@ function bindEmotionFormListeners (idUser, idApplication, closeModal) {
     errorDepression.classList.add('hidden');
     depressionInput.value = depressionInput.value.replace(/[^0-9.]/g, '');
     const parts = depressionInput.value.split('.');
-    if (parts.length > 2) depressionInput.value = parts[0] + '.' + parts.slice(1).join('');
+    if (parts.length > 2) depressionInput.value = `${parts[0]  }.${  parts.slice(1).join('')}`;
     const n = parseFloat(depressionInput.value);
     if (!isNaN(n) && n > 100) depressionInput.value = '100';
     interpDepression.textContent = (depressionInput.value.trim() === '' || isNaN(parseFloat(depressionInput.value)))
@@ -469,7 +469,7 @@ function bindEmotionFormListeners (idUser, idApplication, closeModal) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-csrf-token': _csrfToken },
         body: JSON.stringify({
-          score_anxiety_beck:    anxietyNum,
+          score_anxiety_beck: anxietyNum,
           score_depression_beck: depressionNum,
           notes,
         }),
@@ -510,9 +510,7 @@ async function openEmotionModal (idUser, idApplication, test, mode) {
 
   if (isModify || isConsult) {
     try {
-      const res  = await fetch(
-        `/api/users/${idUser}/applications/${idApplication}/tests/6/results/${test.idResults}`
-      );
+      const res  = await fetch(`/api/users/${idUser}/applications/${idApplication}/tests/6/results/${test.idResults}`);
       const json = await res.json();
 
       if (!res.ok) {
@@ -531,9 +529,9 @@ async function openEmotionModal (idUser, idApplication, test, mode) {
   }
 
   const prefill = {
-    scoreAnxietyBeck:    (isModify || isConsult) ? (fetchedTest.scoreAnxietyBeck    ?? '') : '',
+    scoreAnxietyBeck: (isModify || isConsult) ? (fetchedTest.scoreAnxietyBeck    ?? '') : '',
     scoreDepressionBeck: (isModify || isConsult) ? (fetchedTest.scoreDepressionBeck ?? '') : '',
-    notes:               (isModify || isConsult) ? (fetchedTest.notes               ?? '') : '',
+    notes: (isModify || isConsult) ? (fetchedTest.notes               ?? '') : '',
   };
 
   const modal = document.createElement('div');
