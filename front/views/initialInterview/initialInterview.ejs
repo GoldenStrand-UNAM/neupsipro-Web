@@ -82,6 +82,11 @@
                                 <%- include('./identification/subStep3/subStep3.ejs') %>
                             </div>
 
+                            <!-- IDENTIFICATION 1.4 -->
+                            <div id="identification-section-4" class="identification-content hidden">
+                                <%- include('./identification/subStep4/subStep4.ejs') %>
+                            </div>
+
                             <!-- FINANCIAL 2.1 -->
                             <div id="financial-section-1" class="financial-content hidden">
                                 <div class="grid md:grid-cols-2 gap-4">
@@ -151,7 +156,7 @@
     <!------------------------ Load Content Functions ------------------------>
     <script>
         // Total subSteps per phase (current_step), used to know the navigation boundaries
-        const PHASE_SUBSTEPS = { 1: 3, 2: 4 };
+        const PHASE_SUBSTEPS = { 1: 4, 2: 4 };
 
         // Update nav buttons: hidden only at the very first/last subStep of the whole interview
         function updateNavigationButtons(phase, currentSection) {
@@ -219,7 +224,10 @@
                     subStepTitle.textContent = '1.2 Situación Familiar';
 
                 } else if (data.current_section === 3) {
-                    subStepTitle.textContent = '1.3 Situación Laboral y Conclusiones';
+                    subStepTitle.textContent = '1.3 Situación Laboral';
+
+                } else if (data.current_section === 4) {
+                    subStepTitle.textContent = '1.4 Conclusiones';
                 }
 
             } else if (data.current_step === 2) {
@@ -402,6 +410,8 @@
                         window.mapSubStep2?.(data.data);
                     } else if (data.current_section === 3) {
                         window.mapSubStep3?.(data.data);
+                    } else if (data.current_section === 4) {
+                        window.mapSubStep4?.(data.data);
                     }
                 }, 0);
 

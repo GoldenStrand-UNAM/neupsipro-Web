@@ -5,6 +5,7 @@ const subStepConfig = new Map([
   [1, [
     { step: 1, title: 'Datos Personales' },
     { step: 2, title: 'Situación Familiar' },
+    { step: 3, title: 'Situación Laboral' },
   ]],
   [2, [
     { step: 1, title: 'Ingresos y Egresos' },
