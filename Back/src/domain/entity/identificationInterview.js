@@ -14,6 +14,10 @@ class IdentificationInterview {
         this.data = this.mapSubStep2(initialProgress, data);
         break;
 
+      case 3:
+        this.data = this.mapSubStep3(initialProgress, data);
+        break;
+
       default:
         throw new Error('Invalid section');
     }
@@ -31,6 +35,8 @@ class IdentificationInterview {
     'Licenciatura',
     'Posgrado',
   ];
+
+  static STRESS_WORK_OPTIONS = ['Bajo', 'Medio', 'Alto'];
 
   // Get number or null if the value isn't registered
   static numberOrNull (value) {
@@ -216,6 +222,28 @@ class IdentificationInterview {
     };
   }
 
+  // Situación Laboral + Conclusiones
+  mapSubStep3 (initialProgress, data) {
+    const base = data || {};
+
+    return {
+      employmentSituation: {
+        hasJob: IdentificationInterview.booleanOrNull(base.has_job),
+        workActivity: IdentificationInterview.textOrNull(base.work_activity, 150),
+        stressWork: IdentificationInterview.textOrNull(base.stress_work, 10),
+        employmentStatus: IdentificationInterview.textOrNull(base.employment_status, 150),
+        seniority: IdentificationInterview.numberOrNull(base.seniority),
+        workProblems: IdentificationInterview.textOrNull(base.work_problems, 150),
+      },
+
+      conclusions: IdentificationInterview.textOrNull(base.conclusions, 1000),
+
+      completedSteps: this.mapInitialProgress(initialProgress),
+
+      id_user: this.id_user,
+    };
+  }
+
   // Initial Interview Progress
   mapInitialProgress (initialProgress) {
     const data = initialProgress[0];
@@ -305,6 +333,22 @@ class IdentificationInterview {
         childSchooling: this.enumOrNull(child.childSchooling, this.SCHOOLING_OPTIONS),
         childOccupation: this.textOrNull(child.childOccupation, 80),
       }));
+  }
+
+  // Validate Situación Laboral + Conclusiones
+  static validateSubStep3 (data) {
+    const hasJob = this.requiredBoolean(data.hasJob, '¿Tiene trabajo?');
+
+    return {
+      hasJob,
+      workActivity: hasJob ? this.textOrNull(data.workActivity, 150) : null,
+      stressWork: hasJob ? this.enumOrNull(data.stressWork, this.STRESS_WORK_OPTIONS) : null,
+      employmentStatus: hasJob ? this.textOrNull(data.employmentStatus, 150) : null,
+      seniority: hasJob ? this.integerOrNull(data.seniority, 0, null, 'La antigüedad') : null,
+      workProblems: hasJob ? this.textOrNull(data.workProblems, 150) : null,
+
+      conclusions: this.textOrNull(data.conclusions, 1000),
+    };
   }
 }
 

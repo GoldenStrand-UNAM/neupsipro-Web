@@ -23,6 +23,10 @@ class IdentificationInterviewUseCase {
       case 2:
         formattedData = await this.identificationInterviewRepository.fetchSubStep2Data({ id_user_relation });
         break;
+
+      case 3:
+        formattedData = await this.identificationInterviewRepository.fetchSubStep3Data({ id_user_relation });
+        break;
     }
 
     return new IdentificationInterview({
