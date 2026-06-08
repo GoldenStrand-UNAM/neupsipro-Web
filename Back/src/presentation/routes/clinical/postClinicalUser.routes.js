@@ -25,7 +25,6 @@ module.exports = (authUseCase, authMiddleware) => {
   const editUseCase = new EditClinicalUserUseCase(repository, hashingService);
   const editController = new editClinicalUserController(editUseCase, repository);
 
-
   router.get(
     '/postUser',
     authMiddleware.verifyToken,
@@ -59,7 +58,6 @@ module.exports = (authUseCase, authMiddleware) => {
     upload.none(),
     (req, res) => editController.editClinicalUser(req, res)
   );
-
 
   return router;
 };

@@ -104,7 +104,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   router.get(
     '/:id_user', authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), 
+    permissionsMiddleware.requirePermission('user management', 'consultation'),
     (req, res) => controller.getUser(req, res)
   );
 

@@ -1,11 +1,11 @@
 const ALLOWED_TESTS = ['all', 'banfe', 'wais', 'rey'];
 
 class ExportTestResultsCsvUseCase {
-  constructor(testExportRepository) {
+  constructor (testExportRepository) {
     this.testExportRepository = testExportRepository;
   }
 
-  async execute({ test = 'all' }) {
+  async execute ({ test = 'all' }) {
     const normalizedTest = String(test).toLowerCase().trim();
 
     if (!ALLOWED_TESTS.includes(normalizedTest)) {

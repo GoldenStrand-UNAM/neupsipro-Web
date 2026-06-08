@@ -102,19 +102,8 @@ function renderSections () {
   });
 }
 
-// Enable sections click
-document.addEventListener('click', (e) => {
-
-  const el = e.target.closest('#sections-stepper .step');
-  if (!el) return;
-
-  sectionsState.currentStep = Number(el.dataset.step);
-  sectionsState.subStep = 1;
-
-  localStorage.setItem('sections_step', sectionsState.currentStep);
-
-  renderSections();
-});
+// Note: clicking a step now triggers a full phase switch (see initialInterview.ejs,
+// which loads the phase's data and updates sectionsState/renders this stepper)
 
 // Inicialize
 function init () {
