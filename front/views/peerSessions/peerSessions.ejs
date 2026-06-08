@@ -85,6 +85,7 @@
     <!-- Modal partials-->
     <%- include('./addSessionModal') %>
     <%- include('./deleteSessionModal') %>
+    <%- include('./sessionDetailModal') %>
 
         <!-- NOTE: The following script especally the carts rendering part was made with AI help,
                although it was customized and I try to document it as much as possible-->
@@ -210,7 +211,7 @@
     function sessionCard (s) {
         const total = (s.menCount || 0) + (s.womenCount || 0);
         return `
-            <div class="bg-[#F8F8FB] rounded-xl p-4 shadow-sm flex flex-col gap-2">
+            <div class="js-session-card bg-[#F8F8FB] rounded-xl p-4 shadow-sm flex flex-col gap-2 cursor-pointer hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between gap-2">
                     <h3 class="font-semibold text-gray-800">${escapeHtml(s.title || 'Sin título')}</h3>
                     <span class="text-[11px] text-gray-400 bg-white rounded px-2 py-0.5 whitespace-nowrap">
@@ -244,8 +245,16 @@
             return;
         }
         container.innerHTML = sessions.map(sessionCard).join('');
+
+        container.querySelectorAll('.js-session-card').forEach((card, i) => {
+            card.addEventListener('click', () => window.openSessionDetail(sessions[i]));
+        });
+
         container.querySelectorAll('.js-delete-session').forEach(btn => {
-            btn.addEventListener('click', () => window.openDeletePeerSession(btn.dataset.id));
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.openDeletePeerSession(btn.dataset.id);
+            });
         });
     }
 

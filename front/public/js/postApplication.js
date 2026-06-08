@@ -3,24 +3,21 @@
 const MAX_APPLICATIONS = 10;
 
 function setupModalControls (modal) {
-  const inputEl = document.getElementById('inputAppName');
-  const errorEl = document.getElementById('modalError');
-  const nameCount = document.getElementById('nameCount');
+  const selectEl = document.getElementById('inputAppName');
+  const errorEl  = document.getElementById('modalError');
 
   function openModal () {
-    inputEl.value = '';
+    selectEl.selectedIndex = 0;
     errorEl.classList.add('hidden');
     errorEl.textContent = '';
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    inputEl.focus();
-    nameCount.innerText = '0/20';
+    selectEl.focus();
   }
 
   function closeModal () {
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    inputEl.value.length = 0;
   }
 
   function showModalError (msg) {
@@ -77,16 +74,7 @@ function showLimitToast () {
 
 async function saveApplication (user, ctx) {
   const { inputAppName, closeModal, showModalError } = ctx;
-  const name = inputAppName.value.trim();
-
-  if (!name) {
-    showModalError('El nombre de la aplicación es obligatorio');
-    return;
-  }
-  if (name.length > 20) {
-    showModalError('El nombre debe tener máximo 20 caracteres');
-    return;
-  }
+  const name = inputAppName.value;
 
   const btnSave = document.getElementById('btnSaveApp');
   btnSave.disabled = true;
@@ -135,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container    = document.getElementById('logbookContainer');
 
   const { openModal, closeModal, showModalError } = setupModalControls(modal);
+
 
   // Hide add button on load if limit already reached
   container.addEventListener('DOMSubtreeModified', () => {

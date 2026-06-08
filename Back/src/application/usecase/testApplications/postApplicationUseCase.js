@@ -1,5 +1,7 @@
 const testApplicationDTO = require('../../dto/testApplicationDTO');
 
+const ALLOWED_APP_NAMES = Array.from({ length: 10 }, (_, i) => `Evaluación ${i}`);
+
 class postApplicationUseCase {
   constructor (impTestApplicationsRepository, impTestResultsRepository) {
     this.impTestApplicationsRepository = impTestApplicationsRepository;
@@ -18,13 +20,8 @@ class postApplicationUseCase {
       throw err;
     }
     const trimmed = String(application_name ?? '').trim();
-    if (!trimmed) {
-      const err = new Error('application_name is required');
-      err.status = 422;
-      throw err;
-    }
-    if (trimmed.length > 20) {
-      const err = new Error('application_name must be 20 characters or less');
+    if (!ALLOWED_APP_NAMES.includes(trimmed)) {
+      const err = new Error('Nombre de aplicación no válido');
       err.status = 422;
       throw err;
     }
