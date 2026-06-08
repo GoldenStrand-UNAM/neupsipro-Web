@@ -1,0 +1,57 @@
+@startuml GET_IdentificationInterview- personalData
+actor Usuario as user
+participant "Frontend\n(_personalData.ejs / identificationMapper.js)" as front
+participant "Router\n(identificationInterview.routes.js)" as router
+participant "AuthMiddleware /\nPermissionsMiddleware" as auth
+participant "identificationInterviewController" as controller
+participant "IdentificationInterviewUseCase" as useCase
+participant "IdentificationInterviewRepository" as repo
+participant "IdentificationInterview\n(entity)" as entity
+participant "IdentificationInterviewDTO" as dto
+database "MySQL\n(initial_interview /\ninitial_interview_progress /\nuser_relation / users / user_info)" as db
+
+user -> front: Abre la sección "Identificación"
+front -> router: GET /api/:id_user/identification/:subStep
+router -> auth: verifyToken / requirePermission("consultation")
+auth --> router: OK
+
+router -> controller: getIdentificationInterview(req, res)
+controller -> useCase: execute({ id_user, step, subStep })
+
+useCase -> repo: fetchRelation({ id_user })
+repo -> db: SELECT id_user_relation FROM user_relation
+db --> repo: id_user_relation
+repo --> useCase: id_user_relation
+
+useCase -> repo: fetchInterviewProgress({ id_user_relation })
+repo -> db: SELECT * FROM initial_interview_progress
+db --> repo: initialProgress
+repo --> useCase: initialProgress
+
+useCase -> useCase: getFirstStepData(...)
+
+alt subStep === 1
+  useCase -> repo: fetchReadOnlyFields({ id_user })
+  repo -> db: SELECT users + user_info (JOIN)
+  db --> repo: rows (datos cifrados)
+  repo -> repo: safeDecrypt(...) + calculateAge(birthdate)
+  repo --> useCase: readOnlyFields
+
+  useCase -> repo: fetchSubStep1Data({ id_user_relation })
+  repo -> db: SELECT * FROM initial_interview WHERE id_user_relation = ?
+  db --> repo: personalData (o null)
+  repo --> useCase: personalData
+end
+
+useCase -> entity: new IdentificationInterview({ readOnlyFields, data, ... })
+entity --> useCase: instancia validada/formateada
+useCase --> controller: identificationInterview
+
+controller -> dto: IdentificationInterviewDTO.fromEntity(identificationInterview)
+dto --> controller: response (JSON)
+
+controller --> router: 200 OK + response
+router --> front: 200 OK + JSON
+front -> front: mapSubStep1(data)\n(rellena inputs, selects, IMC)
+front --> user: Muestra los datos cargados
+@enduml
