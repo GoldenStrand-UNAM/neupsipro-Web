@@ -927,10 +927,6 @@ ALTER TABLE user_clinical
 
 
 ALTER TABLE clinical_interview
-    ADD COLUMN cdr_result        VARCHAR(150) NULL
-        COMMENT 'Resultado calculadora CDR/DSR-Demencia (mdcalc 10160)',
-    ADD COLUMN nihss_result      VARCHAR(150) NULL
-        COMMENT 'Resultado calculadora NIHSS Stroke (mdcalc 715)',
-    ADD COLUMN mental_observation VARCHAR(500) NULL
-        COMMENT 'Observación clínica sobre alerta/atención, pensamiento, comunicación y memoria';
- 
+    ADD COLUMN cdr_result          VARCHAR(150) NULL,
+    ADD COLUMN nihss_result        VARCHAR(150) NULL,
+    ADD COLUMN mental_observation  VARCHAR(500) NULL;
