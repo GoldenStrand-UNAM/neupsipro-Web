@@ -1,0 +1,127 @@
+<div>
+    <h2 class="section_title">Calculadora de IMC</h2>
+
+    <div class="mt-4 space-y-4">
+        <!--Weight-->
+        <div>
+            <label class="input_label">Peso (kg)</label>
+            <input type="number" min="0" max="620" step="0.1" id="weight" class="input" placeholder="0.0">
+        </div>
+
+        <!--Size-->
+        <div>
+            <label class="input_label">Talla (cm)</label>
+            <input type="number" min="0" max="251" step="0.1" id="size" class="input" placeholder="0.0">
+        </div>
+
+        <!--Amputation toggle-->
+        <div>
+            <label class="input_label flex items-center gap-2">
+                <input type="checkbox" id="amputationEnabled">
+                Paciente con amputación
+            </label>
+        </div>
+
+        <!--Amputation fields-->
+        <div id="amputationFields" class="hidden space-y-4 pl-4 border-l-2 border-gray-200">
+            <div>
+                <label class="input_label">Tipo de amputación</label>
+
+                <select id="amputationType" class="select input text-gray-400">
+                    <option disabled selected value="">Selecciona una opción</option>
+
+                    <option value="BK">Bajo rodilla (BK)</option>
+                    <option value="AK">Arriba de rodilla (AK)</option>
+                    <option value="BILATERAL_BK">Bilateral bajo rodilla</option>
+                    <option value="BILATERAL_AK">Bilateral arriba de rodilla</option>
+                    <option value="BK_AK">Bajo rodilla + arriba de rodilla</option>
+                    <option value="PIE">Pie</option>
+                    <option value="AMBOS_PIES">Ambos pies</option>
+                    <option value="MANO">Mano</option>
+                    <option value="AMBAS_MANOS">Ambas manos</option>
+                    <option value="ANTEBRAZO_MANO">Antebrazo y mano</option>
+                    <option value="AMBOS_ANTEBRAZOS_MANOS">Ambos antebrazos y manos</option>
+                    <option value="BRAZO_COMPLETO">Brazo completo</option>
+                    <option value="AMBOS_BRAZOS_COMPLETOS">Ambos brazos completos</option>
+                    <option value="PIERNA_COMPLETA">Pierna completa</option>
+                    <option value="AMBAS_PIERNAS_COMPLETAS">Ambas piernas completas</option>
+                    <option value="OTRO">Otro</option>
+                </select>
+            </div>
+
+            <!--Custom amputation percentage (only for "Otro")-->
+            <div id="amputationCustomField" class="hidden">
+                <label class="input_label">Porcentaje de amputación</label>
+                <div class="relative">
+                    <input type="number" min="0" max="100" step="0.1" id="amputationCustomPct" class="input pr-7" placeholder="0.0">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">%</span>
+                </div>
+            </div>
+
+            <div>
+                <label class="input_label flex items-center gap-2">
+                    <input type="checkbox" id="hasProsthesis">
+                    Usa prótesis
+                </label>
+            </div>
+        </div>
+
+        <!--Gender (pediatric criteria only)-->
+        <div id="genderField" class="hidden">
+            <label class="input_label">Sexo</label>
+
+            <select id="gender" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="F">Femenino</option>
+                <option value="M">Masculino</option>
+            </select>
+        </div>
+
+        <!--Results-->
+        <div class="rounded-xl border border-gray-300 p-4 space-y-2">
+            <div>
+                <span class="input_label">IMC:</span>
+                <span id="imcResult" class="font-semibold"></span>
+            </div>
+
+            <div>
+                <span class="input_label">Categoría:</span>
+                <span id="imcCategory" class="font-semibold"></span>
+            </div>
+
+            <div id="adjustedWeightResult" class="hidden">
+                <span class="input_label">Peso ajustado por amputación (kg):</span>
+                <span id="adjustedWeight" class="font-semibold"></span>
+            </div>
+
+            <div id="ageRangeResult" class="hidden">
+                <span class="input_label">Rango de edad (criterio IMSS):</span>
+                <span id="ageRange" class="font-semibold"></span>
+            </div>
+
+            <p id="pediatricNote" class="hidden text-xs text-gray-400">
+                En población pediátrica el IMC se interpreta mediante percentiles según edad y sexo,
+                de acuerdo con los criterios del IMSS. La categoría "Pediátrico" es solo informativa.
+            </p>
+
+            <p id="ageWarning" class="hidden text-xs text-[#BA8700]">
+                El paciente está marcado como pediátrico, pero su edad calculada es de 18 años o más.
+                Verifique el dato antes de continuar.
+            </p>
+        </div>
+
+        <!--External reference links-->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="https://www.imss.gob.mx/salud-en-linea/calculaimc" target="_blank" rel="noopener noreferrer"
+               class="btn-mid bg-[#3350A9] text-center">
+                Referencia IMSS
+            </a>
+
+            <a href="https://www.zkidney.com/abmi" target="_blank" rel="noopener noreferrer"
+               class="btn-mid bg-[#3350A9] text-center">
+                Referencia zKidney
+            </a>
+        </div>
+    </div>
+</div>
