@@ -10,6 +10,28 @@ function setFieldValue (id, value) {
   element.value = value ?? '';
 }
 
+// Set a <select> value, swapping the placeholder gray for dark text once an option is loaded
+// (mirrors financial/financialMapper.js's setSelectValue, so saved selections look selected)
+function setSelectValue (id, value) {
+  const select = document.getElementById(id);
+
+  if (!select) return;
+
+  if (value === null || value === undefined || value === '') {
+    select.value = '';
+
+    select.classList.remove('text-gray-900');
+    select.classList.add('text-gray-400');
+
+    return;
+  }
+
+  select.value = String(value);
+
+  select.classList.remove('text-gray-400');
+  select.classList.add('text-gray-900');
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEP 1 MAPPER -----------------------------
 
@@ -39,10 +61,10 @@ function mapPersonalData (personalData) {
   setFieldValue('proofAddress', info.proofAddress);
   setFieldValue('healthcareSystem', info.healthcareSystem);
   setFieldValue('religion', info.religion);
-  setFieldValue('schooling', info.schooling);
+  setSelectValue('schooling', info.schooling);
   setFieldValue('residence', info.residence);
-  setFieldValue('fathersSchooling', info.fathersSchooling);
-  setFieldValue('mothersSchooling', info.mothersSchooling);
+  setSelectValue('fathersSchooling', info.fathersSchooling);
+  setSelectValue('mothersSchooling', info.mothersSchooling);
   setFieldValue('currentOcupation', info.ocupation);
 }
 
