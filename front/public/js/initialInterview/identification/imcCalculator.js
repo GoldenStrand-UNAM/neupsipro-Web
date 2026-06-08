@@ -80,6 +80,30 @@ function getAdultCategory (imc) {
   return 'Obesidad III';
 }
 
+// Restrict a number input to at most `integerDigits` whole-number digits and
+// one decimal point followed by `decimalDigits` digits (e.g. 3 and 1 -> "620.5")
+function limitDecimalInput (input, integerDigits, decimalDigits) {
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    let { value } = input;
+
+    value = value.replace(/[^\d.]/g, '');
+
+    const firstDot = value.indexOf('.');
+    if (firstDot !== -1) {
+      value = value.slice(0, firstDot + 1) + value.slice(firstDot + 1).replace(/\./g, '');
+    }
+
+    const [intPart, decPart] = value.split('.');
+    let limited = intPart.slice(0, integerDigits);
+    if (decPart !== undefined) limited += '.' + decPart.slice(0, decimalDigits);
+
+    if (limited !== value) value = limited;
+    if (value !== input.value) input.value = value;
+  });
+}
+
 function getAmputationPercentage () {
   const type = document.getElementById('amputationType')?.value;
 
@@ -212,6 +236,11 @@ function calculate () {
 // ----- Event binding ---------------------------------------------------------
 
 function bindEvents () {
+  // Format limiters must bind before `calculate`, so it reads the already-cleaned value
+  limitDecimalInput(document.getElementById('weight'), 3, 1);
+  limitDecimalInput(document.getElementById('size'), 3, 1);
+  limitDecimalInput(document.getElementById('amputationCustomPct'), 3, 1);
+
   document.getElementById('weight')?.addEventListener('input', calculate);
   document.getElementById('size')?.addEventListener('input', calculate);
 
