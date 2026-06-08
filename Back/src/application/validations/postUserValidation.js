@@ -87,7 +87,7 @@ function validateSecond (user) {
     assigned: validation.validate({
       value: user.assigned,
       maxLength: 36,
-      label: 'El clínico asignado',
+      label: 'El colaborador asignado',
       required: true,
     }),
     profilePhoto: validation.validate({
