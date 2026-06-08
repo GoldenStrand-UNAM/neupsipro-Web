@@ -1,0 +1,293 @@
+<!--Last Studies-->
+<div>
+    <label class="input_label">1.Pensando en el jefe o jefa del hogar, ¿Cuál es el último año de estudios que aprobó en la escuela?</label>
+
+    <div>
+        <select id="lastStudies" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                No estudió
+            </option>
+            <option value="6">
+                Primaria Incompleta
+            </option>
+            <option value="11">
+                Primaria Completa
+            </option>
+            <option value="12">
+                Secundaria Incompleta
+            </option>
+            <option value="18">
+                Secundaria Completa
+            </option>
+            <option value="23">
+                Carrera comercial
+            </option>
+            <option value="23">
+                Carrera técnica
+            </option>
+            <option value="23">
+                Preparatoria Incompleta
+            </option>
+            <option value="27">
+                Preparatoria Completa
+            </option>
+            <option value="36">
+                Licenciatura Incompleta
+            </option>
+            <option value="59">
+                Licenciatura Completa
+            </option>
+            <option value="85">
+                Diplomado o maestría
+            </option>
+            <option value="85">
+                Doctorado
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Num BathRooms-->
+<div>
+    <label class="input_label">
+        2. ¿Cuántos baños completos con regadera y excusado, hay en su vivienda?
+    </label>
+
+    <div>
+        <select id="numBathrooms" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                0
+            </option>
+            <option value="24">
+                1
+            </option>
+            <option value="47">
+                2 ó más
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Num Cars-->
+<div>
+    <label class="input_label">
+        3. ¿Cuántos automóviles o camionetas tiene su hogar, incluyendo camionetas cerradas o con cabina o caja?
+    </label>
+
+    <div>
+        <select id="numCar" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                0
+            </option>
+            <option value="22">
+                1
+            </option>
+            <option value="43">
+                2 ó más
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Internet-->
+<div>
+    <label class="input_label">
+        4. Sin tomar en cuenta la conexión móvil que pudiera tener desde algún celular, ¿este hogar cuenta con internet?
+    </label>
+
+    <div>
+        <select id="hasInternet" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                NO tiene
+            </option>
+            <option value="32">
+                SÍ tiene
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Work-->
+<div>
+    <label class="input_label">
+        5. De todas las personas de 14 años o más que viven en el hogar, ¿cuántas trabajaron en el último mes?
+    </label>
+
+    <div>
+        <select id="hasWorked" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                0
+            </option>
+            <option value="15">
+                1
+            </option>
+            <option value="31">
+                2
+            </option>
+            <option value="46">
+                3
+            </option>
+            <option value="61">
+                4 ó más
+            </option>
+        </select>
+    </div>
+</div>
+
+<!--Bedroom-->
+<div>
+    <label class="input_label">
+        6. En esta vivienda, ¿cuántos cuartos se usan para dormir, sin contar pasillos, ni baños?
+    </label>
+
+    <div>
+        <select id="hasBedroom" class="select input text-gray-400">
+            <option disabled selected value="">Selecciona una opción</option>
+
+            <option value="0">
+                0
+            </option>
+            <option value="8">
+                1
+            </option>
+            <option value="16">
+                2
+            </option>
+            <option value="24">
+                3
+            </option>
+            <option value="32">
+                4 ó más
+            </option>
+        </select>
+    </div>
+</div>
+
+<!-- Total Puntuation-->
+<div class="grid grid-cols-3">
+    <div></div>
+    <div class="total">
+        <span class="font-bold">Puntuación Obtenida: </span>
+        <span class="level">
+            <span id="totalPuntuationAMAI"></span>
+            puntos
+        </span>
+    </div>
+</div>
+
+<!-- Level-->
+<div class="grid grid-cols-3">
+    <div></div>
+    <div class="total">
+        <span class="font-bold">Nivel Socioeconómico: </span>
+        <span class="level" id="socioeconomicLevelAMAI"></span>
+    </div>
+</div>
+
+<script>
+    // Function that get the value of each element
+    function getPointsAmai(element) {
+
+        if (!element) return 0;
+
+        const value = parseInt(element.value);
+
+        return isNaN(value) ? 0 : value;
+    }
+
+    // Function to calculate AMAI cuestionary total
+    function calculateAMAITotal() {
+
+        // Inputs
+        const lastStudies =
+            getPointsAmai(document.getElementById('lastStudies'));
+
+        const numBathrooms =
+            getPointsAmai(document.getElementById('numBathrooms'));
+
+        const numCar =
+            getPointsAmai(document.getElementById('numCar'));
+
+        const hasInternet =
+            getPointsAmai(document.getElementById('hasInternet'));
+
+        const hasWorked =
+            getPointsAmai(document.getElementById('hasWorked'));
+
+        const hasBedroom =
+            getPointsAmai(document.getElementById('hasBedroom'));
+        
+        // Total
+        const total =
+            lastStudies +
+            numBathrooms +
+            numCar +
+            hasInternet +
+            hasWorked +
+            hasBedroom;
+
+        // Render total
+        document.getElementById('totalPuntuationAMAI').textContent =
+            total;
+
+        // Level
+        let level = '-';
+
+        if (total < 61) {
+            level = 'E';
+        } else if (total < 102) {
+            level = 'D';
+        } else if (total < 157) {
+            level = 'D+';
+        } else if (total < 192) {
+            level = 'C';
+        } else if (total < 242) {
+            level = 'C+';
+        } else {
+            level = 'A/B';
+        } 
+
+        // Render level
+        document.getElementById('socioeconomicLevelAMAI').textContent =
+            level;
+    }
+
+    function updateSelectColor(select) {
+
+        if (select.value !== '') {
+            select.classList.remove('text-gray-400');
+            select.classList.add('text-black');
+        } else {
+            select.classList.remove('text-black');
+            select.classList.add('text-gray-400');
+        }
+    }
+
+    // Detect changes automatically
+    document.querySelectorAll('select').forEach(select => {
+
+        // inicial color 
+        updateSelectColor(select);
+
+        // Calculate the color chance
+        select.addEventListener('change', () => {
+            updateSelectColor(select);
+            calculateAMAITotal();
+        });
+    });
+
+    window.calculateAMAITotal = calculateAMAITotal;
+
+    // Initial calculation
+    calculateAMAITotal();
+</script>
