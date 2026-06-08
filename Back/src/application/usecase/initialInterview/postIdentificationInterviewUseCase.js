@@ -35,6 +35,7 @@ class postIdentificationInterviewUseCase {
           throw new Error('Invalid section');
       }
     } catch (err) {
+      console.error('[identification useCase] validation error:', err.message);
       // Validation failures are client errors (missing/invalid fields), not server errors
       err.status = 400;
       throw err;
@@ -95,9 +96,13 @@ class postIdentificationInterviewUseCase {
     subStep,
     body,
   }) {
+    console.log('[identification useCase] executeUpdate:', { id_user, step, subStep });
+
     // fetch relation
     const relationResult = await this.identificationInterviewRepository.fetchRelation({ id_user });
     const id_user_relation = relationResult[0][0]?.id_user_relation;
+
+    console.log('[identification useCase] id_user_relation:', id_user_relation);
 
     if (!id_user_relation) {
       throw new Error('Initial interview relation not found');
@@ -110,10 +115,13 @@ class postIdentificationInterviewUseCase {
 
     // validate entity
     const validatedData = this.validateSectionData({ subStep, body });
+    console.log('[identification useCase] validatedData:', validatedData);
 
     await this.updateData({ id_user_relation, subStep, validatedData });
+    console.log('[identification useCase] updateData done');
 
     await this.updateProgress(id_user_relation);
+    console.log('[identification useCase] updateProgress done');
 
     return {
       current_section: subStep + 1,
