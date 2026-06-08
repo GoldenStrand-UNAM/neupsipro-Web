@@ -1,3 +1,6 @@
+<!-- Flatpickr (same date picker used in createAppointmentModal.ejs) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <div>
     <h2 class="section_title">Datos Generales de la Entrevista</h2>
 
@@ -5,7 +8,7 @@
         <!--Interview date-->
         <div>
             <label class="input_label">Fecha de la entrevista</label>
-            <input type="date" id="interviewDate" class="input">
+            <input type="text" id="interviewDate" class="input" placeholder="Selecciona una fecha" autocomplete="off">
         </div>
 
         <!--Interviewer name-->
@@ -19,54 +22,63 @@
         <div>
             <label class="input_label">Nombre del estudiante de apoyo</label>
             <input type="text" id="supportStudentName" maxlength="80" class="input" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
         </div>
 
         <!--Companions name-->
         <div>
             <label class="input_label">Nombre de los acompañantes</label>
-            <input type="text" id="companionsName" maxlength="80" class="input" placeholder="Nombre completo">
+            <input type="text" id="companionsName" maxlength="50" class="input" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
         </div>
 
         <!--Companion relation-->
         <div>
             <label class="input_label">Parentesco con el acompañante</label>
-            <input type="text" id="companionRelation" maxlength="30" class="input" placeholder="Ej. Madre, padre, tutor">
+            <input type="text" id="companionRelation" maxlength="50" class="input" placeholder="Ej. Madre, padre, tutor">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
         </div>
 
         <!--Address-->
         <div>
             <label class="input_label">Domicilio</label>
-            <input type="text" id="address" maxlength="120" class="input" placeholder="Calle, número, colonia, municipio">
+            <input type="text" id="address" maxlength="100" class="input" placeholder="Calle, número, colonia, municipio">
+            <p class="text-xs text-gray-400 mt-1">Máximo 100 caracteres</p>
         </div>
 
         <!--Proof of address-->
         <div>
             <label class="input_label">Comprobante de domicilio</label>
-            <input type="text" id="proofAddress" maxlength="60" class="input" placeholder="Tipo de comprobante presentado">
+            <input type="text" id="proofAddress" maxlength="200" class="input" placeholder="Tipo de comprobante presentado">
+            <p class="text-xs text-gray-400 mt-1">Máximo 200 caracteres</p>
         </div>
 
         <!--Healthcare system-->
         <div>
             <label class="input_label">Sistema de salud</label>
-            <input type="text" id="healthcareSystem" maxlength="60" class="input" placeholder="Ej. IMSS, ISSSTE, particular">
+            <input type="text" id="healthcareSystem" maxlength="50" class="input" placeholder="Ej. IMSS, ISSSTE, particular">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
         </div>
 
         <!--Religion-->
         <div>
             <label class="input_label">Religión</label>
-            <input type="text" id="religion" maxlength="40" class="input" placeholder="Religión que profesa">
+            <input type="text" id="religion" maxlength="30" class="input" placeholder="Religión que profesa">
+            <p class="text-xs text-gray-400 mt-1">Máximo 30 caracteres</p>
         </div>
 
         <!--Residence-->
         <div>
             <label class="input_label">Lugar de residencia</label>
-            <input type="text" id="residence" maxlength="60" class="input" placeholder="Ciudad, estado">
+            <input type="text" id="residence" maxlength="80" class="input" placeholder="Ciudad, estado">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
         </div>
 
         <!--Ocupation-->
         <div>
             <label class="input_label">Ocupación</label>
-            <input type="text" id="currentOcupation" maxlength="60" class="input" placeholder="Ocupación actual">
+            <input type="text" id="currentOcupation" maxlength="50" class="input" placeholder="Ocupación actual">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
         </div>
 
         <!--Schooling-->
@@ -118,3 +130,37 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Same date picker setup as createAppointmentModal.ejs, adapted to a date-only field
+    // (no time component, and dates are not restricted to "today onward")
+    (function () {
+        const inputDate = document.getElementById('interviewDate');
+        if (inputDate && window.flatpickr) {
+            flatpickr(inputDate, {
+                dateFormat: 'Y-m-d',
+            });
+        }
+    })();
+
+    // Block emoji input and enforce each field's declared maxlength,
+    // applied the same way to every text field in this form (the date picker is excluded)
+    (function () {
+        const EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
+
+        document.querySelectorAll('#identification-section-1 input[type="text"]:not(#interviewDate)')
+            .forEach(input => {
+                const limit = input.maxLength > 0 ? input.maxLength : null;
+
+                input.addEventListener('input', () => {
+                    let { value } = input;
+
+                    value = value.replace(EMOJI_REGEX, '');
+                    if (limit) value = value.slice(0, limit);
+
+                    if (value !== input.value) input.value = value;
+                });
+            });
+    })();
+</script>
