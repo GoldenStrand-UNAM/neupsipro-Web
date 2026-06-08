@@ -3,7 +3,6 @@
 // Get number or null if the value isn't registered
 function getNumberOrNull (id) {
 
-  // eslint-disable-next-line no-undef
   const { value } = document.getElementById(id);
 
   return value === ''
@@ -13,7 +12,7 @@ function getNumberOrNull (id) {
 
 // Get text or null if the value isn't registered
 function getTextOrNull (id) {
-  // eslint-disable-next-line no-undef
+
   const { value } = document.getElementById(id);
 
   return value === ''
@@ -23,7 +22,6 @@ function getTextOrNull (id) {
 
 function getSpanNumberOrNull (id) {
 
-  // eslint-disable-next-line no-undef
   const element = document.getElementById(id);
 
   if (!element) return null;
@@ -37,7 +35,6 @@ function getSpanNumberOrNull (id) {
 
 function getSpanTextOrNull (id) {
 
-  // eslint-disable-next-line no-undef
   const element = document.getElementById(id);
 
   if (!element) return null;
@@ -49,7 +46,7 @@ function getSpanTextOrNull (id) {
     : value;
 }
 
-function getSpanMoneyOrNull(id) {
+function getSpanMoneyOrNull (id) {
   const element = document.getElementById(id);
 
   if (!element) return null;
@@ -94,7 +91,6 @@ function buildContributors () {
 
   const contributors = [];
 
-  // eslint-disable-next-line no-undef
   document.querySelectorAll('#contributorsContainer .rounded-xl').forEach(card => {
 
     const name =
@@ -316,5 +312,4 @@ function buildSection (section) {
   }
 }
 
-// eslint-disable-next-line no-undef
 window.buildSection = buildSection;

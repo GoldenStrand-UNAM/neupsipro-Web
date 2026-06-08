@@ -516,7 +516,7 @@
 
             if (section === current) return;
 
-            // Save current section before changing
+            // Save current section before changing (free navigation: don't block on save outcome)
             await saveActiveSection(current);
 
             await goToSection(phase, section);
@@ -533,7 +533,7 @@
             // Phase 3 (Historia Clínica) has no content/data wired up yet
             if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
 
-            // Save the active subStep before switching phases
+            // Save the active subStep before switching phases (free navigation: don't block on save outcome)
             await saveActiveSection(getActivePhaseData().current_section);
 
             await goToSection(phase, 1);
@@ -548,6 +548,7 @@
                 const current = getActivePhaseData().current_section;
                 const total = PHASE_SUBSTEPS[phase];
 
+                // Save current section (free navigation: don't block on save outcome)
                 await saveActiveSection(current);
 
                 if (current < total) {
@@ -566,7 +567,7 @@
                 const phase = window.currentPhase;
                 const current = getActivePhaseData().current_section;
 
-                // Save current section before changing
+                // Save current section (free navigation: don't block on save outcome)
                 await saveActiveSection(current);
 
                 if (current > 1) {

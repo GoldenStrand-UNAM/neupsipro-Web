@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 
 // ----- Auxiliary functions --------------------------------------------------
 // Named distinctly from financial's helpers (getTextOrNull/getNumberOrNull):

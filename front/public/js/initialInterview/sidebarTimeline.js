@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-/* eslint-disable no-undef */
 
 // SubStep list per initial interview phase (current_step)
 const subStepConfig = new Map([
@@ -30,7 +29,7 @@ function buildSidebarItems () {
   const container = document.getElementById('sidebar-timeline-list');
   if (!container) return;
 
-  const phase = window.sidebarState.phase;
+  const { phase } = window.sidebarState;
   if (phase === builtForPhase) return;
 
   const items = subStepConfig.get(phase) || [];

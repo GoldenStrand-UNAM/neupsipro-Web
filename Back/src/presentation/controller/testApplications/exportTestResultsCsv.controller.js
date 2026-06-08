@@ -1,9 +1,9 @@
 class ExportTestResultsCsvController {
-  constructor(exportTestResultsCsvUseCase) {
+  constructor (exportTestResultsCsvUseCase) {
     this.useCase = exportTestResultsCsvUseCase;
   }
 
-  async export(req, res) {
+  async export (req, res) {
     try {
       const { test = 'all' } = req.query;
 
@@ -33,7 +33,7 @@ class ExportTestResultsCsvController {
     }
   }
 
-  toCsv(rows) {
+  toCsv (rows) {
     if (!rows || rows.length === 0) {
       return '\uFEFF';
     }
@@ -60,8 +60,7 @@ class ExportTestResultsCsvController {
     const csvRows = [
       headers.join(','),
       ...rows.map(row =>
-        headers.map(header => escapeCsvValue(row[header])).join(',')
-      ),
+        headers.map(header => escapeCsvValue(row[header])).join(',')),
     ];
 
     return `\uFEFF${csvRows.join('\n')}`;

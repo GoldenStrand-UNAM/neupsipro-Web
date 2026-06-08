@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+
 class IdentificationInterview {
   constructor ({ id_user, current_step, current_section, initialProgress, readOnlyFields, data }) {
     this.id_user = id_user;
@@ -161,7 +161,7 @@ class IdentificationInterview {
   static validateSubStep1 (data) {
     return {
       interviewDate: this.dateOrNull(data.interviewDate),
-      interviewerName: this.requiredText(data.interviewerName, 80, 'El nombre del entrevistador'),
+      interviewerName: this.textOrNull(data.interviewerName, 80),
       supportStudentName: this.textOrNull(data.supportStudentName, 80),
       companionsName: this.textOrNull(data.companionsName, 50),
       companionRelation: this.textOrNull(data.companionRelation, 50),
