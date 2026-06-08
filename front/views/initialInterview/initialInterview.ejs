@@ -321,6 +321,12 @@
 
         // Set Content
         function setContent(data) {
+
+            // Both phases' sections live in the same DOM at once: hide everything
+            // first so switching phases never leaves the previous one visible
+            document.querySelectorAll('.identification-content, .financial-content')
+                .forEach(section => section.classList.add('hidden'));
+
             if (data.current_step === 1) {
                 setIdentificationContent(data);
             } else if (data.current_step === 2) {
@@ -514,6 +520,23 @@
             await saveActiveSection(current);
 
             await goToSection(phase, section);
+        });
+
+        // Listener for jumping between phases via the top stepper (free navigation)
+        document.addEventListener('click', async (e) => {
+
+            const phaseEl = e.target.closest('#sections-stepper .step');
+            if (!phaseEl) return;
+
+            const phase = Number(phaseEl.dataset.step);
+
+            // Phase 3 (Historia Clínica) has no content/data wired up yet
+            if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
+
+            // Save the active subStep before switching phases
+            await saveActiveSection(getActivePhaseData().current_section);
+
+            await goToSection(phase, 1);
         });
 
         // NEXT buttons

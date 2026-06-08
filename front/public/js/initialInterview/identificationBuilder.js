@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
 
 // ----- Auxiliary functions --------------------------------------------------
+// Named distinctly from financial's helpers (getTextOrNull/getNumberOrNull):
+// every <script> here shares one global scope, and financial/financialBuilder.js
+// loads later, so identical names would silently overwrite these.
 
 // Get text or null if the value isn't registered
-function getTextOrNull (id) {
+function getIdentificationTextOrNull (id) {
   const element = document.getElementById(id);
 
   if (!element) return null;
@@ -16,7 +19,7 @@ function getTextOrNull (id) {
 }
 
 // Get number or null if the value isn't registered
-function getNumberOrNull (id) {
+function getIdentificationNumberOrNull (id) {
   const element = document.getElementById(id);
 
   if (!element) return null;
@@ -40,37 +43,37 @@ function buildSubStep1Payload () {
   return {
 
     interviewDate:
-      getTextOrNull('interviewDate'),
+      getIdentificationTextOrNull('interviewDate'),
 
     interviewerName:
-      getTextOrNull('interviewerName'),
+      getIdentificationTextOrNull('interviewerName'),
 
     supportStudentName:
-      getTextOrNull('supportStudentName'),
+      getIdentificationTextOrNull('supportStudentName'),
 
     companionsName:
-      getTextOrNull('companionsName'),
+      getIdentificationTextOrNull('companionsName'),
 
     companionRelation:
-      getTextOrNull('companionRelation'),
+      getIdentificationTextOrNull('companionRelation'),
 
     address:
-      getTextOrNull('address'),
+      getIdentificationTextOrNull('address'),
 
     proofAddress:
-      getTextOrNull('proofAddress'),
+      getIdentificationTextOrNull('proofAddress'),
 
     healthcareSystem:
-      getTextOrNull('healthcareSystem'),
+      getIdentificationTextOrNull('healthcareSystem'),
 
     religion:
-      getTextOrNull('religion'),
+      getIdentificationTextOrNull('religion'),
 
     weight:
-      getNumberOrNull('weight'),
+      getIdentificationNumberOrNull('weight'),
 
     size:
-      getNumberOrNull('size'),
+      getIdentificationNumberOrNull('size'),
 
     imc:
       imc ?? null,
@@ -79,19 +82,19 @@ function buildSubStep1Payload () {
       imcCategory ?? null,
 
     schooling:
-      getTextOrNull('schooling'),
+      getIdentificationTextOrNull('schooling'),
 
     residence:
-      getTextOrNull('residence'),
+      getIdentificationTextOrNull('residence'),
 
     fathersSchooling:
-      getTextOrNull('fathersSchooling'),
+      getIdentificationTextOrNull('fathersSchooling'),
 
     mothersSchooling:
-      getTextOrNull('mothersSchooling'),
+      getIdentificationTextOrNull('mothersSchooling'),
 
     ocupation:
-      getTextOrNull('currentOcupation'),
+      getIdentificationTextOrNull('currentOcupation'),
   };
 }
 
