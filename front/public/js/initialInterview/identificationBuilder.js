@@ -91,7 +91,7 @@ function buildSubStep1Payload () {
       getTextOrNull('mothersSchooling'),
 
     ocupation:
-      getTextOrNull('ocupation'),
+      getTextOrNull('currentOcupation'),
   };
 }
 

@@ -21,7 +21,7 @@ function mapReadOnlyFields (readOnly) {
   setFieldValue('referenceNumber', info.referenceNumber);
   setFieldValue('fullName', info.fullName);
   setFieldValue('email', info.email);
-  setFieldValue('phone', info.phone);
+  setFieldValue('userPhone', info.phone);
   setFieldValue('birthdate', info.birthdate);
   setFieldValue('age', info.age);
   setFieldValue('laterality', info.laterality);
@@ -44,7 +44,7 @@ function mapPersonalData (personalData) {
   setFieldValue('residence', info.residence);
   setFieldValue('fathersSchooling', info.fathersSchooling);
   setFieldValue('mothersSchooling', info.mothersSchooling);
-  setFieldValue('ocupation', info.ocupation);
+  setFieldValue('currentOcupation', info.ocupation);
 }
 
 // Map weight/size and (re)initialize the IMC calculator with the patient context,
