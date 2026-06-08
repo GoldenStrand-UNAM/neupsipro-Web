@@ -1,5 +1,5 @@
 class ForumDTO {
-  constructor({ posts, page, limit, total }) {
+  constructor ({ posts, page, limit, total }) {
     this.posts = posts;
     this.pagination = {
       page,

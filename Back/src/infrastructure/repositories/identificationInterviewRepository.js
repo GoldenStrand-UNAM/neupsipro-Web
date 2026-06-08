@@ -1,6 +1,7 @@
-/* eslint-disable max-lines-per-function */
+
 const db = require ('../database/database');
 const ImpIdentificationInterviewRepository = require('../../domain/repository/ImpIdentificationInterviewRepository');
+const { safeDecrypt } = require('../crypt/profile/getProfile');
 
 class IdentificationInterviewRepository extends ImpIdentificationInterviewRepository {
 
@@ -31,16 +32,40 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // ----- Datos Personales substep -------------------------------------------
 
+  // Calculate age in years from a decrypted dd/mm/yyyy birthdate (mirrors domain/entity/user.js)
+  calculateAge (birthdate) {
+    if (!birthdate) return null;
+
+    const [day, month, year] = birthdate.split('/');
+    const birth = new Date(year, month - 1, day);
+
+    if (isNaN(birth.getTime())) return null;
+
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const beforeBirthdayThisYear =
+      today.getMonth() < birth.getMonth() ||
+      (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
+
+    if (beforeBirthdayThisYear) age -= 1;
+
+    return age;
+  }
+
   // Fetch read-only patient data (users + user_info)
+  // Names, contact data, birthdate and laterality are encrypted at rest, so they
+  // must be decrypted (and full_name/age derived) in JS rather than in SQL
   async fetchReadOnlyFields ({ id_user }) {
     const [rows] = await db.query(
       `SELECT
               ui.reference_number,
-              CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+              u.first_name,
+              u.lastname_p,
+              u.lastname_m,
               u.email,
-              u.phone,
+              ui.phone,
               u.birthdate,
-              TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) AS age,
               ui.laterality,
               ui.is_child
             FROM users AS u
@@ -49,7 +74,24 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
       [id_user]
     );
 
-    return rows[0] || null;
+    const row = rows[0];
+    if (!row) return null;
+
+    const birthdate = safeDecrypt(row.birthdate);
+
+    return {
+      reference_number: safeDecrypt(row.reference_number),
+      full_name: [row.first_name, row.lastname_p, row.lastname_m]
+        .map(safeDecrypt)
+        .filter(Boolean)
+        .join(' '),
+      email: safeDecrypt(row.email),
+      phone: safeDecrypt(row.phone),
+      birthdate,
+      age: this.calculateAge(birthdate),
+      laterality: safeDecrypt(row.laterality),
+      is_child: row.is_child,
+    };
   }
 
   // Fetch Datos Personales by relation
@@ -87,28 +129,40 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // Save Datos Personales
   async saveSubStep1 ({ connection, id_user_relation, data }) {
-    await connection.query(
-      `UPDATE initial_interview
-      SET interview_date = ?,
-          interviewer_name = ?,
-          support_student_name = ?,
-          companions_name = ?,
-          companion_relation = ?,
-          address = ?,
-          proof_address = ?,
-          healthcare_system = ?,
-          religion = ?,
-          weight = ?,
-          size = ?,
-          imc = ?,
-          imc_category = ?,
-          schooling = ?,
-          residence = ?,
-          fathers_schooling = ?,
-          mothers_schooling = ?,
-          ocupation = ?
-      WHERE id_user_relation = ?`,
+    console.log('[identification repo] saveSubStep1:', { id_user_relation, data });
+
+    // No row exists in `initial_interview` until the first identification save:
+    // upsert so the row is created on first save and merged on later ones.
+    // `interview_date` is NOT NULL, so a missing value falls back to today's date
+    // on insert, and keeps the stored value (instead of being nulled out) on update.
+    const [result] = await connection.query(
+      `INSERT INTO initial_interview (
+          id_user_relation, interview_date, interviewer_name, support_student_name,
+          companions_name, companion_relation, address, proof_address, healthcare_system,
+          religion, weight, size, imc, imc_category, schooling, residence,
+          fathers_schooling, mothers_schooling, ocupation
+      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          interview_date = COALESCE(?, interview_date),
+          interviewer_name = VALUES(interviewer_name),
+          support_student_name = VALUES(support_student_name),
+          companions_name = VALUES(companions_name),
+          companion_relation = VALUES(companion_relation),
+          address = VALUES(address),
+          proof_address = VALUES(proof_address),
+          healthcare_system = VALUES(healthcare_system),
+          religion = VALUES(religion),
+          weight = VALUES(weight),
+          size = VALUES(size),
+          imc = VALUES(imc),
+          imc_category = VALUES(imc_category),
+          schooling = VALUES(schooling),
+          residence = VALUES(residence),
+          fathers_schooling = VALUES(fathers_schooling),
+          mothers_schooling = VALUES(mothers_schooling),
+          ocupation = VALUES(ocupation)`,
       [
+        id_user_relation,
         data.interviewDate,
         data.interviewerName,
         data.supportStudentName,
@@ -128,9 +182,14 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.mothersSchooling,
         data.ocupation,
 
-        id_user_relation,
+        data.interviewDate,
       ]
     );
+
+    console.log('[identification repo] saveSubStep1 result:', {
+      affectedRows: result.affectedRows,
+      changedRows: result.changedRows,
+    });
   }
 
   // ----- Update Identification Progress -------------------------------------
@@ -158,6 +217,7 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // ---- MAIN PATCH Function -------------------------------------------------
   async saveIdentificationSection ({ subStep, id_user_relation, data, completed }) {
+    console.log('[identification repo] saveIdentificationSection:', { subStep, id_user_relation, completed });
 
     // Connection for secure async queries
     const connection = await db.getConnection();
@@ -192,6 +252,7 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
       };
 
     } catch (err) {
+      console.error('[identification repo] saveIdentificationSection error:', err.message);
 
       await connection.rollback();
 

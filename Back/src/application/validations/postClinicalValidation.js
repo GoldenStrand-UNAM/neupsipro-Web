@@ -61,7 +61,8 @@ function validateSecond (user, { passwordRequired }) {
     required: true });
   const activity = validation.validateEnum(
     user.activity,
-    enumActivity);
+    enumActivity
+  );
   const startDate = validation.validateDate({
     date: user.startDate,
     label: 'La fecha de inicio',

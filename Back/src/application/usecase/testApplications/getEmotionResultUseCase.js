@@ -17,15 +17,15 @@ class getEmotionResultUseCase {
     }
 
     return new EmotionResultsDTO({
-      idResults:           row.id_results,
-      idTest:              6,
-      status:              row.status,
-      dateApplied:         row.date_applied ?? null,
-      scoreAnxietyBeck:    row.score_anxiety_beck,
-      interAnxietyBeck:    row.inter_anxiety_beck,
+      idResults: row.id_results,
+      idTest: 6,
+      status: row.status,
+      dateApplied: row.date_applied ?? null,
+      scoreAnxietyBeck: row.score_anxiety_beck,
+      interAnxietyBeck: row.inter_anxiety_beck,
       scoreDepressionBeck: row.score_depression_beck,
       interDepressionBeck: row.inter_depression_beck,
-      notes:               row.notes ?? null,
+      notes: row.notes ?? null,
     });
   }
 }

@@ -32,22 +32,20 @@ class ImpPeerSessionRepository extends peerSessionRepository {
   }
 
   async fetchAllForStats () {
-    const [rows] = await db.query(
-      `SELECT title, session_date, men_count, women_count
+    const [rows] = await db.query(`SELECT title, session_date, men_count, women_count
          FROM peer_session
-        ORDER BY session_date ASC`
-    );
+        ORDER BY session_date ASC`);
     return rows;
   }
-  
+
   async deleteSession (id_peer_session) {
-      const [result] = await db.query(
-        `DELETE FROM peer_session
+    const [result] = await db.query(
+      `DELETE FROM peer_session
           WHERE id_peer_session = ?`,
-        [id_peer_session]
-      );
-      return result.affectedRows > 0;
-    }
+      [id_peer_session]
+    );
+    return result.affectedRows > 0;
+  }
 
   async fetchSessions ({ page, limit, from, to }) {
     const offset = (page - 1) * limit;
@@ -85,7 +83,7 @@ class ImpPeerSessionRepository extends peerSessionRepository {
     );
     return rows[0]?.total ?? 0;
   }
-  
+
 }
 
 module.exports = ImpPeerSessionRepository;
