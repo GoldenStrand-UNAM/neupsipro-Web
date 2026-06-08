@@ -1,0 +1,13 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <%- include('./_readOnlyFields.ejs') %>
+    <%- include('./_personalData.ejs') %>
+    <%- include('./_imcCalculator.ejs') %>
+</div>
+
+<!--
+    This substep is not yet wired into initialInterview.ejs (out of scope for this task),
+    so its scripts are loaded here to keep it self-contained and ready to be included.
+-->
+<script src="/js/initialInterview/identification/imcCalculator.js"></script>
+<script src="/js/initialInterview/identificationBuilder.js"></script>
+<script src="/js/initialInterview/identificationMapper.js"></script>
