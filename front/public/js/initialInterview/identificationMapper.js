@@ -38,6 +38,13 @@ function setBooleanSelectValue (id, value) {
   setSelectValue(id, value === null || value === undefined ? null : String(value));
 }
 
+// Check the radio in a group whose value matches, uncheck the rest
+function setRadioValue (name, value) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+    radio.checked = radio.value === value;
+  });
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEP 1 MAPPER -----------------------------
 
@@ -129,5 +136,47 @@ function mapSubStep2 (data) {
   window.childrenTable?.init(info.children || []);
 }
 
+// ----------------------------------------------------------------------------
+// ----------------------------- SUBSTEP 3 MAPPER -----------------------------
+
+// Employment fields (Situación Laboral)
+function mapEmploymentSituation (employmentSituation) {
+  const info = employmentSituation || {};
+
+  setBooleanSelectValue('hasJob', info.hasJob);
+  setFieldValue('workActivity', info.workActivity);
+  setRadioValue('stressWork', info.stressWork);
+  setFieldValue('employmentStatus', info.employmentStatus);
+  setFieldValue('seniority', info.seniority);
+  setFieldValue('workProblems', info.workProblems);
+
+  // Re-trigger the inline toggle script in _employmentFields.ejs,
+  // so the detail block shows/hides according to the loaded value
+  document.getElementById('hasJob')?.dispatchEvent(new Event('change'));
+}
+
+// Populate the DOM with the GET payload of subStep 3 (Situación Laboral)
+function mapSubStep3 (data) {
+  const info = data || {};
+
+  mapEmploymentSituation(info.employmentSituation);
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------- SUBSTEP 4 MAPPER -----------------------------
+
+// Populate the DOM with the GET payload of subStep 4 (Conclusiones)
+function mapSubStep4 (data) {
+  const info = data || {};
+
+  setFieldValue('conclusions', info.conclusions);
+
+  // Re-trigger the shared char-counter (data-target="conclusions"), so it
+  // reflects the loaded text length right away (same dispatch pattern mapImcFields uses)
+  document.getElementById('conclusions')?.dispatchEvent(new Event('input'));
+}
+
 window.mapSubStep1 = mapSubStep1;
 window.mapSubStep2 = mapSubStep2;
+window.mapSubStep3 = mapSubStep3;
+window.mapSubStep4 = mapSubStep4;

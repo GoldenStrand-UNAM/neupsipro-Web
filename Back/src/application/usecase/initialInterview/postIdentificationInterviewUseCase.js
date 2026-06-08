@@ -5,57 +5,6 @@ class postIdentificationInterviewUseCase {
     this.identificationInterviewRepository = identificationInterviewRepository;
   }
 
-  // ----- Substeps status functions (check completion) ----
-  isSubStep1Complete (data) {
-    const requiredFields = [
-      data.interviewDate,
-      data.interviewerName,
-      data.address,
-      data.healthcareSystem,
-      data.weight,
-      data.size,
-      data.schooling,
-      data.residence,
-      data.fathersSchooling,
-      data.mothersSchooling,
-      data.ocupation,
-    ];
-
-    return requiredFields.every(field =>
-      field !== null && field !== undefined && field !== '');
-  }
-
-  isSubStep2Complete (data) {
-    const requiredFields = [
-      data.inRelationship,
-      data.hasChildren,
-      data.numberFamilyMembers,
-    ];
-
-    const baseComplete = requiredFields.every(field =>
-      field !== null && field !== undefined && field !== '');
-
-    if (!baseComplete) return false;
-
-    // Claiming children but registering none leaves the substep incomplete
-    if (data.hasChildren && data.children.length === 0) return false;
-
-    return true;
-  }
-
-  isSubStep3Complete (data) {
-    if (data.hasJob === null || data.hasJob === undefined || data.hasJob === '') return false;
-
-    if (data.hasJob) {
-      const requiredFields = [data.workActivity, data.employmentStatus, data.stressWork];
-
-      return requiredFields.every(field =>
-        field !== null && field !== undefined && field !== '');
-    }
-
-    return true;
-  }
-
   // Validate Section Data by substep
   validateSectionData ({ subStep, body }) {
     try {
@@ -66,6 +15,8 @@ class postIdentificationInterviewUseCase {
           return IdentificationInterview.validateSubStep2(body);
         case 3:
           return IdentificationInterview.validateSubStep3(body);
+        case 4:
+          return IdentificationInterview.validateSubStep4(body);
         default:
           throw new Error('Invalid section');
       }
@@ -86,15 +37,19 @@ class postIdentificationInterviewUseCase {
 
     switch (subStep) {
       case 1:
-        completed = this.isSubStep1Complete(validatedData);
+        completed = IdentificationInterview.isSubStep1Complete(validatedData);
         break;
 
       case 2:
-        completed = this.isSubStep2Complete(validatedData);
+        completed = IdentificationInterview.isSubStep2Complete(validatedData);
         break;
 
       case 3:
-        completed = this.isSubStep3Complete(validatedData);
+        completed = IdentificationInterview.isSubStep3Complete(validatedData);
+        break;
+
+      case 4:
+        completed = IdentificationInterview.isSubStep4Complete(validatedData);
         break;
     }
 

@@ -1,0 +1,101 @@
+<div>
+    <h2 class="section_title">Situación Laboral</h2>
+
+    <div class="mt-4 space-y-4">
+        <!--Has job-->
+        <div>
+            <label class="input_label">¿Tiene trabajo actualmente?</label>
+
+            <select id="hasJob" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+
+        <!--Employment details (hidden when hasJob = false)-->
+        <div id="employmentDetails" class="space-y-4 hidden">
+
+            <!--Work activity-->
+            <div>
+                <label class="input_label">Actividad laboral</label>
+                <input type="text" id="workActivity" maxlength="150" class="input" placeholder="Describe su actividad laboral">
+                <p class="text-xs text-gray-400 mt-1">Máximo 150 caracteres</p>
+            </div>
+
+            <!--Stress level-->
+            <div>
+                <label class="input_label">Nivel de estrés laboral</label>
+
+                <div class="flex flex-wrap gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="stressWork" id="stressWorkBajo" value="Bajo" class="peer sr-only">
+                        <span class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 peer-checked:border-[#3350A9] peer-checked:bg-[#3350A9] peer-checked:text-white transition-all duration-200">
+                            Bajo
+                        </span>
+                    </label>
+
+                    <label class="cursor-pointer">
+                        <input type="radio" name="stressWork" id="stressWorkMedio" value="Medio" class="peer sr-only">
+                        <span class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 peer-checked:border-[#3350A9] peer-checked:bg-[#3350A9] peer-checked:text-white transition-all duration-200">
+                            Medio
+                        </span>
+                    </label>
+
+                    <label class="cursor-pointer">
+                        <input type="radio" name="stressWork" id="stressWorkAlto" value="Alto" class="peer sr-only">
+                        <span class="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 peer-checked:border-[#3350A9] peer-checked:bg-[#3350A9] peer-checked:text-white transition-all duration-200">
+                            Alto
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!--Employment status-->
+            <div>
+                <label class="input_label">Situación laboral / contractual</label>
+                <input type="text" id="employmentStatus" maxlength="150" class="input" placeholder="Describe su situación laboral">
+                <p class="text-xs text-gray-400 mt-1">Máximo 150 caracteres</p>
+            </div>
+
+            <!--Seniority-->
+            <div>
+                <label class="input_label">Antigüedad en años</label>
+                <input type="number" min="0" step="1" id="seniority" class="input" placeholder="Antigüedad en años">
+            </div>
+
+            <!--Work problems-->
+            <div>
+                <label class="input_label">Problemas en el trabajo</label>
+                <input type="text" id="workProblems" maxlength="150" class="input" placeholder="Describe los problemas en el trabajo">
+                <p class="text-xs text-gray-400 mt-1">Máximo 150 caracteres</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide the employment details block and clear its inputs based on hasJob
+    // (same toggle pattern as inRelationship in subStep2/_coupleFields.ejs)
+    (function () {
+        const select = document.getElementById('hasJob');
+        const details = document.getElementById('employmentDetails');
+
+        if (!select || !details) return;
+
+        select.addEventListener('change', () => {
+            const hasJob = select.value === 'true';
+
+            details.classList.toggle('hidden', !hasJob);
+
+            if (!hasJob) {
+                details.querySelectorAll('input[type="text"], input[type="number"]')
+                    .forEach(input => { input.value = ''; });
+
+                details.querySelectorAll('input[type="radio"]')
+                    .forEach(radio => { radio.checked = false; });
+            }
+        });
+    })();
+</script>

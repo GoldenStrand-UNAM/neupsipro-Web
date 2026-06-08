@@ -44,6 +44,13 @@ function getIdentificationBooleanOrNull (id) {
   return null;
 }
 
+// Get the value of the checked radio in a group, or null if none is selected
+function getIdentificationRadioOrNull (name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+
+  return checked ? checked.value : null;
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------- SUBSTEPS BUILDER -----------------------------
 
@@ -169,6 +176,45 @@ function buildSubStep2Payload () {
   };
 }
 
+// ----- Situación Laboral -------------------------------------------------------
+
+function buildSubStep3Payload () {
+
+  const hasJob = getIdentificationBooleanOrNull('hasJob');
+
+  return {
+
+    hasJob,
+
+    // If there is no job, send the employment fields explicitly as null
+    // instead of omitting them, so no residual values are kept on save
+    workActivity:
+      hasJob ? getIdentificationTextOrNull('workActivity') : null,
+
+    stressWork:
+      hasJob ? getIdentificationRadioOrNull('stressWork') : null,
+
+    employmentStatus:
+      hasJob ? getIdentificationTextOrNull('employmentStatus') : null,
+
+    seniority:
+      hasJob ? getIdentificationNumberOrNull('seniority') : null,
+
+    workProblems:
+      hasJob ? getIdentificationTextOrNull('workProblems') : null,
+  };
+}
+
+// ----- Conclusiones -------------------------------------------------------------
+
+function buildSubStep4Payload () {
+
+  return {
+    conclusions:
+      getIdentificationTextOrNull('conclusions'),
+  };
+}
+
 // ----------------------------------------------------------------------------
 // ------------------------------- MAIN BUILDER -------------------------------
 
@@ -182,6 +228,12 @@ function buildIdentificationSection (subStep) {
     case 2:
       return buildSubStep2Payload();
 
+    case 3:
+      return buildSubStep3Payload();
+
+    case 4:
+      return buildSubStep4Payload();
+
     default:
       return {};
   }
@@ -189,4 +241,6 @@ function buildIdentificationSection (subStep) {
 
 window.buildSubStep1Payload = buildSubStep1Payload;
 window.buildSubStep2Payload = buildSubStep2Payload;
+window.buildSubStep3Payload = buildSubStep3Payload;
+window.buildSubStep4Payload = buildSubStep4Payload;
 window.buildIdentificationSection = buildIdentificationSection;

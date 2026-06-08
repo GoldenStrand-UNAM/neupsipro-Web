@@ -169,7 +169,7 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     };
   }
 
-  // Fetch Situación Laboral + Conclusiones by relation
+  // Fetch Situación Laboral by relation
   async fetchSubStep3Data ({ id_user_relation }) {
     const [rows] = await db.query(
       `SELECT
@@ -178,7 +178,19 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
               stress_work,
               employment_status,
               seniority,
-              work_problems,
+              work_problems
+            FROM initial_interview
+            WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return rows[0] || null;
+  }
+
+  // Fetch Conclusiones by relation
+  async fetchSubStep4Data ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
               conclusions
             FROM initial_interview
             WHERE id_user_relation = ?`,
@@ -335,22 +347,21 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     });
   }
 
-  // Save Situación Laboral + Conclusiones — same UPSERT pattern as
+  // Save Situación Laboral — same UPSERT pattern as
   // saveFamilySituationInfo, in case the relation reaches this substep before subStep1's first save
   async saveSubStep3 ({ connection, id_user_relation, data }) {
     await connection.query(
       `INSERT INTO initial_interview (
           id_user_relation, interview_date, has_job, work_activity, stress_work,
-          employment_status, seniority, work_problems, conclusions
-      ) VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?)
+          employment_status, seniority, work_problems
+      ) VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
           has_job = VALUES(has_job),
           work_activity = VALUES(work_activity),
           stress_work = VALUES(stress_work),
           employment_status = VALUES(employment_status),
           seniority = VALUES(seniority),
-          work_problems = VALUES(work_problems),
-          conclusions = VALUES(conclusions)`,
+          work_problems = VALUES(work_problems)`,
       [
         id_user_relation,
         data.hasJob,
@@ -359,6 +370,21 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.employmentStatus,
         data.seniority,
         data.workProblems,
+      ]
+    );
+  }
+
+  // Save Conclusiones — same UPSERT pattern as saveFamilySituationInfo, in
+  // case the relation reaches this substep before subStep1's first save
+  async saveSubStep4 ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `INSERT INTO initial_interview (
+          id_user_relation, interview_date, conclusions
+      ) VALUES (?, CURRENT_DATE, ?)
+      ON DUPLICATE KEY UPDATE
+          conclusions = VALUES(conclusions)`,
+      [
+        id_user_relation,
         data.conclusions,
       ]
     );
@@ -433,6 +459,22 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         case 3:
 
           await this.saveSubStep3({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateIdentificationCompleted({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 4:
+
+          await this.saveSubStep4({
             connection,
             id_user_relation,
             data,

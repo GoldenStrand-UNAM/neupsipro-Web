@@ -1,9 +1,10 @@
 
 class IdentificationInterview {
-  constructor ({ id_user, current_step, current_section, initialProgress, readOnlyFields, data }) {
+  constructor ({ id_user, current_step, current_section, initialProgress, readOnlyFields, completedSubSteps, data }) {
     this.id_user = id_user;
     this.current_step = current_step;
     this.current_section = current_section;
+    this.completedSubSteps = completedSubSteps || [];
 
     switch (current_section) {
       case 1:
@@ -16,6 +17,10 @@ class IdentificationInterview {
 
       case 3:
         this.data = this.mapSubStep3(initialProgress, data);
+        break;
+
+      case 4:
+        this.data = this.mapSubStep4(initialProgress, data);
         break;
 
       default:
@@ -185,6 +190,7 @@ class IdentificationInterview {
       },
 
       completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
 
       id_user: this.id_user,
     };
@@ -217,12 +223,13 @@ class IdentificationInterview {
       })),
 
       completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
 
       id_user: this.id_user,
     };
   }
 
-  // Situación Laboral + Conclusiones
+  // Situación Laboral
   mapSubStep3 (initialProgress, data) {
     const base = data || {};
 
@@ -236,9 +243,22 @@ class IdentificationInterview {
         workProblems: IdentificationInterview.textOrNull(base.work_problems, 150),
       },
 
+      completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
+
+      id_user: this.id_user,
+    };
+  }
+
+  // Conclusiones
+  mapSubStep4 (initialProgress, data) {
+    const base = data || {};
+
+    return {
       conclusions: IdentificationInterview.textOrNull(base.conclusions, 1000),
 
       completedSteps: this.mapInitialProgress(initialProgress),
+      completedSubSteps: this.completedSubSteps,
 
       id_user: this.id_user,
     };
@@ -335,7 +355,7 @@ class IdentificationInterview {
       }));
   }
 
-  // Validate Situación Laboral + Conclusiones
+  // Validate Situación Laboral
   static validateSubStep3 (data) {
     const hasJob = this.requiredBoolean(data.hasJob, '¿Tiene trabajo?');
 
@@ -346,9 +366,73 @@ class IdentificationInterview {
       employmentStatus: hasJob ? this.textOrNull(data.employmentStatus, 150) : null,
       seniority: hasJob ? this.integerOrNull(data.seniority, 0, null, 'La antigüedad') : null,
       workProblems: hasJob ? this.textOrNull(data.workProblems, 150) : null,
+    };
+  }
 
+  // Validate Conclusiones
+  static validateSubStep4 (data) {
+    return {
       conclusions: this.textOrNull(data.conclusions, 1000),
     };
+  }
+
+  // ========================== COMPLETION CHECKS ==========================
+  // Shared by the GET use case (to compute completedSubSteps for the sidebar)
+  // and the PATCH use case (to decide whether to flip the completed flag)
+
+  static isSubStep1Complete (data) {
+    const requiredFields = [
+      data.interviewDate,
+      data.interviewerName,
+      data.address,
+      data.healthcareSystem,
+      data.weight,
+      data.size,
+      data.schooling,
+      data.residence,
+      data.fathersSchooling,
+      data.mothersSchooling,
+      data.ocupation,
+    ];
+
+    return requiredFields.every(field =>
+      field !== null && field !== undefined && field !== '');
+  }
+
+  static isSubStep2Complete (data) {
+    const requiredFields = [
+      data.inRelationship,
+      data.hasChildren,
+      data.numberFamilyMembers,
+    ];
+
+    const baseComplete = requiredFields.every(field =>
+      field !== null && field !== undefined && field !== '');
+
+    if (!baseComplete) return false;
+
+    // Claiming children but registering none leaves the substep incomplete
+    if (data.hasChildren && data.children.length === 0) return false;
+
+    return true;
+  }
+
+  static isSubStep3Complete (data) {
+    if (data.hasJob === null || data.hasJob === undefined || data.hasJob === '') return false;
+
+    if (data.hasJob) {
+      const requiredFields = [data.workActivity, data.employmentStatus, data.stressWork];
+
+      return requiredFields.every(field =>
+        field !== null && field !== undefined && field !== '');
+    }
+
+    return true;
+  }
+
+  // Conclusiones is an optional, free-text field: the substep is always considered complete
+  static isSubStep4Complete () {
+    return true;
   }
 }
 
