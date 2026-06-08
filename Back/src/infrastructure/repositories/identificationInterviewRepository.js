@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 const db = require ('../database/database');
 const ImpIdentificationInterviewRepository = require('../../domain/repository/ImpIdentificationInterviewRepository');
+const { safeDecrypt } = require('../crypt/profile/getProfile');
 
 class IdentificationInterviewRepository extends ImpIdentificationInterviewRepository {
 
@@ -31,16 +32,40 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // ----- Datos Personales substep -------------------------------------------
 
+  // Calculate age in years from a decrypted dd/mm/yyyy birthdate (mirrors domain/entity/user.js)
+  calculateAge (birthdate) {
+    if (!birthdate) return null;
+
+    const [day, month, year] = birthdate.split('/');
+    const birth = new Date(year, month - 1, day);
+
+    if (isNaN(birth.getTime())) return null;
+
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const beforeBirthdayThisYear =
+      today.getMonth() < birth.getMonth() ||
+      (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
+
+    if (beforeBirthdayThisYear) age -= 1;
+
+    return age;
+  }
+
   // Fetch read-only patient data (users + user_info)
+  // Names, contact data, birthdate and laterality are encrypted at rest, so they
+  // must be decrypted (and full_name/age derived) in JS rather than in SQL
   async fetchReadOnlyFields ({ id_user }) {
     const [rows] = await db.query(
       `SELECT
               ui.reference_number,
-              CONCAT_WS(' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+              u.first_name,
+              u.lastname_p,
+              u.lastname_m,
               u.email,
-              u.phone,
+              ui.phone,
               u.birthdate,
-              TIMESTAMPDIFF(YEAR, u.birthdate, CURDATE()) AS age,
               ui.laterality,
               ui.is_child
             FROM users AS u
@@ -49,7 +74,24 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
       [id_user]
     );
 
-    return rows[0] || null;
+    const row = rows[0];
+    if (!row) return null;
+
+    const birthdate = safeDecrypt(row.birthdate);
+
+    return {
+      reference_number: safeDecrypt(row.reference_number),
+      full_name: [row.first_name, row.lastname_p, row.lastname_m]
+        .map(safeDecrypt)
+        .filter(Boolean)
+        .join(' '),
+      email: safeDecrypt(row.email),
+      phone: safeDecrypt(row.phone),
+      birthdate,
+      age: this.calculateAge(birthdate),
+      laterality: safeDecrypt(row.laterality),
+      is_child: row.is_child,
+    };
   }
 
   // Fetch Datos Personales by relation
