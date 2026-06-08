@@ -20,7 +20,8 @@
       gap: 16px;
       padding-top: 18px;
     }
-    .header__logo { width: 84px; height: auto; }
+    .header__logo { width: 86px; height: auto; }
+    .header__logo--enes { width: 88px; }
     .header__titles {
       flex: 1;
       text-align: center;
@@ -112,21 +113,19 @@
 
   <!-- ===== Letterhead ===== -->
   <div class="header">
-    <img class="header__logo" src="<%= unamLogo %>" alt="UNAM">
+    <img class="header__logo header__logo--enes" src="<%= enesLogo %>" alt="ENES Juriquilla">
     <div class="header__titles">
       UNIVERSIDAD NACIONAL AUTÓNOMA DE MÉXICO<br>
       ESCUELA NACIONAL DE ESTUDIOS SUPERIORES<br>
       UNIDAD JURIQUILLA
     </div>
-    <div>
-      <img class="header__logo" src="<%= unamLogo %>" alt="ENES Juriquilla">
-      <div class="header__enes">E N E S<br>JURIQUILLA</div>
-    </div>
+    <img class="header__logo" src="<%= unamLogo %>" alt="UNAM">
   </div>
 
   <div class="report-title">
     UNIDAD DE INVESTIGACIÓN EN ÓRTESIS Y PRÓTESIS<br>
-    INFORME DE EVALUACIÓN NEUROPSICOLÓGICA DE <%= report.patientName %>
+    INFORME DE EVALUACIÓN NEUROPSICOLÓGICA DE <%= report.patientName %><br>
+    PROTOCOLO <%= String(report.protocolLabel || '').toUpperCase() %>
   </div>
 
   <!-- ===== I. Ficha de identificación ===== -->
@@ -135,18 +134,27 @@
     <b>No. de expediente:</b> <%= report.referenceNumber || '' %>&nbsp;&nbsp;&nbsp;
     <b>Edad Cronológica:</b> <%= report.age || '' %>&nbsp;&nbsp;&nbsp;
     <b>Fecha de Devolución de Resultados:</b> <%= report.exportedDate %><br>
+    <% if (report.mentalAge) { %><b>Edad Mental:</b> <%= report.mentalAge %>&nbsp;&nbsp;&nbsp;<% } %>
     <b>Escolaridad:</b> <%= report.schooling || '' %>&nbsp;&nbsp;&nbsp;
     <b>Ocupación:</b> <%= report.ocupation || '' %>&nbsp;&nbsp;&nbsp;
     <b>Lateralidad:</b> <%= report.laterality || '' %>
   </div>
 
-  <!-- ===== II. Instrumentos de evaluación ===== -->
+  <!-- ===== II. Instrumentos de evaluación (depende del protocolo) ===== -->
   <div class="section-heading"><span class="roman">II.</span> INSTRUMENTOS DE EVALUACIÓN</div>
-  <p class="instruments">
-    (1) Perfil Socioemocional (IDA-B; SCL-90-R; SF-36; WHODAS 2.0; COPE-28; CRIq); (2) Prueba
-    Cognitiva de Montreal (MoCA-a, por sus siglas en inglés); (3) <i>Dominio de sensaciones (NIH
-    Toolbox)</i>; (4) Prueba de Figura Compleja de Rey-Osterrieth (Figura A, ROCF).
-  </p>
+  <% if (report.protocolLabel === 'Investigación') { %>
+    <p class="instruments">
+      (1) Batería Neuropsicológica de Funciones Ejecutivas y Lóbulos Frontales (BANFE-3); 
+      (2) Escala Wechsler de Inteligencia para Adultos (WAIS-IV); (3) Prueba de Figura Compleja de
+      Rey-Osterrieth (Figura A, ROCF); (4) Perfil Socioemocional.
+    </p>
+  <% } else { %>
+    <p class="instruments">
+      (1) Prueba de Figura Compleja de Rey-Osterrieth (Figura A, ROCF); (2) Prueba Cognitiva de
+      Montreal (MoCA-a, por sus siglas en inglés); (3) Perfil Socioemocional; (4) <i>Dominio de
+      sensaciones (NIH Toolbox)</i>.
+    </p>
+  <% } %>
 
   <!-- ===== Intro text (Alina) ===== -->
   <% if (report.introText) { %>
