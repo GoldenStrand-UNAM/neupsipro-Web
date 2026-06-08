@@ -1,0 +1,193 @@
+<div class="space-y-8">
+    <h2 class="section_title">Desglose de Egresos</h2>
+
+    <!--Expenses List-->
+    <div>
+        <!--Food-->
+        <div class="expenses_input">
+            <label class="input_label">Alimentación / despensa</label>
+            <div class="flex justify-end">
+                <div class="input max-w-40 flex items-center gap-1 focus-within:border-[#3350A9]">
+                    <span class="text-gray-500 shrink-0 text-sm select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="food" class="expense-value w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Rent-->
+        <div class="expenses_input">
+            <label class="input_label">Renta / hipoteca</label>
+            <div class="flex justify-end">
+                <div class="input max-w-40 flex items-center gap-1 focus-within:border-[#3350A9]">
+                    <span class="text-gray-500 shrink-0 text-sm select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="rent" class="expense-value w-full bg-transparent border-none p-0 outline-none focus:outline-none focus:ring-0 text-sm min-w-0" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Services-->
+        <div class="expenses_input">
+            <label class="input_label">Luz, Agua, Gas e Internet</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="services" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Gas-->
+        <div class="expenses_input">
+            <label class="input_label">Gasolina</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="gas" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--School-->
+        <div class="expenses_input">
+            <label class="input_label">Educación</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="school" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Wardrope-->
+        <div class="expenses_input">
+            <label class="input_label">Vestido</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="wardrope" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Medic-->
+        <div class="expenses_input">
+            <label class="input_label">Atención Médica</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="medic" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Transport-->
+        <div class="expenses_input">
+            <label class="input_label">Transporte</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="transport" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Credit-->
+        <div class="expenses_input">
+            <label class="input_label">Abonos / Crédito</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="credit" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Phone-->
+        <div class="expenses_input">
+            <label class="input_label">Teléfono</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="phone" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+
+        <!--Others-->
+        <div class="expenses_input border-0">
+            <label class="input_label">Otros ej. diversión, salidas</label>
+            <div class="flex justify-end">
+                <div class="relative max-w-40 w-full">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">$</span>
+                    <input type="number" min="0" max="1000000" step="1" inputmode="numeric" id="others" class="expense-value input w-full pl-7" placeholder="mensual">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Expenses-->
+    <div class="flex justify-end mt-6">
+        <div class="total flex items-center gap-2">
+            <span class="font-bold whitespace-nowrap">
+                Total de Egresos:
+            </span>
+
+            <span id="totalExpenses" class="font-normal">
+                $0.00
+            </span>
+        </div>
+    </div>
+
+    <div class="pb-4">
+        <!--Economic Situation-->
+        <div class="pt-2">
+            <label class="input_label">Situación Económica</label>
+            <input type="text" id="economicSituation" maxlength="30" class="input" placeholder="Ej. estable, deudas, etc.">
+            <p class="text-xs text-gray-400 mt-1"><span class="char-counter" data-target="economicSituation" data-max="30">0/30</span> caracteres</p>
+        </div>
+
+        <!--Salary after-->
+        <div class="pt-2">
+            <label class="input_label">Número de dependientes económicos</label>
+            <input type="number" min="0" step="1" inputmode="numeric" id="numDependants" class="input" placeholder="0">
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Get expenses total
+        const expensesInputs = document.querySelectorAll('.expense-value');
+
+        function getValue(input) {
+            return parseFloat(input.value) || 0;
+        }
+
+        // Make the sum
+        function calculateExpenses() {
+            let total = 0;
+
+            expensesInputs.forEach(input => {
+                total += getValue(input);
+            });
+
+            document.getElementById('totalExpenses').textContent =
+                `$${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        // Listen changes + clamp max
+        expensesInputs.forEach(input => {
+            input.addEventListener('input', () => {
+                if (parseFloat(input.value) > 1000000) input.value = 1000000;
+                calculateExpenses();
+            });
+        });
+
+        // Let the function use it globally
+        window.calculateExpenses = calculateExpenses;
+
+        // inicial
+        calculateExpenses();
+    });
+</script>

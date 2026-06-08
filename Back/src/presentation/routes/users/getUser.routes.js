@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 const express = require('express');
 const { apiLimiter , userLimiter } = require('../../../infrastructure/external/rateLimiting');
 
@@ -109,12 +110,16 @@ module.exports = (authUseCase, authMiddleware) => {
 
   router.get(
     '/:id_user', authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getUser(req, res)
+    permissionsMiddleware.requirePermission('user management', 'consultation'), 
+    (req, res) => controller.getUser(req, res)
   );
 
   //Create Application route
 
-  router.post('/:id_user/applications', (req, res) => appController.createApplication(req, res));
+  router.post(
+    '/:id_user/applications',
+    (req, res) => appController.createApplication(req, res)
+  );
 
   router.get(
     '/clinics/list',
@@ -182,6 +187,10 @@ module.exports = (authUseCase, authMiddleware) => {
     permissionsMiddleware.requirePermission('user management', 'writing'),
     (req, res) => protocolController.modifyProtocol(req, res)
   );
+
+  //INITIAL INTERVIEW
+  const initialInterviewRoutes = require('../initialInterview/financialInterview.routes');
+  router.use('/:id_user/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 
   return router;
 };
