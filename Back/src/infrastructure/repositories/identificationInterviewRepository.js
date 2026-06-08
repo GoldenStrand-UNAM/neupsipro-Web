@@ -174,13 +174,11 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // Save Datos Personales
   async saveSubStep1 ({ connection, id_user_relation, data }) {
-    console.log('[identification repo] saveSubStep1:', { id_user_relation, data });
-
     // No row exists in `initial_interview` until the first identification save:
     // upsert so the row is created on first save and merged on later ones.
     // `interview_date` is NOT NULL, so a missing value falls back to today's date
     // on insert, and keeps the stored value (instead of being nulled out) on update.
-    const [result] = await connection.query(
+    await connection.query(
       `INSERT INTO initial_interview (
           id_user_relation, interview_date, interviewer_name, support_student_name,
           companions_name, companion_relation, address, proof_address, healthcare_system,
@@ -230,11 +228,6 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.interviewDate,
       ]
     );
-
-    console.log('[identification repo] saveSubStep1 result:', {
-      affectedRows: result.affectedRows,
-      changedRows: result.changedRows,
-    });
   }
 
   // Save Situación Familiar info (pareja + familia) — same UPSERT pattern as
@@ -348,8 +341,6 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
 
   // ---- MAIN PATCH Function -------------------------------------------------
   async saveIdentificationSection ({ subStep, id_user_relation, data, completed }) {
-    console.log('[identification repo] saveIdentificationSection:', { subStep, id_user_relation, completed });
-
     // Connection for secure async queries
     const connection = await db.getConnection();
 
