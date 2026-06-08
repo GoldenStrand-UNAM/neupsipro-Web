@@ -926,6 +926,11 @@ ALTER TABLE user_clinical
     MODIFY COLUMN emergency_contact_relation VARCHAR(115) NULL;
 
 
+ALTER TABLE user_relation
+    MODIFY COLUMN type ENUM('assigned', 'initial_interview', 'appointment') NOT NULL,
+    MODIFY COLUMN id_clinic_user VARCHAR(36) NOT NULL;
+
+
 ALTER TABLE clinical_interview
     ADD COLUMN cdr_result          VARCHAR(150) NULL,
     ADD COLUMN nihss_result        VARCHAR(150) NULL,
