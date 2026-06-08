@@ -1,0 +1,87 @@
+@startuml EI03 - PATCH Clinical Interview (Symptoms)
+
+title Patch - Clinical Interview / Symptoms (Golondrina)
+
+actor "Clinical Team" as CG
+boundary "Clinical Interview \nView (Step 3)" as View
+
+boundary "Initial Interview \nRoutes" as Route
+control "post \nClinicalInterview \nController" as ctrl
+
+control "post \nClinicalInterview \nUseCase" as UC
+entity "Clinical Interview \n(Entity)" as Ent
+
+control "Clinical Interview Repository" as Repo
+database "Database" as DB
+
+== Save a section (Next / Previous / Change Section) ==
+
+CG -> View : Fill section data, click 'Next'
+View -> View : buildSection(subStep) \n(build request body: each symptom {presence, desc})
+View -> Route : PATCH /initial-interview/symptoms/api/:id_user/:subStep \n{ body }
+Route -> ctrl : saveClinicalInterview(req, res) \n(req.params.step = 'symptoms')
+ctrl -> UC : executeUpdate({id_user, step, subStep, body})
+
+UC -> Repo : fetchRelation({id_user})
+Repo -->> DB : query('SELECT id_user_relation \nFROM user_relation WHERE id_user = ?;', [id_user])
+
+alt Relation found
+    DB -->> Repo : id_user_relation
+    Repo --> UC : id_user_relation
+
+    note over UC, Ent : Validate and normalize data according to subStep
+    UC -> Ent : validate<Section>(body)
+    note right of Ent : Combine each symptom: \n'Yes'+desc -> "Yes: desc" \n'No' -> "No" \nempty -> null
+    Ent --> UC : validatedData
+
+    UC -> Repo : saveClinicalSection({subStep, id_user_relation, data})
+    Repo -> DB : getConnection() + beginTransaction()
+
+    Repo -> DB : INSERT INTO clinical_interview (id_user_relation) \nVALUES (?) ON DUPLICATE KEY UPDATE ... \n(ensureRow: guarantees base row exists)
+    DB -->> Repo : ok
+
+    Repo -> DB : UPDATE clinical_interview \nSET <section columns> = ? \nWHERE id_user_relation = ?;
+    DB -->> Repo : ok
+
+    Repo -> DB : commit()
+    Repo --> UC : { saved: true }
+
+    note over UC : updateProgress: if subStep == 6 \nset symptoms_completed = 1
+    opt subStep == 6
+        UC -> Repo : updateSymptomsProgress({id_user_relation, completed:true})
+        Repo -->> DB : UPDATE initial_interview_progress \nSET symptoms_completed = 1 WHERE id_user_relation = ?;
+        DB -->> Repo : ok
+    end
+
+    UC -> Repo : fetchInterviewProgress({id_user_relation})
+    Repo -->> DB : query('SELECT * FROM initial_interview_progress \nWHERE id_user_relation = ?;', [id_user_relation])
+    DB -->> Repo : progressRow
+    Repo --> UC : progress
+
+    note over UC : Recalculate overall status \n(to_start / in_progress / completed)
+    opt Status changes
+        UC -> Repo : updateInterviewProgress({id_user_relation, status})
+        Repo -->> DB : UPDATE initial_interview_progress \nSET status = ? WHERE id_user_relation = ?;
+        DB -->> Repo : ok
+    end
+
+    UC --> ctrl : { current_section: subStep+1, saved: true }
+    ctrl --> Route : HTTP 200 { success:true, data }
+    Route --> View : HTTP 200
+    View --> CG : Load next section
+
+else Relation not found
+    DB -->> Repo : []
+    Repo --> UC : undefined
+    UC --> ctrl : Error 404 (relation not found)
+    ctrl --> Route : HTTP 404 { success:false, error }
+    Route --> View : HTTP 404
+    View --> CG : console.error(error)
+end
+
+note over Repo, DB
+  If an error occurs inside the transaction:
+  rollback() + throw -> controller returns HTTP 500
+end note
+
+@enduml

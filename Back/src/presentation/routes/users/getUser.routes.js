@@ -192,5 +192,8 @@ module.exports = (authUseCase, authMiddleware) => {
   const initialInterviewRoutes = require('../initialInterview/financialInterview.routes');
   router.use('/:id_user/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
 
+  const clinicalInterviewRoutes = require('../initialInterview/clinicalInterview.routes');
+  router.use('/:id_user/initial-interview', clinicalInterviewRoutes(authUseCase, authMiddleware));
+
   return router;
 };

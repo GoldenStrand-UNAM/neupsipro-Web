@@ -1,0 +1,75 @@
+@startuml EI03 - GET Clinical Interview (Symptoms)
+
+title Get - Clinical Interview / Symptoms (Golondrina)
+
+actor "Clinical Team" as CG
+boundary "User Consultation View" as UView
+boundary "Clinical Interview \nView (Step 3)" as View
+
+boundary "Initial Interview \nRoutes" as Route
+control "Clinical Interview Controller" as ctrl
+
+control "get \nClinicalInterview \nUseCase" as UC
+
+control "Clinical Interview Repository" as Repo
+entity "Clinical Interview DTO" as DTO
+database "Database" as DB
+
+== Page Rendering (Step 3) ==
+
+CG -> UView : Click 'Clinical History' for a user
+UView -> Route : GET /initial-interview/symptoms/:id_user
+Route -> ctrl : getClinicalPage(req, res)
+ctrl --> Route : render('initialInterview/clinicalInterview', {id_user, step:3, section:1})
+Route --> View : HTTP 200
+View --> CG : Clinical History View (Section 1)
+
+== Load a Section (Open / Next / Previous / Timeline Click) ==
+
+CG -> View : loadSection(subStep)
+View -> Route : GET /initial-interview/symptoms/api/:id_user/:subStep
+Route -> ctrl : getClinicalInterview(req, res) \n(req.params.step = 'symptoms')
+ctrl -> UC : execute({id_user, step, subStep})
+
+UC -> Repo : fetchRelation({id_user})
+Repo -->> DB : query('SELECT id_user_relation \nFROM user_relation WHERE id_user = ?;', [id_user])
+
+alt Relation found
+    DB -->> Repo : id_user_relation
+
+    note over UC : Dispatch to the appropriate fetch method based on subStep (1..6)
+
+    UC -> Repo : fetch<Section>({id_user_relation})
+    Repo -->> DB : query('SELECT <section columns> \nFROM clinical_interview \nWHERE id_user_relation = ?;', [id_user_relation])
+    DB -->> Repo : sectionRow (or {})
+    Repo --> UC : sectionData
+
+    UC -> Repo : fetchRefNum({id_user})
+    Repo -->> DB : query('SELECT reference_number \nFROM user_info WHERE id_user = ?;', [id_user])
+    DB -->> Repo : reference_number
+    Repo --> UC : refNumber
+
+    UC -> Repo : fetchInterviewProgress({id_user_relation})
+    Repo -->> DB : query('SELECT * FROM initial_interview_progress \nWHERE id_user_relation = ?;', [id_user_relation])
+    DB -->> Repo : progressRow
+    Repo --> UC : progress
+
+    note over UC : Build completedSteps using \nidentification/financial/symptoms_completed
+
+    UC --> ctrl : { current_step, current_section, refNumber, data:{section, completedSteps, status} }
+    ctrl -> DTO : fromEntity(result)
+    DTO --> ctrl : response
+    ctrl --> Route : HTTP 200 JSON {response}
+    Route --> View : HTTP 200
+    View --> CG : renderClinicalData() populates inputs \n(split "Yes: desc" into select + note)
+
+else Relation not found
+    DB -->> Repo : []
+    Repo --> UC : undefined
+    UC --> ctrl : Error 404 (relation not found)
+    ctrl --> Route : HTTP 404 { error }
+    Route --> View : HTTP 404
+    View --> CG : console.error(error)
+end
+
+@enduml
