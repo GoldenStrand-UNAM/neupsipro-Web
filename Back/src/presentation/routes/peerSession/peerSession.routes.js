@@ -16,12 +16,11 @@ const DeletePeerSessionController = require('../../controller/peerSession/delete
 const GetPeerSessionsUseCase = require('../../../application/usecase/peers/getPeerSessionsUseCase');
 const GetPeerSessionsController = require('../../controller/peerSession/getPeerSession.controller');
 
-
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpPeerSessionRepository();
-  
+
   const useCase = new PostPeerSessionUseCase(repository);
   const controller = new PostPeerSessionController(useCase);
 
@@ -34,7 +33,6 @@ module.exports = (authUseCase, authMiddleware) => {
   const deleteController = new DeletePeerSessionController(deleteUseCase);
   const listUseCase = new GetPeerSessionsUseCase(repository);
   const listController = new GetPeerSessionsController(listUseCase);
-
 
   router.get(
     '/',

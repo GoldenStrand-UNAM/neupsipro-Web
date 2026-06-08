@@ -1,7 +1,7 @@
 class EmotionResultsDTO {
   constructor ({ idResults, idTest, status, dateApplied,
-                 scoreAnxietyBeck, interAnxietyBeck,
-                 scoreDepressionBeck, interDepressionBeck, notes }) {
+    scoreAnxietyBeck, interAnxietyBeck,
+    scoreDepressionBeck, interDepressionBeck, notes }) {
     this.idResults            = idResults;
     this.idTest               = idTest;
     this.status               = status;

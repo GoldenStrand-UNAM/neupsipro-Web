@@ -42,12 +42,10 @@ module.exports = (authUseCase, authMiddleware) => {
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('Forum', 'writing'),
-    (req, res) => {
-      return res.render('forum/postPublication', {
-        activePage: 'forum',
-        tutorialModule: 'postPublication',
-      });
-    }
+    (req, res) => res.render('forum/postPublication', {
+      activePage: 'forum',
+      tutorialModule: 'postPublication',
+    })
   );
 
   return router;

@@ -3,7 +3,7 @@ const Crypt = require('../crypt');
 const crypt = new Crypt();
 
 function cryptUser (user) {
-  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ""} ${user.birthdate}
+  const data = `${user.firstName} ${user.lastnameP} ${user.lastnameM || ''} ${user.birthdate}
     `.replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
@@ -22,7 +22,7 @@ function cryptUser (user) {
     emergencyContactName: crypt.encrypt(user.emergencyContactName),
     emergencyContactPhone: crypt.encrypt(user.emergencyContactPhone),
     emergencyContactRelation: crypt.encrypt(user.emergencyContactRelation),
-    bindex: bindex,
+    bindex,
   };
 }
 
