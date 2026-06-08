@@ -3,11 +3,7 @@ const TestExportRepository = require('../../domain/repository/testExportReposito
 const uncrypt = require('../crypt/exports/exports');
 
 class ImpTestExportRepository extends TestExportRepository {
-<<<<<<< HEAD
-  async fetchBanfeResults () {
-=======
   async fetchBanfeResults() {
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
     const [rows] = await db.query(`
       SELECT
         'BANFE' AS test_type,
@@ -41,19 +37,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-<<<<<<< HEAD
-    if (rows) return uncrypt(rows);
-    return rows;
-  }
-
-  async fetchWaisResults () {
-=======
     if(rows) return uncrypt(rows);
     return rows;
   }
 
   async fetchWaisResults() {
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
     const [rows] = await db.query(`
       SELECT
         'WAIS' AS test_type,
@@ -89,19 +77,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-<<<<<<< HEAD
-    if (rows) return uncrypt(rows);
-    return rows;
-  }
-
-  async fetchReyResults () {
-=======
     if(rows) return uncrypt(rows);
     return rows;
   }
 
   async fetchReyResults() {
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
     const [rows] = await db.query(`
       SELECT
         'REY' AS test_type,
@@ -139,19 +119,11 @@ class ImpTestExportRepository extends TestExportRepository {
       WHERE u.eliminated = 0
       ORDER BY tr.date_applied DESC
     `);
-<<<<<<< HEAD
-    if (rows) return uncrypt(rows);
-    return rows;
-  }
-
-  async fetchAllResults () {
-=======
     if(rows) return uncrypt(rows);
     return rows;
   }
 
   async fetchAllResults() {
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
     const [rows] = await db.query(`
       SELECT
         'BANFE' AS test_type,
@@ -330,17 +302,9 @@ class ImpTestExportRepository extends TestExportRepository {
 
       ORDER BY date_applied DESC
     `);
-<<<<<<< HEAD
-    if (rows) return uncrypt(rows);
-=======
     if(rows) return uncrypt(rows);
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
     return rows;
   }
 }
 
-<<<<<<< HEAD
 module.exports = ImpTestExportRepository;
-=======
-module.exports = ImpTestExportRepository;
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7

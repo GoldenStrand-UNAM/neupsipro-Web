@@ -32,8 +32,4 @@ class GetForumUseCase {
   }
 }
 
-<<<<<<< HEAD
 module.exports = GetForumUseCase;
-=======
-module.exports = GetForumUseCase;
->>>>>>> 9f392ba005e2d865cd4a75f77eaaf0d9747ff1a7
