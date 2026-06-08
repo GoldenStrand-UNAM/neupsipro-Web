@@ -31,6 +31,7 @@ describe('ExportPdfUseCase — Unit Tests', () => {
             fetchApplicationById: jest.fn(),
             fetchAllResultsForExport: jest.fn(),
             updateApplicationAndTestsStatus: jest.fn(),
+            fetchUserSchoolingAndOccupation: jest.fn().mockResolvedValue({ schooling: null, ocupation: null }),
         };
         mockUsersRepository = {
             fetchUserForExport: jest.fn(),

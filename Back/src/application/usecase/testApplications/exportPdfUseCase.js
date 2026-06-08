@@ -106,14 +106,16 @@ class ExportPdfUseCase {
 
     // 4. Build the report payload
     const chronoYears = ageInYears(user.birthdate);
+    // Schooling and occupation come from the user's initial interview.
+    const { schooling, ocupation } = await this.testResultsRepository.fetchUserSchoolingAndOccupation({ id_user });
     const report = {
       patientName: user.name,
       referenceNumber: user.referenceNumber ?? '',
       laterality: user.laterality ?? '',
       age: calculateAge(user.birthdate),
       mentalAge: calculateMentalAge(waisCi, chronoYears),
-      schooling: user.schooling ?? '',
-      ocupation: user.ocupation ?? '',
+      schooling: schooling ?? '',
+      ocupation: ocupation ?? '',
       protocolLabel: PROTOCOL_LABELS[user.protocol] ?? user.protocol,
       applicationName: application.applicationName,
       statusLabel: 'Entregado',
