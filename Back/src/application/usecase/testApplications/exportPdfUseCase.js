@@ -16,11 +16,23 @@ function formatDate (value) {
   return date.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+// Computes whole years between a birthdate and today. Returns '' when invalid.
+function calculateAge (birthdate) {
+  if (!birthdate) return '';
+  const dob = new Date(birthdate);
+  if (Number.isNaN(dob.getTime())) return '';
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
+  return age >= 0 ? `${age} años` : '';
+}
+
 // Builds and returns the export PDF for a completed application.
 // Reuses the existing get*UseCase to map each test result to its DTO.
 // Supports both Research (BANFE/WAIS/REY) and Clinical (MOCA/NIH) protocols.
 class ExportPdfUseCase {
-  constructor (testResultsRepository, usersRepository, pdfService, getBanfeUseCase, getWaisUseCase, getReyUseCase, getMocaUseCase = null, getNihUseCase = null) {
+  constructor (testResultsRepository, usersRepository, pdfService, getBanfeUseCase, getWaisUseCase, getReyUseCase, getMocaUseCase = null, getNihUseCase = null, getEmotionUseCase = null) {
     this.testResultsRepository = testResultsRepository;
     this.usersRepository = usersRepository;
     this.pdfService = pdfService;
@@ -29,6 +41,7 @@ class ExportPdfUseCase {
     this.getReyUseCase = getReyUseCase;
     this.getMocaUseCase = getMocaUseCase;
     this.getNihUseCase = getNihUseCase;
+    this.getEmotionUseCase = getEmotionUseCase;
   }
 
   async execute ({ id_user, id_application }) {
@@ -64,6 +77,11 @@ class ExportPdfUseCase {
     // 4. Build the report payload
     const report = {
       patientName: user.name,
+      referenceNumber: user.referenceNumber ?? '',
+      laterality: user.laterality ?? '',
+      age: calculateAge(user.birthdate),
+      schooling: user.schooling ?? '',
+      ocupation: user.ocupation ?? '',
       protocolLabel: PROTOCOL_LABELS[user.protocol] ?? user.protocol,
       applicationName: application.applicationName,
       statusLabel: 'Entregado',
@@ -159,10 +177,25 @@ class ExportPdfUseCase {
     if (result.idTest === 5 && this.getNihUseCase) {
       const dto = await this.getNihUseCase.execute({ id_results: result.idResults });
       return {
-        testName: 'NIH Toolbox',
+        testName: 'NIH',
         dateApplied,
         columns: ['Observaciones'],
         rows: [],
+        totalRow: null,
+        notes: dto.notes,
+      };
+    }
+
+    if (result.idTest === 6 && this.getEmotionUseCase) {
+      const dto = await this.getEmotionUseCase.execute({ id_results: result.idResults });
+      return {
+        testName: 'Cuestionario Socioemocional',
+        dateApplied,
+        columns: ['Índice', 'Puntuación', 'Interpretación'],
+        rows: [
+          ['IAB (Ansiedad - Beck)', dto.scoreAnxietyBeck ?? '—', dto.interAnxietyBeck ?? '—'],
+          ['IDB (Depresión - Beck)', dto.scoreDepressionBeck ?? '—', dto.interDepressionBeck ?? '—'],
+        ],
         totalRow: null,
         notes: dto.notes,
       };

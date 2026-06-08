@@ -8,59 +8,104 @@
       font-family: Arial, Helvetica, sans-serif;
       color: #1a1a1a;
       margin: 0;
-      padding: 24px 28px;
+      padding: 0 28px 24px;
+      font-size: 13px;
     }
 
-    /* Letterhead */
+    /* ===== Letterhead ===== */
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      padding-top: 18px;
     }
-    .header__logo { width: 88px; height: auto; }
+    .header__logo { width: 84px; height: auto; }
     .header__titles {
       flex: 1;
       text-align: center;
-      color: #36558f;
+      color: #1f3a6b;
       letter-spacing: 1px;
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.55;
     }
     .header__enes {
       text-align: center;
-      color: #36558f;
+      color: #1f3a6b;
       font-weight: bold;
-      font-size: 15px;
-      letter-spacing: 1px;
+      font-size: 13px;
+      letter-spacing: 2px;
       margin-top: 2px;
     }
 
-    /* Tables */
+    .report-title {
+      text-align: center;
+      color: #1a1a1a;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+      margin: 26px 0 8px;
+    }
+
+    /* ===== Numbered sections (I, II, ...) ===== */
+    .section-heading {
+      font-weight: bold;
+      font-size: 13.5px;
+      margin: 22px 0 8px;
+    }
+    .section-heading .roman { display: inline-block; min-width: 34px; }
+    .ficha { line-height: 1.9; }
+    .ficha b { color: #1a1a1a; }
+    .instruments { text-align: justify; line-height: 1.6; color: #333; }
+    .instruments i { font-style: italic; }
+
+    /* ===== Tables ===== */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 26px;
+      margin-top: 20px;
     }
     td, th {
-      border: 1px solid #1a1a1a;
-      padding: 10px 12px;
+      border: 1px solid #c3cede;
+      padding: 9px 12px;
       text-align: center;
-      font-size: 13px;
+      font-size: 12.5px;
     }
     .tbl-head { background: #2e5b9e; color: #ffffff; font-weight: bold; }
-    .tbl-title { background: #2e5b9e; color: #ffffff; font-weight: bold; font-size: 15px; }
-    .label { font-weight: bold; }
-    .notes-cell { height: 130px; vertical-align: top; text-align: left; }
-
-    /* Footer */
-    .footer {
-      margin-top: 42px;
-      text-align: center;
-      color: #9fb0cc;
-      font-size: 11px;
-      line-height: 1.5;
+    .tbl-title {
+      background: #2e5b9e; color: #ffffff; font-weight: bold;
+      font-size: 14px; letter-spacing: 0.5px;
     }
+    .tbl-section { background: #eef2f9; color: #2e5b9e; font-weight: bold; }
+    .label { font-weight: bold; background: #f6f8fc; }
+    .blank { color: #9aa7bd; }
+    .notes-cell { height: 110px; vertical-align: top; text-align: left; }
+
+    /* keep each test block from splitting across pages */
+    .test-block { page-break-inside: avoid; }
+
+    /* ===== Free-text blocks ===== */
+    .intro-text {
+      margin-top: 20px;
+      text-align: justify;
+      line-height: 1.55;
+      color: #333;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      margin-top: 38px;
+      padding-top: 12px;
+      border-top: 1px solid #c3cede;
+      text-align: center;
+      color: #6b7280;
+      font-size: 10.5px;
+      line-height: 1.6;
+    }
+    .footer__cedula { font-weight: bold; color: #2e5b9e; }
+    .footer__brand { margin-top: 6px; font-style: italic; }
   </style>
 </head>
 <body>
@@ -75,54 +120,74 @@
     </div>
     <div>
       <img class="header__logo" src="<%= unamLogo %>" alt="ENES Juriquilla">
-      <div class="header__enes">ENES<br>JURIQUILLA</div>
+      <div class="header__enes">E N E S<br>JURIQUILLA</div>
     </div>
   </div>
 
-  <!-- ===== Application report ===== -->
-  <table>
-    <tr class="tbl-head">
-      <td>Golondrina</td>
-      <td>Reporte de aplicación</td>
-      <td colspan="2">Exportado: <%= report.exportedDate %></td>
-    </tr>
-    <tr>
-      <td class="label">Paciente</td>
-      <td><%= report.patientName %></td>
-      <td class="label">Protocolo:</td>
-      <td><%= report.protocolLabel %></td>
-    </tr>
-    <tr>
-      <td class="label">Aplicación</td>
-      <td><%= report.applicationName %></td>
-      <td class="label">Estado:</td>
-      <td><%= report.statusLabel %></td>
-    </tr>
-  </table>
+  <div class="report-title">
+    UNIDAD DE INVESTIGACIÓN EN ÓRTESIS Y PRÓTESIS<br>
+    INFORME DE EVALUACIÓN NEUROPSICOLÓGICA DE <%= report.patientName %>
+  </div>
+
+  <!-- ===== I. Ficha de identificación ===== -->
+  <div class="section-heading"><span class="roman">I.</span> FICHA DE IDENTIFICACIÓN</div>
+  <div class="ficha">
+    <b>No. de expediente:</b> <%= report.referenceNumber || '' %>&nbsp;&nbsp;&nbsp;
+    <b>Edad Cronológica:</b> <%= report.age || '' %>&nbsp;&nbsp;&nbsp;
+    <b>Fecha de Devolución de Resultados:</b> <%= report.exportedDate %><br>
+    <b>Escolaridad:</b> <%= report.schooling || '' %>&nbsp;&nbsp;&nbsp;
+    <b>Ocupación:</b> <%= report.ocupation || '' %>&nbsp;&nbsp;&nbsp;
+    <b>Lateralidad:</b> <%= report.laterality || '' %>
+  </div>
+
+  <!-- ===== II. Instrumentos de evaluación ===== -->
+  <div class="section-heading"><span class="roman">II.</span> INSTRUMENTOS DE EVALUACIÓN</div>
+  <p class="instruments">
+    (1) Perfil Socioemocional (IDA-B; SCL-90-R; SF-36; WHODAS 2.0; COPE-28; CRIq); (2) Prueba
+    Cognitiva de Montreal (MoCA-a, por sus siglas en inglés); (3) <i>Dominio de sensaciones (NIH
+    Toolbox)</i>; (4) Prueba de Figura Compleja de Rey-Osterrieth (Figura A, ROCF).
+  </p>
+
+  <!-- ===== Intro text (Alina) ===== -->
+  <% if (report.introText) { %>
+    <p class="intro-text"><%= report.introText %></p>
+  <% } %>
+
+  <!-- ===== III. Resultados ===== -->
+  <div class="section-heading"><span class="roman">III.</span> RESULTADOS</div>
 
   <!-- ===== One section per graded test ===== -->
   <% report.results.forEach(function (r) { %>
-    <table>
-      <tr class="tbl-title"><td colspan="<%= r.columns.length %>">Fecha de aplicación: <%= r.dateApplied %></td></tr>
+    <table class="test-block">
       <tr class="tbl-title"><td colspan="<%= r.columns.length %>"><%= r.testName %></td></tr>
-      <tr class="tbl-head">
-        <% r.columns.forEach(function (c) { %><th><%= c %></th><% }) %>
-      </tr>
+      <tr class="tbl-section"><td colspan="<%= r.columns.length %>">Fecha de aplicación: <%= r.dateApplied %></td></tr>
+      <% if (r.columns.length) { %>
+        <tr class="tbl-head">
+          <% r.columns.forEach(function (c) { %><th><%= c %></th><% }) %>
+        </tr>
+      <% } %>
       <% r.rows.forEach(function (row) { %>
         <tr><% row.forEach(function (cell) { %><td><%= cell %></td><% }) %></tr>
       <% }) %>
       <% if (r.totalRow) { %>
         <tr><% r.totalRow.forEach(function (cell) { %><td class="label"><%= cell %></td><% }) %></tr>
       <% } %>
-      <tr class="tbl-title"><td colspan="<%= r.columns.length %>">Notas</td></tr>
+      <tr class="tbl-section"><td colspan="<%= r.columns.length %>">Notas</td></tr>
       <tr><td colspan="<%= r.columns.length %>" class="notes-cell"><%= r.notes || '' %></td></tr>
     </table>
   <% }) %>
 
+  <!-- ===== Recomendaciones ===== -->
+  <table class="test-block">
+    <tr class="tbl-title"><td>RECOMENDACIONES</td></tr>
+    <tr><td class="notes-cell"><%= report.recommendations || '' %></td></tr>
+  </table>
+
   <!-- ===== Footer ===== -->
   <div class="footer">
-    Boulevard Juriquilla 3001, Juriquilla, Querétaro, C.P. 76230<br>
-    www.enesjuriquilla.unam.mx
+    <div class="footer__cedula">DRA. EN PSI. ALINA JIMÉNEZ SOLÓRZANO — CP 578508-11541981</div>
+    Boulevard Juriquilla 3001, Juriquilla, Querétaro, C.P. 76230 · www.enesjuriquilla.unam.mx
+    <div class="footer__brand">Reporte realizado a través de Neurogolondrina</div>
   </div>
 
 </body>
