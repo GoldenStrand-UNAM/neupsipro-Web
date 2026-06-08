@@ -169,6 +169,25 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     };
   }
 
+  // Fetch Situación Laboral + Conclusiones by relation
+  async fetchSubStep3Data ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
+              has_job,
+              work_activity,
+              stress_work,
+              employment_status,
+              seniority,
+              work_problems,
+              conclusions
+            FROM initial_interview
+            WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return rows[0] || null;
+  }
+
   // --------------------------------------------------------------------------
   // ----------------------------- PATCH Functions ----------------------------
 
@@ -316,6 +335,35 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     });
   }
 
+  // Save Situación Laboral + Conclusiones — same UPSERT pattern as
+  // saveFamilySituationInfo, in case the relation reaches this substep before subStep1's first save
+  async saveSubStep3 ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `INSERT INTO initial_interview (
+          id_user_relation, interview_date, has_job, work_activity, stress_work,
+          employment_status, seniority, work_problems, conclusions
+      ) VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          has_job = VALUES(has_job),
+          work_activity = VALUES(work_activity),
+          stress_work = VALUES(stress_work),
+          employment_status = VALUES(employment_status),
+          seniority = VALUES(seniority),
+          work_problems = VALUES(work_problems),
+          conclusions = VALUES(conclusions)`,
+      [
+        id_user_relation,
+        data.hasJob,
+        data.workActivity,
+        data.stressWork,
+        data.employmentStatus,
+        data.seniority,
+        data.workProblems,
+        data.conclusions,
+      ]
+    );
+  }
+
   // ----- Update Identification Progress -------------------------------------
 
   async updateIdentificationCompleted ({ connection, id_user_relation, completed }) {
@@ -369,6 +417,22 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         case 2:
 
           await this.saveSubStep2({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateIdentificationCompleted({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 3:
+
+          await this.saveSubStep3({
             connection,
             id_user_relation,
             data,

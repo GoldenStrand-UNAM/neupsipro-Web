@@ -43,6 +43,19 @@ class postIdentificationInterviewUseCase {
     return true;
   }
 
+  isSubStep3Complete (data) {
+    if (data.hasJob === null || data.hasJob === undefined || data.hasJob === '') return false;
+
+    if (data.hasJob) {
+      const requiredFields = [data.workActivity, data.employmentStatus, data.stressWork];
+
+      return requiredFields.every(field =>
+        field !== null && field !== undefined && field !== '');
+    }
+
+    return true;
+  }
+
   // Validate Section Data by substep
   validateSectionData ({ subStep, body }) {
     try {
@@ -51,6 +64,8 @@ class postIdentificationInterviewUseCase {
           return IdentificationInterview.validateSubStep1(body);
         case 2:
           return IdentificationInterview.validateSubStep2(body);
+        case 3:
+          return IdentificationInterview.validateSubStep3(body);
         default:
           throw new Error('Invalid section');
       }
@@ -76,6 +91,10 @@ class postIdentificationInterviewUseCase {
 
       case 2:
         completed = this.isSubStep2Complete(validatedData);
+        break;
+
+      case 3:
+        completed = this.isSubStep3Complete(validatedData);
         break;
     }
 
