@@ -94,6 +94,14 @@ describe('RNF05 - Aislamiento funcional entre módulos principales', () => {
 
     expectControlledResponse(failedModuleResponse);
 
+    jest
+      .spyOn(ForumRepository.prototype, 'fetchAll')
+      .mockResolvedValueOnce([]);
+
+    jest
+      .spyOn(ForumRepository.prototype, 'count')
+      .mockResolvedValueOnce(0);
+
     const healthyModuleResponse = await request(app)
       .get('/api/forum')
       .query({ page: 1, limit: 6 });
@@ -115,6 +123,14 @@ describe('RNF05 - Aislamiento funcional entre módulos principales', () => {
       });
 
     expectControlledResponse(failedModuleResponse);
+
+    jest
+      .spyOn(ForumRepository.prototype, 'fetchAll')
+      .mockResolvedValueOnce([]);
+
+    jest
+      .spyOn(ForumRepository.prototype, 'count')
+      .mockResolvedValueOnce(0);
 
     const healthyModuleResponse = await request(app)
       .get('/api/forum')
@@ -156,6 +172,14 @@ describe('RNF05 - Aislamiento funcional entre módulos principales', () => {
       .get('/dashboard');
 
     expectControlledResponse(failedModuleResponse);
+
+    jest
+      .spyOn(ForumRepository.prototype, 'fetchAll')
+      .mockResolvedValueOnce([]);
+
+    jest
+      .spyOn(ForumRepository.prototype, 'count')
+      .mockResolvedValueOnce(0);
 
     const healthyModuleResponse = await request(app)
       .get('/api/forum')

@@ -2,7 +2,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 
 // Combine merges from 0.1.0 with test and prod env
-let envFile = 'env';
+let envFile = '.env';
 if (process.env.NODE_ENV === 'test') {
   envFile = '.env.test';
 } else if (process.env.NODE_ENV === 'production') {
