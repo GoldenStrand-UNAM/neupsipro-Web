@@ -110,7 +110,7 @@ class validation {
 
     // Control chars + zero-width / invisible characters
     // eslint-disable-next-line no-control-regex
-    const invisibleRegex = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/u;
+    const invisibleRegex = /[\x00-\x1F\x7F-\x9F\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/;
     if (invisibleRegex.test(value))
       throw new Error(`${label} contiene caracteres no permitidos`);
 
@@ -183,4 +183,6 @@ class validation {
     if (!/^[A-Za-z]{3,5}$/.test(letterPart)) return 'error';
     return param.toUpperCase();
   }
-} module.exports = validation;
+}
+
+module.exports = validation;
