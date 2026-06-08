@@ -1,0 +1,27 @@
+<div class="space-y-6">
+    <%- include('./_employmentFields.ejs') %>
+    <%- include('./_conclusions.ejs') %>
+</div>
+
+<script>
+    // Block emoji input and enforce each field's declared maxlength,
+    // applied the same way as subStep1/subStep2 to every static text field in this section
+    // (the conclusions textarea has its own char-counter, which already strips emojis)
+    (function () {
+        const EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
+
+        document.querySelectorAll('#identification-section-3 input[type="text"]')
+            .forEach(input => {
+                const limit = input.maxLength > 0 ? input.maxLength : null;
+
+                input.addEventListener('input', () => {
+                    let { value } = input;
+
+                    value = value.replace(EMOJI_REGEX, '');
+                    if (limit) value = value.slice(0, limit);
+
+                    if (value !== input.value) input.value = value;
+                });
+            });
+    })();
+</script>
