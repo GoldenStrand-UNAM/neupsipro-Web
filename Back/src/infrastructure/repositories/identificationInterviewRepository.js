@@ -237,6 +237,92 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     });
   }
 
+  // Save Situación Familiar info (pareja + familia) — same UPSERT pattern as
+  // saveSubStep1, in case the relation reaches this substep before subStep1's first save
+  async saveFamilySituationInfo ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `INSERT INTO initial_interview (
+          id_user_relation, interview_date, in_relationship, relationship_duration,
+          partners_name, partners_age, partners_ocupation, partners_health,
+          has_children, number_family_members, roomie_info, aditional_info
+      ) VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          in_relationship = VALUES(in_relationship),
+          relationship_duration = VALUES(relationship_duration),
+          partners_name = VALUES(partners_name),
+          partners_age = VALUES(partners_age),
+          partners_ocupation = VALUES(partners_ocupation),
+          partners_health = VALUES(partners_health),
+          has_children = VALUES(has_children),
+          number_family_members = VALUES(number_family_members),
+          roomie_info = VALUES(roomie_info),
+          aditional_info = VALUES(aditional_info)`,
+      [
+        id_user_relation,
+        data.inRelationship,
+        data.relationshipDuration,
+        data.partnersName,
+        data.partnersAge,
+        data.partnersOcupation,
+        data.partnersHealth,
+        data.hasChildren,
+        data.numberFamilyMembers,
+        data.roomieInfo,
+        data.aditionalInfo,
+      ]
+    );
+  }
+
+  // Save children rows (delete + insert, same pattern as contributing_people in financiera)
+  async saveChildren ({ connection, id_user_relation, children }) {
+    // Delete old children
+    await connection.query(
+      `DELETE FROM initial_interview_children
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    // Insert new children (rows without a name were already discarded by validateSubStep2)
+    for (const child of children) {
+
+      // eslint-disable-next-line no-await-in-loop
+      await connection.query(
+        `INSERT INTO initial_interview_children
+          (
+            id_user_relation,
+            child_name,
+            child_age,
+            child_schooling,
+            child_occupation
+          )
+          VALUES (?, ?, ?, ?, ?)`,
+        [
+          id_user_relation,
+          child.childName,
+          child.childAge,
+          child.childSchooling,
+          child.childOccupation,
+        ]
+      );
+    }
+  }
+
+  // Save Situación Familiar substep info for a user relation
+  async saveSubStep2 ({ connection, id_user_relation, data }) {
+
+    await this.saveFamilySituationInfo({
+      connection,
+      id_user_relation,
+      data,
+    });
+
+    await this.saveChildren({
+      connection,
+      id_user_relation,
+      children: data.children,
+    });
+  }
+
   // ----- Update Identification Progress -------------------------------------
 
   async updateIdentificationCompleted ({ connection, id_user_relation, completed }) {
@@ -276,6 +362,22 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         case 1:
 
           await this.saveSubStep1({
+            connection,
+            id_user_relation,
+            data,
+          });
+
+          await this.updateIdentificationCompleted({
+            connection,
+            id_user_relation,
+            completed,
+          });
+
+          break;
+
+        case 2:
+
+          await this.saveSubStep2({
             connection,
             id_user_relation,
             data,
