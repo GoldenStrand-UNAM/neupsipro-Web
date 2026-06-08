@@ -124,6 +124,51 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
     return rows[0] || null;
   }
 
+  // Fetch the children rows for a relation, ordered for stable rendering
+  async fetchChildren ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
+              id_child,
+              child_name,
+              child_age,
+              child_schooling,
+              child_occupation
+            FROM initial_interview_children
+            WHERE id_user_relation = ?
+            ORDER BY id_child ASC`,
+      [id_user_relation]
+    );
+
+    return rows;
+  }
+
+  // Fetch Situación Familiar by relation (initial_interview fields + children[])
+  async fetchSubStep2Data ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT
+              in_relationship,
+              relationship_duration,
+              partners_name,
+              partners_age,
+              partners_ocupation,
+              partners_health,
+              has_children,
+              number_family_members,
+              roomie_info,
+              aditional_info
+            FROM initial_interview
+            WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    const children = await this.fetchChildren({ id_user_relation });
+
+    return {
+      ...(rows[0] || {}),
+      children,
+    };
+  }
+
   // --------------------------------------------------------------------------
   // ----------------------------- PATCH Functions ----------------------------
 
