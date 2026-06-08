@@ -16,7 +16,7 @@ if (Option selected?) then (Consult)
 else (Register or Modify)
   :Enters raw score and notes;
   |System|
-  :Applies schooling bonus if applicable\n+2 if schooling <= 12 years and score <= 28;
+  :Applies schooling bonus if applicable\n+2 if schooling <= 12 years and score <= 29;
   :Shows live final score and interpretation;
   |User|
   if (Wants to save?) then (yes)

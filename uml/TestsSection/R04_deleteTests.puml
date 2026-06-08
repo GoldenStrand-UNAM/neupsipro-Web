@@ -1,0 +1,81 @@
+@startuml Delete_Application
+
+actor "Clinic User" as USR
+participant "user.ejs" as VEJS
+participant "deleteApplication.js" as DAPP
+participant "UserRoutes" as UROUTE
+participant "deleteApplicationController" as TCTRL
+participant "deleteApplicationUseCase" as UC_DEL
+participant "impTestApplicationRepository" as AREPO
+participant "impTestResultsRepository" as RREPO
+database "DB" as DB
+
+== Abrir modal de confirmación ==
+
+USR -> VEJS : Click [Eliminar aplicación]
+VEJS -> DAPP : openDeleteModal(idApplication, applicationName)
+DAPP --> USR : Modal de confirmación visible\n"¿Estás seguro de eliminar esta aplicación?\nSe eliminarán todas las pruebas\ny resultados almacenados."
+
+== Confirmar eliminación ==
+
+USR -> DAPP : Click [Eliminar]
+DAPP -> UROUTE : fetch DELETE /users/:id_user/applications/:id_application
+
+UROUTE -> TCTRL : deleteApplicationController.delete(req, res)
+TCTRL -> UC_DEL : execute({ id_user, id_application })
+
+== Validaciones ==
+
+UC_DEL -> AREPO : fetchApplicationById({ id_application })
+AREPO -> DB : SELECT id_application, id_user\nFROM test_applications\nWHERE id_application = ?
+DB --> AREPO : { application } | null
+AREPO --> UC_DEL : application | null
+
+alt application not found
+    UC_DEL --> TCTRL : throw Error 404\n'Application not found'
+    TCTRL --> DAPP : HTTP 404 { error }
+    DAPP --> USR : showToast('Aplicación no encontrada')
+end
+
+alt application.idUser !== id_user
+    UC_DEL --> TCTRL : throw Error 403\n'Forbidden'
+    TCTRL --> DAPP : HTTP 403 { error }
+    DAPP --> USR : showToast('No tienes permiso')
+end
+
+== Eliminar resultados específicos por instrumento ==
+
+UC_DEL -> RREPO : fetchTestsByApplication({ id_application })
+RREPO -> DB : SELECT id_results, id_test\nFROM test_results\nWHERE id_application = ?
+DB --> RREPO : [ { id_results, id_test } ]
+RREPO --> UC_DEL : [ results ]
+
+loop Por cada resultado
+
+    UC_DEL -> RREPO : deleteInstrumentResult({ id_results, id_test })
+    RREPO -> DB : DELETE FROM banfe_results\n  OR wais_results\n  OR rey_results\n  OR moca_results\n  OR nih_results\n  OR emotion_results\nWHERE id_results = ?
+    DB --> RREPO : OK
+
+end
+
+== Eliminar test_results y test_application ==
+
+UC_DEL -> RREPO : deleteTestResults({ id_application })
+RREPO -> DB : DELETE FROM test_results\nWHERE id_application = ?
+DB --> RREPO : OK
+
+UC_DEL -> AREPO : deleteApplication({ id_application })
+AREPO -> DB : DELETE FROM test_applications\nWHERE id_application = ?
+DB --> AREPO : OK
+
+UC_DEL --> TCTRL : { deleted: true }
+TCTRL --> DAPP : HTTP 200 { data: { deleted: true } }
+
+== Actualizar UI ==
+
+DAPP -> DAPP : closeModal()
+DAPP -> VEJS : removeApplicationCard(idApplication)
+DAPP -> VEJS : showToast('Aplicación eliminada con éxito')
+VEJS --> USR : Modal cerrado\nCard eliminada del DOM\nToast visible 3s
+
+@enduml

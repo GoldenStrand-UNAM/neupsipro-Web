@@ -1,0 +1,31 @@
+@startuml diagrama de actividades Delete Application
+
+title Eliminar Aplicación
+
+|User|
+start
+:Clicks delete button\non application card;
+
+|System|
+:Shows confirmation modal\nwith warning message;
+
+|User|
+if (Confirms delete?) then (yes)
+  |System|
+  :Validates application exists\nand belongs to user;
+  if (Valid?) then (no)
+    :Shows error toast;
+    stop
+  endif
+  :Deletes instrument results\n(banfe, wais, rey, moca, nih, emotion);
+  :Deletes test_results rows;
+  :Deletes test_application;
+  :Removes card from UI;
+  :Shows success toast;
+  stop
+else (no)
+  :Closes modal;
+  stop
+endif
+
+@enduml
