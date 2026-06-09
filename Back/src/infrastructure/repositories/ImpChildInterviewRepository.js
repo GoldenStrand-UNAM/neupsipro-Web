@@ -87,7 +87,11 @@ class ImpChildInterviewRepository extends ChildInterviewRepository {
       `SELECT not_gestate, misscarriage_number, csection, labors, wanted, planned,
               moms_age, dads_age, conceive_dif, conception_type, obstetric_surveillance,
               control_numbers, abortion_risk, premature_risk, emotional_state,
-              feeding, diseases, medications, exposures
+              feeding, diseases, medications, exposures,
+              natal_labor_hours, natal_membrane_rupture, natal_sdg, natal_cried_at_birth,
+              natal_weight_height, natal_apgar, natal_ucin, natal_discharge,
+              natal_feeding_type, natal_bottle_weaning, natal_reflux, natal_ablactation,
+              natal_comments
          FROM child_interview
         WHERE id_user_relation = ?`,
       [id_user_relation]
@@ -103,7 +107,8 @@ class ImpChildInterviewRepository extends ChildInterviewRepository {
               letter_legibility, motor_coordination, bicyle, movement_problems,
               temper, social_smile, object_permanence, affection_demonstration, conduct_strangers,
               childs_conduct, has_friends, friends_to_home, invited_to_party, other_sex_interest,
-              how_plays, freetime_activity, electronics, follows_games_rules, new_situation_adaptation
+              how_plays, freetime_activity, electronics, follows_games_rules, new_situation_adaptation,
+              language_results
          FROM child_interview
         WHERE id_user_relation = ?`,
       [id_user_relation]
@@ -143,7 +148,8 @@ class ImpChildInterviewRepository extends ChildInterviewRepository {
     const [rows] = await db.query(
       `SELECT weight, size, wc, temperature, bp, oxygenation, alergies_dermatitis,
               functional_support, good_hearing, concern_listen, audiometry,
-              sees_well, needs_glasses, result
+              sees_well, needs_glasses, result,
+              vision_error, exam_summary, exam_treatment_plan
          FROM child_interview
         WHERE id_user_relation = ?`,
       [id_user_relation]

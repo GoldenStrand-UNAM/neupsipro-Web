@@ -3,7 +3,6 @@
 
     <%
         // Backend subStep 8 (validatePhysicalExam). id = clave camelCase del body.
-        // Los 'uiOnly: true' NO tienen columna: se muestran pero no se guardan.
         const groups = [
             { title: 'Antropometría y signos vitales', fields: [
                 { id: 'weight',             label: 'Peso', type: 'int', ph: 'kg' },
@@ -24,11 +23,11 @@
             { title: 'Desarrollo sensorial — Visión', fields: [
                 { id: 'seesWell',     label: '¿Ve bien?', type: 'text', max: 100 },
                 { id: 'needsGlasses', label: '¿Usa lentes?', type: 'yn' },
-                { id: 'visionError',  label: 'Tipo de error y graduación', type: 'text', max: 150, uiOnly: true },
+                { id: 'visionError',  label: 'Tipo de error y graduación', type: 'text', max: 150 },
             ] },
             { title: 'Conclusión', fields: [
-                { id: 'examSummary',       label: 'RESUMEN', type: 'textarea', uiOnly: true },
-                { id: 'examTreatmentPlan', label: 'PLAN DE TX', type: 'textarea', uiOnly: true },
+                { id: 'examSummary',       label: 'RESUMEN', type: 'textarea' },
+                { id: 'examTreatmentPlan', label: 'PLAN DE TX', type: 'textarea' },
             ] },
         ];
     %>

@@ -25,8 +25,7 @@
             { id: 'exposures',             label: 'Exposiciones (vacunas, rayos X, contaminantes, otro)', type: 'text' },
         ];
 
-        // Natales (4.21-4.33): UI solamente. Aún NO hay columnas en el backend, por eso
-        // estos ids van con prefijo "natal" y childBuilder.js no los envía (no se guardan).
+        // Natales (4.21-4.33): conectadas al backend (columnas natal_* en child_interview).
         const natales = [
             { id: 'natalLaborHours',     label: 'Número de horas de trabajo de parto', type: 'number' },
             { id: 'natalMembraneRupture', label: 'Ruptura de membranas', type: 'text' },

@@ -64,16 +64,21 @@ function buildPathological () {
   };
 }
 
-// 3.3 Antecedentes Prenatales  (backend subStep 4)
-// Solo prenatales (4.1-4.20); natales no tiene columnas en el backend.
+// 3.3 Antecedentes Prenatales / Natales  (backend subStep 4)
 // Los selects mandan 'Sí'/'No' y la entity (_bool) los interpreta; los number
 // van como string y la entity (_int) los parsea.
 function buildPrenatal () {
   const ids = [
+    // Prenatales
     'notGestate', 'misscarriageNumber', 'csection', 'labors', 'momsAge', 'dadsAge',
     'controlNumbers', 'wanted', 'planned', 'conceiveDif', 'obstetricSurveillance',
     'abortionRisk', 'prematureRisk', 'conceptionType', 'emotionalState', 'feeding',
     'diseases', 'medications', 'exposures',
+    // Natales
+    'natalLaborHours', 'natalMembraneRupture', 'natalSdg', 'natalCriedAtBirth',
+    'natalWeightHeight', 'natalApgar', 'natalUcin', 'natalDischarge',
+    'natalFeedingType', 'natalBottleWeaning', 'natalReflux', 'natalAblactation',
+    'natalComments',
   ];
   const body = {};
   ids.forEach((id) => { body[id] = val(id); });
@@ -94,6 +99,8 @@ function buildDevelopment () {
     'temper', 'socialSmile', 'objectPermanence', 'affectionDemonstration', 'conductStrangers',
     'childsConduct', 'hasFriends', 'friendsToHome', 'invitedToParty', 'otherSexInterest',
     'howPlays', 'freetimeActivity', 'electronics', 'followsGamesRules', 'newSituationAdaptation',
+    // Resultados (terapia de lenguaje)
+    'devResults',
   ];
   const body = {};
   ids.forEach((id) => { body[id] = val(id); });
@@ -153,13 +160,13 @@ function buildSchoolHistory () {
 }
 
 // 3.7 Exploración Física Pediátrica  (backend subStep 8)
-// visionError / examSummary / examTreatmentPlan son UI-only (sin columna) y no se envían.
 function buildPhysicalExam () {
   const ids = [
     'weight', 'size', 'wc', 'temperature', 'bp', 'oxygenation',
     'alergiesDermatitis', 'functionalSupport',
     'goodHearing', 'concernListen', 'audiometry', 'result',
-    'seesWell', 'needsGlasses',
+    'seesWell', 'needsGlasses', 'visionError',
+    'examSummary', 'examTreatmentPlan',
   ];
   const body = {};
   ids.forEach((id) => { body[id] = val(id); });

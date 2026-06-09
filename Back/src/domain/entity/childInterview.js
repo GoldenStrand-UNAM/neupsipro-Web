@@ -140,6 +140,21 @@ class ChildInterview {
       diseases:               this._text(body.diseases, 100, 'diseases'),
       medications:            this._text(body.medications, 100, 'medications'),
       exposures:              this._text(body.exposures, 100, 'exposures'),
+
+      // Natales
+      natal_labor_hours:      this._text(body.natalLaborHours, 50, 'natalLaborHours'),
+      natal_membrane_rupture: this._text(body.natalMembraneRupture, 150, 'natalMembraneRupture'),
+      natal_sdg:              this._text(body.natalSdg, 50, 'natalSdg'),
+      natal_cried_at_birth:   this._bool(body.natalCriedAtBirth),
+      natal_weight_height:    this._text(body.natalWeightHeight, 50, 'natalWeightHeight'),
+      natal_apgar:            this._text(body.natalApgar, 50, 'natalApgar'),
+      natal_ucin:             this._text(body.natalUcin, 150, 'natalUcin'),
+      natal_discharge:        this._text(body.natalDischarge, 150, 'natalDischarge'),
+      natal_feeding_type:     this._text(body.natalFeedingType, 100, 'natalFeedingType'),
+      natal_bottle_weaning:   this._text(body.natalBottleWeaning, 150, 'natalBottleWeaning'),
+      natal_reflux:           this._text(body.natalReflux, 100, 'natalReflux'),
+      natal_ablactation:      this._text(body.natalAblactation, 100, 'natalAblactation'),
+      natal_comments:         this._text(body.natalComments, 500, 'natalComments'),
     };
   }
 
@@ -184,6 +199,8 @@ class ChildInterview {
       electronics:             this._bool(body.electronics),
       follows_games_rules:     this._bool(body.followsGamesRules),
       new_situation_adaptation: this._text(body.newSituationAdaptation, 100, 'newSituationAdaptation'),
+
+      language_results:        this._text(body.devResults, 150, 'devResults'),
     };
   }
 
@@ -257,6 +274,9 @@ class ChildInterview {
       sees_well:           this._text(body.seesWell, 100, 'seesWell'),
       needs_glasses:       this._bool(body.needsGlasses),
       result:              this._text(body.result, 100, 'result'),
+      vision_error:        this._text(body.visionError, 150, 'visionError'),
+      exam_summary:        this._text(body.examSummary, 500, 'examSummary'),
+      exam_treatment_plan: this._text(body.examTreatmentPlan, 500, 'examTreatmentPlan'),
     };
   }
 }

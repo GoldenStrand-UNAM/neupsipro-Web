@@ -75,12 +75,18 @@ function renderPrenatalData (info) {
     labors: 'labors', momsAge: 'moms_age', dadsAge: 'dads_age', controlNumbers: 'control_numbers',
     conceptionType: 'conception_type', emotionalState: 'emotional_state', feeding: 'feeding',
     diseases: 'diseases', medications: 'medications', exposures: 'exposures',
+    // Natales
+    natalLaborHours: 'natal_labor_hours', natalMembraneRupture: 'natal_membrane_rupture',
+    natalSdg: 'natal_sdg', natalWeightHeight: 'natal_weight_height', natalApgar: 'natal_apgar',
+    natalUcin: 'natal_ucin', natalDischarge: 'natal_discharge', natalFeedingType: 'natal_feeding_type',
+    natalBottleWeaning: 'natal_bottle_weaning', natalReflux: 'natal_reflux',
+    natalAblactation: 'natal_ablactation', natalComments: 'natal_comments',
   };
   // campos Sí/No (tinyint en BD)
   const bools = {
     wanted: 'wanted', planned: 'planned', conceiveDif: 'conceive_dif',
     obstetricSurveillance: 'obstetric_surveillance', abortionRisk: 'abortion_risk',
-    prematureRisk: 'premature_risk',
+    prematureRisk: 'premature_risk', natalCriedAtBirth: 'natal_cried_at_birth',
   };
 
   Object.entries(direct).forEach(([id, col]) => setVal(id, info[col]));
@@ -103,6 +109,7 @@ function renderDevelopmentData (info) {
     childsConduct: 'childs_conduct', hasFriends: 'has_friends', friendsToHome: 'friends_to_home',
     howPlays: 'how_plays', freetimeActivity: 'freetime_activity',
     newSituationAdaptation: 'new_situation_adaptation',
+    devResults: 'language_results',
   };
   // Campos Sí/No (tinyint en BD)
   const bools = {
@@ -176,6 +183,8 @@ function renderPhysicalExamData (info) {
     oxygenation: 'oxygenation', alergiesDermatitis: 'alergies_dermatitis',
     functionalSupport: 'functional_support', goodHearing: 'good_hearing',
     concernListen: 'concern_listen', result: 'result', seesWell: 'sees_well',
+    visionError: 'vision_error', examSummary: 'exam_summary',
+    examTreatmentPlan: 'exam_treatment_plan',
   };
   // Campos Sí/No (tinyint en BD)
   const bools = { audiometry: 'audiometry', needsGlasses: 'needs_glasses' };
