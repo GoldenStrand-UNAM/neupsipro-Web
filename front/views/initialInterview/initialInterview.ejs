@@ -67,6 +67,26 @@
                                 <h2 id="subStep-title" class="section_title"></h2>
                             </div>
 
+                            <!-- IDENTIFICATION 1.1 -->
+                            <div id="identification-section-1" class="identification-content hidden">
+                                <%- include('./identification/subStep1/subStep1.ejs') %>
+                            </div>
+
+                            <!-- IDENTIFICATION 1.2 -->
+                            <div id="identification-section-2" class="identification-content hidden">
+                                <%- include('./identification/subStep2/subStep2.ejs') %>
+                            </div>
+
+                            <!-- IDENTIFICATION 1.3 -->
+                            <div id="identification-section-3" class="identification-content hidden">
+                                <%- include('./identification/subStep3/subStep3.ejs') %>
+                            </div>
+
+                            <!-- IDENTIFICATION 1.4 -->
+                            <div id="identification-section-4" class="identification-content hidden">
+                                <%- include('./identification/subStep4/subStep4.ejs') %>
+                            </div>
+
                             <!-- FINANCIAL 2.1 -->
                             <div id="financial-section-1" class="financial-content hidden">
                                 <div class="grid md:grid-cols-2 gap-4">
@@ -123,6 +143,10 @@
     </div>
 
     <!-- Script -->
+    <script src="/js/initialInterview/identification/imcCalculator.js"></script>
+    <script src="/js/initialInterview/childrenTable.js"></script>
+    <script src="/js/initialInterview/identificationMapper.js"></script>
+    <script src="/js/initialInterview/identificationBuilder.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/initialInterview/financial/financialMapper.js"></script>
     <script src="/js/sidebar.js"></script>
@@ -132,12 +156,18 @@
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
-        // Update nav buttons, just for futher funcionality
-        function updateNavigationButtons(currentSection) {
+        // Total subSteps per phase (current_step), used to know the navigation boundaries
+        const PHASE_SUBSTEPS = { 1: 4, 2: 4 };
+
+        // Update nav buttons: hidden only at the very first/last subStep of the whole interview
+        function updateNavigationButtons(phase, currentSection) {
+
+            const isFirst = phase === 1 && currentSection === 1;
+            const isLast = phase === 2 && currentSection === PHASE_SUBSTEPS[2];
 
             document.querySelectorAll('.prevBtn').forEach(button => {
 
-                if (currentSection === 1) {
+                if (isFirst) {
                     button.classList.add('opacity-0', 'pointer-events-none');
                 } else {
                     button.classList.remove('opacity-0', 'pointer-events-none');
@@ -146,7 +176,7 @@
 
             document.querySelectorAll('.nextBtn').forEach(button => {
 
-                if (currentSection === 4) {
+                if (isLast) {
                     button.classList.add('opacity-0', 'pointer-events-none');
                 } else {
                     button.classList.remove('opacity-0', 'pointer-events-none');
@@ -186,7 +216,22 @@
         function setSubStepTitle(data) {
             const subStepTitle = document.getElementById('subStep-title');
 
-            if (data.current_step === 2) {
+            if (data.current_step === 1) {
+
+                if (data.current_section === 1) {
+                    subStepTitle.textContent = '1.1 Datos Personales';
+
+                } else if (data.current_section === 2) {
+                    subStepTitle.textContent = '1.2 Situación Familiar';
+
+                } else if (data.current_section === 3) {
+                    subStepTitle.textContent = '1.3 Situación Laboral';
+
+                } else if (data.current_section === 4) {
+                    subStepTitle.textContent = '1.4 Conclusiones';
+                }
+
+            } else if (data.current_step === 2) {
 
                 if (data.current_section === 1) {
                     subStepTitle.textContent = '2.1 Ingresos y Egresos';
@@ -236,8 +281,9 @@
 
                 setSubStepTitle(data);
                 setFinancialContent(data);
-                updateNavigationButtons(data.current_section);
+                updateNavigationButtons(data.current_step, data.current_section);
 
+                window.sidebarState.phase = data.current_step;
                 window.sidebarState.currentStep = section;
 
                 if (window.renderSidebar) {
@@ -279,16 +325,129 @@
             }
         }
         
-        // Set Content
-        function setContent(data) {
-            if(data.current_step === 1){
-                // missing
-            } else if (data.current_step === 2) {
-                setFinancialContent(data);
-            } 
+        // Identification step Content
+        function setIdentificationContent(data) {
+
+            // Hidde all
+            document.querySelectorAll('.identification-content')
+                .forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+            // Chance the correct substep
+            const activeSection =
+                document.getElementById(
+                    `identification-section-${data.current_section}`
+                );
+
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
         }
 
-        // Load financial step content 
+        // Set Content
+        function setContent(data) {
+
+            // Both phases' sections live in the same DOM at once: hide everything
+            // first so switching phases never leaves the previous one visible
+            document.querySelectorAll('.identification-content, .financial-content')
+                .forEach(section => section.classList.add('hidden'));
+
+            if (data.current_step === 1) {
+                setIdentificationContent(data);
+            } else if (data.current_step === 2) {
+                setFinancialContent(data);
+            }
+        }
+
+        // Get content by identification subStep ------------------------------
+        async function loadIdentificationSection(section) {
+
+            try {
+                const res = await fetch(
+                    `/users/${id_user}/initial-interview/api/${id_user}/identification/${section}`
+                );
+
+                const data = await res.json();
+                console.log('DATA: ', data);
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return;
+                }
+
+                window.identificationData = data;
+
+                // update sections state
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                // update sidebar state
+                window.sidebarState = {
+                    phase: data.current_step,
+                    currentStep: data.current_section,
+                    completedSteps: data.data.completedSubSteps,
+                };
+
+                setSubStepTitle(data);
+                setIdentificationContent(data);
+                updateNavigationButtons(data.current_step, data.current_section);
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+                setTimeout(() => {
+                    if (data.current_section === 1) {
+                        window.mapSubStep1?.(data.data);
+                    } else if (data.current_section === 2) {
+                        window.mapSubStep2?.(data.data);
+                    } else if (data.current_section === 3) {
+                        window.mapSubStep3?.(data.data);
+                    } else if (data.current_section === 4) {
+                        window.mapSubStep4?.(data.data);
+                    }
+                }, 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Load identification step content
+        async function loadIdentification() {
+            try {
+
+                await loadIdentificationSection(1);
+
+                const data = window.identificationData;
+
+                // Set titles
+                setStepTitle(data);
+
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Load financial step content
         async function loadFinancial() {
             try {
 
@@ -317,36 +476,101 @@
             }
         }
 
+        // ----- Cross-phase navigation orchestration --------------------------
+        // 1 = Ficha de Identificación, 2 = Nivel Socioeconómico (financiero)
+
+        // Get the loaded GET payload of the active phase
+        function getActivePhaseData() {
+            return window.currentPhase === 1
+                ? window.identificationData
+                : window.financialData;
+        }
+
+        // Save the active subStep of the active phase
+        async function saveActiveSection(section) {
+            return window.currentPhase === 1
+                ? saveIdentificationSection(section)
+                : saveSection(section);
+        }
+
+        // Load and render a given phase/subStep, switching phases when needed
+        async function goToSection(phase, section) {
+
+            window.currentPhase = phase;
+
+            if (phase === 1) {
+                await loadIdentificationSection(section);
+            } else {
+                await loadSection(section);
+            }
+
+            const data = getActivePhaseData();
+
+            setStepTitle(data);
+            setSubStepTitle(data);
+            setContent(data);
+            updateNavigationButtons(phase, section);
+
+            window.sidebarState.phase = phase;
+            window.sidebarState.currentStep = section;
+
+            if (window.renderSidebar) {
+                window.renderSidebar();
+            }
+        }
+
         const id_user = "<%= id_user %>";
-        loadFinancial();
+        window.currentPhase = 1;
+
+        // Entry point: start at Identification, jumping to Financial only if it's already completed
+        async function loadInitialInterview() {
+
+            await loadIdentification();
+
+            const completedSteps = window.identificationData?.data?.completedSteps || [];
+
+            if (completedSteps.includes(1)) {
+                await goToSection(2, 1);
+            }
+        }
+
+        loadInitialInterview();
 
         // ---------------------------- LISTENERS ----------------------------
 
-        // Listener for change substep
-        document.querySelectorAll('.timeline-step').forEach(step => {
-            step.addEventListener('click', async () => {
-                
-                // Save current section before changing
-                const currentSection = window.financialData.current_section;
-                await saveSection(currentSection);
+        // Listener for change substep (delegated: the sidebar subSteps are rebuilt per phase)
+        document.addEventListener('click', async (e) => {
 
-                // Load new section
-                const section = Number(step.dataset.step);
-                await loadSection(section);
+            const stepEl = e.target.closest('#sidebar-timeline .timeline-step');
+            if (!stepEl) return;
 
-                // update titles
-                setSubStepTitle(window.financialData);
+            const phase = window.currentPhase;
+            const current = getActivePhaseData().current_section;
+            const section = Number(stepEl.dataset.step);
 
-                // update content
-                setFinancialContent(window.financialData);
+            if (section === current) return;
 
-                // update sidebar
-                window.sidebarState.currentStep = section;
+            // Save current section before changing (free navigation: don't block on save outcome)
+            await saveActiveSection(current);
 
-                if (window.renderSidebar) {
-                    window.renderSidebar();
-                }
-            });
+            await goToSection(phase, section);
+        });
+
+        // Listener for jumping between phases via the top stepper (free navigation)
+        document.addEventListener('click', async (e) => {
+
+            const phaseEl = e.target.closest('#sections-stepper .step');
+            if (!phaseEl) return;
+
+            const phase = Number(phaseEl.dataset.step);
+
+            // Phase 3 (Historia Clínica) has no content/data wired up yet
+            if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
+
+            // Save the active subStep before switching phases (free navigation: don't block on save outcome)
+            await saveActiveSection(getActivePhaseData().current_section);
+
+            await goToSection(phase, 1);
         });
 
         // NEXT buttons
@@ -354,22 +578,17 @@
 
             button.addEventListener('click', async () => {
 
-                let current = window.financialData.current_section;
+                const phase = window.currentPhase;
+                const current = getActivePhaseData().current_section;
+                const total = PHASE_SUBSTEPS[phase];
 
-                const ok = await saveSection(current);
-                if (!ok) return;
+                // Save current section (free navigation: don't block on save outcome)
+                await saveActiveSection(current);
 
-                current++;
-
-                await loadSection(current);
-
-                setSubStepTitle(window.financialData);
-                setFinancialContent(window.financialData);
-
-                window.sidebarState.currentStep = current;
-
-                if (window.renderSidebar) {
-                    window.renderSidebar();
+                if (current < total) {
+                    await goToSection(phase, current + 1);
+                } else if (phase < 2) {
+                    await goToSection(phase + 1, 1);
                 }
             });
         });
@@ -379,23 +598,16 @@
 
             button.addEventListener('click', async () => {
 
-                let current = window.financialData.current_section;
+                const phase = window.currentPhase;
+                const current = getActivePhaseData().current_section;
 
-                // Save current section before changing
-                const ok = await saveSection(current);
-                if (!ok) return;
+                // Save current section (free navigation: don't block on save outcome)
+                await saveActiveSection(current);
 
-                current--;
-
-                await loadSection(current);
-
-                setSubStepTitle(window.financialData);
-                setFinancialContent(window.financialData);
-
-                window.sidebarState.currentStep = current;
-
-                if (window.renderSidebar) {
-                    window.renderSidebar();
+                if (current > 1) {
+                    await goToSection(phase, current - 1);
+                } else if (phase > 1) {
+                    await goToSection(phase - 1, PHASE_SUBSTEPS[phase - 1]);
                 }
             });
         });
@@ -491,6 +703,38 @@
             } catch (err) {
 
                 console.error(err);
+                window.showToast?.('Ocurrió un error al guardar', 'error');
+                return false;
+            }
+        }
+
+        // PATCH Identification Section Content
+        async function saveIdentificationSection (section) {
+            try {
+
+                const body = buildIdentificationSection(section);
+                const res = await fetch(
+                `/users/${id_user}/initial-interview/api/${id_user}/identification/${section}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    window.showToast?.(data.error || 'No se pudo guardar la sección', 'error');
+                    return false;
+                }
+
+                return true;
+
+            } catch (err) {
+
                 window.showToast?.('Ocurrió un error al guardar', 'error');
                 return false;
             }

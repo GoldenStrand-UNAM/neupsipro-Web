@@ -189,8 +189,13 @@ module.exports = (authUseCase, authMiddleware) => {
   );
 
   //INITIAL INTERVIEW
-  const initialInterviewRoutes = require('../initialInterview/financialInterview.routes');
-  router.use('/:id_user/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
+  // Identification must be mounted first: its onlyIdentificationStep guard
+  // calls next('route') for non-identification requests, which falls through
+  // to the financial router below.
+  const identificationRoutes = require('../initialInterview/identificationInterview.routes');
+  const financialRoutes = require('../initialInterview/financialInterview.routes');
+  router.use('/:id_user/initial-interview', identificationRoutes(authUseCase, authMiddleware));
+  router.use('/:id_user/initial-interview', financialRoutes(authUseCase, authMiddleware));
 
   const childInterviewRoutes = require('../initialInterview/childInterview.routes');
   router.use('/:id_user/initial-interview', childInterviewRoutes(authUseCase, authMiddleware));
