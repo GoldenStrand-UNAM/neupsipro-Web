@@ -17,6 +17,8 @@ class clinicalInterviewController {
 
       const response = ClinicalInterviewDTO.fromEntity(clinicalInterview);
 
+      console.log(response);
+
       res.status(200).json(response);
     } catch (error) {
       return res.status(error.status || 400).json({

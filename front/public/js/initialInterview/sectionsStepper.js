@@ -13,7 +13,7 @@ console.log(window);
 const stepConfig = new Map([
   [1, 3],
   [2, 4],
-  [3, 10],
+  [3, 6],
 ]);
 
 // Render UI

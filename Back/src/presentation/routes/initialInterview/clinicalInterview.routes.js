@@ -19,6 +19,11 @@ module.exports = (authUseCase, authMiddleware) => {
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
  
   const repository = new CIRepository();
+
+  const onlyClinicalStep = (req, res, next) => {
+    if (req.params.step === 'symptoms') return next();
+    return next('route');
+  };
  
   const useCase = new GetCIUseCase(repository);
   const controller = new CIController(useCase);
@@ -36,6 +41,7 @@ module.exports = (authUseCase, authMiddleware) => {
  
   router.get(
     '/symptoms/api/:id_user/:subStep',
+    onlyClinicalStep,
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'consultation'),
@@ -47,6 +53,7 @@ module.exports = (authUseCase, authMiddleware) => {
 
   router.patch(
     '/symptoms/api/:id_user/:subStep',
+    onlyClinicalStep,
     authMiddleware.verifyToken,
     userLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'edit'),

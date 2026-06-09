@@ -98,17 +98,17 @@
                             </div>
 
                             <!-- Clinical 3.3 -->
-                            <div id="clinical-section-3" class="clinical-content">
+                            <div id="clinical-section-3" class="clinical-content hidden">
                                 <%- include('./clinicalInterview/subStep3/subStep3.ejs') %>
                             </div>
 
                             <!-- Clinical 3.5 -->
-                            <div id="clinical-section-5" class="clinical-content">
+                            <div id="clinical-section-5" class="clinical-content hidden">
                                 <%- include('./clinicalInterview/subStep5/subStep5.ejs') %>
                             </div>
 
                             <!-- Clinical 3.6 -->
-                            <div id="clinical-section-6" class="clinical-content">
+                            <div id="clinical-section-6" class="clinical-content hidden">
                                 <%- include('./clinicalInterview/subStep6/subStep6.ejs') %>
                             </div>
 
@@ -186,13 +186,13 @@
     <!------------------------ Load Content Functions ------------------------>
     <script>
         // Total subSteps per phase (current_step), used to know the navigation boundaries
-        const PHASE_SUBSTEPS = { 1: 4, 2: 4 };
+        const PHASE_SUBSTEPS = { 1: 4, 2: 4, 3: 6};
 
         // Update nav buttons: hidden only at the very first/last subStep of the whole interview
         function updateNavigationButtons(phase, currentSection) {
 
             const isFirst = phase === 1 && currentSection === 1;
-            const isLast = phase === 2 && currentSection === PHASE_SUBSTEPS[2];
+            const isLast = phase === 3 && currentSection === PHASE_SUBSTEPS[3];
 
             document.querySelectorAll('.prevBtn').forEach(button => {
 
@@ -274,6 +274,26 @@
                 } else if (data.current_section === 4) {
                     subStepTitle.textContent = '2.4 Resumen de Resultados';
                 }
+
+            } else if (data.current_step === 3) {
+                if (data.current_section === 1) {
+                    subStepTitle.textContent = '3.1 Preocupaciones Fisicas';
+
+                } else if (data.current_section === 2) {
+                    subStepTitle.textContent = '3.2 Motor';
+
+                } else if (data.current_section === 3) {
+                    subStepTitle.textContent = '3.3 Sensorial';
+
+                } else if (data.current_section === 4) {
+                    subStepTitle.textContent = '3.4 Funciones Mentales';
+                }
+                else if (data.current_section === 5) {
+                    subStepTitle.textContent = '3.5 Personalidad';
+                }
+                else if (data.current_section === 6) {
+                    subStepTitle.textContent = '3.6 Uso de Sustancias';
+                }
             }
         }
 
@@ -354,6 +374,23 @@
             }
         }
         
+        function setClinicalContent(data){
+            // Hidde all
+            document.querySelectorAll('.clinical-content')
+                .forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+            // Chance the correct substep
+            const activeSection =
+                document.getElementById(
+                    `clinical-section-${data.current_section}`
+                );
+
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+        }
         // Identification step Content
         function setIdentificationContent(data) {
 
@@ -379,13 +416,60 @@
 
             // Both phases' sections live in the same DOM at once: hide everything
             // first so switching phases never leaves the previous one visible
-            document.querySelectorAll('.identification-content, .financial-content')
+            document.querySelectorAll('.identification-content, .financial-content, .clinical-content')
                 .forEach(section => section.classList.add('hidden'));
 
             if (data.current_step === 1) {
                 setIdentificationContent(data);
             } else if (data.current_step === 2) {
                 setFinancialContent(data);
+            } else if (data.current_step === 3){
+                setClinicalContent(data);
+            }
+        }
+
+        async function loadClinicalSection(section) {
+            try {
+                const res = await fetch(
+                    `/users/${id_user}/initial-interview/api/${id_user}/symptoms/${section}`
+                );
+
+                const data = await res.json();
+                console.log('DATA: ', data);
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    return;
+                }
+
+                window.clinicalData = data;
+                // update sections state
+                window.sectionsState = {
+                    currentStep: data.current_step,
+                    completedSteps: data.data.completedSteps,
+                    subStep: data.current_section
+                };
+
+                // update sidebar state
+                window.sidebarState = {
+                    phase: data.current_step,
+                    currentStep: data.current_section,
+                    completedSteps: data.data.completedSubSteps,
+                };
+
+                setSubStepTitle(data);
+                setClinicalContent(data);
+                updateNavigationButtons(data.current_step, data.current_section);
+
+                if (window.renderSidebar) {
+                    window.renderSidebar();
+                }
+
+                if (window.renderSections) {
+                    window.renderSections();
+                }
+            } catch (err) {
+                console.error(err);
             }
         }
 
@@ -476,6 +560,20 @@
             }
         }
 
+        async function loadClinical() {
+        try {
+            await loadClinicalSection(1);
+            const data = window.clinicalData;
+            setStepTitle(data);
+            window.sectionsState = {
+                currentStep: data.current_step,
+                completedSteps: data.data.completedSteps,
+                subStep: data.current_section
+            };
+            window.renderSections?.();
+        } catch (err) { console.error(err); }
+}
+
         // Load financial step content
         async function loadFinancial() {
             try {
@@ -510,16 +608,16 @@
 
         // Get the loaded GET payload of the active phase
         function getActivePhaseData() {
-            return window.currentPhase === 1
-                ? window.identificationData
-                : window.financialData;
+            if (window.currentPhase === 1) return window.identificationData;
+            if (window.currentPhase === 2) return window.financialData;
+            return window.clinicalData;
         }
 
         // Save the active subStep of the active phase
         async function saveActiveSection(section) {
-            return window.currentPhase === 1
-                ? saveIdentificationSection(section)
-                : saveSection(section);
+            if (window.currentPhase === 1) return saveIdentificationSection(section);
+            if (window.currentPhase === 2) return saveSection(section);
+            return saveClinicalSection(section);
         }
 
         // Load and render a given phase/subStep, switching phases when needed
@@ -529,8 +627,10 @@
 
             if (phase === 1) {
                 await loadIdentificationSection(section);
-            } else {
+            } else if (phase ===2) {
                 await loadSection(section);
+            } else if(phase === 3) {
+                await loadClinicalSection(section);
             }
 
             const data = getActivePhaseData();
@@ -560,6 +660,10 @@
 
             if (completedSteps.includes(1)) {
                 await goToSection(2, 1);
+                const financialCompleted = window.financialData?.data?.completedSteps || [];
+                if (financialCompleted.includes(2)) {
+                    await goToSection(3, 1);
+                }
             }
         }
 
@@ -593,7 +697,6 @@
 
             const phase = Number(phaseEl.dataset.step);
 
-            // Phase 3 (Historia Clínica) has no content/data wired up yet
             if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
 
             // Save the active subStep before switching phases (free navigation: don't block on save outcome)
@@ -616,7 +719,7 @@
 
                 if (current < total) {
                     await goToSection(phase, current + 1);
-                } else if (phase < 2) {
+                } else if (phase < 3) {
                     await goToSection(phase + 1, 1);
                 }
             });
