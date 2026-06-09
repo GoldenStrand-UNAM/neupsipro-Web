@@ -1,0 +1,88 @@
+<div>
+    <h2 class="section_title">3.3 Antecedentes Prenatales / Natales</h2>
+
+    <%
+        // Prenatales (4.1-4.20): SÍ conectadas al backend (validatePrenatal).
+        const prenatales = [
+            { id: 'notGestate',            label: 'No. gesta', type: 'number' },
+            { id: 'misscarriageNumber',    label: 'Nro abortos', type: 'number' },
+            { id: 'csection',              label: 'Césarea', type: 'number' },
+            { id: 'labors',                label: 'Partos', type: 'number' },
+            { id: 'momsAge',               label: 'Edad mamá', type: 'number' },
+            { id: 'dadsAge',               label: 'Edad papá', type: 'number' },
+            { id: 'controlNumbers',        label: 'Núm. de controles obstétricos', type: 'number' },
+            { id: 'wanted',                label: '¿Deseado?', type: 'yn' },
+            { id: 'planned',               label: '¿Planeado?', type: 'yn' },
+            { id: 'conceiveDif',           label: '¿Dificultad para concebir?', type: 'yn' },
+            { id: 'obstetricSurveillance', label: '¿Vigilancia obstétrica?', type: 'yn' },
+            { id: 'abortionRisk',          label: '¿Amenaza de aborto?', type: 'yn' },
+            { id: 'prematureRisk',         label: '¿Amenaza de parto prematuro?', type: 'yn' },
+            { id: 'conceptionType',        label: 'Tipo de concepción', type: 'text' },
+            { id: 'emotionalState',        label: 'Estado emocional materno durante la gestación', type: 'text' },
+            { id: 'feeding',               label: 'Alimentación durante la gestación', type: 'text' },
+            { id: 'diseases',              label: 'Enfermedades durante la gestación', type: 'text' },
+            { id: 'medications',           label: 'Medicamentos o toxicomanías', type: 'text' },
+            { id: 'exposures',             label: 'Exposiciones (vacunas, rayos X, contaminantes, otro)', type: 'text' },
+        ];
+
+        // Natales (4.21-4.33): UI solamente. Aún NO hay columnas en el backend, por eso
+        // estos ids van con prefijo "natal" y childBuilder.js no los envía (no se guardan).
+        const natales = [
+            { id: 'natalLaborHours',     label: 'Número de horas de trabajo de parto', type: 'number' },
+            { id: 'natalMembraneRupture', label: 'Ruptura de membranas', type: 'text' },
+            { id: 'natalSdg',            label: 'SDG', type: 'text' },
+            { id: 'natalCriedAtBirth',   label: '¿Lloró al nacer?', type: 'yn' },
+            { id: 'natalWeightHeight',   label: 'Peso / talla', type: 'text' },
+            { id: 'natalApgar',          label: 'APGAR', type: 'text' },
+            { id: 'natalUcin',           label: 'UCIN / maniobra', type: 'text' },
+            { id: 'natalDischarge',      label: 'Egreso', type: 'text' },
+            { id: 'natalFeedingType',    label: 'Tipo de alimentación', type: 'text' },
+            { id: 'natalBottleWeaning',  label: '¿Cómo dejó el biberón?', type: 'text' },
+            { id: 'natalReflux',         label: 'Reflujo (Sí / No y grado)', type: 'text' },
+            { id: 'natalAblactation',    label: 'Ablactación', type: 'text' },
+            { id: 'natalComments',       label: 'Comentarios', type: 'textarea' },
+        ];
+    %>
+
+    <h3 class="section_title text-lg mt-4">Prenatales</h3>
+    <div class="space-y-4 max-w-xl mt-3">
+        <% prenatales.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <% if (f.type === 'number') { %>
+                    <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="Número">
+                <% } else if (f.type === 'yn') { %>
+                    <select id="<%= f.id %>" class="input text-black">
+                        <option value="">Selecciona</option>
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                <% } else { %>
+                    <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Describa">
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+
+    <h3 class="section_title text-lg mt-8">Natales</h3>
+    <div class="space-y-4 max-w-xl mt-3">
+        <% natales.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <% if (f.type === 'number') { %>
+                    <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="Número">
+                <% } else if (f.type === 'yn') { %>
+                    <select id="<%= f.id %>" class="input text-black">
+                        <option value="">Selecciona</option>
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                <% } else if (f.type === 'textarea') { %>
+                    <textarea id="<%= f.id %>" rows="3" maxlength="500" class="input" placeholder="Comentarios"></textarea>
+                <% } else { %>
+                    <input type="text" id="<%= f.id %>" maxlength="150" class="input" placeholder="Describa">
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+</div>

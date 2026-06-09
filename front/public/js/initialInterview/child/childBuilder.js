@@ -64,11 +64,28 @@ function buildPathological () {
   };
 }
 
+// 3.3 Antecedentes Prenatales  (backend subStep 4)
+// Solo prenatales (4.1-4.20); natales no tiene columnas en el backend.
+// Los selects mandan 'Sí'/'No' y la entity (_bool) los interpreta; los number
+// van como string y la entity (_int) los parsea.
+function buildPrenatal () {
+  const ids = [
+    'notGestate', 'misscarriageNumber', 'csection', 'labors', 'momsAge', 'dadsAge',
+    'controlNumbers', 'wanted', 'planned', 'conceiveDif', 'obstetricSurveillance',
+    'abortionRisk', 'prematureRisk', 'conceptionType', 'emotionalState', 'feeding',
+    'diseases', 'medications', 'exposures',
+  ];
+  const body = {};
+  ids.forEach((id) => { body[id] = val(id); });
+  return body;
+}
+
 // Returns the body matching the given section.
 function buildSection (section) {
   switch (Number(section)) {
     case 2: return buildHeredofamilial();
     case 3: return buildPathological();
+    case 4: return buildPrenatal();
     default: return {};
   }
 }
