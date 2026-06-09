@@ -21,8 +21,6 @@ class postIdentificationInterviewUseCase {
           throw new Error('Invalid section');
       }
     } catch (err) {
-      console.error('[identification useCase] validation error:', err.message);
-      // Validation failures are client errors (missing/invalid fields), not server errors
       err.status = 400;
       throw err;
     }

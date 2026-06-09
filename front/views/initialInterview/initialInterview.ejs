@@ -713,7 +713,6 @@
             try {
 
                 const body = buildIdentificationSection(section);
-                console.log('body: ', body);
                 const res = await fetch(
                 `/users/${id_user}/initial-interview/api/${id_user}/identification/${section}`,
                 {
@@ -728,7 +727,7 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    console.error(data.error);
+                    window.showToast?.(data.error || 'No se pudo guardar la sección', 'error');
                     return false;
                 }
 
@@ -736,40 +735,7 @@
 
             } catch (err) {
 
-                console.error(err);
-                return false;
-            }
-        }
-
-        // PATCH Identification Section Content
-        async function saveIdentificationSection (section) {
-            try {
-
-                const body = buildIdentificationSection(section);
-                console.log('body: ', body);
-                const res = await fetch(
-                `/users/${id_user}/initial-interview/api/${id_user}/identification/${section}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(body),
-                }
-                );
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    console.error(data.error);
-                    return false;
-                }
-
-                return true;
-
-            } catch (err) {
-
-                console.error(err);
+                window.showToast?.('Ocurrió un error al guardar', 'error');
                 return false;
             }
         }
