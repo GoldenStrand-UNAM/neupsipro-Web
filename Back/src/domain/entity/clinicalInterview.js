@@ -125,6 +125,25 @@ class ClinicalInterview {
       observations:           this._maxLen(this._text(body.observations), 400, 'observations'),
     };
   }
+
+  // calculators
+  static validateCalculators (body = {}) {
+    return {
+      cardiovascular_risk:  this._maxLen(this._text(body.cardiovascularRisk), 200, 'cardiovascularRisk'),
+      qstroke_result:       this._maxLen(this._text(body.qstrokeResult), 200, 'qstrokeResult'),
+      diabetes_risk:        this._maxLen(this._text(body.diabetesRisk), 200, 'diabetesRisk'),
+      calc_analysis:        this._maxLen(this._text(body.calcAnalysis), 400, 'calcAnalysis'),
+      inclusion_criteria:   this._maxLen(this._text(body.inclusionCriteria), 400, 'inclusionCriteria'),
+    };
+  }
+
+  // follow-up notes
+  static validateFollowUp (body = {}) {
+    return {
+      initial_consultation: this._maxLen(this._text(body.initialConsultation), 1000, 'initialConsultation'),
+      follow_up_notes:      this._maxLen(this._text(body.followUpNotes), 1000, 'followUpNotes'),
+    };
+  }
 }
 
 module.exports = ClinicalInterview;

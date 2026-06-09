@@ -14,6 +14,8 @@ class getClinicalInterviewUseCase {
       case 4: return repo.fetchMentalFunctions({ id_user_relation });
       case 5: return repo.fetchPersonality({ id_user_relation });
       case 6: return repo.fetchSubstanceUse({ id_user_relation });
+      case 7: return repo.fetchCalculators({ id_user_relation });
+      case 8: return repo.fetchFollowUp({ id_user_relation });
       default: {
         const err = new Error('Invalid section');
         err.status = 400;
@@ -31,7 +33,7 @@ class getClinicalInterviewUseCase {
     }
  
     const section = Number(subStep);
-    if (!Number.isInteger(section) || section < 1 || section > 6) {
+    if (!Number.isInteger(section) || section < 1 || section > 8) {
       const err = new Error('Invalid section');
       err.status = 400;
       throw err;

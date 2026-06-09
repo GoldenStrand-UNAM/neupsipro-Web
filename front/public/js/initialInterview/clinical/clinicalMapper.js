@@ -92,6 +92,21 @@ function renderSubstanceUseData (info) {
   setVal('observations',         info.observations          ?? '');
 }
 
+// 3.7 Calculadoras  (backend subStep 7)
+function renderCalculatorsData (info) {
+  setVal('cardiovascularRisk', info.cardiovascular_risk ?? '');
+  setVal('qstrokeResult',      info.qstroke_result      ?? '');
+  setVal('diabetesRisk',       info.diabetes_risk       ?? '');
+  setVal('calcAnalysis',       info.calc_analysis       ?? '');
+  setVal('inclusionCriteria',  info.inclusion_criteria  ?? '');
+}
+
+// 3.8 Notas de Seguimiento  (backend subStep 8)
+function renderFollowUpData (info) {
+  setVal('initialConsultation', info.initial_consultation ?? '');
+  setVal('followUpNotes',       info.follow_up_notes      ?? '');
+}
+
 // Entry point called by initialInterview.ejs after a GET response.
 // `data` is the full API response payload ({ section, completedSteps, ... }).
 function renderClinicalData (data) {
@@ -105,6 +120,8 @@ function renderClinicalData (data) {
     case 4: renderMentalFunctionsData(info);  break;
     case 5: renderPersonalityData(info);      break;
     case 6: renderSubstanceUseData(info);     break;
+    case 7: renderCalculatorsData(info);      break;
+    case 8: renderFollowUpData(info);         break;
     default: break;
   }
 }

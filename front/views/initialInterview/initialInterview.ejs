@@ -172,6 +172,12 @@
                             <div id="clinical-section-6" class="clinical-content hidden">
                                 <%- include('./clinical/subStep6/substanceUse.ejs') %>
                             </div>
+                            <div id="clinical-section-7" class="clinical-content hidden">
+                                <%- include('./clinical/subStep7/calculators.ejs') %>
+                            </div>
+                            <div id="clinical-section-8" class="clinical-content hidden">
+                                <%- include('./clinical/subStep8/followUp.ejs') %>
+                            </div>
 
                         </div>
 
@@ -343,6 +349,8 @@
                     4: '3.4 Funciones Mentales',
                     5: '3.5 Personalidad',
                     6: '3.6 Uso de Sustancias',
+                    7: '3.7 Calculadoras',
+                    8: '3.8 Notas de Seguimiento',
                 };
                 const titles = window.isChild ? pedTitles : clinTitles;
                 subStepTitle.textContent = titles[data.current_section] || '';
@@ -765,7 +773,7 @@
                 const step3Title = document.querySelector('#sections-stepper .step[data-step="3"] .step-title');
                 if (step3Title) step3Title.textContent = '3. Pediátrica';
             } else {
-                PHASE_SUBSTEPS[3] = 6;
+                PHASE_SUBSTEPS[3] = 8;
             }
 
             const completedSteps = window.identificationData?.data?.completedSteps || [];

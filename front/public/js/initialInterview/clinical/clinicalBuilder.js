@@ -102,6 +102,25 @@ function buildSubstanceUse () {
   };
 }
 
+// 3.7 Calculadoras  (backend subStep 7)
+function buildCalculators () {
+  return {
+    cardiovascularRisk:  val('cardiovascularRisk'),
+    qstrokeResult:       val('qstrokeResult'),
+    diabetesRisk:        val('diabetesRisk'),
+    calcAnalysis:        val('calcAnalysis'),
+    inclusionCriteria:   val('inclusionCriteria'),
+  };
+}
+
+// 3.8 Notas de Seguimiento  (backend subStep 8)
+function buildFollowUp () {
+  return {
+    initialConsultation: val('initialConsultation'),
+    followUpNotes:       val('followUpNotes'),
+  };
+}
+
 // Returns the body matching the given section (1-6).
 function buildClinicalSection (section) {
   switch (Number(section)) {
@@ -111,6 +130,8 @@ function buildClinicalSection (section) {
     case 4: return buildMentalFunctions();
     case 5: return buildPersonality();
     case 6: return buildSubstanceUse();
+    case 7: return buildCalculators();
+    case 8: return buildFollowUp();
     default: return {};
   }
 }

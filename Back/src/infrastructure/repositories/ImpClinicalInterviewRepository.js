@@ -119,6 +119,27 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
     return rows[0] || {};
   }
 
+  async fetchCalculators ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT cardiovascular_risk, qstroke_result, diabetes_risk,
+              calc_analysis, inclusion_criteria
+         FROM clinical_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+    return rows[0] || {};
+  }
+
+  async fetchFollowUp ({ id_user_relation }) {
+    const [rows] = await db.query(
+      `SELECT initial_consultation, follow_up_notes
+         FROM clinical_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+    return rows[0] || {};
+  }
+
   // ====================== POST  Functions =====================
   async _savePhysicalConcerns ({ connection, id_user_relation, data }) {
     await connection.query(
@@ -212,6 +233,32 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
     );
   }
 
+  async _saveCalculators ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `UPDATE clinical_interview
+          SET cardiovascular_risk = ?, qstroke_result = ?, diabetes_risk = ?,
+              calc_analysis = ?, inclusion_criteria = ?
+        WHERE id_user_relation = ?`,
+      [
+        data.cardiovascular_risk, data.qstroke_result, data.diabetes_risk,
+        data.calc_analysis, data.inclusion_criteria,
+        id_user_relation,
+      ]
+    );
+  }
+
+  async _saveFollowUp ({ connection, id_user_relation, data }) {
+    await connection.query(
+      `UPDATE clinical_interview
+          SET initial_consultation = ?, follow_up_notes = ?
+        WHERE id_user_relation = ?`,
+      [
+        data.initial_consultation, data.follow_up_notes,
+        id_user_relation,
+      ]
+    );
+  }
+
   // Progress update
   async updateSymptomsProgress ({ id_user_relation, completed }) {
     return await db.query(
@@ -260,6 +307,12 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
           break;
         case 6:
           await this._saveSubstanceUse({ connection, id_user_relation, data });
+          break;
+        case 7:
+          await this._saveCalculators({ connection, id_user_relation, data });
+          break;
+        case 8:
+          await this._saveFollowUp({ connection, id_user_relation, data });
           break;
         default:
           throw new Error('Invalid section');
