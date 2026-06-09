@@ -121,7 +121,8 @@ module.exports = (authUseCase, authMiddleware) => {
     getWaisUseCase,
     getReyUseCase,
     getMocaUseCase,
-    getNihUseCase
+    getNihUseCase,
+    getEmotionUseCase
   );
   const exportPdfController = new ExportPdfController(exportPdfUseCase);
 
