@@ -1,0 +1,108 @@
+<div class="space-y-6">
+  <h2 class="section_title">3.5 Sustancias y Cierre</h2>
+  <div class="mt-4 space-y-4">
+
+    <!-- Consume alguna droga -->
+    <div>
+      <label class="input_label">Actualmente, ¿usted consume alguna droga?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="drugUse" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="drugUseNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Consumo de cigarro -->
+    <div>
+      <label class="input_label">Consumo de cigarro: frecuencia y cantidad</label>
+      <div class="flex gap-2 mt-1">
+        <select id="cigaretteUse" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="cigaretteUseNotes" placeholder="Frecuencia y cantidad"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Consumo de alcohol -->
+    <div>
+      <label class="input_label">Consumo de alcohol: frecuencia y cantidad</label>
+      <div class="flex gap-2 mt-1">
+        <select id="alcoholUse" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="alcoholUseNotes" placeholder="Frecuencia y cantidad"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Consumo de otras drogas -->
+    <div>
+      <label class="input_label">Consumo de otras drogas: frecuencia, cantidad, ¿cuáles?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="otherDrugs" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="otherDrugsNotes" placeholder="Frecuencia, cantidad y cuáles"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Ha asistido a terapia -->
+    <div>
+      <label class="input_label">¿Alguna vez ha asistido a terapia?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="therapy" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="therapyNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Tipo de terapia y duración -->
+    <div>
+      <div class="flex items-center gap-2 mt-1">
+        <label class="input_label w-40 flex-shrink-0 mb-0">Tipo de terapia y tiempo de duración</label>
+        <input type="text" id="therapyType" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Algo positivo de la amputación -->
+    <div>
+      <label class="input_label">Algunas personas dicen que cada nube negra tiene un lado positivo: ¿a usted le ha pasado algo positivo o bueno como resultado de la amputación?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="positiveOutcome" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="positiveOutcomeNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Metas para el futuro -->
+    <div>
+      <label class="input_label">¿Cuáles son sus metas para el futuro?</label>
+      <div class="mt-1">
+        <textarea id="futurGoals" placeholder="Notas" rows="3"
+          class="input w-full bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400 resize-none"></textarea>
+      </div>
+    </div>
+
+  </div>
+</div>

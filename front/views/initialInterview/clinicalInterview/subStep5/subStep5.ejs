@@ -1,0 +1,218 @@
+<div class="space-y-6">
+  <h2 class="section_title">3.4 Psiquiátrico</h2>
+  <div class="mt-4 space-y-4">
+
+    <!-- Dx psiquiátricos -->
+    <div>
+      <label class="input_label">Dx psiquiátricos</label>
+      <div class="flex gap-2 mt-1">
+        <select id="psychiatricDx" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="psychiatricDxNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Depresión -->
+    <div>
+      <label class="input_label">Depresión</label>
+      <div class="flex gap-2 mt-1">
+        <select id="depression" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="depressionNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Ansiedad -->
+    <div>
+      <label class="input_label">Ansiedad</label>
+      <div class="flex gap-2 mt-1">
+        <select id="anxiety" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="anxietyNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Estrés -->
+    <div>
+      <label class="input_label">Estrés</label>
+      <div class="flex gap-2 mt-1">
+        <select id="stress" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="stressNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Sueño -->
+    <div>
+      <label class="input_label">Sueño</label>
+      <div class="flex gap-2 mt-1">
+        <select id="sleep" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="sleepNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Me enojo fácilmente -->
+    <div>
+      <label class="input_label">Me enojo fácilmente</label>
+      <div class="flex gap-2 mt-1">
+        <select id="angerEasily" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="angerEasilyNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Tiempo para volver a la calma -->
+    <div>
+      <label class="input_label">Cuando se enoja, ¿cuánto tiempo tarda en volver a la calma?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="calmDownTime" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="minutos">Minutos</option>
+          <option value="horas">Horas</option>
+          <option value="dias">Días</option>
+        </select>
+        <input type="text" id="calmDownTimeNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Muy emocional -->
+    <div>
+      <label class="input_label">Muy emocional (p. ej., lloro con facilidad)</label>
+      <div class="flex gap-2 mt-1">
+        <select id="veryEmotional" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="veryEmotionalNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Me frustro fácilmente -->
+    <div>
+      <label class="input_label">Me frustro fácilmente</label>
+      <div class="flex gap-2 mt-1">
+        <select id="frustratedEasily" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="frustratedEasilyNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Cambios en pensamiento/conducta/estado de ánimo -->
+    <div>
+      <label class="input_label">¿Alguien le ha comentado sobre cambios en su pensamiento, conducta, estado de ánimo o personalidad?</label>
+      <div class="flex gap-2 mt-1">
+        <select id="behaviorChanges" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="behaviorChangesNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Problema marital/familiar -->
+    <div>
+      <label class="input_label">En este momento, tiene algún problema marital/familiar</label>
+      <div class="flex gap-2 mt-1">
+        <select id="maritalProblems" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="maritalProblemsNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Problema legal -->
+    <div>
+      <label class="input_label">En este momento, tiene algún problema legal</label>
+      <div class="flex gap-2 mt-1">
+        <select id="legalProblems" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="no">No</option>
+          <option value="si">Sí</option>
+        </select>
+        <input type="text" id="legalProblemsNotes" placeholder="Describa"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Problema manejo de casa o del dinero -->
+    <div>
+      <label class="input_label">En este momento, tiene algún problema manejo de casa o del dinero</label>
+      <div class="flex gap-2 mt-1">
+        <select id="homeMoneyProblems" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="homeMoneyProblemsNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Problema para conducir -->
+    <div>
+      <label class="input_label">En este momento, tiene algún problema para conducir</label>
+      <div class="flex gap-2 mt-1">
+        <select id="drivingProblems" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <input type="text" id="drivingProblemsNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+    <!-- Observación clínica -->
+    <div>
+      <label class="input_label">Observación clínica: Nivel general de introspección del entrevistado</label>
+      <div class="flex gap-2 mt-1">
+        <select id="introspectionLevel" class="input w-40 flex-shrink-0 bg-white border border-gray-300 rounded-md text-sm text-gray-500">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="alto">Alto</option>
+          <option value="medio">Medio</option>
+          <option value="bajo">Bajo</option>
+        </select>
+        <input type="text" id="introspectionNotes" placeholder="Notas"
+          class="input flex-1 bg-white border border-gray-300 rounded-md text-sm text-gray-500 placeholder-gray-400" />
+      </div>
+    </div>
+
+  </div>
+</div>
