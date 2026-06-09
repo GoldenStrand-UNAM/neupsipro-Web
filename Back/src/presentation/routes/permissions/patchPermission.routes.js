@@ -6,8 +6,8 @@ const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.
 const Repository = require('../../../infrastructure/repositories/permissionsRepository');
 
 // Get
-const Controller = require('../../controller/permissions/getPermissions.controller');
-const GetUseCase = require('../../../application/usecase/permissions/permissionsUseCase');
+const Controller = require('../../controller/permissions/patchPermissions.controller');
+const GetUseCase = require('../../../application/usecase/permissions/patchPermissionsUseCase');
 
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router({ mergeParams: true });
@@ -19,22 +19,12 @@ module.exports = (authUseCase, authMiddleware) => {
   const useCase = new GetUseCase(repository);
   const controller = new Controller(useCase);
 
-  /*
-  router.get(
-    '/financial',
-    authMiddleware.verifyToken,
-    apiLimiter,
-    permissionsMiddleware.requirePermission('Permissions', 'consultation'),
-    (req, res) => controller.getPermissionsPage(req, res)
-  );
-  */
-
   router.patch(
     '/api/admin/users/:userId/permissions',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('Permissions', 'consultation'),
-    (req, res) => controller.getPermission(req, res)
+    permissionsMiddleware.requirePermission('Permissions', 'edit'),
+    (req, res) => controller.patchPermission(req, res)
   );
 
   return router;
