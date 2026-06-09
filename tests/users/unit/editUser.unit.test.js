@@ -21,17 +21,14 @@ jest.mock('../../../Back/src/infrastructure/external/s3.config', () => ({
 
 describe('EditUserUseCase', () => {
     let mockUserRepository;
-    let mockHashingService;
     let useCase;
 
     const validUserData = {
         id_user: '123',
-        userName: 'johndoe',
         firstName: 'John',
         lastnameP: 'Doe',
         birthdate: '01/01/1900',
         sex: 'Masculino',
-        password: 'newSecurePassword123',
         profilePhoto: 'new_photo.jpg',
         referenceNumber: '123P-ABC',
         phase:'Preprotésico',
@@ -54,11 +51,7 @@ describe('EditUserUseCase', () => {
             editUser: jest.fn(),
         };
 
-        mockHashingService = {
-            hash: jest.fn().mockResolvedValue('encrypted_hash_password'),
-        };
-
-        useCase = new EditUserUseCase(mockUserRepository, mockHashingService);
+        useCase = new EditUserUseCase(mockUserRepository);
     });
 
     test('Must edit with success if user has all valid data', async () => {
@@ -73,28 +66,9 @@ describe('EditUserUseCase', () => {
         const result = await useCase.execute(validUserData);
         
         expect(mockUserRepository.fetchUserForEdit).toHaveBeenCalledWith({ id_user: '123' });
-        expect(mockHashingService.hash).toHaveBeenCalledWith('newSecurePassword123');
         expect(mockUserRepository.editUser).toHaveBeenCalled();
         expect(deleteFromS3).toHaveBeenCalledWith('old_photo.jpg');
         expect(result).toEqual({ id_user: '123', success: true });
-    });
-
-    test('If password is empty, does not apply hash nor deletes previous one', async () => {
-        const dataWithoutPassword = { ...validUserData, password: '' };
-
-        mockUserRepository.fetchUserForEdit.mockResolvedValue({
-            id_user:'123',
-            profilePhoto: 'old_photo.jpg',
-        });
-        mockUserRepository.editUser.mockResolvedValue({ id_user: '123' });
-
-        await useCase.execute(dataWithoutPassword);
-
-        expect(mockHashingService.hash).not.toHaveBeenCalled();
-
-        expect(mockUserRepository.editUser).toHaveBeenCalledWith(
-            expect.objectContaining({ passwordHash: null })
-        );
     });
 
     test('Must throw 404 error if user does not exist onthe system', async () => {

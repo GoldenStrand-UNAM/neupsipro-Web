@@ -605,10 +605,12 @@ class impTestResultsRepository extends resultRepository {
   // Use by REY to determine the percentil
   async fetchUserSchooling ({ id_user }) {
     const [rows] = await db.query(
-      `SELECT schooling
-     FROM user_info
-     WHERE id_user = ?
-     LIMIT 1`,
+      `SELECT ii.schooling
+         FROM user_relation ur
+         JOIN initial_interview ii ON ii.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        ORDER BY ur.assignment_date DESC
+        LIMIT 1`,
       [id_user]
     );
     return rows.length ? rows[0].schooling : null;
