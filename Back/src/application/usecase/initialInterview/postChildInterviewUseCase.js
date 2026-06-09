@@ -25,10 +25,12 @@ class postChildInterviewUseCase {
   }
 
   // porgress
-  async updateProgress ({ id_user_relation, subStep }) {
+  async updateProgress ({ id_user_relation, subStep, validatedData }) {
 
     // if completing symptoms section, mark symptoms as completed
-    const symptomsCompleted = Number(subStep) === 8;
+    // Only mark complete if the physical exam form has at least one non-null field
+    const hasData = validatedData && Object.values(validatedData).some(v => v !== null && v !== undefined);
+    const symptomsCompleted = Number(subStep) === 8 && hasData;
     if (symptomsCompleted) {
       await this.childInterviewRepository.updateSymptomsProgress({
         id_user_relation,
@@ -94,7 +96,7 @@ class postChildInterviewUseCase {
       data: validatedData,
     });
 
-    await this.updateProgress({ id_user_relation, subStep: section });
+    await this.updateProgress({ id_user_relation, subStep: section, validatedData });
 
     return {
       current_section: section + 1,
