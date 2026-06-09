@@ -100,6 +100,72 @@ function buildDevelopment () {
   return body;
 }
 
+// 3.5 Conductas en General  (backend subStep 6)
+// number e int (likert) van como string (_int los parsea); textos como texto.
+function buildBehavior () {
+  const ids = [
+    // Hábitos
+    'byThemselvesAge', 'helpsAtHome', 'toDo',
+    // Alimentación y sueño
+    'howEats', 'dailyMeals', 'pickyEater', 'foodNotConsumed', 'nonFoodSubstances',
+    'feedingBehavior', 'sleepRoutine', 'sleepHours', 'continuousSleep', 'naps',
+    // Control de esfínteres
+    'sphControlAge', 'sphMethod', 'daytimeSphCtrlAge', 'sphRegression',
+    // Disciplina
+    'typeHomeDiscipline', 'authorityFigure', 'disScolding', 'disPhysicalPunishment',
+    'disTimeout', 'disTreat', 'disConvincing', 'disOther', 'respDisMethods',
+    'partnerAgreement', 'disAreaChallenges',
+  ];
+  const body = {};
+  ids.forEach((id) => { body[id] = val(id); });
+  return body;
+}
+
+// 3.6 Historia Escolar  (backend subStep 7)
+// Cada grado combina Escuela + Promedio + Comentarios en su columna varchar(400).
+function combineGrade (escuela, promedio, comentarios) {
+  const parts = [];
+  if (escuela)     parts.push(`Escuela: ${escuela}`);
+  if (promedio)    parts.push(`Promedio: ${promedio}`);
+  if (comentarios) parts.push(`Comentarios: ${comentarios}`);
+  return parts.join(' | ');
+}
+
+function gradeField (id) {
+  return combineGrade(val(`${id}Escuela`), val(`${id}Promedio`), val(`${id}Comentarios`));
+}
+
+function buildSchoolHistory () {
+  return {
+    schoolStartingAge: val('schoolStartingAge'),
+    schoolPerformance: val('schoolPerformance'),
+    preschool:         gradeField('preschool'),
+    primarySchool:     gradeField('primarySchool'),
+    juniorHigh:        gradeField('juniorHigh'),
+    highschool:        gradeField('highschool'),
+    schoolInterest:    val('schoolInterest'),
+    schoolAptitudes:   val('schoolAptitudes'),
+    failedYear:        val('failedYear'),
+    particularClasses: val('particularClasses'),
+    partClassesTime:   val('partClassesTime'),
+    extracurAct:       val('extracurAct'),
+  };
+}
+
+// 3.7 Exploración Física Pediátrica  (backend subStep 8)
+// visionError / examSummary / examTreatmentPlan son UI-only (sin columna) y no se envían.
+function buildPhysicalExam () {
+  const ids = [
+    'weight', 'size', 'wc', 'temperature', 'bp', 'oxygenation',
+    'alergiesDermatitis', 'functionalSupport',
+    'goodHearing', 'concernListen', 'audiometry', 'result',
+    'seesWell', 'needsGlasses',
+  ];
+  const body = {};
+  ids.forEach((id) => { body[id] = val(id); });
+  return body;
+}
+
 // Returns the body matching the given section.
 function buildSection (section) {
   switch (Number(section)) {
@@ -107,6 +173,9 @@ function buildSection (section) {
     case 3: return buildPathological();
     case 4: return buildPrenatal();
     case 5: return buildDevelopment();
+    case 6: return buildBehavior();
+    case 7: return buildSchoolHistory();
+    case 8: return buildPhysicalExam();
     default: return {};
   }
 }
