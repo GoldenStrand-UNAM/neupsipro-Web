@@ -47,7 +47,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.patch(
     '/child/api/:id_user/:subStep',
     authMiddleware.verifyToken,
-    userLimiter,
+    apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'edit'),
     (req, res) => {
       req.params.step = 'child';

@@ -48,7 +48,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/api/:id_user/:step/:subStep',
     onlyIdentificationStep,
     authMiddleware.verifyToken,
-    userLimiter,
+    apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'edit'),
     (req, res) => postController.saveIdentificationInterview(req, res)
   );

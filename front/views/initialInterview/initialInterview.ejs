@@ -504,6 +504,14 @@
                 // La navegación unificada usa el subpaso visual (1-7).
                 window.pediatricNav = { current_step: 3, current_section: section };
 
+                // Actualiza el stepper de fases para que muestre la fase 3 como activa
+                // y los dots reflejen el sub-paso actual.
+                window.sectionsState = {
+                    currentStep: 3,
+                    completedSteps: data.data.completedSteps || window.sectionsState?.completedSteps || [],
+                    subStep: section,
+                };
+
                 window.sidebarState = {
                     phase: 3,
                     currentStep: section,
