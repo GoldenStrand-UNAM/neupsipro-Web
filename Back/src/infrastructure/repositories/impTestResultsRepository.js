@@ -605,14 +605,34 @@ class impTestResultsRepository extends resultRepository {
   // Use by REY to determine the percentil
   async fetchUserSchooling ({ id_user }) {
     const [rows] = await db.query(
-      `SELECT schooling
-     FROM user_info
-     WHERE id_user = ?
-     LIMIT 1`,
+      `SELECT ii.schooling
+         FROM user_relation ur
+         JOIN initial_interview ii ON ii.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        ORDER BY ur.assignment_date DESC
+        LIMIT 1`,
       [id_user]
     );
     return rows.length ? rows[0].schooling : null;
   }
+  // Fetch schooling and occupation captured in the user's initial interview.
+  // The interview is linked to the user through user_relation (type 'initial_interview').
+  // Used by the PDF export to fill the identification card.
+  async fetchUserSchoolingAndOccupation ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling, ii.ocupation
+         FROM user_relation ur
+         JOIN initial_interview ii ON ii.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        ORDER BY ur.assignment_date DESC
+        LIMIT 1`,
+      [id_user]
+    );
+    return rows.length
+      ? { schooling: rows[0].schooling ?? null, ocupation: rows[0].ocupation ?? null }
+      : { schooling: null, ocupation: null };
+  }
+
   // Fetch birthdate of user.
   async fetchUserAge ({ id_user }) {
     const [rows] = await db.query(

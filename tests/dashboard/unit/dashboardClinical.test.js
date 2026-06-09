@@ -45,9 +45,9 @@ describe('GetClinicalUserDashboardUseCase', () => {
 
   test('throw error if fetchAllWithClinical fails', async () => {
     usersRepository.fetchNumberUsers.mockResolvedValue([{ total: 0 }]);
-    usersRepository.fetchAllWithClinical.mockRejectedValue(new Error('Error obteniendo usuarios clínicos'));
+    usersRepository.fetchAllWithClinical.mockRejectedValue(new Error('Error obteniendo colaboradores'));
     appointmentRepository.fecthAppointmentWithClinical.mockResolvedValue([]);
-    await expect(useCase.execute({ idClinicalUser: 1 })).rejects.toThrow('Error obteniendo usuarios clínicos');
+    await expect(useCase.execute({ idClinicalUser: 1 })).rejects.toThrow('Error obteniendo colaboradores');
   });
 
   test('throw error if fecthAppointmentWithClinical fails', async () => {
