@@ -174,7 +174,9 @@ function buildPhysicalExam () {
 }
 
 // Returns the body matching the given section.
-function buildSection (section) {
+// Nombre único (buildChildSection) para NO colisionar con el buildSection del financiero,
+// que se carga en la misma página unificada (initialInterview.ejs).
+function buildChildSection (section) {
   switch (Number(section)) {
     case 2: return buildHeredofamilial();
     case 3: return buildPathological();
@@ -187,4 +189,4 @@ function buildSection (section) {
   }
 }
 
-window.buildSection = buildSection;
+window.buildChildSection = buildChildSection;

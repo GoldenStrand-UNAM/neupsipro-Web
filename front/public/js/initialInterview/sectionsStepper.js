@@ -11,9 +11,9 @@ window.sectionsState = window.sectionsState || {
 console.log(window);
 
 const stepConfig = new Map([
-  [1, 3],
+  [1, 4],
   [2, 4],
-  [3, 10],
+  [3, 7],
 ]);
 
 // Render UI
