@@ -153,6 +153,32 @@
                                 <%- include('./child/subStep7/physicalExamBackground.ejs') %>
                             </div>
 
+                            <!-- CLINICAL HISTORY (Fase 3, adultos) — 6 sub-secciones -->
+                            <div id="clinical-section-1" class="clinical-content hidden">
+                                <%- include('./clinical/subStep1/physicalConcerns.ejs') %>
+                            </div>
+                            <div id="clinical-section-2" class="clinical-content hidden">
+                                <%- include('./clinical/subStep2/motor.ejs') %>
+                            </div>
+                            <div id="clinical-section-3" class="clinical-content hidden">
+                                <%- include('./clinical/subStep3/sensory.ejs') %>
+                            </div>
+                            <div id="clinical-section-4" class="clinical-content hidden">
+                                <%- include('./clinical/subStep4/mentalFunctions.ejs') %>
+                            </div>
+                            <div id="clinical-section-5" class="clinical-content hidden">
+                                <%- include('./clinical/subStep5/personality.ejs') %>
+                            </div>
+                            <div id="clinical-section-6" class="clinical-content hidden">
+                                <%- include('./clinical/subStep6/substanceUse.ejs') %>
+                            </div>
+                            <div id="clinical-section-7" class="clinical-content hidden">
+                                <%- include('./clinical/subStep7/calculators.ejs') %>
+                            </div>
+                            <div id="clinical-section-8" class="clinical-content hidden">
+                                <%- include('./clinical/subStep8/followUp.ejs') %>
+                            </div>
+
                         </div>
 
                     </div>
@@ -178,11 +204,14 @@
     <script src="/js/initialInterview/financial/financialBuilder.js"></script>
     <script src="/js/initialInterview/child/childMapper.js"></script>
     <script src="/js/initialInterview/child/childBuilder.js"></script>
+    <script src="/js/initialInterview/clinical/clinicalMapper.js"></script>
+    <script src="/js/initialInterview/clinical/clinicalBuilder.js"></script>
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
         // Total subSteps per phase (current_step), used to know the navigation boundaries.
         // La Fase 3 (pediátrica = 7 subpasos) se habilita SOLO para niños, tras cargar identificación.
+        // La Fase 3 (historia clínica adulto = 6 subpasos) se activa para no-niños.
         const PHASE_SUBSTEPS = { 1: 4, 2: 4 };
         window.isChild = false;
 
@@ -203,12 +232,12 @@
             setTimeout(() => toast.remove(), 3000);
         };
 
-        // Muestra el bloque de sidebar de la fase activa (identif. / financiera / pediátrica)
+        // Muestra el bloque de sidebar de la fase activa (identif. / financiera / pediátrica o clínica)
         function showSidebarPhase (phase) {
             const blocks = {
                 1: 'sidebar-identification-steps',
                 2: 'sidebar-financial-steps',
-                3: 'sidebar-pediatric-steps',
+                3: window.isChild ? 'sidebar-pediatric-steps' : 'sidebar-clinical-steps',
             };
             Object.values(blocks).forEach((bid) => document.getElementById(bid)?.classList.add('hidden'));
             document.getElementById(blocks[phase])?.classList.remove('hidden');
@@ -313,7 +342,18 @@
                     6: '3.6 Historia Escolar',
                     7: '3.7 Exploración Física',
                 };
-                subStepTitle.textContent = pedTitles[data.current_section] || '';
+                const clinTitles = {
+                    1: '3.1 Preocupaciones Físicas',
+                    2: '3.2 Motor',
+                    3: '3.3 Sensorial',
+                    4: '3.4 Funciones Mentales',
+                    5: '3.5 Personalidad',
+                    6: '3.6 Uso de Sustancias',
+                    7: '3.7 Calculadoras',
+                    8: '3.8 Notas de Seguimiento',
+                };
+                const titles = window.isChild ? pedTitles : clinTitles;
+                subStepTitle.textContent = titles[data.current_section] || '';
             }
         }
 
@@ -423,12 +463,20 @@
             if (activeSection) activeSection.classList.remove('hidden');
         }
 
+        function setClinicalContent(data) {
+            document.querySelectorAll('.clinical-content')
+                .forEach(section => section.classList.add('hidden'));
+            const activeSection =
+                document.getElementById(`clinical-section-${data.current_section}`);
+            if (activeSection) activeSection.classList.remove('hidden');
+        }
+
         // Set Content
         function setContent(data) {
 
             // All phases' sections live in the same DOM at once: hide everything
             // first so switching phases never leaves the previous one visible
-            document.querySelectorAll('.identification-content, .financial-content, .pediatric-content')
+            document.querySelectorAll('.identification-content, .financial-content, .pediatric-content, .clinical-content')
                 .forEach(section => section.classList.add('hidden'));
 
             if (data.current_step === 1) {
@@ -436,7 +484,11 @@
             } else if (data.current_step === 2) {
                 setFinancialContent(data);
             } else if (data.current_step === 3) {
-                setPediatricContent(data);
+                if (window.isChild) {
+                    setPediatricContent(data);
+                } else {
+                    setClinicalContent(data);
+                }
             }
         }
 
@@ -549,6 +601,55 @@
             }
         }
 
+        // Get content by clinical subStep (Fase 3, adultos) — subpasos 1-6
+        async function loadClinicalSection(section) {
+            try {
+                const res = await fetch(
+                    `/users/${id_user}/initial-interview/symptoms/api/${id_user}/${section}`,
+                    { headers: { 'Accept': 'application/json' } }
+                );
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    window.showToast?.(data.error || 'No se pudo cargar la sección', 'error');
+                    return;
+                }
+
+                window.clinicalData = data;
+                window.clinicalNav  = { current_step: 3, current_section: section };
+
+                window.sectionsState = {
+                    currentStep: 3,
+                    completedSteps: data.data.completedSteps || window.sectionsState?.completedSteps || [],
+                    subStep: section,
+                };
+
+                window.sidebarState = {
+                    phase: 3,
+                    currentStep: section,
+                    completedSteps: data.data.completedSubSteps || [],
+                };
+
+                setSubStepTitle(window.clinicalNav);
+                setClinicalContent(window.clinicalNav);
+                updateNavigationButtons(3, section);
+
+                if (window.renderSidebar) window.renderSidebar();
+                if (window.renderSections) window.renderSections();
+
+                setTimeout(() => {
+                    window.renderClinicalData?.({
+                        section: data.data.section,
+                        currentSection: section,
+                    });
+                }, 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
         // Load identification step content
         async function loadIdentification() {
             try {
@@ -610,14 +711,16 @@
         // Get the loaded GET payload of the active phase
         function getActivePhaseData() {
             if (window.currentPhase === 1) return window.identificationData;
-            if (window.currentPhase === 3) return window.pediatricNav;
+            if (window.currentPhase === 3) return window.isChild ? window.pediatricNav : window.clinicalNav;
             return window.financialData;
         }
 
         // Save the active subStep of the active phase
         async function saveActiveSection(section) {
             if (window.currentPhase === 1) return saveIdentificationSection(section);
-            if (window.currentPhase === 3) return savePediatricSection(section);
+            if (window.currentPhase === 3) return window.isChild
+                ? savePediatricSection(section)
+                : saveClinicalSection(section);
             return saveSection(section);
         }
 
@@ -630,7 +733,11 @@
             if (phase === 1) {
                 await loadIdentificationSection(section);
             } else if (phase === 3) {
-                await loadPediatricSection(section);
+                if (window.isChild) {
+                    await loadPediatricSection(section);
+                } else {
+                    await loadClinicalSection(section);
+                }
             } else {
                 await loadSection(section);
             }
@@ -665,6 +772,8 @@
                 PHASE_SUBSTEPS[3] = 7;
                 const step3Title = document.querySelector('#sections-stepper .step[data-step="3"] .step-title');
                 if (step3Title) step3Title.textContent = '3. Pediátrica';
+            } else {
+                PHASE_SUBSTEPS[3] = 8;
             }
 
             const completedSteps = window.identificationData?.data?.completedSteps || [];
@@ -880,6 +989,39 @@
 
             } catch (err) {
                 console.error('[savePediatricSection]', err);
+                window.showToast?.(`Error al guardar: ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        // PATCH Clinical History Section (Fase 3, adultos) — subpasos 1-6
+        async function saveClinicalSection (section) {
+            try {
+                const body = window.buildClinicalSection(section);
+                const res = await fetch(
+                `/users/${id_user}/initial-interview/symptoms/api/${id_user}/${section}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    window.showToast?.(data.error || 'No se pudo guardar la sección', 'error');
+                    return false;
+                }
+
+                window.showToast?.('Sección guardada exitosamente');
+                return true;
+
+            } catch (err) {
+                console.error('[saveClinicalSection]', err);
                 window.showToast?.(`Error al guardar: ${err.message}`, 'error');
                 return false;
             }

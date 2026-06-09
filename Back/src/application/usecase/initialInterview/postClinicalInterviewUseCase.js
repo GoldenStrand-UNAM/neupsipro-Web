@@ -14,6 +14,8 @@ class postClinicalInterviewUseCase {
       case 4: return ClinicalInterview.validateMentalFunctions(body);
       case 5: return ClinicalInterview.validatePersonality(body);
       case 6: return ClinicalInterview.validateSubstanceUse(body);
+      case 7: return ClinicalInterview.validateCalculators(body);
+      case 8: return ClinicalInterview.validateFollowUp(body);
       default: {
         const err = new Error('Invalid section');
         err.status = 400;
@@ -66,7 +68,7 @@ class postClinicalInterviewUseCase {
     }
 
     const section = Number(subStep);
-    if (!Number.isInteger(section) || section < 1 || section > 6) {
+    if (!Number.isInteger(section) || section < 1 || section > 8) {
       const err = new Error('Invalid section');
       err.status = 400;
       throw err;

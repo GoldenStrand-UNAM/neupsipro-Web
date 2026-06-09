@@ -354,6 +354,15 @@ CREATE TABLE clinical_interview (
     future_goals               VARCHAR(300) NULL,
     observations               VARCHAR(400) NULL,
     psychology_notes           VARCHAR(500) NULL,
+    -- Calculators
+    cardiovascular_risk        VARCHAR(200) NULL,
+    qstroke_result             VARCHAR(200) NULL,
+    diabetes_risk              VARCHAR(200) NULL,
+    calc_analysis              VARCHAR(400) NULL,
+    inclusion_criteria         VARCHAR(400) NULL,
+    -- Follow-up notes
+    initial_consultation       TEXT         NULL,
+    follow_up_notes            TEXT         NULL,
     CONSTRAINT fk_ci_relation FOREIGN KEY (id_user_relation) REFERENCES user_relation (id_user_relation)
 );
 
