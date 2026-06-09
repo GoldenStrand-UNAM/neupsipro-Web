@@ -928,3 +928,7 @@ ALTER TABLE user_clinical
 ALTER TABLE user_relation
     MODIFY COLUMN type ENUM('assigned', 'initial_interview', 'appointment') NOT NULL,
     MODIFY COLUMN id_clinic_user VARCHAR(36) NOT NULL;
+
+ALTER TABLE users 
+    MODIFY user_name VARCHAR(118) NULL UNIQUE,
+    MODIFY password_hash VARCHAR(250) NULL;

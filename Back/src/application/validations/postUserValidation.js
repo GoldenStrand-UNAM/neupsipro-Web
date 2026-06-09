@@ -72,18 +72,6 @@ function validateSecond (user) {
   if(user.id_user) requiredPassword = false
   else requiredPassword = true;
   return {
-    userName: validation.validate({
-      value: user.userName,
-      maxLength: 30,
-      label: 'El nombre de usuario',
-      required: true,
-    }),
-    password: validation.validate({
-      value: user.password,
-      maxLength: 30,
-      label: 'La contraseña',
-      required: requiredPassword
-    }),
     assigned: validation.validate({
       value: user.assigned,
       maxLength: 36,
