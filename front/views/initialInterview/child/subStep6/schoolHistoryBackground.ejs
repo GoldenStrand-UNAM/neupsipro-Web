@@ -30,7 +30,7 @@
                 <% if (f.type === 'number') { %>
                     <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="Número">
                 <% } else { %>
-                    <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa">
+                    <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                 <% } %>
             </div>
         <% }); %>
@@ -46,15 +46,15 @@
                 <div class="bg-white p-4 space-y-4">
                     <div>
                         <label class="input_label">Nombre de la escuela</label>
-                        <input type="text" id="<%= g.id %>Escuela" maxlength="150" class="input" placeholder="Nombre de la escuela">
+                        <input type="text" id="<%= g.id %>Escuela" maxlength="150" class="input" placeholder="Nombre de la escuela" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                     </div>
                     <div>
                         <label class="input_label">Promedio</label>
-                        <input type="text" id="<%= g.id %>Promedio" maxlength="20" class="input" placeholder="Promedio">
+                        <input type="text" id="<%= g.id %>Promedio" maxlength="20" class="input" placeholder="Promedio" oninput="this.value = this.value.replace(/[^0-10.,]/g, '')">
                     </div>
                     <div>
                         <label class="input_label">Comentarios</label>
-                        <input type="text" id="<%= g.id %>Comentarios" maxlength="200" class="input" placeholder="Comentarios">
+                        <input type="text" id="<%= g.id %>Comentarios" maxlength="200" class="input" placeholder="Comentarios" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
         <% finales.forEach(function (f) { %>
             <div>
                 <label class="input_label"><%= f.label %></label>
-                <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa">
+                <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
             </div>
         <% }); %>
     </div>

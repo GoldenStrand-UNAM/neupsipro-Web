@@ -3,7 +3,7 @@
 
         <div>
             <label class="input_label">Puntuación MoCA</label>
-            <input type="text" id="cdrResult" maxlength="150" class="input" placeholder="Resultado">
+            <input type="text" id="cdrResult" maxlength="150" class="input" placeholder="Resultado" oninput="this.value = this.value.replace(/[^0-9a-zA-Z\/.-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="cdrResult" data-max="150">0/150</span>
         </div>
 
@@ -18,14 +18,14 @@
                    target="_blank" rel="noopener noreferrer"
                    class="ml-1 text-xs text-blue-500 underline">NIHSS Stroke</a>
             </label>
-            <input type="text" id="nihssResult" maxlength="150" class="input" placeholder="Resultado">
+            <input type="text" id="nihssResult" maxlength="150" class="input" placeholder="Resultado" oninput="this.value = this.value.replace(/[^0-9a-zA-Z\/.-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="nihssResult" data-max="150">0/150</span>
         </div>
 
         <div>
             <label class="input_label">Observación clínica sobre el alerta y atención, pensamiento, comunicación y memoria</label>
             <textarea id="mentalObservation" maxlength="500" rows="4"
-                      class="input resize-none" placeholder="Observación clínica"></textarea>
+                      class="input resize-none" placeholder="Observación clínica" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')"></textarea>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="mentalObservation" data-max="500">0/500</span>
         </div>
 

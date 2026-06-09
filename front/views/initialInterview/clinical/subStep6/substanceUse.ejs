@@ -3,58 +3,58 @@
 
         <div>
             <label class="input_label">Actualmente, ¿usted consume alguna droga?</label>
-            <input type="text" id="drugConsumption" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="drugConsumption" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="drugConsumption" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">Consumo de cigarro: frecuencia y cantidad</label>
-            <input type="text" id="cigaretteConsumption" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="cigaretteConsumption" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="cigaretteConsumption" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">Consumo de alcohol: frecuencia y cantidad</label>
-            <input type="text" id="alcoholConsumption" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="alcoholConsumption" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="alcoholConsumption" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">¿Alguna vez ha asistido a terapia?</label>
-            <input type="text" id="hasAttendedTherapy" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="hasAttendedTherapy" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="hasAttendedTherapy" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">Tipo de terapia y tiempo de duración</label>
-            <input type="text" id="therapyType" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="therapyType" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="therapyType" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">Duración de la terapia</label>
-            <input type="text" id="therapyDuration" maxlength="100" class="input" placeholder="Notas">
+            <input type="text" id="therapyDuration" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="therapyDuration" data-max="100">0/100</span>
         </div>
 
         <div>
             <label class="input_label">Algunas personas dicen que cada nube negra tiene un lado positivo: ¿a usted le ha pasado algo positivo o bueno como resultado de la amputación?</label>
             <textarea id="positiveExperience" maxlength="300" rows="3"
-                      class="input resize-none" placeholder="Notas"></textarea>
+                      class="input resize-none" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')"></textarea>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="positiveExperience" data-max="300">0/300</span>
         </div>
 
         <div>
             <label class="input_label">¿Cuáles son sus metas para el futuro?</label>
             <textarea id="futureGoals" maxlength="300" rows="3"
-                      class="input resize-none" placeholder="Notas"></textarea>
+                      class="input resize-none" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')"></textarea>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="futureGoals" data-max="300">0/300</span>
         </div>
 
         <div>
             <label class="input_label">Observaciones generales</label>
             <textarea id="observations" maxlength="400" rows="4"
-                      class="input resize-none" placeholder="Observaciones"></textarea>
+                      class="input resize-none" placeholder="Observaciones" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')"></textarea>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="observations" data-max="400">0/400</span>
         </div>
 

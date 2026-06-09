@@ -47,9 +47,9 @@
                             <option value="No">No</option>
                         </select>
                     <% } else if (f.type === 'textarea') { %>
-                        <textarea id="<%= f.id %>" rows="3" maxlength="500" class="input" placeholder="Describa"></textarea>
+                        <textarea id="<%= f.id %>" rows="3" maxlength="500" class="input" placeholder="Describa" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')"></textarea>
                     <% } else { %>
-                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa">
+                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                     <% } %>
                 </div>
             <% }); %>

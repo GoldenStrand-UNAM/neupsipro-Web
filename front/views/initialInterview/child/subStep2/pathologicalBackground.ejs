@@ -24,18 +24,27 @@
                 <div class="bg-white p-4 space-y-4">
                     <div>
                         <label class="input_label">Edad</label>
-                        <input type="text" id="<%= cat.id %>Edad" maxlength="30" class="input"
-                            placeholder="Escribe la edad">
+                        <div class="relative">
+                            <input type="text" id="<%= cat.id %>Edad" maxlength="30" class="input"
+                            placeholder="Escribe la edad"
+                            oninput="this.value = this.value.replace(/[^\w\sáéíóúÁÉÍÓÚñÑ]/g, '')">
+                            <span class="char-counter absolute bottom-2 right-3 text-xs text-gray-400 pointer-events-none" data-target="<%= cat.id %>Edad" data-max="30">0/30</span>
+                        </div>
                     </div>
                     <div>
                         <label class="input_label">Descripción</label>
-                        <input type="text" id="<%= cat.id %>Desc" maxlength="150" class="input"
-                            placeholder="Escribe la descripción">
+                        <div class="relative">
+                            <input type="text" id="<%= cat.id %>Desc" maxlength="150" class="input"
+                            placeholder="Escribe la descripción"
+                            oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
+                            <span class="char-counter absolute bottom-2 right-3 text-xs text-gray-400 pointer-events-none" data-target="<%= cat.id %>Desc" data-max="150">0/150</span>
+                        </div>
                     </div>
                     <div>
                         <label class="input_label">Consecuencia</label>
                         <input type="text" id="<%= cat.id %>Conseq" maxlength="150" class="input"
-                            placeholder="Escribe la consecuencia">
+                            placeholder="Escribe la consecuencia"
+                            oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                     </div>
                 </div>
             </div>

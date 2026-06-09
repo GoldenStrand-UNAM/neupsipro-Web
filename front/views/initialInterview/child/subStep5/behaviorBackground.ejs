@@ -59,7 +59,7 @@
                             <option value="4">Siempre</option>
                         </select>
                     <% } else { %>
-                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa">
+                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑ-]/g, '')">
                     <% } %>
                 </div>
             <% }); %>

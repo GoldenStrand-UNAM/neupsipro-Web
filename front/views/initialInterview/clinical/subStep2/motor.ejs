@@ -14,7 +14,7 @@
         <% fields.forEach(function (f) { %>
             <div>
                 <label class="input_label"><%= f.label %></label>
-                <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Notas">
+                <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Notas" oninput="this.value = this.value.replace(/[^\w\s.,;:?!()áéíóúÁÉÍÓÚñÑüÜ-]/g, '')">
                 <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="100">0/100</span>
             </div>
         <% }); %>
