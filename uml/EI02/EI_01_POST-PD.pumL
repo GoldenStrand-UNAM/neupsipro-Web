@@ -1,0 +1,75 @@
+@startuml PATCH_IdentificationInterview-personalData
+actor Usuario as user
+participant "Frontend\n(_personalData.ejs / identificationBuilder.js)" as front
+participant "Router\n(identificationInterview.routes.js)" as router
+participant "AuthMiddleware /\nPermissionsMiddleware" as auth
+participant "identificationInterviewController\n(POST controller)" as controller
+participant "postIdentificationInterviewUseCase" as useCase
+participant "IdentificationInterview\n(entity - validateSubStep1)" as entity
+participant "IdentificationInterviewRepository" as repo
+database "MySQL\n(initial_interview /\ninitial_interview_progress /\nuser_relation)" as db
+
+user -> front: Edita campos y navega/guarda
+front -> front: buildSubStep1Payload()\n(arma el body)
+front -> router: PATCH /api/:id_user/identification/:subStep\n(body = datos del formulario)
+router -> auth: verifyToken / requirePermission("edit")
+auth --> router: OK
+
+router -> controller: saveIdentificationInterview(req, res)
+controller -> useCase: executeUpdate({ id_user, step, subStep, body })
+
+useCase -> repo: fetchRelation({ id_user })
+repo -> db: SELECT id_user_relation FROM user_relation
+db --> repo: id_user_relation
+repo --> useCase: id_user_relation
+
+alt id_user_relation no existe
+  useCase --> controller: throw Error("Initial interview relation not found")
+  controller --> front: 500 / error
+end
+
+useCase -> useCase: validateSectionData({ subStep, body })
+useCase -> entity: IdentificationInterview.validateSubStep1(body)
+
+alt datos inválidos
+  entity --> useCase: throw ValidationError
+  useCase --> controller: error.status = 400
+  controller --> front: 400 Bad Request
+else datos válidos
+  entity --> useCase: validatedData
+end
+
+useCase -> useCase: isSubStep1Complete(validatedData)\n(determina "completed")
+useCase -> repo: saveIdentificationSection({ subStep, id_user_relation, data, completed })
+
+repo -> db: beginTransaction()
+
+repo -> repo: saveSubStep1({ connection, id_user_relation, data })
+repo -> db: INSERT INTO initial_interview (...)\nON DUPLICATE KEY UPDATE ...
+db --> repo: result (affectedRows / changedRows)
+
+repo -> repo: updateIdentificationCompleted({ connection, id_user_relation, completed })
+repo -> db: UPDATE initial_interview_progress\nSET identification_completed = ?
+
+alt error en la transacción
+  repo -> db: rollback()
+  repo --> useCase: throw err
+else éxito
+  repo -> db: commit()
+  repo --> useCase: { saved: true }
+end
+
+useCase -> repo: fetchInterviewProgress({ id_user_relation })
+repo -> db: SELECT * FROM initial_interview_progress
+db --> repo: initialProgress
+repo --> useCase: initialProgress
+
+useCase -> useCase: updateProgress(id_user_relation)\n(evalúa si todo el step está "completed")
+useCase -> repo: updateInterviewProgress({ id_user_relation, status })
+repo -> db: UPDATE initial_interview_progress SET status = ?
+
+useCase --> controller: { current_section, saved: true }
+controller --> router: 200 OK + { success, message, data }
+router --> front: 200 OK
+front --> user: Guardado (sin bloquear navegación)
+@enduml

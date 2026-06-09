@@ -1,0 +1,74 @@
+<div>
+    <h2 class="section_title">Situación de Pareja</h2>
+
+    <div class="mt-4 space-y-4">
+        <!--In a relationship-->
+        <div>
+            <label class="input_label">¿Tiene pareja actualmente?</label>
+
+            <select id="inRelationship" class="select input text-gray-400">
+                <option disabled selected value="">Selecciona una opción</option>
+
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+
+        <!--Couple details (hidden when inRelationship = false)-->
+        <div id="coupleDetails" class="space-y-4 hidden">
+            <!--Relationship duration-->
+            <div>
+                <label class="input_label">Duración de la relación (años)</label>
+                <input type="number" min="0" step="1" id="relationshipDuration" class="input" placeholder="0 = menos de un año">
+            </div>
+
+            <!--Partner's name-->
+            <div>
+                <label class="input_label">Nombre de la pareja</label>
+                <input type="text" id="partnersName" maxlength="50" class="input" placeholder="Nombre completo">
+                <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+            </div>
+
+            <!--Partner's age-->
+            <div>
+                <label class="input_label">Edad de la pareja</label>
+                <input type="number" min="15" max="120" step="1" id="partnersAge" class="input" placeholder="Edad en años (15-120)">
+            </div>
+
+            <!--Partner's ocupation-->
+            <div>
+                <label class="input_label">Ocupación de la pareja</label>
+                <input type="text" id="partnersOcupation" maxlength="50" class="input" placeholder="Ocupación actual">
+                <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+            </div>
+
+            <!--Partner's health-->
+            <div>
+                <label class="input_label">Estado de salud de la pareja</label>
+                <input type="text" id="partnersHealth" maxlength="150" class="input" placeholder="Describe su estado de salud">
+                <p class="text-xs text-gray-400 mt-1">Máximo 150 caracteres</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide the couple details block and clear its inputs based on inRelationship
+    // (same toggle pattern as amputationEnabled in _imcCalculator.ejs)
+    (function () {
+        const select = document.getElementById('inRelationship');
+        const details = document.getElementById('coupleDetails');
+
+        if (!select || !details) return;
+
+        select.addEventListener('change', () => {
+            const inRelationship = select.value === 'true';
+
+            details.classList.toggle('hidden', !inRelationship);
+
+            if (!inRelationship) {
+                details.querySelectorAll('input').forEach(input => { input.value = ''; });
+            }
+        });
+    })();
+</script>
