@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista Inicial Pediátrica - Golondrina</title>
+    <link rel="stylesheet" href="/css/output.css">
+</head>
+
+<body class="bg-[#0A2472] flex h-screen lg:flex-row transition-transform duration-300">
+
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden"></div>
+
+    <!-- Sidebar -->
+    <%- include('../../partials/sidebar.ejs') %>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- Header -->
+        <%- include('../../partials/header.ejs') %>
+
+        <!-- Main -->
+        <main class="flex-1 p-3 sm:p-4 md:p-6 pb-0 md:pl-0 overflow-hidden flex flex-col">
+
+            <div class="flex-1 min-h-0 w-full bg-white rounded-tl-2xl rounded-tr-2xl md:rounded-tl-3xl md:rounded-tr-3xl overflow-y-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
+
+                <div class="flex items-center gap-4 mb-5">
+                    <a href="/users/<%= id_user %>">
+                        <button class="cursor-pointer pb">
+                            <svg class="black-icon shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </button>
+                    </a>
+                    <h1 class="text-2xl font-bold text-[#1E1E1E]">
+                        Entrevista inicial
+                    </h1>
+                </div>
+                <hr class="border-3 rounded-2xl border-[#002B7A] mb-4">
+
+                <!-- Top stepper -->
+                <div class="flex gap-3 mb-2">
+                    <div class="step">
+                        <div class="text-container">
+                            <p class="status-label">Completada</p>
+                            <p class="step-title step-title-strong">1. Ficha de Identificación</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="text-container">
+                            <p class="status-label invisible">Completada</p>
+                            <p class="step-title step-title-strong">2. Situación Financiera</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="text-container">
+                            <p class="status-label invisible">Actual</p>
+                            <p class="step-title step-title-strong text-[#BA8700]">3. Pediátrica</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido -->
+                <div class="w-full pt-0 p-3">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 pb-3">
+                        <div>
+                            <h1 id="step-title" class="font-bold section_title">3. Pediátrica</h1>
+                        </div>
+                        <%- include('../../partials/navButtons.ejs') %>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex flex-col lg:grid lg:grid-cols-5 gap-6">
+
+                        <!-- Sidebar pediatric substeps.
+                             data-step = backend subStep number (heredofamilial = 2, ... physicalExam = 8) -->
+                        <div id="sidebar-timeline" class="z-10">
+                            <div class="relative flex flex-row lg:flex-col gap-4 lg:min-w-0 overflow-x-auto">
+                                <div class="hidden lg:block absolute left-2.5 top-2 bottom-2 w-0.5 bg-gray-200"></div>
+
+                                <div class="subStep timeline-step" data-step="2">
+                                    <div class="circle timeline-circle">1</div>
+                                    <div>
+                                        <p class="title timeline-title">Antecedentes Heredofamiliares</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="3">
+                                    <div class="circle timeline-circle">2</div>
+                                    <div>
+                                        <p class="title timeline-title">Antecedentes Patológicos</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="4">
+                                    <div class="circle timeline-circle">3</div>
+                                    <div>
+                                        <p class="title timeline-title">Antecedentes Prenatales</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="5">
+                                    <div class="circle timeline-circle">4</div>
+                                    <div>
+                                        <p class="title timeline-title">Antecedentes de Desarrollo Generales</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="6">
+                                    <div class="circle timeline-circle">5</div>
+                                    <div>
+                                        <p class="title timeline-title">Conductas en General</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="7">
+                                    <div class="circle timeline-circle">6</div>
+                                    <div>
+                                        <p class="title timeline-title">Historia Escolar</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+
+                                <div class="subStep timeline-step" data-step="8">
+                                    <div class="circle timeline-circle">7</div>
+                                    <div>
+                                        <p class="title timeline-title">Exploración Física Pediátrica</p>
+                                        <p class="status timeline-status">Pendiente</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="dynamic-content" class="md:col-span-4 min-w-0">
+
+                            <!-- 3.1 Heredofamiliares (subStep1 / API section 2) -->
+                            <div id="pediatric-section-2" class="pediatric-content hidden">
+                                <%- include('./subStep1/heredofamilialBackground.ejs') %>
+                            </div>
+
+                            <!-- 3.2 Patológicos (subStep2 / API section 3) -->
+                            <div id="pediatric-section-3" class="pediatric-content hidden">
+                                <%- include('./subStep2/pathologicalBackground.ejs') %>
+                            </div>
+
+                            <!-- Placeholder for not-yet-built sections -->
+                            <div id="pediatric-section-placeholder" class="pediatric-content hidden">
+                                <div class="mt-6 p-6 rounded-xl border border-dashed border-gray-300 text-gray-500">
+                                    Esta sección aún está en construcción.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <%- include('../../partials/navButtons.ejs') %>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/main.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/initialInterview/sidebarTimeline.js"></script>
+    <script src="/js/initialInterview/child/childMapper.js"></script>
+    <script src="/js/initialInterview/child/childBuilder.js"></script>
+
+    <script>
+        const id_user = "<%= id_user %>";
+
+        // Backend subSteps shown in the sidebar (heredofamilial = 2 ... physicalExam = 8)
+        const FIRST_SECTION = 2;
+        const LAST_SECTION = 8;
+
+        const childApi = (section) =>
+            `/users/${id_user}/initial-interview/child/api/${id_user}/${section}`;
+
+        // ----- Content visibility -----
+        function setPediatricContent (section) {
+            document.querySelectorAll('.pediatric-content')
+                .forEach(el => el.classList.add('hidden'));
+
+            const active = document.getElementById(`pediatric-section-${section}`)
+                || document.getElementById('pediatric-section-placeholder');
+
+            if (active) active.classList.remove('hidden');
+        }
+
+        function updateNavigationButtons (section) {
+            document.querySelectorAll('.prevBtn').forEach(btn => {
+                btn.classList.toggle('opacity-0', section <= FIRST_SECTION);
+                btn.classList.toggle('pointer-events-none', section <= FIRST_SECTION);
+            });
+            document.querySelectorAll('.nextBtn').forEach(btn => {
+                btn.classList.toggle('opacity-0', section >= LAST_SECTION);
+                btn.classList.toggle('pointer-events-none', section >= LAST_SECTION);
+            });
+        }
+
+        // ----- Load a section from the API -----
+        async function loadSection (section) {
+            try {
+                const res = await fetch(childApi(section));
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    window.showToast?.(data.error || 'No se pudo cargar la sección', 'error');
+                    return;
+                }
+
+                window.childData = data;
+
+                window.sidebarState = {
+                    currentStep: section,
+                    completedSteps: data.data.completedSubSteps || [],
+                };
+
+                setPediatricContent(section);
+                updateNavigationButtons(section);
+                window.renderSidebar?.();
+                setTimeout(() => window.renderPediatricData?.(), 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ----- Save the current section -----
+        async function saveSection (section) {
+            try {
+                const body = window.buildSection(section);
+                const res = await fetch(childApi(section), {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    window.showToast?.(data.error || 'No se pudo guardar la sección', 'error');
+                    return false;
+                }
+                return true;
+
+            } catch (err) {
+                console.error(err);
+                window.showToast?.('Ocurrió un error al guardar', 'error');
+                return false;
+            }
+        }
+
+        // ----- Navigation -----
+        async function goToSection (section) {
+            const current = window.childData?.current_section;
+            if (current) {
+                const ok = await saveSection(current);
+                if (!ok) return;
+            }
+            await loadSection(section);
+        }
+
+        document.querySelectorAll('.timeline-step').forEach(step => {
+            step.addEventListener('click', () => goToSection(Number(step.dataset.step)));
+        });
+
+        document.querySelectorAll('.nextBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const current = window.childData?.current_section || FIRST_SECTION;
+                if (current < LAST_SECTION) goToSection(current + 1);
+            });
+        });
+
+        document.querySelectorAll('.prevBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const current = window.childData?.current_section || FIRST_SECTION;
+                if (current > FIRST_SECTION) goToSection(current - 1);
+            });
+        });
+
+        // ----- Live char counters -----
+        document.querySelectorAll('.char-counter').forEach(counter => {
+            const target = document.getElementById(counter.dataset.target);
+            const max = Number(counter.dataset.max) || 150;
+            if (!target) return;
+            const update = () => {
+                counter.textContent = `${target.value.length}/${max}`;
+                counter.classList.toggle('text-red-500', target.value.length >= max);
+            };
+            target.addEventListener('input', update);
+            update();
+        });
+
+        // ----- Initial load -----
+        loadSection(FIRST_SECTION);
+    </script>
+
+</body>
+</html>

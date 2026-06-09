@@ -404,7 +404,14 @@
     <script>
         document.getElementById("IIbutton").addEventListener("click", () => {
 
-            window.location.href = `/users/<%= usuario.idUser %>/initial-interview/financial`;
+            // Filtrado adulto/pediátrico por edad.
+            // `usuario.age` viene como "X años, Y meses y Z días" (ya descifrado por el backend);
+            // parseInt toma los años. Menor de 18 => entrevista pediátrica (child).
+            const ageYears = parseInt("<%= usuario.age || '' %>", 10);
+            const isChild = Number.isFinite(ageYears) && ageYears < 18;
+
+            const step = isChild ? 'child' : 'financial';
+            window.location.href = `/users/<%= usuario.idUser %>/initial-interview/${step}`;
         });
 
     if (sessionStorage.getItem('modifiedUser') === 'true') {
