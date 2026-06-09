@@ -928,3 +928,33 @@ ALTER TABLE user_clinical
 ALTER TABLE user_relation
     MODIFY COLUMN type ENUM('assigned', 'initial_interview', 'appointment') NOT NULL,
     MODIFY COLUMN id_clinic_user VARCHAR(36) NOT NULL;
+
+    --initial interview changes
+ALTER TABLE initial_interview
+    ADD COLUMN interviewer_name      VARCHAR(80)   NULL AFTER id_user_relation,
+    ADD COLUMN support_student_name  VARCHAR(80)   NULL AFTER interviewer_name,
+    ADD COLUMN residence             VARCHAR(80)   NULL AFTER schooling,
+    ADD COLUMN imc                   FLOAT         NULL AFTER size,
+    ADD COLUMN imc_category          VARCHAR(30)   NULL AFTER imc,
+    ADD COLUMN conclusions           VARCHAR(1000) NULL;
+
+
+-- 3. Children
+CREATE TABLE initial_interview_children (
+    id_child         INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_user_relation VARCHAR(36)  NOT NULL,
+    child_name       VARCHAR(80)  NULL,
+    child_age        INT          NULL,
+    child_schooling  ENUM(
+        'Sin escolaridad',
+        'Primaria',
+        'Secundaria',
+        'Bachillerato',
+        'Licenciatura',
+        'Posgrado'
+    ) NULL,
+    child_occupation VARCHAR(80)  NULL,
+    CONSTRAINT fk_child_relation
+        FOREIGN KEY (id_user_relation)
+        REFERENCES user_relation(id_user_relation)
+);
