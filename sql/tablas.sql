@@ -930,8 +930,30 @@ ALTER TABLE user_relation
     MODIFY COLUMN type ENUM('assigned', 'initial_interview', 'appointment') NOT NULL,
     MODIFY COLUMN id_clinic_user VARCHAR(36) NOT NULL;
 
-
 ALTER TABLE clinical_interview
     ADD COLUMN cdr_result          VARCHAR(150) NULL,
     ADD COLUMN nihss_result        VARCHAR(150) NULL,
     ADD COLUMN mental_observation  VARCHAR(500) NULL;
+
+ALTER TABLE users
+    MODIFY user_name VARCHAR(118) NULL UNIQUE,
+    MODIFY password_hash VARCHAR(250) NULL;
+
+DROP TABLE IF EXISTS access_role;
+DROP TABLE IF EXISTS acl_modules;
+DROP TABLE IF EXISTS acl;
+
+CREATE TABLE user_acl (
+    id_user_acl INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    id_module INT NOT NULL,
+    consultation TINYINT(1) DEFAULT 0,
+    writing TINYINT(1) DEFAULT 0,
+    edit TINYINT(1) DEFAULT 0,
+    eliminate TINYINT(1) DEFAULT 0,
+
+    FOREIGN KEY (id_user) REFERENCES users(id_user),
+    FOREIGN KEY (id_module) REFERENCES modules(id_module),
+
+    UNIQUE KEY unique_user_module (id_user, id_module)
+);

@@ -42,12 +42,10 @@ class AuthRepository {
   async getExceptions (idUser) {
     try {
       const [rows] = await this.db.execute(`
-                SELECT m.module AS module_name, acl.consultation, acl.writing, acl.edit, acl.eliminate
-                FROM access_role ar
-                JOIN acl ON ar.id_acl = acl.id_acl
-                JOIN acl_modules am ON acl.id_acl = am.id_acl
-                JOIN modules m ON am.id_module = m.id_module
-                WHERE ar.id_user = ?;`, [idUser]);
+                SELECT m.module AS module_name, ua.consultation, ua.writing, ua.edit, ua.eliminate
+                FROM user_acl ua
+                JOIN modules m ON ua.id_module = m.id_module
+                WHERE ua.id_user = ?;`, [idUser]);
 
       if (rows.length === 0) {
         return null;

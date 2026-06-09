@@ -31,6 +31,7 @@ describe('ExportPdfUseCase — Unit Tests', () => {
             fetchApplicationById: jest.fn(),
             fetchAllResultsForExport: jest.fn(),
             updateApplicationAndTestsStatus: jest.fn(),
+            fetchUserSchoolingAndOccupation: jest.fn().mockResolvedValue({ schooling: null, ocupation: null }),
         };
         mockUsersRepository = {
             fetchUserForExport: jest.fn(),
@@ -263,7 +264,7 @@ describe('ExportPdfUseCase — Unit Tests', () => {
 
         expect(mockGetNihUseCase.execute).toHaveBeenCalledWith({ id_results: 'r-nih' });
         const report = mockPdfService.generate.mock.calls[0][0];
-        expect(report.results[0].testName).toBe('NIH Toolbox');
+        expect(report.results[0].testName).toBe('NIH');
         expect(report.results[0].columns).toEqual(['Observaciones']);
         expect(report.results[0].rows).toEqual([]);
         expect(report.results[0].notes).toBe('observaciones NIH');

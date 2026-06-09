@@ -5,7 +5,6 @@ const ImpUserRepository = require('../../../infrastructure/repositories/ImpUsers
 const PostUserUseCase = require('../../../application/usecase/users/postUserUseCase');
 const postUserController = require('../../controller/users/postUser.controller');
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
-const HashingService = require('../../../infrastructure/external/hashing.service');
 
 const upload = require('../../../infrastructure/external/multer.service');
 const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
@@ -16,8 +15,7 @@ module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router();
 
   const repository = new ImpUserRepository();
-  const hashingService = new HashingService();
-  const useCase = new PostUserUseCase(repository, hashingService);
+  const useCase = new PostUserUseCase(repository);
   const controller = new postUserController(useCase);
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
