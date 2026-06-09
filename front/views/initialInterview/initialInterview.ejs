@@ -800,7 +800,8 @@
                 {
                     method: 'PATCH',
                     headers: {
-                    'Content-Type': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(body),
                 }
@@ -833,7 +834,10 @@
                 `/users/${id_user}/initial-interview/child/api/${id_user}/${apiStep}`,
                 {
                     method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
                     body: JSON.stringify(body),
                 }
                 );
@@ -849,7 +853,7 @@
 
             } catch (err) {
                 console.error('[savePediatricSection]', err);
-                window.showToast?.('Ocurrió un error al guardar', 'error');
+                window.showToast?.(`Error al guardar: ${err.message}`, 'error');
                 return false;
             }
         }

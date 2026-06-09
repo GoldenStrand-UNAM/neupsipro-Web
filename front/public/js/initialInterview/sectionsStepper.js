@@ -63,8 +63,8 @@ function renderSections () {
 
     const dots = container.querySelectorAll('.dot');
 
-    // Set as Complete
-    if (sectionsState.completedSteps.includes(step)) {
+    // Set as Complete — solo si NO es la fase activa en este momento
+    if (sectionsState.completedSteps.includes(step) && step !== sectionsState.currentStep) {
       label.classList.remove('invisible');
       check.classList.remove('invisible');
     }
