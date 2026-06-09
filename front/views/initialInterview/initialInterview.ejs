@@ -848,6 +848,7 @@
                 return true;
 
             } catch (err) {
+                console.error('[savePediatricSection]', err);
                 window.showToast?.('Ocurrió un error al guardar', 'error');
                 return false;
             }
