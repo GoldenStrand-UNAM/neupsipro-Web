@@ -11,9 +11,9 @@ window.sectionsState = window.sectionsState || {
 console.log(window);
 
 const stepConfig = new Map([
-  [1, 3],
+  [1, 4],
   [2, 4],
-  [3, 10],
+  [3, 7],
 ]);
 
 // Render UI
@@ -63,8 +63,8 @@ function renderSections () {
 
     const dots = container.querySelectorAll('.dot');
 
-    // Set as Complete
-    if (sectionsState.completedSteps.includes(step)) {
+    // Set as Complete — solo si NO es la fase activa en este momento
+    if (sectionsState.completedSteps.includes(step) && step !== sectionsState.currentStep) {
       label.classList.remove('invisible');
       check.classList.remove('invisible');
     }

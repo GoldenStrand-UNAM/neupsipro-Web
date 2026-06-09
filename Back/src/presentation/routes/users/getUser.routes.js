@@ -197,5 +197,11 @@ module.exports = (authUseCase, authMiddleware) => {
   router.use('/:id_user/initial-interview', identificationRoutes(authUseCase, authMiddleware));
   router.use('/:id_user/initial-interview', financialRoutes(authUseCase, authMiddleware));
 
+  const childInterviewRoutes = require('../initialInterview/childInterview.routes');
+  router.use('/:id_user/initial-interview', childInterviewRoutes(authUseCase, authMiddleware));
+
+  const clinicalInterviewRoutes = require('../initialInterview/clinicalInterview.routes');
+  router.use('/:id_user/initial-interview', clinicalInterviewRoutes(authUseCase, authMiddleware));
+
   return router;
 };

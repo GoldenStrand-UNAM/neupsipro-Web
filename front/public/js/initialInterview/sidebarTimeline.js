@@ -10,8 +10,14 @@ window.sidebarState = window.sidebarState || {
 // Render UI
 function renderSidebar () {
 
-  const steps = document.querySelectorAll('#sidebar-timeline .subStep');
-  if (!steps.length) return;
+  // Solo opera sobre el bloque de fase activo (visible) para evitar
+  // pintar duplicados cuando varios bloques comparten data-step.
+  const activeBlock = document.querySelector(
+    '#sidebar-timeline > div:not(.hidden)'
+  );
+  if (!activeBlock) return;
+
+  const steps = activeBlock.querySelectorAll('.subStep');
   // For each step update UI
   steps.forEach(stepEl => {
 
@@ -60,11 +66,16 @@ function renderSidebar () {
   });
 }
 
-// Enable subSections click
+// Enable subSections click — solo responde al bloque visible
 document.addEventListener('click', (e) => {
 
-  const el = e.target.closest('#sidebar-timeline .subStep');
-  if (!el) return;
+  const activeBlock = document.querySelector(
+    '#sidebar-timeline > div:not(.hidden)'
+  );
+  if (!activeBlock) return;
+
+  const el = e.target.closest('.subStep');
+  if (!el || !activeBlock.contains(el)) return;
 
   window.sidebarState.currentStep = Number(el.dataset.step);
 

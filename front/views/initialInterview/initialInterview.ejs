@@ -130,6 +130,29 @@
                                 </div>
                             </div>
 
+                            <!-- PEDIATRIC (Fase 3, niños) — subpasos visuales 1-7 = API 2-8 -->
+                            <div id="pediatric-section-1" class="pediatric-content hidden">
+                                <%- include('./child/subStep1/heredofamilialBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-2" class="pediatric-content hidden">
+                                <%- include('./child/subStep2/pathologicalBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-3" class="pediatric-content hidden">
+                                <%- include('./child/subStep3/prenatalBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-4" class="pediatric-content hidden">
+                                <%- include('./child/subStep4/developmentBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-5" class="pediatric-content hidden">
+                                <%- include('./child/subStep5/behaviorBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-6" class="pediatric-content hidden">
+                                <%- include('./child/subStep6/schoolHistoryBackground.ejs') %>
+                            </div>
+                            <div id="pediatric-section-7" class="pediatric-content hidden">
+                                <%- include('./child/subStep7/physicalExamBackground.ejs') %>
+                            </div>
+
                         </div>
 
                     </div>
@@ -153,17 +176,50 @@
     <script src="/js/initialInterview/sectionsStepper.js"></script>
     <script src="/js/initialInterview/sidebarTimeline.js"></script>
     <script src="/js/initialInterview/financial/financialBuilder.js"></script>
+    <script src="/js/initialInterview/child/childMapper.js"></script>
+    <script src="/js/initialInterview/child/childBuilder.js"></script>
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
-        // Total subSteps per phase (current_step), used to know the navigation boundaries
+        // Total subSteps per phase (current_step), used to know the navigation boundaries.
+        // La Fase 3 (pediátrica = 7 subpasos) se habilita SOLO para niños, tras cargar identificación.
         const PHASE_SUBSTEPS = { 1: 4, 2: 4 };
+        window.isChild = false;
+
+        window.showToast = function (message, type) {
+            const isError = type === 'error';
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 right-6 z-50 flex items-center gap-3 ${
+                isError ? 'bg-red-600' : 'bg-[#002B7A]'
+            } text-white px-5 py-3 rounded-xl shadow-lg text-sm`;
+            const icon = isError
+                ? `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>`;
+            const span = document.createElement('span');
+            span.textContent = message;
+            toast.innerHTML = icon;
+            toast.appendChild(span);
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        };
+
+        // Muestra el bloque de sidebar de la fase activa (identif. / financiera / pediátrica)
+        function showSidebarPhase (phase) {
+            const blocks = {
+                1: 'sidebar-identification-steps',
+                2: 'sidebar-financial-steps',
+                3: 'sidebar-pediatric-steps',
+            };
+            Object.values(blocks).forEach((bid) => document.getElementById(bid)?.classList.add('hidden'));
+            document.getElementById(blocks[phase])?.classList.remove('hidden');
+        }
 
         // Update nav buttons: hidden only at the very first/last subStep of the whole interview
         function updateNavigationButtons(phase, currentSection) {
 
+            const maxPhase = window.isChild ? 3 : 2;
             const isFirst = phase === 1 && currentSection === 1;
-            const isLast = phase === 2 && currentSection === PHASE_SUBSTEPS[2];
+            const isLast = phase === maxPhase && currentSection === PHASE_SUBSTEPS[maxPhase];
 
             document.querySelectorAll('.prevBtn').forEach(button => {
 
@@ -203,7 +259,7 @@
             } else if (data.current_step === 3) {
 
                 steptitle.textContent =
-                    '3. Historia Clínica';
+                    window.isChild ? '3. Pediátrica' : '3. Historia Clínica';
 
             } else {
 
@@ -245,6 +301,19 @@
                 } else if (data.current_section === 4) {
                     subStepTitle.textContent = '2.4 Resumen de Resultados';
                 }
+
+            } else if (data.current_step === 3) {
+
+                const pedTitles = {
+                    1: '3.1 Antecedentes Heredofamiliares',
+                    2: '3.2 Antecedentes Patológicos',
+                    3: '3.3 Antecedentes Prenatales / Natales',
+                    4: '3.4 Antecedentes de Desarrollo',
+                    5: '3.5 Conductas en General',
+                    6: '3.6 Historia Escolar',
+                    7: '3.7 Exploración Física',
+                };
+                subStepTitle.textContent = pedTitles[data.current_section] || '';
             }
         }
 
@@ -345,18 +414,29 @@
             }
         }
 
+        // Pediatric step content (Fase 3, niños)
+        function setPediatricContent(data) {
+            document.querySelectorAll('.pediatric-content')
+                .forEach(section => section.classList.add('hidden'));
+            const activeSection =
+                document.getElementById(`pediatric-section-${data.current_section}`);
+            if (activeSection) activeSection.classList.remove('hidden');
+        }
+
         // Set Content
         function setContent(data) {
 
-            // Both phases' sections live in the same DOM at once: hide everything
+            // All phases' sections live in the same DOM at once: hide everything
             // first so switching phases never leaves the previous one visible
-            document.querySelectorAll('.identification-content, .financial-content')
+            document.querySelectorAll('.identification-content, .financial-content, .pediatric-content')
                 .forEach(section => section.classList.add('hidden'));
 
             if (data.current_step === 1) {
                 setIdentificationContent(data);
             } else if (data.current_step === 2) {
                 setFinancialContent(data);
+            } else if (data.current_step === 3) {
+                setPediatricContent(data);
             }
         }
 
@@ -415,6 +495,54 @@
                         window.mapSubStep4?.(data.data);
                     }
                 }, 0);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Get content by pediatric subStep (Fase 3, niños) — visual 1-7 -> API 2-8
+        async function loadPediatricSection(section) {
+            try {
+                const apiStep = section + 1;
+                const res = await fetch(
+                    `/users/${id_user}/initial-interview/child/api/${id_user}/${apiStep}`
+                );
+                const data = await res.json();
+
+                if (!res.ok) {
+                    console.error(data.error);
+                    window.showToast?.(data.error || 'No se pudo cargar la sección', 'error');
+                    return;
+                }
+
+                // data.current_section viene como apiStep (2-8): lo usa childMapper.
+                window.childData = data;
+                // La navegación unificada usa el subpaso visual (1-7).
+                window.pediatricNav = { current_step: 3, current_section: section };
+
+                // Actualiza el stepper de fases para que muestre la fase 3 como activa
+                // y los dots reflejen el sub-paso actual.
+                window.sectionsState = {
+                    currentStep: 3,
+                    completedSteps: data.data.completedSteps || window.sectionsState?.completedSteps || [],
+                    subStep: section,
+                };
+
+                window.sidebarState = {
+                    phase: 3,
+                    currentStep: section,
+                    completedSteps: data.data.completedSubSteps || [],
+                };
+
+                setSubStepTitle(window.pediatricNav);
+                setPediatricContent(window.pediatricNav);
+                updateNavigationButtons(3, section);
+
+                if (window.renderSidebar) window.renderSidebar();
+                if (window.renderSections) window.renderSections();
+
+                setTimeout(() => window.renderPediatricData?.(), 0);
 
             } catch (err) {
                 console.error(err);
@@ -481,25 +609,28 @@
 
         // Get the loaded GET payload of the active phase
         function getActivePhaseData() {
-            return window.currentPhase === 1
-                ? window.identificationData
-                : window.financialData;
+            if (window.currentPhase === 1) return window.identificationData;
+            if (window.currentPhase === 3) return window.pediatricNav;
+            return window.financialData;
         }
 
         // Save the active subStep of the active phase
         async function saveActiveSection(section) {
-            return window.currentPhase === 1
-                ? saveIdentificationSection(section)
-                : saveSection(section);
+            if (window.currentPhase === 1) return saveIdentificationSection(section);
+            if (window.currentPhase === 3) return savePediatricSection(section);
+            return saveSection(section);
         }
 
         // Load and render a given phase/subStep, switching phases when needed
         async function goToSection(phase, section) {
 
             window.currentPhase = phase;
+            showSidebarPhase(phase);
 
             if (phase === 1) {
                 await loadIdentificationSection(section);
+            } else if (phase === 3) {
+                await loadPediatricSection(section);
             } else {
                 await loadSection(section);
             }
@@ -525,7 +656,16 @@
         // Entry point: start at Identification, jumping to Financial only if it's already completed
         async function loadInitialInterview() {
 
+            showSidebarPhase(1);
             await loadIdentification();
+
+            // ¿niño? -> habilita la Fase 3 pediátrica (7 subpasos) y renombra el stepper
+            window.isChild = Boolean(window.identificationData?.data?.readOnly?.isChild);
+            if (window.isChild) {
+                PHASE_SUBSTEPS[3] = 7;
+                const step3Title = document.querySelector('#sections-stepper .step[data-step="3"] .step-title');
+                if (step3Title) step3Title.textContent = '3. Pediátrica';
+            }
 
             const completedSteps = window.identificationData?.data?.completedSteps || [];
 
@@ -581,13 +721,14 @@
                 const phase = window.currentPhase;
                 const current = getActivePhaseData().current_section;
                 const total = PHASE_SUBSTEPS[phase];
+                const maxPhase = window.isChild ? 3 : 2;
 
                 // Save current section (free navigation: don't block on save outcome)
                 await saveActiveSection(current);
 
                 if (current < total) {
                     await goToSection(phase, current + 1);
-                } else if (phase < 2) {
+                } else if (phase < maxPhase) {
                     await goToSection(phase + 1, 1);
                 }
             });
@@ -677,14 +818,15 @@
         async function saveSection (section) {
             try {
                 
-                const body = buildSection(section);
+                const body = window.buildSection(section);
                 console.log('body: ', body);
                 const res = await fetch(
                 `/users/${id_user}/initial-interview/api/${id_user}/financial/${section}`,
                 {
                     method: 'PATCH',
                     headers: {
-                    'Content-Type': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(body),
                 }
@@ -698,12 +840,47 @@
                     return false;
                 }
 
+                window.showToast?.('Sección guardada exitosamente');
                 return true;
 
             } catch (err) {
 
                 console.error(err);
                 window.showToast?.('Ocurrió un error al guardar', 'error');
+                return false;
+            }
+        }
+
+        // PATCH Pediatric Section (Fase 3, niños) — visual 1-7 -> API 2-8
+        async function savePediatricSection (section) {
+            try {
+                const apiStep = section + 1;
+                const body = window.buildChildSection(apiStep);
+                const res = await fetch(
+                `/users/${id_user}/initial-interview/child/api/${id_user}/${apiStep}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                }
+                );
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    window.showToast?.(data.error || 'No se pudo guardar la sección', 'error');
+                    return false;
+                }
+
+                window.showToast?.('Sección guardada exitosamente');
+                return true;
+
+            } catch (err) {
+                console.error('[savePediatricSection]', err);
+                window.showToast?.(`Error al guardar: ${err.message}`, 'error');
                 return false;
             }
         }
@@ -731,6 +908,7 @@
                     return false;
                 }
 
+                window.showToast?.('Sección guardada exitosamente');
                 return true;
 
             } catch (err) {

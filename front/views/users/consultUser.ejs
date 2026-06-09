@@ -404,6 +404,8 @@
     <script>
         document.getElementById("IIbutton").addEventListener("click", () => {
 
+            // Entrada única a la entrevista inicial unificada (identificación -> financiera -> fase 3).
+            // La Fase 3 se decide internamente con is_child (pediátrica si niño, clínica si adulto).
             window.location.href = `/users/<%= usuario.idUser %>/initial-interview/financial`;
         });
 

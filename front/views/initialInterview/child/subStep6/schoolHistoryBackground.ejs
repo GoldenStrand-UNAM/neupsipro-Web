@@ -1,0 +1,72 @@
+<div>
+    <%
+        // Backend subStep 7 (validateSchoolHistory). id = clave camelCase del body.
+        const generales = [
+            { id: 'schoolStartingAge', label: '¿A qué edad comenzó la escuela?', type: 'number' },
+            { id: 'schoolPerformance', label: 'Desempeño escolar', type: 'text', max: 100 },
+        ];
+        // Cada grado tiene 3 campos (Nombre de la escuela, Promedio, Comentarios) que se
+        // combinan en una sola columna varchar(400) (ver childBuilder.js).
+        const grados = [
+            { id: 'preschool',     label: 'Preescolar' },
+            { id: 'primarySchool', label: 'Primaria' },
+            { id: 'juniorHigh',    label: 'Secundaria' },
+            { id: 'highschool',    label: 'Preparatoria' },
+        ];
+        const finales = [
+            { id: 'schoolInterest',    label: '¿Le gusta ir a la escuela? ¿Por qué?', type: 'text', max: 400 },
+            { id: 'schoolAptitudes',   label: 'Aptitudes / intereses escolares', type: 'text', max: 100 },
+            { id: 'failedYear',        label: '¿Ha reprobado algún año escolar?', type: 'text', max: 50 },
+            { id: 'particularClasses', label: 'Clases particulares / regularización (grado y materia)', type: 'text', max: 100 },
+            { id: 'partClassesTime',   label: '¿Cuánto tiempo?', type: 'text', max: 50 },
+            { id: 'extracurAct',       label: 'Actividades extraescolares', type: 'text', max: 100 },
+        ];
+    %>
+
+    <div class="space-y-4 max-w-xl mt-4">
+        <% generales.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <% if (f.type === 'number') { %>
+                    <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="Número">
+                <% } else { %>
+                    <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa">
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+
+    <h3 class="section_title text-lg mt-6">Escolaridad por grado</h3>
+    <div class="space-y-6 max-w-2xl mt-3">
+        <% grados.forEach(function (g) { %>
+            <div class="rounded-xl overflow-hidden shadow-sm border border-gray-400">
+                <div class="bg-[#BA8700] text-white px-4 py-2">
+                    <span class="font-semibold"><%= g.label %></span>
+                </div>
+                <div class="bg-white p-4 space-y-4">
+                    <div>
+                        <label class="input_label">Nombre de la escuela</label>
+                        <input type="text" id="<%= g.id %>Escuela" maxlength="150" class="input" placeholder="Nombre de la escuela">
+                    </div>
+                    <div>
+                        <label class="input_label">Promedio</label>
+                        <input type="text" id="<%= g.id %>Promedio" maxlength="20" class="input" placeholder="Promedio">
+                    </div>
+                    <div>
+                        <label class="input_label">Comentarios</label>
+                        <input type="text" id="<%= g.id %>Comentarios" maxlength="200" class="input" placeholder="Comentarios">
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <div class="space-y-4 max-w-xl mt-6">
+        <% finales.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <input type="text" id="<%= f.id %>" maxlength="<%= f.max %>" class="input" placeholder="Describa">
+            </div>
+        <% }); %>
+    </div>
+</div>

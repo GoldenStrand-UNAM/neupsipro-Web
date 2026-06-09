@@ -1,0 +1,87 @@
+@startuml EI04 - PATCH Child Interview (Pediatric)
+
+title Patch - Child Interview / Pediatric (Golondrina)
+
+actor "Clinical Group" as CG
+boundary "Child Interview \nView (Step 3)" as View
+boundary "Initial Interview \nRoutes" as Route
+control "POST \nChild Interview \nController" as Ctrl
+control "POST \nChild Interview \nUse Case" as UC
+entity "Child Interview \n(Entity)" as Ent
+control "Child Interview Repository" as Repo
+database "Database" as DB
+
+== Save a Section (Next / Previous / Section Change) ==
+
+CG -> View : Enter information, click 'Next'
+View -> View : buildSection(subStep) (build request body)
+View -> Route : PATCH /users/:id_user/initial-interview/child/api/:id_user/:subStep { body }
+Route -> Ctrl : saveChildInterview(req, res) \n(req.params.step = 'child')
+Ctrl -> UC : executeUpdate({id_user, step, subStep, body})
+
+UC -> Repo : fetchRelation({id_user})
+Repo -->> DB : SELECT id_user_relation FROM user_relation WHERE id_user = ?
+
+alt Relation found
+    DB -->> Repo : id_user_relation
+    Repo --> UC : id_user_relation
+
+    note over UC, Ent : Validate and normalize according to subStep \n(text / int / bool / float / enum)
+    UC -> Ent : validate<Section>(body)
+    Ent --> UC : validatedData
+
+    UC -> Repo : saveChildSection({subStep, id_user, id_user_relation, data})
+    Repo -> DB : getConnection() + beginTransaction()
+
+    Repo -> DB : INSERT INTO child_interview (id_user_relation) \nVALUES (?) ON DUPLICATE KEY UPDATE ... (ensureRow)
+    DB -->> Repo : ok
+
+    Repo -> DB : UPDATE child_interview SET <section columns> = ? \nWHERE id_user_relation = ?
+    DB -->> Repo : ok
+
+    opt subStep == 1 (Profile + Siblings)
+        Repo -> DB : DELETE FROM sibling WHERE id_user = ?
+        loop For each sibling with a name
+            Repo -> DB : INSERT INTO sibling (id_sibling, id_user, sibling_name, age, schooling, school_occupation) \nVALUES (UUID(), ?, ?, ?, ?, ?)
+        end
+        DB -->> Repo : ok
+    end
+
+    Repo -> DB : commit()
+    Repo --> UC : { saved: true }
+
+    note over UC : updateProgress: if subStep == 8 \nset symptoms_completed = 1
+    opt subStep == 8
+        UC -> Repo : updateSymptomsProgress({id_user_relation, completed:true})
+        Repo -->> DB : UPDATE initial_interview_progress SET symptoms_completed = 1 WHERE id_user_relation = ?
+    end
+
+    UC -> Repo : fetchInterviewProgress({id_user_relation})
+    Repo -->> DB : SELECT * FROM initial_interview_progress WHERE id_user_relation = ?
+    DB -->> Repo : progress
+
+    opt Global status changes
+        UC -> Repo : updateInterviewProgress({id_user_relation, status})
+        Repo -->> DB : UPDATE initial_interview_progress SET status = ? WHERE id_user_relation = ?
+    end
+
+    UC --> Ctrl : { current_section: subStep + 1, saved: true }
+    Ctrl --> Route : HTTP 200 { success:true, data }
+    Route --> View : HTTP 200
+    View --> CG : Load next section
+
+else Relation not found
+    DB -->> Repo : []
+    Repo --> UC : undefined
+    UC --> Ctrl : Error 404 (relation not found)
+    Ctrl --> Route : HTTP 404 { success:false, error }
+    Route --> View : HTTP 404
+    View --> CG : console.error(error)
+end
+
+note over Repo, DB
+  Error inside transaction:
+  rollback() + throw -> controller returns HTTP 500
+end note
+
+@enduml
