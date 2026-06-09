@@ -6,7 +6,6 @@ class UsersDTO {
     this.lastnameP = user.lastnameP;
     this.lastnameM = user.lastnameM;
     this.birthdate = user.birthdate;
-    this.passwordHash = user.passwordHash;
     this.assigned = user.assigned;
     this.phase = user.phase;
     this.basePathology = user.basePathology;
@@ -28,7 +27,6 @@ class UsersDTO {
       lastnameP: entity.lastname_p,
       lastnameM: entity.lastname_m,
       birthdate: entity.birthdate,
-      passwordHash: entity.password_hash,
       assigned: entity.id_clinic_user,
       phase: entity.neuro_status,
       basePathology: entity.base_patology,

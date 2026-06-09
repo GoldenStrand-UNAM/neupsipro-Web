@@ -12,10 +12,8 @@ function cryptUser (user) {
   const refBindex = crypt.generateBlindIndex(user.referenceNumber);
   return {
     ...encrypted,
-    userName: user.userName,
     idRole: user.idRole,
     assigned: user.assigned,
-    passwordHash: user.passwordHash,
     profilePhoto: user.profilePhoto,
     bindex: bindex,
     refBindex: refBindex,
