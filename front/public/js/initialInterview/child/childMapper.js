@@ -87,6 +87,34 @@ function renderPrenatalData (info) {
   Object.entries(bools).forEach(([id, col]) => setVal(id, boolToSelect(info[col])));
 }
 
+// 3.4 Antecedentes de Desarrollo Generales  (backend subStep 5)
+function renderDevelopmentData (info) {
+  // Campos directos (number / text / enum): id del form -> columna snake_case
+  const direct = {
+    babblingAge: 'babbling_age', firstWordAge: 'first_word_age', firstWord: 'first_word',
+    firstSentence: 'first_sentence', languagePairs: 'language_pairs', expressedIdeas: 'expressed_ideas',
+    spokenComprehension: 'spoken_comprehension', therapyInfo: 'therapy_info',
+    headSupport: 'head_support', turn: 'turn', seating: 'seating', crawl: 'crawl',
+    standing: 'standing', motion: 'motion', practicesSports: 'practices_sports', trimming: 'trimming',
+    letterLegibility: 'letter_legibility', motorCoordination: 'motor_coordination',
+    bicycle: 'bicyle', movementProblems: 'movement_problems',
+    temper: 'temper', socialSmile: 'social_smile', objectPermanence: 'object_permanence',
+    affectionDemonstration: 'affection_demonstration', conductStrangers: 'conduct_strangers',
+    childsConduct: 'childs_conduct', hasFriends: 'has_friends', friendsToHome: 'friends_to_home',
+    howPlays: 'how_plays', freetimeActivity: 'freetime_activity',
+    newSituationAdaptation: 'new_situation_adaptation',
+  };
+  // Campos Sí/No (tinyint en BD)
+  const bools = {
+    talkStrangers: 'talk_strangers', languageTherapy: 'lenguaje_therapy',
+    invitedToParty: 'invited_to_party', otherSexInterest: 'other_sex_interest',
+    electronics: 'electronics', followsGamesRules: 'follows_games_rules',
+  };
+
+  Object.entries(direct).forEach(([id, col]) => setVal(id, info[col]));
+  Object.entries(bools).forEach(([id, col]) => setVal(id, boolToSelect(info[col])));
+}
+
 // Dispatches the rendering according to the loaded section.
 function renderPediatricData () {
 
@@ -99,6 +127,7 @@ function renderPediatricData () {
     case 2: renderHeredofamilialData(info); break;
     case 3: renderPathologicalData(info); break;
     case 4: renderPrenatalData(info); break;
+    case 5: renderDevelopmentData(info); break;
     default: break;
   }
 }

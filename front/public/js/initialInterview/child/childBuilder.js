@@ -80,12 +80,33 @@ function buildPrenatal () {
   return body;
 }
 
+// 3.4 Antecedentes de Desarrollo Generales  (backend subStep 5)
+// Selects mandan 'Sí'/'No' (_bool); enum manda su valor; number como string (_int).
+function buildDevelopment () {
+  const ids = [
+    // Dominio comunicativo
+    'babblingAge', 'firstWordAge', 'firstWord', 'firstSentence', 'talkStrangers',
+    'languagePairs', 'expressedIdeas', 'spokenComprehension', 'languageTherapy', 'therapyInfo',
+    // Dominio motor
+    'headSupport', 'turn', 'seating', 'crawl', 'standing', 'motion', 'practicesSports',
+    'trimming', 'letterLegibility', 'motorCoordination', 'bicycle', 'movementProblems',
+    // Dominio social / conductual
+    'temper', 'socialSmile', 'objectPermanence', 'affectionDemonstration', 'conductStrangers',
+    'childsConduct', 'hasFriends', 'friendsToHome', 'invitedToParty', 'otherSexInterest',
+    'howPlays', 'freetimeActivity', 'electronics', 'followsGamesRules', 'newSituationAdaptation',
+  ];
+  const body = {};
+  ids.forEach((id) => { body[id] = val(id); });
+  return body;
+}
+
 // Returns the body matching the given section.
 function buildSection (section) {
   switch (Number(section)) {
     case 2: return buildHeredofamilial();
     case 3: return buildPathological();
     case 4: return buildPrenatal();
+    case 5: return buildDevelopment();
     default: return {};
   }
 }
