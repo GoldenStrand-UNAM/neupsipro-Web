@@ -21,14 +21,6 @@ CREATE TABLE privilege_role (
     CONSTRAINT fk_rp_role      FOREIGN KEY (id_role)      REFERENCES roles (id_role)
 );
 
-CREATE TABLE acl (
-    id_acl         INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    consultation   BOOL         NOT NULL,
-    writing       BOOL         NOT NULL,
-    edit           BOOL         NOT NULL,
-    eliminate      BOOL         NOT NULL
-);
-
 CREATE TABLE log_record (
     id_record        VARCHAR(36)  NOT NULL PRIMARY KEY,
     id_user          VARCHAR(36)  NOT NULL,   -- FK agregada después de crear usuario
@@ -37,25 +29,9 @@ CREATE TABLE log_record (
     affected_table   VARCHAR(20)  NOT NULL
 );
 
-CREATE TABLE access_role (
-    id_access_role  INT  NOT NULL AUTO_INCREMENT,
-    id_acl          INT  NOT NULL,
-    id_user         VARCHAR(36)  NOT NULL,
-    PRIMARY KEY (id_access_role)
-);
-
-
 CREATE TABLE modules (
     id_module  INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     module     VARCHAR(30)  NOT NULL
-);
-
-CREATE TABLE acl_modules (
-    id_acl_module  INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_acl         INT         NOT NULL,
-    id_module      INT         NOT NULL,
-    CONSTRAINT fk_am_acl    FOREIGN KEY (id_acl)    REFERENCES acl (id_acl),
-    CONSTRAINT fk_am_module FOREIGN KEY (id_module) REFERENCES modules (id_module)
 );
 
 CREATE TABLE tutorial (
@@ -111,10 +87,6 @@ CREATE TABLE user_relation (
 ALTER TABLE log_record
     ADD CONSTRAINT fk_log_user FOREIGN KEY (id_user) REFERENCES users (id_user);
 
-ALTER TABLE access_role
-    ADD CONSTRAINT fk_ar_acl  FOREIGN KEY (id_acl)  REFERENCES acl (id_acl),
-    ADD CONSTRAINT fk_ar_role FOREIGN KEY (id_user) REFERENCES users (id_user);
-    
 -- ============================================================
 -- ASSIGNMENTS AND INTERVENTION LOGBOOK
 -- ============================================================
@@ -382,6 +354,15 @@ CREATE TABLE clinical_interview (
     future_goals               VARCHAR(300) NULL,
     observations               VARCHAR(400) NULL,
     psychology_notes           VARCHAR(500) NULL,
+    -- Calculators
+    cardiovascular_risk        VARCHAR(200) NULL,
+    qstroke_result             VARCHAR(200) NULL,
+    diabetes_risk              VARCHAR(200) NULL,
+    calc_analysis              VARCHAR(400) NULL,
+    inclusion_criteria         VARCHAR(400) NULL,
+    -- Follow-up notes
+    initial_consultation       TEXT         NULL,
+    follow_up_notes            TEXT         NULL,
     CONSTRAINT fk_ci_relation FOREIGN KEY (id_user_relation) REFERENCES user_relation (id_user_relation)
 );
 
@@ -696,8 +677,6 @@ ADD COLUMN unit_entry_date DATE NULL AFTER registration_date;
 ALTER TABLE user_info
 ADD COLUMN stage ENUM('Evaluation', 'Initial', 'Following', 'Graduation') NOT NULL DEFAULT 'Evaluation';
 
-ALTER TABLE acl CHANGE writing writing BOOL NOT NULL;
-
 CREATE TABLE user_clinical (
     id_user      VARCHAR(36) NOT NULL PRIMARY KEY,
     affiliation  VARCHAR(20) NULL ,
@@ -925,6 +904,84 @@ ALTER TABLE user_clinical
     MODIFY COLUMN emergency_contact_phone VARCHAR(88) NULL,
     MODIFY COLUMN emergency_contact_relation VARCHAR(115) NULL;
 
+
 ALTER TABLE user_relation
     MODIFY COLUMN type ENUM('assigned', 'initial_interview', 'appointment') NOT NULL,
     MODIFY COLUMN id_clinic_user VARCHAR(36) NOT NULL;
+
+ALTER TABLE clinical_interview
+    ADD COLUMN cdr_result          VARCHAR(150) NULL,
+    ADD COLUMN nihss_result        VARCHAR(150) NULL,
+    ADD COLUMN mental_observation  VARCHAR(500) NULL;
+
+-- child_interview: Natales, Resultados de lenguaje, Visión y conclusiones (entrevista pediátrica).
+-- Se usan TEXT porque la tabla child_interview ya está cerca del límite de tamaño de fila de
+-- MySQL (65,535 bytes); los límites de largo por campo los aplica la entity (childInterview.js).
+ALTER TABLE child_interview
+    ADD COLUMN natal_labor_hours      TEXT       NULL,
+    ADD COLUMN natal_membrane_rupture TEXT       NULL,
+    ADD COLUMN natal_sdg              TEXT       NULL,
+    ADD COLUMN natal_cried_at_birth   TINYINT(1) NULL,
+    ADD COLUMN natal_weight_height    TEXT       NULL,
+    ADD COLUMN natal_apgar            TEXT       NULL,
+    ADD COLUMN natal_ucin             TEXT       NULL,
+    ADD COLUMN natal_discharge        TEXT       NULL,
+    ADD COLUMN natal_feeding_type     TEXT       NULL,
+    ADD COLUMN natal_bottle_weaning   TEXT       NULL,
+    ADD COLUMN natal_reflux           TEXT       NULL,
+    ADD COLUMN natal_ablactation      TEXT       NULL,
+    ADD COLUMN natal_comments         TEXT       NULL,
+    ADD COLUMN language_results       TEXT       NULL,
+    ADD COLUMN vision_error           TEXT       NULL,
+    ADD COLUMN exam_summary           TEXT       NULL,
+    ADD COLUMN exam_treatment_plan    TEXT       NULL;
+
+--initial interview changes
+ALTER TABLE initial_interview
+    ADD COLUMN interviewer_name      VARCHAR(80)   NULL AFTER id_user_relation,
+    ADD COLUMN support_student_name  VARCHAR(80)   NULL AFTER interviewer_name,
+    ADD COLUMN residence             VARCHAR(80)   NULL AFTER schooling,
+    ADD COLUMN imc                   FLOAT         NULL AFTER size,
+    ADD COLUMN imc_category          VARCHAR(30)   NULL AFTER imc,
+    ADD COLUMN conclusions           VARCHAR(1000) NULL;
+
+
+-- 3. Children
+CREATE TABLE initial_interview_children (
+    id_child         INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_user_relation VARCHAR(36)  NOT NULL,
+    child_name       VARCHAR(80)  NULL,
+    child_age        INT          NULL,
+    child_schooling  ENUM(
+        'Sin escolaridad',
+        'Primaria',
+        'Secundaria',
+        'Bachillerato',
+        'Licenciatura',
+        'Posgrado'
+    ) NULL,
+    child_occupation VARCHAR(80)  NULL,
+    CONSTRAINT fk_child_relation
+        FOREIGN KEY (id_user_relation)
+        REFERENCES user_relation(id_user_relation)
+);
+
+ALTER TABLE users
+    MODIFY user_name VARCHAR(118) NULL UNIQUE,
+    MODIFY password_hash VARCHAR(250) NULL;
+
+-- ACL por usuario (reemplaza a las viejas acl / access_role / acl_modules)
+CREATE TABLE user_acl (
+    id_user_acl INT AUTO_INCREMENT PRIMARY KEY,
+    id_user VARCHAR(36) NOT NULL,
+    id_module INT NOT NULL,
+    consultation TINYINT(1) DEFAULT 0,
+    writing TINYINT(1) DEFAULT 0,
+    edit TINYINT(1) DEFAULT 0,
+    eliminate TINYINT(1) DEFAULT 0,
+
+    FOREIGN KEY (id_user) REFERENCES users(id_user),
+    FOREIGN KEY (id_module) REFERENCES modules(id_module),
+
+    UNIQUE KEY unique_user_module (id_user, id_module)
+);
