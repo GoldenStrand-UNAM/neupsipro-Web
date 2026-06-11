@@ -3,7 +3,7 @@ const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 // Base imports
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
-const Repository = require('../../../infrastructure/repositories/permissionsRepository');
+const Repository = require('../../../infrastructure/repositories/ImpPermissionsRepository');
 
 // Get
 const Controller = require('../../controller/permissions/patchPermissions.controller');
@@ -20,7 +20,7 @@ module.exports = (authUseCase, authMiddleware) => {
   const controller = new Controller(useCase);
 
   router.patch(
-    '/api/admin/users/:userId/permissions',
+    '/users/:userId/permissions',
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('Permissions', 'edit'),

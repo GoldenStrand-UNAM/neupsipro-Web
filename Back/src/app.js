@@ -267,6 +267,10 @@ app.get('/consultUser', (req, res) => {
   });
 });
 
+const patchPermissionsRoutes = require('./presentation/routes/permissions/patchPermission.routes');
+
+app.use('/api/admin', patchPermissionsRoutes(authUseCase, authMiddleware));
+
 app.get('/construction', (req, res) => {
   res.render('construction');
 });

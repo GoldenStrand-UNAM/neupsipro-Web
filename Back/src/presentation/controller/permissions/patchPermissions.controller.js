@@ -7,22 +7,27 @@ class PatchPermissionsController {
   async patchPermission (req, res) {
 
     try {
+
       const { userId } = req.params;
+      const { permissions } = req.body;
 
-      const permissions =
-        await this.patchPermissionsUseCase.executePatch({ userId });
+      await this.patchPermissionsUseCase.executePatch({
+        userId,
+        permissions,
+      });
 
-      //Successful response
       res.status(200).json({
         success: true,
         message: 'Permissions saved',
-        permissions,
       });
+
     } catch (err) {
+
       res.status(err.status || 500).json({
         success: false,
         error: err.message,
       });
+
     }
   }
 
