@@ -1,44 +1,211 @@
 <!--Sections Sidebar-->
 
-
-<div class="relative flex flex-row lg:flex-col gap-4  lg:min-w-0">
+<div class="relative flex flex-col gap-4 lg:min-w-0">
   <!-- vertical line desktop -->
   <div class="hidden lg:block absolute left-2.5 top-2 bottom-2 w-0.5 bg-gray-200"></div>
 
-  <!--SubStep 1: Ingressos y Egresos-->
-  <div class="subStep timeline-step" data-step="1">
-    <div class="circle timeline-circle">1</div>
-    <div>
-      <p class="title timeline-title">Ingresos y Egresos</p>
-      <p class="status timeline-status">Pendiente</p>
+  <!-- Phase 1: Ficha de Identificación -->
+  <div id="sidebar-identification-steps" class="flex flex-row lg:flex-col gap-4">
+
+    <div class="subStep timeline-step" data-step="1">
+      <div class="circle timeline-circle">1</div>
+      <div>
+        <p class="title timeline-title">Datos Personales</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
     </div>
+
+    <div class="subStep timeline-step" data-step="2">
+      <div class="circle timeline-circle">2</div>
+      <div>
+        <p class="title timeline-title">Situación Familiar</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="3">
+      <div class="circle timeline-circle">3</div>
+      <div>
+        <p class="title timeline-title">Situación Laboral</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="4">
+      <div class="circle timeline-circle">4</div>
+      <div>
+        <p class="title timeline-title">Notas</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
   </div>
 
-  <!--SubStep 2: ESC Gubernamental-->
-  <div class="subStep timeline-step" data-step="2">
-    <div class="circle timeline-circle">2</div>
-    <div>
-      <p class="title timeline-title">ESC Gubernamental</p>
-      <p class="status timeline-status">Pendiente</p>
+  <!-- Phase 2: Nivel Socioeconómico -->
+  <div id="sidebar-financial-steps" class="flex flex-row lg:flex-col gap-4 hidden">
+
+    <div class="subStep timeline-step" data-step="1">
+      <div class="circle timeline-circle">1</div>
+      <div>
+        <p class="title timeline-title">Ingresos y Egresos</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
     </div>
+
+    <div class="subStep timeline-step" data-step="2">
+      <div class="circle timeline-circle">2</div>
+      <div>
+        <p class="title timeline-title">ESC Gubernamental</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="3">
+      <div class="circle timeline-circle">3</div>
+      <div>
+        <p class="title timeline-title">Cuestionarios AMAI</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="4">
+      <div class="circle timeline-circle">4</div>
+      <div>
+        <p class="title timeline-title">Resumen de Resultados</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
   </div>
 
-  <!--SubStep 3: Cuestionarios AMAI-->
-  <div class="subStep timeline-step" data-step="3">
-    <div class="circle timeline-circle">3</div>
-    <div>
-      <p class="title timeline-title">Cuestionarios AMAI</p>
-      <p class="status timeline-status">Pendiente</p>
+  <!-- Phase 3 (adultos): Historia Clínica -->
+  <div id="sidebar-clinical-steps" class="flex flex-row lg:flex-col gap-4 hidden">
+
+    <div class="subStep timeline-step" data-step="1">
+      <div class="circle timeline-circle">1</div>
+      <div>
+        <p class="title timeline-title">Preocupaciones Físicas</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
     </div>
+
+    <div class="subStep timeline-step" data-step="2">
+      <div class="circle timeline-circle">2</div>
+      <div>
+        <p class="title timeline-title">Motor</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="3">
+      <div class="circle timeline-circle">3</div>
+      <div>
+        <p class="title timeline-title">Sensorial</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="4">
+      <div class="circle timeline-circle">4</div>
+      <div>
+        <p class="title timeline-title">Funciones Mentales</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="5">
+      <div class="circle timeline-circle">5</div>
+      <div>
+        <p class="title timeline-title">Personalidad</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="6">
+      <div class="circle timeline-circle">6</div>
+      <div>
+        <p class="title timeline-title">Uso de Sustancias</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="7">
+      <div class="circle timeline-circle">7</div>
+      <div>
+        <p class="title timeline-title">Calculadoras</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="8">
+      <div class="circle timeline-circle">8</div>
+      <div>
+        <p class="title timeline-title">Notas de Seguimiento</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
   </div>
 
-  <!--SubStep 4: Resumen de Resultados-->
-  <div class="subStep timeline-step" data-step="4">
-    <div class="circle timeline-circle">4</div>
-    <div>
-      <p class="title timeline-title">Resumen de Resultados</p>
-      <p class="status timeline-status">Pendiente</p>
+  <!-- Phase 3 (niños): Pediátrica -->
+  <div id="sidebar-pediatric-steps" class="flex flex-row lg:flex-col gap-4 hidden">
+
+    <div class="subStep timeline-step" data-step="1">
+      <div class="circle timeline-circle">1</div>
+      <div>
+        <p class="title timeline-title">Antecedentes Heredofamiliares</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
     </div>
+
+    <div class="subStep timeline-step" data-step="2">
+      <div class="circle timeline-circle">2</div>
+      <div>
+        <p class="title timeline-title">Antecedentes Patológicos</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="3">
+      <div class="circle timeline-circle">3</div>
+      <div>
+        <p class="title timeline-title">Antecedentes Prenatales</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="4">
+      <div class="circle timeline-circle">4</div>
+      <div>
+        <p class="title timeline-title">Antecedentes de Desarrollo</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="5">
+      <div class="circle timeline-circle">5</div>
+      <div>
+        <p class="title timeline-title">Conductas en General</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="6">
+      <div class="circle timeline-circle">6</div>
+      <div>
+        <p class="title timeline-title">Historia Escolar</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
+    <div class="subStep timeline-step" data-step="7">
+      <div class="circle timeline-circle">7</div>
+      <div>
+        <p class="title timeline-title">Exploración Física</p>
+        <p class="status timeline-status">Pendiente</p>
+      </div>
+    </div>
+
   </div>
 
 </div>

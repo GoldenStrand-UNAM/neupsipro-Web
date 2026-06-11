@@ -84,11 +84,11 @@ class ImpUsersRepository extends usersRepository {
     try {
       await connection.query('START TRANSACTION');
       await connection.query(
-        `INSERT INTO users (id_user, id_role, user_name, first_name, lastname_p, lastname_m, email, profile_photo, birthdate,
-        password_hash, gender, dup_bindex)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [idUser, '2', user.userName, user.firstName, user.lastnameP, user.lastnameM, user.email,
-          user.profilePhoto, user.birthdate, user.passwordHash, user.sex, user.bindex]
+        `INSERT INTO users (id_user, id_role, first_name, lastname_p, lastname_m, email, profile_photo, birthdate,
+        gender, dup_bindex)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [idUser, '2', user.firstName, user.lastnameP, user.lastnameM, user.email,
+          user.profilePhoto, user.birthdate, user.sex, user.bindex]
       );
       await connection.query(
         `INSERT INTO user_info (
@@ -106,7 +106,7 @@ class ImpUsersRepository extends usersRepository {
       );
       const [rows] = await connection.query(
         `SELECT
-        u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.password_hash, u.profile_photo, u.gender,
+        u.id_role, u.user_name, u.first_name, u.lastname_p, u.lastname_m, u.birthdate, u.profile_photo, u.gender,
         ui.neuro_status, ui.base_patology, ui.attendance, ui.reference_number, ui.amputation_date, ui.amputation_level, ui.laterality,
         ui.prosthetist, ui.neuro_entry_date, ui.group_intervention,
         ur.id_clinic_user
@@ -132,21 +132,18 @@ class ImpUsersRepository extends usersRepository {
       await connection.query('START TRANSACTION');
 
       // Update main user information
-      // COALESCE preserves current profile photo/password
       await connection.query(
         `UPDATE users
-            SET user_name     = ?,
-                first_name    = ?,
+            SET first_name    = ?,
                 lastname_p    = ?,
                 lastname_m    = ?,
                 email         = ?,
                 birthdate     = ?,
                 gender        = ?,
-                profile_photo = COALESCE(?, profile_photo),
-                password_hash = COALESCE(?, password_hash)
+                profile_photo = COALESCE(?, profile_photo)
           WHERE id_user = ?`,
-        [user.userName, user.firstName, user.lastnameP, user.lastnameM, user.email,
-          user.birthdate, user.sex, user.profilePhoto, user.passwordHash, user.id_user]
+        [user.firstName, user.lastnameP, user.lastnameM, user.email,
+          user.birthdate, user.sex, user.profilePhoto, user.id_user]
       );
 
       // Update clinical info table
@@ -198,7 +195,6 @@ class ImpUsersRepository extends usersRepository {
     const [rows] = await db.query(
       `SELECT 
           u.id_user, 
-          u.user_name, 
           u.first_name, 
           u.lastname_p, 
           u.lastname_m,
@@ -309,8 +305,10 @@ class ImpUsersRepository extends usersRepository {
       `SELECT u.first_name,
               u.lastname_p,
               u.lastname_m,
+              u.birthdate,
               ui.protocol,
-              ui.reference_number
+              ui.reference_number,
+              ui.laterality
        FROM users u
        JOIN user_info ui ON u.id_user = ui.id_user
        WHERE u.id_user = ?
@@ -325,6 +323,8 @@ class ImpUsersRepository extends usersRepository {
       name: newRows[0].name,
       protocol: newRows[0].protocol,
       referenceNumber: newRows[0].reference_number,
+      laterality: newRows[0].laterality,
+      birthdate: newRows[0].birthdate,
     };
   }
 }

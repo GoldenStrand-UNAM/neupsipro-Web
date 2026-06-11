@@ -1,0 +1,79 @@
+@startuml EI04 - GET Child Interview (Pediatric)
+
+title Get - Child Interview / Pediatric (Golondrina)
+
+actor "Clinical Group" as CG
+boundary "Consult User View" as UView
+boundary "Child Interview \nView (Step 3)" as View
+
+boundary "Initial Interview \nRoutes" as Route
+control "Child Interview Controller" as ctrl
+control "get \nChildInterview \nUseCase" as UC
+control "Child Interview Repository" as Repo
+entity "Child Interview DTO" as DTO
+database "Database" as DB
+
+== Render de la página (Step 3 pediátrico) ==
+
+CG -> UView : Click en 'Historia Clínica' (usuario niño)
+UView -> Route : GET /users/:id_user/initial-interview/child
+Route -> ctrl : getChildPage(req, res)
+ctrl --> Route : render('initialInterview/child/childInterview', {id_user, step:3, section:1})
+Route --> View : HTTP 200
+View --> CG : Vista pediátrica (sección 1)
+
+== Carga de una sección (1..8) ==
+
+CG -> View : loadSection(subStep)
+View -> Route : GET /users/:id_user/initial-interview/child/api/:id_user/:subStep
+Route -> ctrl : getChildInterview(req, res) \n(req.params.step = 'child')
+ctrl -> UC : execute({id_user, step, subStep})
+
+UC -> Repo : fetchRelation({id_user})
+Repo -->> DB : query('SELECT id_user_relation \nFROM user_relation WHERE id_user = ?;', [id_user])
+
+alt Relación encontrada
+    DB -->> Repo : id_user_relation
+
+    note over UC : Despacha según subStep (1..8)
+
+    alt subStep == 1 (Ficha + Hermanos)
+        UC -> Repo : fetchIdentification({id_user_relation})
+        Repo -->> DB : SELECT <cols ficha> FROM child_interview WHERE id_user_relation = ?
+        DB -->> Repo : ficha
+        UC -> Repo : fetchSiblings({id_user})
+        Repo -->> DB : SELECT * FROM sibling WHERE id_user = ?
+        DB -->> Repo : siblings[]
+        Repo --> UC : { ...ficha, siblings }
+    else subStep 2..8
+        UC -> Repo : fetch<Section>({id_user_relation})
+        Repo -->> DB : SELECT <cols de la sección> FROM child_interview WHERE id_user_relation = ?
+        DB -->> Repo : sectionRow (o {})
+        Repo --> UC : sectionData
+    end
+
+    UC -> Repo : fetchRefNum({id_user})
+    Repo -->> DB : SELECT reference_number FROM user_info WHERE id_user = ?
+    DB -->> Repo : refNumber
+
+    UC -> Repo : fetchInterviewProgress({id_user_relation})
+    Repo -->> DB : SELECT * FROM initial_interview_progress WHERE id_user_relation = ?
+    DB -->> Repo : progress
+
+    UC --> ctrl : { current_step:3, current_section, refNumber, data:{section, completedSteps, status} }
+    ctrl -> DTO : fromEntity(result)
+    DTO --> ctrl : response
+    ctrl --> Route : HTTP 200 JSON {response}
+    Route --> View : HTTP 200
+    View --> CG : renderChildData() rellena inputs
+
+else Relación no encontrada
+    DB -->> Repo : []
+    Repo --> UC : undefined
+    UC --> ctrl : Error 404 (relation not found)
+    ctrl --> Route : HTTP 404 { error }
+    Route --> View : HTTP 404
+    View --> CG : console.error(error)
+end
+
+@enduml

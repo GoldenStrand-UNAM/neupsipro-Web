@@ -1,0 +1,68 @@
+<div>
+    <%
+        // Backend subStep 6 (validateBehavior). id = clave camelCase del body.
+        // 'likert' = frecuencia (se guarda como int 1-4 en columnas dis_*).
+        const groups = [
+            { title: 'Hábitos', fields: [
+                { id: 'byThemselvesAge', label: '¿A qué edad comenzó a hacer cosas por sí mismo/a?', type: 'number' },
+                { id: 'helpsAtHome',     label: '¿Ayuda en casa?', type: 'text', max: 50 },
+                { id: 'toDo',            label: 'Quehaceres', type: 'text' },
+            ] },
+            { title: 'Alimentación y ciclo de sueño-vigilia', fields: [
+                { id: 'howEats',           label: '¿Cómo come actualmente?', type: 'text' },
+                { id: 'dailyMeals',        label: '¿Cuántas comidas realiza al día?', type: 'number' },
+                { id: 'pickyEater',        label: '¿Es selectivo con los alimentos?', type: 'text' },
+                { id: 'foodNotConsumed',   label: 'Alimentos que no consume por su textura', type: 'text' },
+                { id: 'nonFoodSubstances', label: 'Ingesta de sustancias no-alimenticias', type: 'text' },
+                { id: 'feedingBehavior',   label: 'Comportamiento al comer', type: 'text' },
+                { id: 'sleepRoutine',      label: 'Rutina de sueño', type: 'text' },
+                { id: 'sleepHours',        label: 'Promedio de horas de sueño', type: 'text' },
+                { id: 'continuousSleep',   label: 'Sueño continuo', type: 'text' },
+                { id: 'naps',              label: 'Siestas (número)', type: 'number' },
+            ] },
+            { title: 'Control de esfínteres', fields: [
+                { id: 'sphControlAge',     label: 'Edad de inicio', type: 'number' },
+                { id: 'sphMethod',         label: 'Método', type: 'number' },
+                { id: 'daytimeSphCtrlAge', label: 'Edad de control diurno', type: 'number' },
+                { id: 'sphRegression',     label: 'Retrocesos', type: 'text' },
+            ] },
+            { title: 'Disciplina', fields: [
+                { id: 'typeHomeDiscipline', label: 'Tipo de disciplina en casa', type: 'text' },
+                { id: 'authorityFigure',    label: '¿Quién es la figura de autoridad?', type: 'text' },
+                { id: 'disScolding',          label: 'Regaño (frecuencia)', type: 'likert' },
+                { id: 'disPhysicalPunishment', label: 'Castigo físico (frecuencia)', type: 'likert' },
+                { id: 'disTimeout',           label: 'Tiempo fuera (frecuencia)', type: 'likert' },
+                { id: 'disTreat',             label: 'Premio (frecuencia)', type: 'likert' },
+                { id: 'disConvincing',        label: 'Convencimiento (frecuencia)', type: 'likert' },
+                { id: 'disOther',           label: 'Otro', type: 'text' },
+                { id: 'respDisMethods',     label: '¿Cómo responde al método disciplinar?', type: 'text' },
+                { id: 'partnerAgreement',   label: '¿Está de acuerdo con su pareja cuando se le impone una consecuencia?', type: 'text', max: 50 },
+                { id: 'disAreaChallenges',  label: '¿Cuáles son los principales retos en el área disciplinar?', type: 'text' },
+            ] },
+        ];
+    %>
+
+    <% groups.forEach(function (g) { %>
+        <h3 class="section_title text-lg mt-6"><%= g.title %></h3>
+        <div class="space-y-4 max-w-xl mt-3">
+            <% g.fields.forEach(function (f) { %>
+                <div>
+                    <label class="input_label"><%= f.label %></label>
+                    <% if (f.type === 'number') { %>
+                        <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="Número">
+                    <% } else if (f.type === 'likert') { %>
+                        <select id="<%= f.id %>" class="input text-black">
+                            <option value="">Selecciona</option>
+                            <option value="1">Nunca</option>
+                            <option value="2">Casi nunca</option>
+                            <option value="3">Casi siempre</option>
+                            <option value="4">Siempre</option>
+                        </select>
+                    <% } else { %>
+                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa">
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    <% }); %>
+</div>
