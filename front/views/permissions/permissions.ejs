@@ -79,8 +79,7 @@
                                     <% }) %>
 
                                     <td class="text-center py-3 px-4">
-                                        <span class="origin-badge px-3 py-1 rounded text-xs font-medium <%= module.hasCustomException ? 'bg-[#7C6FCD] text-white' : 'bg-[#C9A84C] text-white' %>" data-module-id="<%= module.idModule %>">
-                                            <%= module.hasCustomException ? 'Personalizado' : 'Heredado del Rol' %>
+                                        <span class="btn-badge <%= module.hasCustomException ? 'bg-[rgba(21,96,189,0.33)] text-blue-900' : 'bg-[rgba(201,168,76,0.33)] text-[#C9A84C]' %>" data-module-id="<%= module.idModule %>">                                            <%= module.hasCustomException ? 'Personalizado' : 'Heredado del Rol' %>
                                         </span>
                                     </td>
                                 </tr>
@@ -95,10 +94,12 @@
                         id="btn-save-permissions"
                         class="btn-mini bg-[#3350A9]"
                         data-user-id="<%= user.idUser %>">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
-                        </svg>
-                        Guardar
+                        <span id="save-icon" class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                <path fill="none" stroke="currentColor" stroke-width="1.5" d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3zM15 4v5H6V4m6 14a3 3 0 1 1 0-6a3 3 0 0 1 0 6z"/>
+                            </svg>
+                        </span>
+                        <span id="save-text">Guardar</span>
                     </button>
                 </div>
 

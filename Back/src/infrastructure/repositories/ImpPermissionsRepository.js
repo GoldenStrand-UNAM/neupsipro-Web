@@ -1,6 +1,9 @@
 
 const db = require ('../database/database');
 const PermissionsRepository = require('../../domain/repository/PermissionsRepository');
+const Uncrypt = require('../crypt/clinical/getClinicals');
+
+const uncrypt = new Uncrypt();
 
 class ImpPermissionsRepository extends PermissionsRepository {
 
@@ -13,17 +16,25 @@ class ImpPermissionsRepository extends PermissionsRepository {
             a.writing,
             a.edit,
             a.eliminate
-        FROM user_acl AS a
-        INNER JOIN modules AS m 
-          ON a.id_module = m.id_module
-        WHERE a.id_user = ?`,
+        FROM modules AS m 
+        LEFT JOIN user_acl AS a 
+            ON m.id_module = a.id_module AND a.id_user = ?`,
       [userId]
     );
-
     return rows || null;
   }
 
-  // Fetch contributors by relation
+  async fetchName ({ userId }) {
+    const [rows] = await db.query (`SELECT
+      first_name,
+      lastname_p,
+      lastname_m
+      FROM users 
+      WHERE id_user = ?`, [userId]);
+    const name = uncrypt.uncryptName(rows) || null;
+    return name;
+  }
+
   async fetchPrivilegeNames () {
     const [rows] = await db.query(` SELECT p.permited_action, 
 	            p.permissions

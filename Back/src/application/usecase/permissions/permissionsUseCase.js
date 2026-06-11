@@ -1,5 +1,6 @@
 const Permissions = require('../../../domain/entity/permissions');
 const Exceptions = require('../../../domain/entity/exceptions');
+const Clinical = require('../../../domain/entity/clinical');
 
 class PermissionsUseCase {
   constructor (permissionsRepository) {
@@ -10,7 +11,7 @@ class PermissionsUseCase {
 
     // fetch all permissions for clinical user
     const permissionsData = await this.permissionsRepository.fetchAll({ userId });
-
+    const nameData = await this.permissionsRepository.fetchName({ userId });
     const exceptionsData = await this.permissionsRepository.fetchPrivilegeNames();
 
     const permissions = new Permissions({
@@ -21,9 +22,11 @@ class PermissionsUseCase {
       exceptions: exceptionsData,
     });
 
+    const name = new Clinical(nameData);
     return {
       permissions,
       exceptions,
+      name,
     };
   }
 }

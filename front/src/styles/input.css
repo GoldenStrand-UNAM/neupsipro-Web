@@ -10,6 +10,7 @@
 @import './components/atoms/_text.css';
 @import './components/atoms/_input-base.css';
 @import './components/atoms/_pop-up.css';
+@import './components/atoms/_checkbox.css';
 
 @import './components/molecules/_btn-molecules.css';
 @import './components/molecules/_input-molecules.css';

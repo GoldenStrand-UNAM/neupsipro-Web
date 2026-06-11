@@ -170,7 +170,7 @@ app.use((req, res, next) => {
 });
 
 // Permissions
-const permissionsRoutes = require('./presentation/routes/permissions/permissions.routes');
+const permissionsRoutes = require('./presentation/routes/permissions/getPermission.routes');
 
 app.use('/', permissionsRoutes(authUseCase, authMiddleware));
 
@@ -266,12 +266,6 @@ app.get('/consultUser', (req, res) => {
     activePage: 'usuario',
   });
 });
-
-// ========== Permissions ===========
-const permissionsRoutes = require('./presentation/routes/permissions/getPermission.routes');
-
-app.use('/api/admin', permissionsRoutes(authUseCase, authMiddleware));
-
 
 app.get('/construction', (req, res) => {
   res.render('construction');
