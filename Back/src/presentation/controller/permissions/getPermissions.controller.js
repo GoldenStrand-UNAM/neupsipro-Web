@@ -1,4 +1,5 @@
 const PermissionsDTO  = require('../../../application/dto/permissionsDTO');
+const ExceptionsDTO = require('../../../application/dto/exceptionsDTO');
 
 class PermissionsController {
   constructor (permissionsUseCase) {
@@ -7,17 +8,21 @@ class PermissionsController {
 
   // get clinic permissions
   async getPermission (req, res) {
-
     try {
       const { userId } = req.params;
 
-      const permissions =
-        await this.permissionsUseCase.execute({ userId });
+      const {
+        permissions,
+        exceptions,
+      } = await this.permissionsUseCase.execute({ userId });
 
-      const response = PermissionsDTO.fromEntity(permissions);
+      const response = {
+        permissions: PermissionsDTO.fromEntity(permissions),
+        exceptions: ExceptionsDTO.fromEntity(exceptions),
+      };
 
-      //Successful response
       res.status(200).json(response);
+
     } catch (error) {
       return res.status(400).json({
         error: error.message,
