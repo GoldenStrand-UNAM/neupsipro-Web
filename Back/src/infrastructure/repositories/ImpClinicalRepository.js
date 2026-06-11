@@ -109,13 +109,15 @@ class ImpClinicalRepository extends clinicalRepository {
     LEFT JOIN user_info ui ON p.id_user = ui.id_user
     WHERE ur.id_clinic_user = ? 
       AND p.eliminated = 0 
+      AND ur.type = 'assigned'
     LIMIT ? OFFSET ?;`, [id_user, Number(limit), Number(offset)]);
     const [[{ total }]] = await db.query(`
     SELECT COUNT(*) as total
       FROM user_relation ur
       INNER JOIN users p ON ur.id_user = p.id_user
       WHERE ur.id_clinic_user = ?
-        AND p.eliminated = 0;
+        AND p.eliminated = 0
+        AND ur.type = 'assigned';
   `, [id_user]);
 
     const totalPages = Math.ceil(total / limit);
@@ -210,7 +212,7 @@ class ImpClinicalRepository extends clinicalRepository {
     );
     return rows[0];
   }
-  
+
   async fetchClinicalForEdit ({ id_user }) {
     const [rows] = await db.query(
       `SELECT 
