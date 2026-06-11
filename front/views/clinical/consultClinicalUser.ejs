@@ -352,6 +352,21 @@ function consultar(id) {
 }
 // post clinicals
 fetchUsers();
+
+// ===== Permissions redirect =====
+const btnViewPermissions = document.getElementById('btnViewPermissions');
+
+if (btnViewPermissions) {
+    btnViewPermissions.addEventListener('click', () => {
+        const clinicalId = window.__USER_DATA__.idUser;
+        
+        if (clinicalId) {
+            window.location.href = `/clinical/${clinicalId}/permissions`;
+        } else {
+            showToast('No se encontró el ID del colaborador');
+        }
+    });
+}
     </script>
   </body>
 </html>

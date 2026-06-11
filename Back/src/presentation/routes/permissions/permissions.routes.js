@@ -3,28 +3,27 @@ const { apiLimiter } = require('../../../infrastructure/external/rateLimiting');
 
 // Base imports
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
-const FIRepository = require('../../../infrastructure/repositories/financialInterviewRepository');
+//const FIRepository = require('../../../infrastructure/repositories/financialInterviewRepository');
 
 // Get
-const Controller = require('../../controller/initialInterview/financialInterview.controller');
-const GetUseCase = require('../../../application/usecase/initialInterview/financialInterviewUseCase');
+const Controller = require('../../controller/permissions/getPermissions.controller');
 
 module.exports = (authUseCase, authMiddleware) => {
   const router = express.Router({ mergeParams: true });
 
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
-  const repository = new FIRepository();
+  //const repository = new FIRepository();
 
   // GET
-  const useCase = new GetUseCase(repository);
-  const controller = new Controller(useCase);
+ // const useCase = new GetUseCase(repository);
+  const controller = new Controller(/*useCase*/);
 
   router.get(
-    '/permissions',
+    '/clinical/:idUser/permissions',
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('Permissions', 'consultation'),
-    (req, res) => controller.getPermissionsPage(req, res)
+    (req, res) => controller.getPage(req, res)
   );
 
   /*router.get(

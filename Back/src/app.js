@@ -169,6 +169,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Permissions
+const permissionsRoutes = require('./presentation/routes/permissions/permissions.routes');
+
+app.use('/', permissionsRoutes(authUseCase, authMiddleware));
+
 // Dasboards
 const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
 
