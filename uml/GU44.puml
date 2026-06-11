@@ -1,0 +1,135 @@
+@startuml MP01
+actor Administrator
+
+participant "View" as View
+participant "Routes" as Routes
+participant "PermissionsMiddleware" as Mid
+participant "UpdatePermissionsController" as Controller
+participant "AuthUseCase" as AuthUseCase
+participant "UpdateUserPermissionsUseCase" as UseCase
+participant "UserEntity" as UserEntity
+participant "ExceptionEntity" as ExceptionEntity
+participant "PrivilegeEntity" as PrivilegeEntity
+participant "UserDto" as UserDto
+participant "RolePrivilegeDto" as PDto
+participant "UserExceptionDto" as EDto
+participant "ExceptionResponseDto" as RespDto
+participant "UpdateUserPermissionsRepository" as Repository
+database "DB" as DB
+
+Administrator -> View : Select module, set exception type\n(grant/deny), click "Guardar cambios"
+View -> Routes : PUT /admin/users/:userId/permissions\nbody: { moduleId, action, exceptionType }
+
+Routes -> Mid : checkPermission(adminId, 'permissions', 'editing')
+Mid -> AuthUseCase : checkPermission(adminId, 'permissions', 'editing')
+AuthUseCase -> Repository : await PromiseAll[getPrivileges(adminId),\ngetExceptions(adminId, 'permissions')]
+Repository -> DB : db.execute[getPrivileges(adminId),\ngetExceptions(adminId, 'permissions')]
+DB --> Repository : [rawAdminPrivileges[], rawAdminExceptions[]]
+Repository --> AuthUseCase : rawAdminPrivileges, rawAdminExceptions
+
+loop for each rawAdminPrivilege
+    AuthUseCase -> PrivilegeEntity : new PrivilegeEntity(rawAdminPrivilege)
+    PrivilegeEntity --> AuthUseCase : privilegeEntity
+    AuthUseCase -> PDto : fromEntity(privilegeEntity)
+    PDto --> AuthUseCase : privilegeDto
+end
+
+loop for each rawAdminException
+    AuthUseCase -> ExceptionEntity : new ExceptionEntity(rawAdminException)
+    ExceptionEntity --> AuthUseCase : exceptionEntity
+    AuthUseCase -> EDto : fromEntity(exceptionEntity)
+    EDto --> AuthUseCase : exceptionDto
+end
+
+alt admin has permission to edit permissions
+
+    Mid --> Routes : authorized
+    Routes -> Controller : updateUserPermissions(userId, moduleId, action, exceptionType)
+    Controller -> UseCase : execute(userId, moduleId, action, exceptionType)
+
+    ' --- Validate user exists ---
+    UseCase -> Repository : findUserById(userId)
+    Repository -> DB : db.execute('SELECT id_user, user_name, id_role\nFROM users WHERE id_user = ?', [userId])
+
+    alt user found
+
+        DB --> Repository : user row (snake_case)
+        Repository --> UseCase : raw user row
+        UseCase -> UserEntity : new UserEntity(raw user row)
+        UserEntity --> UseCase : userEntity
+        UseCase -> UserDto : fromEntity(userEntity)
+        UserDto --> UseCase : userDto
+
+        ' --- Check if exception already exists for this user + module + action ---
+        UseCase -> Repository : findException(userId, moduleId, action)
+        Repository -> DB : db.execute('SELECT * FROM access_role\nWHERE id_user = ? AND id_module = ? AND action = ?',\n[userId, moduleId, action])
+
+        alt exception already exists → UPDATE
+
+            DB --> Repository : existing exception row (snake_case)
+            Repository --> UseCase : raw exception row
+            UseCase -> ExceptionEntity : new ExceptionEntity(raw exception row)
+            ExceptionEntity --> UseCase : exceptionEntity
+
+            note over UseCase
+                Exception exists: only the type
+                (grant ↔ deny) needs to change
+            end note
+
+            UseCase -> Repository : updateException(exceptionEntity.idException, exceptionType)
+            Repository -> DB : db.execute('UPDATE acess_role\nSET exception_type = ?\nWHERE id_exception = ?',\n[exceptionType, idException])
+            DB --> Repository : updated row (snake_case)
+            Repository --> UseCase : raw updated exception row
+
+        else exception does not exist → INSERT
+
+            DB --> Repository : null
+            Repository --> UseCase : null
+
+            note over UseCase
+                No prior exception: create a new
+                ACL entry for this user + module + action
+            end note
+
+            UseCase -> Repository : createException(userId, moduleId, action, exceptionType)
+            Repository -> DB : db.execute('INSERT INTO acess_role\n(id_user, id_module, action, exception_type)\nVALUES (?, ?, ?, ?)',\n[userId, moduleId, action, exceptionType])
+            DB --> Repository : inserted row (snake_case)
+            Repository --> UseCase : raw inserted exception row
+
+        end
+
+        ' --- Map result: raw → Entity → Dto ---
+        UseCase -> ExceptionEntity : new ExceptionEntity(raw exception row)
+        ExceptionEntity --> UseCase : exceptionEntity
+        UseCase -> EDto : fromEntity(exceptionEntity)
+        EDto --> UseCase : userExceptionDto
+
+        ' --- Build final response ---
+        UseCase -> RespDto : fromDtos(userDto, userExceptionDto)
+        RespDto --> UseCase : exceptionResponseDto\n{ user, updatedException }
+
+        UseCase --> Controller : exceptionResponseDto
+        Controller --> Routes : HTTP 200
+        Routes --> View : exceptionResponseDto (JSON)
+        View --> Administrator : "Permisos actualizados correctamente"\n+ updated exception summary
+
+    else user not found
+
+        DB --> Repository : null
+        Repository --> UseCase : null
+        UseCase --> Controller : UserNotFoundException
+        Controller --> Routes : HTTP 404
+        Routes --> View : Error message
+        View --> Administrator : "User not found"
+
+    end
+
+else admin has no permission
+
+    Mid --> Routes : HTTP 403
+    Routes --> View : Error message
+    View --> Administrator : "You do not have permission to edit this"
+
+end
+
+@enduml

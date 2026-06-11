@@ -1,0 +1,52 @@
+@startuml modify permissions
+title Modify permissions flow
+skinparam style strictuml
+skinparam activity {
+  BackgroundColor #dbeafe
+  BorderColor #1e40af
+  DiamondBackgroundColor #fef08a
+  DiamondBorderColor #ca8a04
+}
+
+|Admin|
+start
+:Modifies checkboxes in the\npermissions matrix;
+
+|System|
+:Applies UI dependency rules\n(e.g., Check 'Create' -> Auto-check 'Consult');
+
+|Admin|
+:Clicks the "Guardar" button;
+
+|System|
+:Disables button and shows\nloading state (spinner);
+:Validates session token and\n"Administrator" role;
+
+if (Is the user a valid Administrator?) then (No)
+  #fee2e2:Blocks the action (Error 403);
+  stop
+else (Yes)
+  :Processes submitted matrix data;
+  :Compares new permissions against\nthe user's Base Role defaults;
+  
+  if (Does the new configuration exactly\nmatch the Base Role for a module?) then (Yes)
+    :Marks the custom ACL record\nfor deletion (Optimization);
+  else (No)
+    :Marks the custom ACL record\nfor creation or update;
+  endif
+  
+  :Attempts Database Transaction;
+  
+  if (Did a network or DB error occur?) then (Yes)
+    :Rollbacks partial changes;
+    #fee2e2:Shows error message:\n"Could not save changes at this time.\nPlease try again later.";
+    :Re-enables the "Guardar" button;
+    stop
+  else (No)
+    :Commits changes to Database;
+    #dcfce3:Shows success notification:\n"Permissions updated successfully";
+    :Reloads the permissions table\nwith the updated data;
+    stop
+  endif
+endif
+@enduml
