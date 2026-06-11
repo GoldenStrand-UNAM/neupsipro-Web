@@ -4,14 +4,12 @@ class ClinicalPatientDTO {
     name,
     state,
     assigmentDate,
-    type,
 
   }) {
     this.id = id,
     this.name = name;
     this.state = state;
     this.assigmentDate = assigmentDate;
-    this.type = type;
   }
 
   static fromEntity (entity) {
@@ -20,7 +18,6 @@ class ClinicalPatientDTO {
       name: entity.name,
       state: entity.state,
       assigmentDate: entity.assigmentDate,
-      type: entity.type,
 
     });
   }
