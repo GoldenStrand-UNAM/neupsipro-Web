@@ -47,7 +47,7 @@ module.exports = (authUseCase, authMiddleware) => {
   router.patch(
     '/api/:id_user/:step/:subStep',
     authMiddleware.verifyToken,
-    userLimiter,
+    apiLimiter,
     permissionsMiddleware.requirePermission('Initial interview', 'edit'),
     (req, res) => postController.saveFinancialInterview(req, res)
   );

@@ -9,7 +9,11 @@ const response = (req, res) => {
     req.xhr ||
     req.headers['x-requested-with'] === 'XMLHttpRequest' ||
     req.method === 'POST' ||
-    req.path.startsWith('/api');
+    req.method === 'PATCH' ||
+    req.method === 'PUT' ||
+    req.method === 'DELETE' ||
+    req.path.startsWith('/api') ||
+    req.headers.accept?.includes('application/json');
 
   if (wantsJson) {
     return res.status(429).json({

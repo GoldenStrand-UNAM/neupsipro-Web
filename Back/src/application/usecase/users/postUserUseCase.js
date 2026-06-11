@@ -6,7 +6,6 @@ const crypt = require('../../../infrastructure/crypt/users/postUser');
 class PostUserUseCase {
   constructor (userRepository, hashingService) {
     this.userRepository = userRepository;
-    this.hashingService = hashingService;
   }
 
   async execute (data) {
@@ -22,8 +21,6 @@ class PostUserUseCase {
 
     // Use Case validation
     const validatedUser = validateUser(sanitizedUser);
-    // Password hashing
-    const passwordHash = await this.hashingService.hash(data.password);
     // Entity validation
     const user = new User (validatedUser);
 
@@ -34,10 +31,8 @@ class PostUserUseCase {
           throw new Error("El usuario ya se encuentra registrado.");
       if (duplicate.matched_reference === 1)
           throw new Error("El número de referencia ya pertenece a otro usuario.");
-      if (duplicate.matched_username === 1)
-          throw new Error("El nombre de usuario ya está en uso.");
     }
-      const saved = await this.userRepository.postUser({ ...cryptedUser, passwordHash });
+      const saved = await this.userRepository.postUser(cryptedUser);
       // Map saved into clean DTO for the client
       return UsersDTO.fromEntity(saved);
   }

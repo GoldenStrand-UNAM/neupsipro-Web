@@ -14,7 +14,6 @@ class usersRepository {
     _lastnameP,
     _lastnameM,
     _birthdate,
-    _passwordHash,
     _assigned,
     _phase,
     _basePathology,
