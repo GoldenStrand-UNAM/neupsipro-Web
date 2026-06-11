@@ -41,7 +41,7 @@ loop for each rawAdminException
     EDto --> AuthUseCase : exceptionDto
 end
 
-alt admin has permission to edit permissions
+alt admin has permission to edit permissions 
 
     Mid --> Routes : authorized
     Routes -> Controller : updateUserPermissions(userId, moduleId, action, exceptionType)
