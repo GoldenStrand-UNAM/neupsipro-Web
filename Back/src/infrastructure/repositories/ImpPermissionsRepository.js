@@ -4,6 +4,7 @@ const PermissionsRepository = require('../../domain/repository/PermissionsReposi
 
 class ImpPermissionsRepository extends PermissionsRepository {
 
+  // ----------------------------------- GET -----------------------------------
   // Fetch all permissions by userId with module names
   async fetchAll ({ userId }) {
     const [rows] = await db.query(
@@ -33,6 +34,94 @@ class ImpPermissionsRepository extends PermissionsRepository {
         WHERE pr.id_role = 3`);
 
     return rows;
+  }
+
+  // ---------------------------------- PATCH ---------------------------------
+  // Fetchs if the exception exist already
+  async fetchExceptions ({ userId, moduleName }) {
+    const [rows] = await db.query(
+      ` SELECT
+            m.module,
+            a.consultation,
+            a.writing,
+            a.edit,
+            a.eliminate
+        FROM user_acl AS a
+        INNER JOIN modules AS m 
+          ON a.id_module = m.id_module
+        WHERE a.id_user = ? 
+          AND m.module = ?`,
+      [userId, moduleName]
+    );
+
+    return rows.length > 0 ? rows[0] : null;
+  }
+
+  // Fetch module id
+  async fetchIdModule ({ moduleName }) {
+    const [rows] = await db.query(
+      ` SELECT id_module
+        FROM modules
+        WHERE module = ?`,
+      [moduleName]
+    );
+
+    return rows;
+  }
+
+  // Update Exception by userid and module name
+  async updateException (data) {
+    await db.query(
+      `UPDATE user_acl AS a
+     INNER JOIN modules AS m
+       ON a.id_module = m.id_module
+     SET
+       a.consultation = ?,
+       a.writing = ?,
+       a.edit = ?,
+       a.eliminate = ?
+     WHERE a.id_user = ?
+       AND m.module = ?`,
+      [
+        data.consultation,
+        data.writing,
+        data.edit,
+        data.eliminate,
+        data.userId,
+        data.moduleName,
+      ]
+    );
+  }
+
+  // Inserts a new exception by moduleid and userid
+  async insertException ({
+    userId,
+    idModule,
+    consultation,
+    writing,
+    edit,
+    eliminate,
+  }) {
+
+    await db.query(
+      `INSERT INTO user_acl (
+        id_user,
+        id_module,
+        consultation,
+        writing,
+        edit,
+        eliminate
+    )
+    VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        idModule,
+        consultation,
+        writing,
+        edit,
+        eliminate,
+      ]
+    );
   }
 
 }
