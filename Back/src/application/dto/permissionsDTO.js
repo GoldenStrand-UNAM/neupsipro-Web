@@ -5,18 +5,17 @@ class PermissionsDTO {
 
     entity.permissions.forEach(permission => {
 
-      // Check if the group permissions exist
-      if (!groupedPermissions[permission.permissions]) {
-        groupedPermissions[permission.permissions] = [];
-      }
-
       // Add the permission
-      groupedPermissions[permission.permissions].push (permission.permited_action);
+      groupedPermissions[permission.module] = {
+        consultation: permission.consultation,
+        writing: permission.writing,
+        edit: permission.edit,
+        eliminate: permission.eliminate,
+      };
+
     });
 
-    return {
-      permissions: groupedPermissions,
-    };
+    return groupedPermissions;
   }
 }
 

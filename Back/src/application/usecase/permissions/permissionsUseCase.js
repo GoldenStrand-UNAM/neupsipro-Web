@@ -10,14 +10,15 @@ class PermissionsUseCase {
 
     // fetch all permissions for clinical user
     const permissionsData = await this.permissionsRepository.fetchAll({ userId });
+
     const exceptionsData = await this.permissionsRepository.fetchPrivilegeNames();
 
     const permissions = new Permissions({
-      permissions: permissionsData[0],
+      permissions: permissionsData,
     });
 
     const exceptions = new Exceptions({
-      exceptions: exceptionsData[0],
+      exceptions: exceptionsData,
     });
 
     return {

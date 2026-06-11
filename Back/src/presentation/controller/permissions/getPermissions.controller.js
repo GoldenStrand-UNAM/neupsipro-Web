@@ -1,5 +1,5 @@
 const PermissionsDTO  = require('../../../application/dto/permissionsDTO');
-const ExceptionsDTO = require('../../../application/dto/exceptionsDTO');
+const ExceptionsDTO = require('../../../application/dto/permissionsExceptionsDTO');
 
 class PermissionsController {
   constructor (permissionsUseCase) {

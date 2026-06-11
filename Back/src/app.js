@@ -262,6 +262,12 @@ app.get('/consultUser', (req, res) => {
   });
 });
 
+// ========== Permissions ===========
+const permissionsRoutes = require('./presentation/routes/permissions/getPermission.routes');
+
+app.use('/api/admin', permissionsRoutes(authUseCase, authMiddleware));
+
+
 app.get('/construction', (req, res) => {
   res.render('construction');
 });
