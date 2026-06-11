@@ -20,7 +20,7 @@ module.exports = (authUseCase, authMiddleware) => {
   const controller = new Controller(useCase);
 
   router.patch(
-    '/users/:userId/permissions',
+    '/clinical/:userId/permissions',
     authMiddleware.verifyToken,
     apiLimiter,
     permissionsMiddleware.requirePermission('Permissions', 'edit'),

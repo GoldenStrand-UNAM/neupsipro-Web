@@ -57,35 +57,45 @@
                             </tr>
                         </thead>
                         <tbody>
+    <% modules.forEach(module => { %>
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors table-permissions-row" 
+            data-module-id="<%= module.idModule %>" 
+            data-module-name="<%= module.moduleName %>">
+            
+            <td class="py-3 pr-6 text-[#1E1E1E]">
+                <%= module.moduleName %>
+            </td>
 
-                            <% modules.forEach(module => { %>
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors" data-module-id="<%= module.idModule %>">
-                                    
-                                    <td class="py-3 pr-6 text-[#1E1E1E]">
-                                        <%= module.moduleName %>
-                                    </td>
+            <% 
+                const classMap = {
+                    'ver': 'chk-consult',
+                    'crear': 'chk-write',
+                    'editar': 'chk-editar',
+                    'eliminar': 'chk-eliminar'
+                };
+            %>
+            
+            <% ['ver', 'crear', 'editar', 'eliminar'].forEach(action => { %>
+                <td class="text-center py-3 px-4">
+                    <input 
+                        type="checkbox" 
+                        id="cb-<%= module.idModule %>-<%= action %>" 
+                        class="permission-checkbox w-5 h-5 cursor-pointer accent-[#C9A84C] <%= classMap[action] %>" 
+                        data-module-id="<%= module.idModule %>" 
+                        data-action="<%= action %>" 
+                        <%= module.actions[action] && module.actions[action].active ? 'checked' : '' %> 
+                    />
+                </td>
+            <% }) %>
 
-                                    <% ['ver', 'crear', 'editar', 'eliminar'].forEach(action => { %>
-                                        <td class="text-center py-3 px-4">
-                                            <input 
-                                                type="checkbox" 
-                                                id="cb-<%= module.idModule %>-<%= action %>" 
-                                                class="permission-checkbox w-5 h-5 cursor-pointer accent-[#C9A84C]" 
-                                                data-module-id="<%= module.idModule %>" 
-                                                data-action="<%= action %>" 
-                                                <%= module.actions[action] && module.actions[action].active ? 'checked' : '' %> 
-                                            />
-                                        </td>
-                                    <% }) %>
-
-                                    <td class="text-center py-3 px-4">
-                                        <span class="btn-badge <%= module.hasCustomException ? 'bg-[rgba(21,96,189,0.33)] text-blue-900' : 'bg-[rgba(201,168,76,0.33)] text-[#C9A84C]' %>" data-module-id="<%= module.idModule %>">                                            <%= module.hasCustomException ? 'Personalizado' : 'Heredado del Rol' %>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <% }) %>
-
-                        </tbody>
+            <td class="text-center py-3 px-4">
+                <span class="btn-badge <%= module.hasCustomException ? 'bg-[rgba(21,96,189,0.33)] text-blue-900' : 'bg-[rgba(201,168,76,0.33)] text-[#C9A84C]' %>" data-module-id="<%= module.idModule %>">
+                    <%= module.hasCustomException ? 'Personalizado' : 'Heredado del Rol' %>
+                </span>
+            </td>
+        </tr>
+    <% }) %>
+</tbody>
                     </table>
                 </div>
 

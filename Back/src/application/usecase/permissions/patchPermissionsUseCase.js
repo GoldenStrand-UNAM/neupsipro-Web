@@ -15,10 +15,10 @@ class PermissionsUseCase {
         });
 
       const data = {
-        consultation: actions.consultation ? 1 : 0,
-        writing: actions.writing ? 1 : 0,
-        edit: actions.edit ? 1 : 0,
-        eliminate: actions.eliminate ? 1 : 0,
+        consultation: (actions.consultation || actions.ver) ? 1 : 0,
+        writing: (actions.writing || actions.crear) ? 1 : 0,
+        edit: (actions.edit || actions.editar) ? 1 : 0,
+        eliminate: (actions.eliminate || actions.eliminar) ? 1 : 0,
       };
 
       if (exception) {
@@ -29,18 +29,15 @@ class PermissionsUseCase {
           ...data,
         });
       } else {
-        const moduleRows =
-          // eslint-disable-next-line no-await-in-loop
-          await this.permissionsRepository.fetchIdModule({ moduleName });
-
-        const moduleId = moduleRows[0].id_module;
+        // eslint-disable-next-line no-await-in-loop
+        const moduleId = await this.permissionsRepository.fetchIdModule({ moduleName });
 
         // eslint-disable-next-line no-await-in-loop
-        await this.permissionsRepository.insertException(
+        await this.permissionsRepository.insertException({
           userId,
-          moduleId,
-          data
-        );
+          idModule: moduleId,
+          ...data,
+        });
       }
     }
 

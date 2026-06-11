@@ -48,63 +48,44 @@ class ImpPermissionsRepository extends PermissionsRepository {
   }
 
   // ---------------------------------- PATCH ---------------------------------
-  // Fetchs if the exception exist already
+
   async fetchExceptions ({ userId, moduleName }) {
     const [rows] = await db.query(
-      ` SELECT
-            m.module,
-            a.consultation,
-            a.writing,
-            a.edit,
-            a.eliminate
+      ` SELECT m.module, a.consultation, a.writing, a.edit, a.eliminate
         FROM user_acl AS a
-        INNER JOIN modules AS m 
-          ON a.id_module = m.id_module
-        WHERE a.id_user = ? 
-          AND m.module = ?`,
+        INNER JOIN modules AS m ON a.id_module = m.id_module
+        WHERE a.id_user = ? AND m.module = ?`,
       [userId, moduleName]
     );
-
     return rows.length > 0 ? rows[0] : null;
   }
 
-  // Fetch module id
   async fetchIdModule ({ moduleName }) {
     const [rows] = await db.query(
-      ` SELECT id_module
-        FROM modules
-        WHERE module = ?`,
+      'SELECT id_module FROM modules WHERE module = ?',
       [moduleName]
     );
-
-    return rows;
+    return rows.length > 0 ? rows[0].id_module : null;
   }
 
-  // Update Exception by userid and module name
-  async updateException (data) {
+  async updateException ({
+    userId,
+    moduleName,
+    consultation,
+    writing,
+    edit,
+    eliminate,
+  }) {
     await db.query(
       `UPDATE user_acl AS a
-     INNER JOIN modules AS m
-       ON a.id_module = m.id_module
-     SET
-       a.consultation = ?,
-       a.writing = ?,
-       a.edit = ?,
-       a.eliminate = ?
-     WHERE a.id_user = ?
-       AND m.module = ?`,
-      [
-        data.consultation,
-        data.writing,
-        data.edit,
-        data.eliminate,
-        data.userId,
-        data.moduleName,
-      ]
+       INNER JOIN modules AS m ON a.id_module = m.id_module
+       SET a.consultation = ?, a.writing = ?, a.edit = ?, a.eliminate = ?
+       WHERE a.id_user = ? AND m.module = ?`,
+      [consultation, writing, edit, eliminate, userId, moduleName]
     );
   }
 
-  // Inserts a new exception by moduleid and userid
+  // Inserts a new exception
   async insertException ({
     userId,
     idModule,
@@ -113,28 +94,12 @@ class ImpPermissionsRepository extends PermissionsRepository {
     edit,
     eliminate,
   }) {
-
     await db.query(
-      `INSERT INTO user_acl (
-        id_user,
-        id_module,
-        consultation,
-        writing,
-        edit,
-        eliminate
-    )
-    VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        userId,
-        idModule,
-        consultation,
-        writing,
-        edit,
-        eliminate,
-      ]
+      `INSERT INTO user_acl (id_user, id_module, consultation, writing, edit, eliminate)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [userId, idModule, consultation, writing, edit, eliminate]
     );
   }
-
 }
 
 module.exports = ImpPermissionsRepository;
