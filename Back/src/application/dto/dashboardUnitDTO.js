@@ -30,15 +30,30 @@ class DashboardGenderDTO {
   }
 }
 
-// creates test count items and calculates total protocols
 class DashboardTestCountsDTO {
   constructor (entities) {
-    this.items = entities.map(e => ({
+    const research = entities.filter(e => e.protocol === 'Research');
+    const clinical = entities.filter(e => e.protocol === 'Clinical');
+
+    const mapItems = list => list.map(e => ({
       idTest: e.idTest,
       testName: e.testName,
       total: e.total,
     }));
-    this.totalProtocols = entities.reduce((a, e) => a + e.total, 0);
+
+    const sumTotal = list => list.reduce((a, e) => a + e.total, 0);
+
+    this.research = {
+      items: mapItems(research),
+      totalProtocols: sumTotal(research),
+    };
+
+    this.clinical = {
+      items: mapItems(clinical),
+      totalProtocols: sumTotal(clinical),
+    };
+
+    this.totalProtocols = this.research.totalProtocols + this.clinical.totalProtocols;
   }
 }
 
