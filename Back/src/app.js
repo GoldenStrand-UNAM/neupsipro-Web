@@ -271,6 +271,11 @@ const patchPermissionsRoutes = require('./presentation/routes/permissions/patchP
 
 app.use('/api/admin', patchPermissionsRoutes(authUseCase, authMiddleware));
 
+// ======== CONFIG ROUTES ========
+const configRoutes = require('./presentation/routes/config/config.routes');
+
+app.use('/api/config', configRoutes(authUseCase, authMiddleware));
+
 app.get('/construction', (req, res) => {
   res.render('construction');
 });

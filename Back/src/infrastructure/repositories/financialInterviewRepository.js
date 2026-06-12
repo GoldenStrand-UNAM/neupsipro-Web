@@ -104,6 +104,17 @@ class FinancialInterviewRepository extends ImpFinancialInterviewRepository {
     return rows[0] || {};
   }
 
+  // Fetch the global minimum salary reference value
+  async fetchMinSalaryConfig () {
+    const [rows] = await db.query(
+      `SELECT config_value
+     FROM system_config
+     WHERE config_key = 'min_salary'`
+    );
+
+    return rows[0]?.config_value ?? null;
+  }
+
   // Fetch ESC Government by relation
   async fetchEscGov ({ id_user_relation }) {
 
