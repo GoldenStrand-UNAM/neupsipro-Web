@@ -59,6 +59,9 @@ function buildSubStep1Payload () {
 
   const { imc, imcCategory } = window.imcCalculator?.getImcResult() ?? {};
 
+  const scoreAge = getIdentificationNumberOrNull('score_age');
+  const scoreSchooling = getIdentificationNumberOrNull('score_schooling');
+
   return {
 
     interviewDate:
@@ -114,6 +117,9 @@ function buildSubStep1Payload () {
 
     ocupation:
       getIdentificationTextOrNull('currentOcupation'),
+
+    scoreAge,
+    scoreSchooling,
   };
 }
 

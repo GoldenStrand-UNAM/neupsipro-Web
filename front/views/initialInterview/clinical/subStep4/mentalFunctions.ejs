@@ -1,35 +1,35 @@
 <div>
     <div class="space-y-4 max-w-xl mt-3">
 
-        <div class="flex items-end gap-2">
-            <div class="flex-1">
-                <label class="input_label">Puntuación MoCA</label>
-                <input type="text" id="cdrResult" maxlength="150" class="input" placeholder="Resultado">
-                <span class="char-counter text-xs text-gray-400 mt-1" data-target="cdrResult" data-max="150">0/150</span>
+        <div>
+            <label class="input_label">Puntuación MoCA</label>
+            <div class="flex items-center gap-2">
+                <input type="text" id="cdrResult" maxlength="150" class="input flex-1" placeholder="Resultado">
+                <input type="number" min="0" max="1" step="1"
+                    name="score_moca" id="score_moca"
+                    class="w-16 input" placeholder="0/1">
             </div>
-            <input type="number" min="0" max="1" step="1"
-                name="score_moca" id="score_moca"
-                class="w-16 input" placeholder="0/1">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="cdrResult" data-max="150">0/150</span>
         </div>
 
-        <div class="flex items-end gap-2">
-            <div class="flex-1">
-                <label class="input_label">
-                    DSR — Demencia
-                    <a href="https://www.mdcalc.com/calc/10160/clinical-dementia-rating-cdr-scale"
-                       target="_blank" rel="noopener noreferrer"
-                       class="ml-2 text-xs text-blue-500 underline">MDCalc CDR</a>
-                    /
-                    <a href="https://www.mdcalc.com/calc/715/nih-stroke-scale-score-nihss"
-                       target="_blank" rel="noopener noreferrer"
-                       class="ml-1 text-xs text-blue-500 underline">NIHSS Stroke</a>
-                </label>
-                <input type="text" id="nihssResult" maxlength="150" class="input" placeholder="Resultado">
-                <span class="char-counter text-xs text-gray-400 mt-1" data-target="nihssResult" data-max="150">0/150</span>
+        <div>
+            <label class="input_label">
+                DSR — Demencia
+                <a href="https://www.mdcalc.com/calc/10160/clinical-dementia-rating-cdr-scale"
+                   target="_blank" rel="noopener noreferrer"
+                   class="ml-2 text-xs text-blue-500 underline">MDCalc CDR</a>
+                /
+                <a href="https://www.mdcalc.com/calc/715/nih-stroke-scale-score-nihss"
+                   target="_blank" rel="noopener noreferrer"
+                   class="ml-1 text-xs text-blue-500 underline">NIHSS Stroke</a>
+            </label>
+            <div class="flex items-center gap-2">
+                <input type="text" id="nihssResult" maxlength="150" class="input flex-1" placeholder="Resultado">
+                <input type="number" min="0" max="1" step="1"
+                    name="score_psychiatric" id="score_psychiatric"
+                    class="w-16 input" placeholder="0/1">
             </div>
-            <input type="number" min="0" max="1" step="1"
-                name="score_psychiatric" id="score_psychiatric"
-                class="w-16 input" placeholder="0/1">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="nihssResult" data-max="150">0/150</span>
         </div>
 
         <div>

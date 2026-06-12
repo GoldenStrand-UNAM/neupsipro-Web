@@ -14,6 +14,12 @@ function symptom (id) {
   return { desc: val(id) };
 }
 
+// Get an inclusion-criteria score input's value as a number, or null if empty
+function score (id) {
+  const el = document.getElementById(id);
+  return el && el.value !== '' ? Number(el.value) : null;
+}
+
 // 3.1 Preocupaciones Físicas  (backend subStep 1)
 // UI agrupa: nauseaVomiting + dizziness en un input; urinaryInconsistency + intestinalProblem en otro.
 function buildPhysicalConcerns () {
@@ -55,6 +61,8 @@ function buildSensory () {
     phantomLimbDesc:     val('phantomLimbDesc'),
     phantomLimbPain:     symptom('phantomLimbPain'),
     phantomLimbPainDesc: val('phantomLimbPainDesc'),
+    scoreVision: score('score_vision'),
+    scoreHearing: score('score_hearing'),
   };
 }
 
@@ -64,6 +72,8 @@ function buildMentalFunctions () {
     cdrResult:          val('cdrResult'),
     nihssResult:        val('nihssResult'),
     mentalObservation:  val('mentalObservation'),
+    scoreMoca: score('score_moca'),
+    scorePsychiatric: score('score_psychiatric'),
   };
 }
 
@@ -99,6 +109,7 @@ function buildSubstanceUse () {
     positiveExperience:   val('positiveExperience'),
     futureGoals:          val('futureGoals'),
     observations:         val('observations'),
+    scoreDrugUse: score('score_drug_use'),
   };
 }
 

@@ -52,6 +52,8 @@ function renderSensoryData (info) {
   setVal('phantomLimbDesc',     info.phantom_limb_desc   ?? '');
   setVal('phantomLimbPain',     symVal(info.phantom_limb_pain));
   setVal('phantomLimbPainDesc', info.phantom_limb_pain_desc ?? '');
+  setVal('score_vision',        info.score_vision  ?? '');
+  setVal('score_hearing',       info.score_hearing ?? '');
 }
 
 // 3.4 Funciones Mentales  (backend subStep 4)
@@ -59,6 +61,8 @@ function renderMentalFunctionsData (info) {
   setVal('cdrResult',         info.cdr_result          ?? '');
   setVal('nihssResult',       info.nihss_result        ?? '');
   setVal('mentalObservation', info.mental_observation  ?? '');
+  setVal('score_moca',        info.score_moca          ?? '');
+  setVal('score_psychiatric', info.score_psychiatric   ?? '');
 }
 
 // 3.5 Personalidad  (backend subStep 5)
@@ -90,6 +94,7 @@ function renderSubstanceUseData (info) {
   setVal('positiveExperience',   info.positive_experience   ?? '');
   setVal('futureGoals',          info.future_goals          ?? '');
   setVal('observations',         info.observations          ?? '');
+  setVal('score_drug_use',       info.score_drug_use        ?? '');
 }
 
 // 3.7 Calculadoras  (backend subStep 7)
@@ -99,6 +104,7 @@ function renderCalculatorsData (info) {
   setVal('diabetesRisk',       info.diabetes_risk       ?? '');
   setVal('calcAnalysis',       info.calc_analysis       ?? '');
   setVal('inclusionCriteria',  info.inclusion_criteria  ?? '');
+  window.inclusionProtocol?.renderInclusionProtocol(info.inclusion_total);
 }
 
 // 3.8 Notas de Seguimiento  (backend subStep 8)
