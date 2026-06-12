@@ -96,6 +96,21 @@ function renderExpensesData (info) {
     `$${expenses.totalExpenses || 0}`;
 }
 
+// Format a numeric value with thousands separator and two decimals (e.g. 1249 -> "1,249.00")
+function formatMinSalary (value) {
+  const num = parseFloat(String(value ?? '').replace(/,/g, '')) || 0;
+
+  return num.toLocaleString('es-MX', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+// Reformat minIncome with thousands separators when the user leaves the field
+document.getElementById('minIncome')?.addEventListener('blur', (e) => {
+  e.target.value = formatMinSalary(e.target.value);
+});
+
 function setSelectValue (id, value) {
 
   const select = document.getElementById(id);
@@ -124,7 +139,7 @@ function renderESCData (info) {
 
   // Inputs
   document.getElementById('minIncome').value =
-    info.minIncome || '';
+    info.minIncome != null ? formatMinSalary(info.minIncome) : '';
 
   // Minimum salary reference (read-only, set via the general config screen)
   document.getElementById('min-salary-ref').textContent =
