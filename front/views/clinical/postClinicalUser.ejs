@@ -472,29 +472,44 @@
         }
       });
     }
-
     form.addEventListener('submit', async (e) => {
-      event.preventDefault();
+      e.preventDefault();
       const formData = new FormData(form);
+      
       try {
-      const res = await fetch('/clinical/post', {
-        method: 'POST',
-        headers: { 'x-csrf-token': _csrfToken },
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        sessionStorage.setItem('savedUser', 'true');
-        window.location.href = '/clinical';
-      } else {
-        if (res.status === 409 && data.inUse === 'user') {
-          userInput.setCustomValidity("El nombre de usuario ya está en uso");
-          userInput.style.border = '2px solid red';
-          userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
-          userInput.reportValidity();
+        const res = await fetch('/clinical/post', {
+          method: 'POST',
+          headers: { 'x-csrf-token': window.__CSRF_TOKEN__ },
+          body: formData,
+        });
+
+        const contentType = res.headers.get("content-type");
+        
+        if (contentType && contentType.includes("text/html")) {
+          if (res.status === 404 || res.status === 403) {
+            const htmlError = await res.text();
+            
+            document.open();
+            document.write(htmlError);
+            document.close();
+            return;
+          }
+        }
+
+        const data = await res.json();
+
+        if (res.ok) {
+          sessionStorage.setItem('savedUser', 'true');
+          window.location.href = '/clinical';
         } else {
-          showToast((data.error || 'Error desconocido'), 'error');
-          if (data.error === 'El usuario ya se encuentra registrado.') {
+          if (res.status === 409 && data.inUse === 'user') {
+            userInput.setCustomValidity("El nombre de usuario ya está en uso");
+            userInput.style.border = '2px solid red';
+            userInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
+            userInput.reportValidity();
+          } else {
+            showToast((data.error || 'Error desconocido'), 'error');
+            if (data.error === 'El usuario ya se encuentra registrado.') {
             lastamePInput.style.border = '2px solid red';
             lastamePInput.style.boxShadow = 'inset 0 0 0 100px #fef2f2';
             lastameMInput.style.border = '2px solid red';
@@ -507,9 +522,9 @@
             nameInput.reportValidity();
           }
         }
-      }
+        }
       } catch (error) {
-        showToast(`Error de conexión: ${error}`, 'error');
+        showToast(`Error de conexión: ${error.message || error}`, 'error');
       }
     });
     userInput.addEventListener('input', () => {

@@ -169,6 +169,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Permissions
+const permissionsRoutes = require('./presentation/routes/permissions/getPermission.routes');
+
+app.use('/', permissionsRoutes(authUseCase, authMiddleware));
+
 // Dasboards
 const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
 
@@ -261,6 +266,10 @@ app.get('/consultUser', (req, res) => {
     activePage: 'usuario',
   });
 });
+
+const patchPermissionsRoutes = require('./presentation/routes/permissions/patchPermission.routes');
+
+app.use('/api/admin', patchPermissionsRoutes(authUseCase, authMiddleware));
 
 app.get('/construction', (req, res) => {
   res.render('construction');

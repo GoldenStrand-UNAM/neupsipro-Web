@@ -1,0 +1,60 @@
+<div>
+    <div class="space-y-6 max-w-xl mt-3">
+
+        <!-- Riesgo Cardiovascular -->
+        <div>
+            <label class="input_label">
+                Riesgo cardiovascular: labs
+                <a href="https://www.imss.gob.mx/salud-en-linea/apps-sano/riesgo-cardiovascular-colesterol"
+                   target="_blank" rel="noopener noreferrer"
+                   class="ml-2 text-xs text-blue-500 underline">Abrir calculadora →</a>
+            </label>
+            <p class="text-xs text-gray-400 mb-1">Contesta la calculadora y anota tu resultado aquí</p>
+            <input type="text" id="cardiovascularRisk" maxlength="200" class="input" placeholder="Resultado">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="cardiovascularRisk" data-max="200">0/200</span>
+        </div>
+
+        <!-- Q-Stroke -->
+        <div>
+            <label class="input_label">
+                Q-Stroke 1-10 años (3 y 5 años): son dos puntuaciones / labs
+                <a href="https://qstroke.org"
+                   target="_blank" rel="noopener noreferrer"
+                   class="ml-2 text-xs text-blue-500 underline">Abrir calculadora →</a>
+            </label>
+            <p class="text-xs text-gray-400 mb-1">Contesta la calculadora y anota tu resultado aquí</p>
+            <input type="text" id="qstrokeResult" maxlength="200" class="input" placeholder="Resultado">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="qstrokeResult" data-max="200">0/200</span>
+        </div>
+
+        <!-- Finnish Diabetes Risk Score -->
+        <div>
+            <label class="input_label">
+                Entrevistado sin diabetes / Finnish Diabetes Risk Score
+                <a href="https://www.mdcalc.com/calc/4000/findrisc-finnish-diabetes-risk-score"
+                   target="_blank" rel="noopener noreferrer"
+                   class="ml-2 text-xs text-blue-500 underline">Abrir calculadora →</a>
+            </label>
+            <p class="text-xs text-gray-400 mb-1">Contesta la calculadora y anota tu resultado aquí</p>
+            <input type="text" id="diabetesRisk" maxlength="200" class="input" placeholder="Resultado">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="diabetesRisk" data-max="200">0/200</span>
+        </div>
+
+        <!-- Análisis -->
+        <div>
+            <label class="input_label">Análisis</label>
+            <textarea id="calcAnalysis" maxlength="400" rows="3"
+                      class="input resize-none" placeholder="Análisis general"></textarea>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="calcAnalysis" data-max="400">0/400</span>
+        </div>
+
+        <!-- Criterios de inclusión -->
+        <div>
+            <label class="input_label">Criterios de inclusión para investigación</label>
+            <textarea id="inclusionCriteria" maxlength="400" rows="3"
+                      class="input resize-none" placeholder="Criterios de inclusión"></textarea>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="inclusionCriteria" data-max="400">0/400</span>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<div>
+    <p class="input_label mt-2 mb-4">¿Alguna vez ha sido...?</p>
+
+    <%
+        // Cada categoría es una card con 3 campos (Edad, Descripción, Consecuencia).
+        // El backend guarda UNA columna varchar(500) por categoría, así que el front
+        // combina los 3 en un solo texto (ver childBuilder.js). id = clave camelCase.
+        const categorias = [
+            { id: 'tbi',          label: 'TCE' },
+            { id: 'hospitalized', label: 'Hospitalizado' },
+            { id: 'seizure',      label: 'Convulsiones' },
+            { id: 'infectious',   label: 'Infectocontagiosas' },
+            { id: 'alergies',     label: 'Alergias' },
+            { id: 'intoxication', label: 'Intoxicación' },
+        ];
+    %>
+
+    <div class="space-y-6 max-w-2xl">
+        <% categorias.forEach(function (cat) { %>
+            <div class="rounded-xl overflow-hidden shadow-sm border border-gray-400">
+                <div class="bg-[#BA8700] text-white px-4 py-2">
+                    <span class="font-semibold"><%= cat.label %></span>
+                </div>
+                <div class="bg-white p-4 space-y-4">
+                    <div>
+                        <label class="input_label">Edad</label>
+                        <input type="text" id="<%= cat.id %>Edad" maxlength="30" class="input"
+                            placeholder="Escribe la edad">
+                    </div>
+                    <div>
+                        <label class="input_label">Descripción</label>
+                        <input type="text" id="<%= cat.id %>Desc" maxlength="150" class="input"
+                            placeholder="Escribe la descripción">
+                    </div>
+                    <div>
+                        <label class="input_label">Consecuencia</label>
+                        <input type="text" id="<%= cat.id %>Conseq" maxlength="150" class="input"
+                            placeholder="Escribe la consecuencia">
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>

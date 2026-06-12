@@ -6,123 +6,79 @@ participant "Routes" as Routes
 participant "PermissionsMiddleware" as Mid
 participant "PermissionsController" as Controller
 participant "AuthUseCase" as AuthUseCase
-participant "GetUserPermissionsUseCase" as UseCase
-participant "UserEntity" as UserEntity
-participant "RoleEntity" as RoleEntity
-participant "PrivilegeEntity" as PrivilegeEntity
-participant "ExceptionEntity" as ExceptionEntity
-participant "UserDto" as UserDto
-participant "RoleDto" as RoleDto
-participant "RolePrivilegeDto" as PDto
-participant "UserExceptionDto" as EDto
-participant "PermissionResponseDto" as RespDto
-participant "GetUserPermissionsRepository" as Repository
+participant "PermissionsUseCase" as UseCase
+participant "PermissionsEntity" as PermissionsEntity
+participant "ExceptionsEntity" as ExceptionsEntity
+participant "PermissionsDTO" as PermissionsDTO
+participant "ExceptionsDTO" as ExceptionsDTO
+participant "PermissionsRepository" as Repository
 database "DB" as DB
 
-Administrator -> View : Select clinical user, click "Ver permisos"
-View -> Routes : GET /admin/users/:userId/permissions
-Routes -> Mid : checkPermission(adminId, 'permissions', 'consulting')
-Mid -> AuthUseCase : checkPermission(adminId, 'permissions', 'consulting')
-AuthUseCase -> Repository : await PromiseAll[getPrivileges(adminId), getExceptions(adminId, 'permissions')]
-Repository -> DB : db.execute[getPrivileges(adminId), getExceptions(adminId, 'permissions')]
-DB --> Repository : [rawAdminPrivileges[], rawAdminExceptions[]]
-Repository --> AuthUseCase : rawAdminPrivileges, rawAdminExceptions
+Administrator -> View : Selecciona usuario y presiona "Ver permisos"
 
-loop for each rawAdminPrivilege
-    AuthUseCase -> PrivilegeEntity : new PrivilegeEntity(rawAdminPrivilege)
-    PrivilegeEntity --> AuthUseCase : privilegeEntity
-    AuthUseCase -> PDto : fromEntity(privilegeEntity)
-    PDto --> AuthUseCase : privilegeDto
+View -> Routes : GET /api/admin/users/:userId/permissions
+
+Routes -> Mid : requirePermission('Permissions', 'consultation')
+
+Mid -> AuthUseCase : checkPermission(adminId, 'Permissions', 'consultation')
+
+alt administrador autorizado
+
+```
+Mid --> Routes : authorized
+
+Routes -> Controller : getPermission(userId)
+
+Controller -> UseCase : execute({ userId })
+
+par Obtener permisos ACL
+
+    UseCase -> Repository : fetchAll({ userId })
+
+    Repository -> DB : SELECT user_acl + modules
+    DB --> Repository : permissionsData[]
+
+    Repository --> UseCase : permissionsData[]
+
+and Obtener privilegios base
+
+    UseCase -> Repository : fetchPrivilegeNames()
+
+    Repository -> DB : SELECT privilege_role + privilege
+    DB --> Repository : exceptionsData[]
+
+    Repository --> UseCase : exceptionsData[]
+
 end
 
-loop for each rawAdminException
-    AuthUseCase -> ExceptionEntity : new ExceptionEntity(rawAdminException)
-    ExceptionEntity --> AuthUseCase : exceptionEntity
-    AuthUseCase -> EDto : fromEntity(exceptionEntity)
-    EDto --> AuthUseCase : exceptionDto
-end
+UseCase -> PermissionsEntity : new Permissions({ permissionsData })
+PermissionsEntity --> UseCase : permissionsEntity
 
-alt admin has permission to consult permissions
+UseCase -> ExceptionsEntity : new Exceptions({ exceptionsData })
+ExceptionsEntity --> UseCase : exceptionsEntity
 
-    Mid --> Routes : authorized
-    Routes -> Controller : getUserPermissions(userId)
-    Controller -> UseCase : execute(userId)
+UseCase --> Controller : {\npermissions,\nexceptions\n}
 
-    ' --- Fetch user basic info ---
-    UseCase -> Repository : findUserById(userId)
-    Repository -> DB : db.execute('SELECT u.id_user, u.user_name, u.id_role\nFROM users u WHERE u.id_user = ?', [userId])
+Controller -> PermissionsDTO : fromEntity(permissions)
+PermissionsDTO --> Controller : permissionsDto
 
-    alt user found
+Controller -> ExceptionsDTO : fromEntity(exceptions)
+ExceptionsDTO --> Controller : exceptionsDto
 
-        DB --> Repository : user row (snake_case)
-        Repository --> UseCase : raw user row
-        UseCase -> UserEntity : new UserEntity(raw user row)
-        UserEntity --> UseCase : userEntity
-        UseCase -> UserDto : fromEntity(userEntity)
-        UserDto --> UseCase : userDto
+Controller --> Routes : HTTP 200
 
-        ' --- Fetch role info ---
-        UseCase -> Repository : findRoleById(userDto.idRole)
-        Repository -> DB : db.execute('SELECT id_role, role_name\nFROM roles WHERE id_role = ?', [idRole])
-        DB --> Repository : role row (snake_case)
-        Repository --> UseCase : raw role row
-        UseCase -> RoleEntity : new RoleEntity(raw role row)
-        RoleEntity --> UseCase : roleEntity
-        UseCase -> RoleDto : fromEntity(roleEntity)
-        RoleDto --> UseCase : roleDto
+Routes --> View : {\n permissions,\n exceptions\n}
 
-        ' --- Fetch RBAC + ACL in parallel ---
-        note over UseCase, DB
-            RBAC: privileges assigned to the user's role
-            ACL:  exceptions (grants/denials) assigned to the specific user
-        end note
+View --> Administrator : Mostrar matriz de permisos\n y excepciones
+```
 
-        UseCase -> Repository : await PromiseAll[\n  getRolePrivileges(userDto.idRole),\n  getUserExceptions(userId)\n]
-        Repository -> DB : db.execute[getRolePrivileges(idRole), getUserExceptions(userId)]\n' queries pending — results will be raw snake_case rows
-        DB --> Repository : [rawRolePrivileges[], rawUserExceptions[]]
-        Repository --> UseCase : rawRolePrivileges, rawUserExceptions
+else administrador sin permisos
 
-        ' --- Map RBAC results: raw → Entity → Dto ---
-        loop for each rawRolePrivilege
-            UseCase -> PrivilegeEntity : new PrivilegeEntity(rawRolePrivilege)
-            PrivilegeEntity --> UseCase : privilegeEntity
-            UseCase -> PDto : fromEntity(privilegeEntity)
-            PDto --> UseCase : rolePrivilegeDto
-        end
-
-        ' --- Map ACL results: raw → Entity → Dto ---
-        loop for each rawUserException
-            UseCase -> ExceptionEntity : new ExceptionEntity(rawUserException)
-            ExceptionEntity --> UseCase : exceptionEntity
-            UseCase -> EDto : fromEntity(exceptionEntity)
-            EDto --> UseCase : userExceptionDto
-        end
-
-        ' --- Build final response ---
-        UseCase -> RespDto : fromDtos(userDto, roleDto, rolePrivilegeDtos[], userExceptionDtos[])
-        RespDto --> UseCase : permissionResponseDto\n{ user, role, rbacPrivileges[], aclExceptions[] }
-
-        UseCase --> Controller : permissionResponseDto
-        Controller --> Routes : HTTP 200
-        Routes --> View : permissionResponseDto (JSON)
-        View --> Administrator : Display user info, role,\nRBAC privileges table & ACL exceptions table
-
-    else user not found
-
-        DB --> Repository : null
-        Repository --> UseCase : null
-        UseCase --> Controller : UserNotFoundException
-        Controller --> Routes : HTTP 404
-        Routes --> View : Error message
-        View --> Administrator : "User not found"
-
-    end
-
-else admin has no permission
-
-    Mid --> Routes : HTTP 403
-    Routes --> View : Error message
-    View --> Administrator : "You do not have permission to view this"
+```
+Mid --> Routes : HTTP 403
+Routes --> View : Error
+View --> Administrator : No autorizado
+```
 
 end
 

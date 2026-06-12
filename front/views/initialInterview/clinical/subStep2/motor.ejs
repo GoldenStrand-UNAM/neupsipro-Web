@@ -1,0 +1,22 @@
+<div>
+    <%
+        const fields = [
+            { id: 'weakness',        label: 'Debilidad (indique la parte del cuerpo)' },
+            { id: 'movementProblem', label: 'Problema con movimientos motores finos' },
+            { id: 'tremor',          label: 'Temblor' },
+            { id: 'tics',            label: 'Tics' },
+            { id: 'balanceProblems', label: 'Problema de equilibrio' },
+            { id: 'falls',           label: 'Caídas / Frecuencia de caídas' },
+        ];
+    %>
+
+    <div class="space-y-4 max-w-xl mt-3">
+        <% fields.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Notas">
+                <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="100">0/100</span>
+            </div>
+        <% }); %>
+    </div>
+</div>
