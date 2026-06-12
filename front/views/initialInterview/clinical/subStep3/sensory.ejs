@@ -1,16 +1,16 @@
 <div>
     <%
         const fields = [
-            { id: 'sensationLoss',        label: 'Pérdida de la sensación (indique en qué parte/s del cuerpo)' },
-            { id: 'visionDif',            label: 'Dificultad para ver',           score: 'score_vision' },
-            { id: 'wearsGlasses',         label: 'Usa lentes' },
-            { id: 'blurryVision',         label: 'Vista borrosa' },
-            { id: 'hearingLoss',          label: 'Dificultad para escuchar',      score: 'score_hearing' },
-            { id: 'ringingEars',          label: 'Zumbido en los oídos' },
-            { id: 'pain',                 label: 'Dolor' },
-            { id: 'phantomLimb',          label: 'Presencia de miembro fantasma' },
+            { id: 'sensationLoss',        label: 'Pérdida de la sensación (indique en qué parte/s del cuerpo)', toggle: true },
+            { id: 'visionDif',            label: 'Dificultad para ver',           toggle: true, score: 'score_vision' },
+            { id: 'wearsGlasses',         label: 'Usa lentes',                    toggle: true },
+            { id: 'blurryVision',         label: 'Vista borrosa',                 toggle: true },
+            { id: 'hearingLoss',          label: 'Dificultad para escuchar',      toggle: true, score: 'score_hearing' },
+            { id: 'ringingEars',          label: 'Zumbido en los oídos',          toggle: true },
+            { id: 'pain',                 label: 'Dolor',                         toggle: true },
+            { id: 'phantomLimb',          label: 'Presencia de miembro fantasma', toggle: true },
             { id: 'phantomLimbDesc',      label: 'Describa (tipo y frecuencia)' },
-            { id: 'phantomLimbPain',      label: 'Presencia de miembro fantasma doloroso' },
+            { id: 'phantomLimbPain',      label: 'Presencia de miembro fantasma doloroso', toggle: true },
             { id: 'phantomLimbPainDesc',  label: 'Describa (tipo y frecuencia)' },
         ];
     %>
@@ -19,17 +19,25 @@
         <% fields.forEach(function (f) { %>
             <div>
                 <label class="input_label"><%= f.label %></label>
-                <% if (f.score) { %>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="<%= f.id %>" maxlength="100" class="input flex-1" placeholder="Notas">
-                        <input type="number" min="0" max="1" step="1"
-                            name="<%= f.score %>" id="<%= f.score %>"
-                            class="w-16 input" placeholder="0/1">
+                <% if (f.toggle) { %>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="<%= f.id %>_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Positivo">Positivo</option>
+                            <option value="Negativo">Negativo</option>
+                        </select>
+                        <input type="text" id="<%= f.id %>" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+                        <% if (f.score) { %>
+                            <input type="number" min="0" max="1" step="1"
+                                name="<%= f.score %>" id="<%= f.score %>"
+                                class="w-16 input" placeholder="0/1">
+                        <% } %>
                     </div>
+                    <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="90">0/90</span>
                 <% } else { %>
                     <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Notas">
+                    <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="100">0/100</span>
                 <% } %>
-                <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="100">0/100</span>
             </div>
         <% }); %>
     </div>

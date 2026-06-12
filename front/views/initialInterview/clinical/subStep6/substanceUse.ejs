@@ -3,31 +3,57 @@
 
         <div>
             <label class="input_label">Actualmente, ¿usted consume alguna droga?</label>
-            <div class="flex items-center gap-2">
-                <input type="text" id="drugConsumption" maxlength="100" class="input flex-1" placeholder="Notas">
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="drugConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="drugConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
                 <input type="number" min="0" max="1" step="1"
                     name="score_drug_use" id="score_drug_use"
                     class="w-16 input" placeholder="0/1">
             </div>
-            <span class="char-counter text-xs text-gray-400 mt-1" data-target="drugConsumption" data-max="100">0/100</span>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="drugConsumption" data-max="90">0/90</span>
         </div>
 
         <div>
             <label class="input_label">Consumo de cigarro: frecuencia y cantidad</label>
-            <input type="text" id="cigaretteConsumption" maxlength="100" class="input" placeholder="Notas">
-            <span class="char-counter text-xs text-gray-400 mt-1" data-target="cigaretteConsumption" data-max="100">0/100</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="cigaretteConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="cigaretteConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="cigaretteConsumption" data-max="90">0/90</span>
         </div>
 
         <div>
             <label class="input_label">Consumo de alcohol: frecuencia y cantidad</label>
-            <input type="text" id="alcoholConsumption" maxlength="100" class="input" placeholder="Notas">
-            <span class="char-counter text-xs text-gray-400 mt-1" data-target="alcoholConsumption" data-max="100">0/100</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="alcoholConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="alcoholConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="alcoholConsumption" data-max="90">0/90</span>
         </div>
 
         <div>
             <label class="input_label">¿Alguna vez ha asistido a terapia?</label>
-            <input type="text" id="hasAttendedTherapy" maxlength="100" class="input" placeholder="Notas">
-            <span class="char-counter text-xs text-gray-400 mt-1" data-target="hasAttendedTherapy" data-max="100">0/100</span>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="hasAttendedTherapy_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="hasAttendedTherapy" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="hasAttendedTherapy" data-max="90">0/90</span>
         </div>
 
         <div>

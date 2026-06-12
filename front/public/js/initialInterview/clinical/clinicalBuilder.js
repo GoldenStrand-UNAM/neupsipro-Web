@@ -8,10 +8,9 @@ function val (id) {
   return el ? el.value.trim() : '';
 }
 
-// Wraps a plain text value into a symptom object { desc }.
-// The backend _symptom helper stores it as-is when no presence is set.
-function symptom (id) {
-  return { desc: val(id) };
+// Build the { presence, notes } payload for a Positivo/Negativo + notas field
+function positiveNegative (id) {
+  return { presence: val(`${id}_presence`) || null, notes: val(id) };
 }
 
 // Get an inclusion-criteria score input's value as a number, or null if empty
@@ -23,43 +22,43 @@ function score (id) {
 // 3.1 Preocupaciones Físicas  (backend subStep 1)
 // UI agrupa: nauseaVomiting + dizziness en un input; urinaryInconsistency + intestinalProblem en otro.
 function buildPhysicalConcerns () {
-  const nausea  = symptom('nauseaVomiting');
-  const urinary = symptom('urinaryInconsistency');
+  const nausea  = positiveNegative('nauseaVomiting');
+  const urinary = positiveNegative('urinaryInconsistency');
   return {
-    headache:             symptom('headache'),
+    headache:             positiveNegative('headache'),
     dizziness:            nausea,           // "mareo" agrupado con náusea en UI
     nauseaVomiting:       nausea,
     urinaryInconsistency: urinary,
     intestinalProblem:    urinary,          // agrupado en UI
-    skinProblem:          symptom('skinProblem'),
+    skinProblem:          positiveNegative('skinProblem'),
   };
 }
 
 // 3.2 Motor  (backend subStep 2)
 function buildMotor () {
   return {
-    weakness:        symptom('weakness'),
-    movementProblem: symptom('movementProblem'),
-    tremor:          symptom('tremor'),
-    tics:            symptom('tics'),
-    balanceProblems: symptom('balanceProblems'),
-    falls:           symptom('falls'),
+    weakness:        positiveNegative('weakness'),
+    movementProblem: positiveNegative('movementProblem'),
+    tremor:          positiveNegative('tremor'),
+    tics:            positiveNegative('tics'),
+    balanceProblems: positiveNegative('balanceProblems'),
+    falls:           positiveNegative('falls'),
   };
 }
 
 // 3.3 Sensorial  (backend subStep 3)
 function buildSensory () {
   return {
-    sensationLoss:       symptom('sensationLoss'),
-    visionDif:           symptom('visionDif'),
-    wearsGlasses:        symptom('wearsGlasses'),
-    blurryVision:        symptom('blurryVision'),
-    hearingLoss:         symptom('hearingLoss'),
-    ringingEars:         symptom('ringingEars'),
-    pain:                symptom('pain'),
-    phantomLimb:         symptom('phantomLimb'),
+    sensationLoss:       positiveNegative('sensationLoss'),
+    visionDif:           positiveNegative('visionDif'),
+    wearsGlasses:        positiveNegative('wearsGlasses'),
+    blurryVision:        positiveNegative('blurryVision'),
+    hearingLoss:         positiveNegative('hearingLoss'),
+    ringingEars:         positiveNegative('ringingEars'),
+    pain:                positiveNegative('pain'),
+    phantomLimb:         positiveNegative('phantomLimb'),
     phantomLimbDesc:     val('phantomLimbDesc'),
-    phantomLimbPain:     symptom('phantomLimbPain'),
+    phantomLimbPain:     positiveNegative('phantomLimbPain'),
     phantomLimbPainDesc: val('phantomLimbPainDesc'),
     scoreVision: score('score_vision'),
     scoreHearing: score('score_hearing'),
@@ -80,19 +79,19 @@ function buildMentalFunctions () {
 // 3.5 Personalidad  (backend subStep 5)
 function buildPersonality () {
   return {
-    depression:          symptom('depression'),
-    anxiety:             symptom('anxiety'),
-    stress:              symptom('stress'),
-    sleepingProblems:    symptom('sleepingProblems'),
-    easilyAngry:         symptom('easilyAngry'),
-    veryEmotional:       symptom('veryEmotional'),
-    frustratedEasily:    symptom('frustratedEasily'),
+    depression:          positiveNegative('depression'),
+    anxiety:             positiveNegative('anxiety'),
+    stress:              positiveNegative('stress'),
+    sleepingProblems:    positiveNegative('sleepingProblems'),
+    easilyAngry:         positiveNegative('easilyAngry'),
+    veryEmotional:       positiveNegative('veryEmotional'),
+    frustratedEasily:    positiveNegative('frustratedEasily'),
     changesComments:     val('changesComments'),
-    familyProblem:       symptom('familyProblem'),
-    legalProblem:        symptom('legalProblem'),
+    familyProblem:       positiveNegative('familyProblem'),
+    legalProblem:        positiveNegative('legalProblem'),
     legalProblemDesc:    val('legalProblemDesc'),
-    financeProblem:      symptom('financeProblem'),
-    drivingProblem:      symptom('drivingProblem'),
+    financeProblem:      positiveNegative('financeProblem'),
+    drivingProblem:      positiveNegative('drivingProblem'),
     controlProblems:     val('controlProblems'),
   };
 }
@@ -100,10 +99,10 @@ function buildPersonality () {
 // 3.6 Uso de Sustancias  (backend subStep 6)
 function buildSubstanceUse () {
   return {
-    drugConsumption:      val('drugConsumption'),
-    cigaretteConsumption: val('cigaretteConsumption'),
-    alcoholConsumption:   val('alcoholConsumption'),
-    hasAttendedTherapy:   symptom('hasAttendedTherapy'),
+    drugConsumption:      positiveNegative('drugConsumption'),
+    cigaretteConsumption: positiveNegative('cigaretteConsumption'),
+    alcoholConsumption:   positiveNegative('alcoholConsumption'),
+    hasAttendedTherapy:   positiveNegative('hasAttendedTherapy'),
     therapyType:          val('therapyType'),
     therapyDuration:      val('therapyDuration'),
     positiveExperience:   val('positiveExperience'),

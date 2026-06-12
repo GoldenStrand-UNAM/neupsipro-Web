@@ -985,3 +985,6 @@ CREATE TABLE user_acl (
 
     UNIQUE KEY unique_user_module (id_user, id_module)
 );
+
+Alter table financial_situation
+    ADD COLUMN min_salary       INT NULL;
