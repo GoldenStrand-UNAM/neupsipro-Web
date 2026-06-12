@@ -35,7 +35,7 @@
                             <option value="all">Todas las pruebas</option>
                             <option value="banfe">BANFE</option>
                             <option value="wais">WAIS</option>
-                            <option value="rey">REY</option>
+                            <option value="rey">ROFC</option>
                             <option value="moca">MOCA</option>
                             <option value="nih">NIH</option>
                         </select>   
@@ -282,7 +282,7 @@
         };
 
         renderCubes([
-            cubeFor('Cuestionario SE', 'Cuestionario Socioemocional'),
+            cubeFor('Perfil SE', 'Perfil Socioemocional'),
             cubeFor('BANFE',           'BANFE'),
             cubeFor('WAIS',            'WAIS'),
             cubeFor('ROFC',            'REY'),
@@ -299,10 +299,10 @@
         };
 
         renderCubes([
-            cubeFor('REY',             'REY'),
+            cubeFor('ROFC',             'ROFC'),
             cubeFor('NIH',             'NIH'),
             cubeFor('MOCA',            'MOCA'),
-            cubeFor('Cuestionario SE', 'Cuestionario Socioemocional'),
+            cubeFor('Perfil SE', 'Perfil Socioemocional'),
             { value: 0, label: 'Devolución', variant: 'muted' },
             { value: clinical?.totalProtocols ?? 0, label: 'Total Protocolos', variant: 'accent' },
         ], '#clinicalCubes');
