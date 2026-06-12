@@ -36,7 +36,7 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
   }
 
 
-  // Recompute inclusion_total as the sum of all 7 inclusion-criteria scores
+  // Recompute inclusion_total as the sum of all 8 inclusion-criteria scores
   // currently stored on the row, after any individual score_* save
   async _recomputeInclusionTotal ({ connection, id_user_relation }) {
     await connection.query(
@@ -44,7 +44,7 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
           SET inclusion_total = COALESCE(score_age, 0) + COALESCE(score_schooling, 0)
                                + COALESCE(score_vision, 0) + COALESCE(score_hearing, 0)
                                + COALESCE(score_moca, 0) + COALESCE(score_psychiatric, 0)
-                               + COALESCE(score_drug_use, 0)
+                               + COALESCE(score_drug_use, 0) + COALESCE(score_interview_date, 0)
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );

@@ -269,14 +269,14 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
       ]
     );
 
-    // Recompute inclusion_total as the sum of all 7 inclusion-criteria scores
-    // currently stored on the row, after score_age/score_schooling are saved
+    // Recompute inclusion_total as the sum of all 8 inclusion-criteria scores
+    // currently stored on the row, after score_age/score_schooling/score_interview_date are saved
     await connection.query(
       `UPDATE initial_interview
           SET inclusion_total = COALESCE(score_age, 0) + COALESCE(score_schooling, 0)
                                + COALESCE(score_vision, 0) + COALESCE(score_hearing, 0)
                                + COALESCE(score_moca, 0) + COALESCE(score_psychiatric, 0)
-                               + COALESCE(score_drug_use, 0)
+                               + COALESCE(score_drug_use, 0) + COALESCE(score_interview_date, 0)
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
