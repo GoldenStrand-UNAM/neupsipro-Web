@@ -24,15 +24,25 @@ class ImpUsersRepository extends usersRepository {
                 
       -- Subquery to get next appointment
       (
-        SELECT a.date_time 
+        SELECT a.date_time
         FROM appointment a
         -- Join w/user relation to know whose appointment this is
         JOIN user_relation ur_app ON a.id_user_relation = ur_app.id_user_relation
-        WHERE ur_app.id_user = l.id_user 
-        AND a.date_time >= NOW() 
-        ORDER BY a.date_time ASC 
+        WHERE ur_app.id_user = l.id_user
+        AND a.date_time >= NOW()
+        ORDER BY a.date_time ASC
         LIMIT 1
-      ) AS next_appointment
+      ) AS next_appointment,
+
+      -- Subquery to get the initial interview progress status
+      (
+        SELECT iip.status
+        FROM user_relation ur_ii
+        JOIN initial_interview_progress iip ON iip.id_user_relation = ur_ii.id_user_relation
+        WHERE ur_ii.id_user = l.id_user AND ur_ii.type = 'initial_interview'
+        ORDER BY ur_ii.assignment_date DESC
+        LIMIT 1
+      ) AS initial_interview_status
 
       FROM user_info l
       JOIN users u ON l.id_user = u.id_user

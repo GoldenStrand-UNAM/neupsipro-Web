@@ -36,6 +36,20 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
   }
 
 
+  // Recompute inclusion_total as the sum of all 7 inclusion-criteria scores
+  // currently stored on the row, after any individual score_* save
+  async _recomputeInclusionTotal ({ connection, id_user_relation }) {
+    await connection.query(
+      `UPDATE initial_interview
+          SET inclusion_total = COALESCE(score_age, 0) + COALESCE(score_schooling, 0)
+                               + COALESCE(score_vision, 0) + COALESCE(score_hearing, 0)
+                               + COALESCE(score_moca, 0) + COALESCE(score_psychiatric, 0)
+                               + COALESCE(score_drug_use, 0)
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+  }
+
   // section fetcher helper
   async ensureRow ({ connection, id_user_relation }) {
     const conn = connection || db;
@@ -81,7 +95,15 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
-    return rows[0] || {};
+
+    const [scoreRows] = await db.query(
+      `SELECT score_vision, score_hearing, inclusion_total
+         FROM initial_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return { ...(rows[0] || {}), ...(scoreRows[0] || {}) };
   }
 
   async fetchMentalFunctions ({ id_user_relation }) {
@@ -91,7 +113,15 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
-    return rows[0] || {};
+
+    const [scoreRows] = await db.query(
+      `SELECT score_moca, score_psychiatric, inclusion_total
+         FROM initial_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return { ...(rows[0] || {}), ...(scoreRows[0] || {}) };
   }
 
   async fetchPersonality ({ id_user_relation }) {
@@ -116,7 +146,15 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
-    return rows[0] || {};
+
+    const [scoreRows] = await db.query(
+      `SELECT score_drug_use, inclusion_total
+         FROM initial_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return { ...(rows[0] || {}), ...(scoreRows[0] || {}) };
   }
 
   async fetchCalculators ({ id_user_relation }) {
@@ -127,7 +165,15 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
-    return rows[0] || {};
+
+    const [scoreRows] = await db.query(
+      `SELECT inclusion_total
+         FROM initial_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return { ...(rows[0] || {}), ...(scoreRows[0] || {}) };
   }
 
   async fetchFollowUp ({ id_user_relation }) {
@@ -185,6 +231,17 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         id_user_relation,
       ]
     );
+
+    await connection.query(
+      `INSERT INTO initial_interview (id_user_relation, interview_date, score_vision, score_hearing)
+       VALUES (?, CURRENT_DATE, ?, ?)
+       ON DUPLICATE KEY UPDATE
+           score_vision = VALUES(score_vision),
+           score_hearing = VALUES(score_hearing)`,
+      [id_user_relation, data.score_vision, data.score_hearing]
+    );
+
+    await this._recomputeInclusionTotal({ connection, id_user_relation });
   }
 
   async _saveMentalFunctions ({ connection, id_user_relation, data }) {
@@ -197,6 +254,17 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         id_user_relation,
       ]
     );
+
+    await connection.query(
+      `INSERT INTO initial_interview (id_user_relation, interview_date, score_moca, score_psychiatric)
+       VALUES (?, CURRENT_DATE, ?, ?)
+       ON DUPLICATE KEY UPDATE
+           score_moca = VALUES(score_moca),
+           score_psychiatric = VALUES(score_psychiatric)`,
+      [id_user_relation, data.score_moca, data.score_psychiatric]
+    );
+
+    await this._recomputeInclusionTotal({ connection, id_user_relation });
   }
 
   async _savePersonality ({ connection, id_user_relation, data }) {
@@ -231,6 +299,16 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
         id_user_relation,
       ]
     );
+
+    await connection.query(
+      `INSERT INTO initial_interview (id_user_relation, interview_date, score_drug_use)
+       VALUES (?, CURRENT_DATE, ?)
+       ON DUPLICATE KEY UPDATE
+           score_drug_use = VALUES(score_drug_use)`,
+      [id_user_relation, data.score_drug_use]
+    );
+
+    await this._recomputeInclusionTotal({ connection, id_user_relation });
   }
 
   async _saveCalculators ({ connection, id_user_relation, data }) {

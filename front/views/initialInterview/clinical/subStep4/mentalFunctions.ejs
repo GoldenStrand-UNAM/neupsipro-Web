@@ -3,7 +3,12 @@
 
         <div>
             <label class="input_label">Puntuación MoCA</label>
-            <input type="text" id="cdrResult" maxlength="150" class="input" placeholder="Resultado">
+            <div class="flex items-center gap-2">
+                <input type="text" id="cdrResult" maxlength="150" class="input flex-1" placeholder="Resultado">
+                <input type="number" min="0" max="1" step="1"
+                    name="score_moca" id="score_moca"
+                    class="w-16 input" placeholder="0/1">
+            </div>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="cdrResult" data-max="150">0/150</span>
         </div>
 
@@ -18,7 +23,12 @@
                    target="_blank" rel="noopener noreferrer"
                    class="ml-1 text-xs text-blue-500 underline">NIHSS Stroke</a>
             </label>
-            <input type="text" id="nihssResult" maxlength="150" class="input" placeholder="Resultado">
+            <div class="flex items-center gap-2">
+                <input type="text" id="nihssResult" maxlength="150" class="input flex-1" placeholder="Resultado">
+                <input type="number" min="0" max="1" step="1"
+                    name="score_psychiatric" id="score_psychiatric"
+                    class="w-16 input" placeholder="0/1">
+            </div>
             <span class="char-counter text-xs text-gray-400 mt-1" data-target="nihssResult" data-max="150">0/150</span>
         </div>
 

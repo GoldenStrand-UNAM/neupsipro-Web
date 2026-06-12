@@ -185,12 +185,12 @@ describe('Domain Entity - User', () => {
         expect(userEntity.setProtocol(null)).toBeNull();
     });
 
-    test('Must parse and return legible states based on getStatus number', () => {
+    test('Must parse and return legible states based on getStatus', () => {
         const userEntity = new User(mockRawData);
 
-        expect(userEntity.getStatus(1)).toBe('Por comenzar');
-        expect(userEntity.getStatus(2)).toBe('En proceso');
-        expect(userEntity.getStatus(3)).toBe('Terminada');
-        expect(userEntity.getStatus(null)).toBeNull();
+        expect(userEntity.getStatus('to_start')).toBe('Por comenzar');
+        expect(userEntity.getStatus('in_progress')).toBe('En proceso');
+        expect(userEntity.getStatus('completed')).toBe('Terminada');
+        expect(userEntity.getStatus(null)).toBe('Sin comenzar');
     });
 });

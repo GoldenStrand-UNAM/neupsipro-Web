@@ -192,6 +192,7 @@
     </div>
 
     <!-- Script -->
+    <script src="/js/initialInterview/inputSanitizer.js"></script>
     <script src="/js/initialInterview/identification/imcCalculator.js"></script>
     <script src="/js/initialInterview/childrenTable.js"></script>
     <script src="/js/initialInterview/identificationMapper.js"></script>
@@ -206,6 +207,7 @@
     <script src="/js/initialInterview/child/childBuilder.js"></script>
     <script src="/js/initialInterview/clinical/clinicalMapper.js"></script>
     <script src="/js/initialInterview/clinical/clinicalBuilder.js"></script>
+    <script src="/js/initialInterview/clinical/inclusionProtocol.js"></script>
 
     <!------------------------ Load Content Functions ------------------------>
     <script>
@@ -246,7 +248,7 @@
         // Update nav buttons: hidden only at the very first/last subStep of the whole interview
         function updateNavigationButtons(phase, currentSection) {
 
-            const maxPhase = window.isChild ? 3 : 2;
+            const maxPhase = 3;
             const isFirst = phase === 1 && currentSection === 1;
             const isLast = phase === maxPhase && currentSection === PHASE_SUBSTEPS[maxPhase];
 
@@ -325,7 +327,7 @@
                     subStepTitle.textContent = '2.2 ESC Gubernamental';
 
                 } else if (data.current_section === 3) {
-                    subStepTitle.textContent = '2.3 Cuestionario AMAI';
+                    subStepTitle.textContent = '2.3 Perfil AMAI';
 
                 } else if (data.current_section === 4) {
                     subStepTitle.textContent = '2.4 Resumen de Resultados';
@@ -813,7 +815,6 @@
 
             const phase = Number(phaseEl.dataset.step);
 
-            // Phase 3 (Historia Clínica) has no content/data wired up yet
             if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
 
             // Save the active subStep before switching phases (free navigation: don't block on save outcome)
@@ -830,7 +831,7 @@
                 const phase = window.currentPhase;
                 const current = getActivePhaseData().current_section;
                 const total = PHASE_SUBSTEPS[phase];
-                const maxPhase = window.isChild ? 3 : 2;
+                const maxPhase = 3;
 
                 // Save current section (free navigation: don't block on save outcome)
                 await saveActiveSection(current);

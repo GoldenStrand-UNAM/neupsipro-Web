@@ -114,7 +114,9 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
               residence,
               fathers_schooling,
               mothers_schooling,
-              ocupation
+              ocupation,
+              score_age,
+              score_schooling
             FROM initial_interview
             WHERE id_user_relation = ?`,
       [id_user_relation]
@@ -213,8 +215,9 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           id_user_relation, interview_date, interviewer_name, support_student_name,
           companions_name, companion_relation, address, proof_address, healthcare_system,
           religion, weight, size, imc, imc_category, schooling, residence,
-          fathers_schooling, mothers_schooling, ocupation
-      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          fathers_schooling, mothers_schooling, ocupation,
+          score_age, score_schooling
+      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
           interview_date = COALESCE(?, interview_date),
           interviewer_name = VALUES(interviewer_name),
@@ -233,7 +236,9 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           residence = VALUES(residence),
           fathers_schooling = VALUES(fathers_schooling),
           mothers_schooling = VALUES(mothers_schooling),
-          ocupation = VALUES(ocupation)`,
+          ocupation = VALUES(ocupation),
+          score_age = VALUES(score_age),
+          score_schooling = VALUES(score_schooling)`,
       [
         id_user_relation,
         data.interviewDate,
@@ -254,9 +259,23 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.fathersSchooling,
         data.mothersSchooling,
         data.ocupation,
+        data.scoreAge,
+        data.scoreSchooling,
 
         data.interviewDate,
       ]
+    );
+
+    // Recompute inclusion_total as the sum of all 7 inclusion-criteria scores
+    // currently stored on the row, after score_age/score_schooling are saved
+    await connection.query(
+      `UPDATE initial_interview
+          SET inclusion_total = COALESCE(score_age, 0) + COALESCE(score_schooling, 0)
+                               + COALESCE(score_vision, 0) + COALESCE(score_hearing, 0)
+                               + COALESCE(score_moca, 0) + COALESCE(score_psychiatric, 0)
+                               + COALESCE(score_drug_use, 0)
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
     );
   }
 

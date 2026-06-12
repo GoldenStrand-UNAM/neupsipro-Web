@@ -81,7 +81,7 @@ const TEST_REGISTRY = {
   // Adaptación Socioemocional
 
   6: {
-    name: 'Cuestionario SocioEmocional',
+    name: 'Perfil SocioEmocional',
     openRegister: (idUser, idApplication, test) =>
       openEmotionModal(idUser, idApplication, test, 'register'),
     openModify: (idUser, idApplication, test) =>

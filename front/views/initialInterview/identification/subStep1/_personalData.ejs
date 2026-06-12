@@ -82,51 +82,29 @@
         </div>
 
         <!--Schooling-->
-        <div>
-            <label class="input_label">Escolaridad</label>
+        <div class="flex items-end gap-2">
+            <div class="flex-1">
+                <label class="input_label">Escolaridad (años)</label>
 
-            <select id="schooling" class="select input text-gray-400">
-                <option disabled selected value="">Selecciona una opción</option>
-
-                <option value="Sin escolaridad">Sin escolaridad</option>
-                <option value="Primaria">Primaria</option>
-                <option value="Secundaria">Secundaria</option>
-                <option value="Bachillerato">Bachillerato</option>
-                <option value="Licenciatura">Licenciatura</option>
-                <option value="Posgrado">Posgrado</option>
-            </select>
+                <input type="number" min="0" max="30" step="1" id="schooling" class="schooling-years input" placeholder="Años de estudio">
+            </div>
+            <input type="number" min="0" max="1" step="1"
+                name="score_schooling" id="score_schooling"
+                class="w-16 input" placeholder="0/1">
         </div>
 
         <!--Father's schooling-->
         <div>
-            <label class="input_label">Escolaridad del padre</label>
+            <label class="input_label">Escolaridad del padre (años)</label>
 
-            <select id="fathersSchooling" class="select input text-gray-400">
-                <option disabled selected value="">Selecciona una opción</option>
-
-                <option value="Sin escolaridad">Sin escolaridad</option>
-                <option value="Primaria">Primaria</option>
-                <option value="Secundaria">Secundaria</option>
-                <option value="Bachillerato">Bachillerato</option>
-                <option value="Licenciatura">Licenciatura</option>
-                <option value="Posgrado">Posgrado</option>
-            </select>
+            <input type="number" min="0" max="30" step="1" id="fathersSchooling" class="schooling-years input" placeholder="Años de estudio">
         </div>
 
         <!--Mother's schooling-->
         <div>
-            <label class="input_label">Escolaridad de la madre</label>
+            <label class="input_label">Escolaridad de la madre (años)</label>
 
-            <select id="mothersSchooling" class="select input text-gray-400">
-                <option disabled selected value="">Selecciona una opción</option>
-
-                <option value="Sin escolaridad">Sin escolaridad</option>
-                <option value="Primaria">Primaria</option>
-                <option value="Secundaria">Secundaria</option>
-                <option value="Bachillerato">Bachillerato</option>
-                <option value="Licenciatura">Licenciatura</option>
-                <option value="Posgrado">Posgrado</option>
-            </select>
+            <input type="number" min="0" max="30" step="1" id="mothersSchooling" class="schooling-years input" placeholder="Años de estudio">
         </div>
     </div>
 </div>
@@ -142,25 +120,5 @@
                 dateFormat: 'Y-m-d',
             });
         }
-    })();
-
-    // Block emoji input and enforce each field's declared maxlength,
-    // applied the same way to every text field in this form (the date picker is excluded)
-    (function () {
-        const EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
-
-        document.querySelectorAll('#identification-section-1 input[type="text"]:not(#interviewDate)')
-            .forEach(input => {
-                const limit = input.maxLength > 0 ? input.maxLength : null;
-
-                input.addEventListener('input', () => {
-                    let { value } = input;
-
-                    value = value.replace(EMOJI_REGEX, '');
-                    if (limit) value = value.slice(0, limit);
-
-                    if (value !== input.value) input.value = value;
-                });
-            });
     })();
 </script>

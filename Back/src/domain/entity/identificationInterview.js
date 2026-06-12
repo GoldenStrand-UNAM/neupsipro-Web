@@ -32,15 +32,6 @@ class IdentificationInterview {
 
   static MAX_TEXT_LENGTH = 30;
 
-  static SCHOOLING_OPTIONS = [
-    'Sin escolaridad',
-    'Primaria',
-    'Secundaria',
-    'Bachillerato',
-    'Licenciatura',
-    'Posgrado',
-  ];
-
   static STRESS_WORK_OPTIONS = ['Bajo', 'Medio', 'Alto'];
 
   // Get number or null if the value isn't registered
@@ -149,6 +140,16 @@ class IdentificationInterview {
     return this.integerOrNull(value, min, max, label);
   }
 
+  // Inclusion criteria score: must be 0, 1 or null
+  static scoreOrNull (value, fieldName) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const n = Number(value);
+    if (![0, 1].includes(n)) throw new Error(`${fieldName} debe ser 0, 1 o null`);
+
+    return n;
+  }
+
   // ================================= Map =================================
 
   // Datos Personales
@@ -182,11 +183,13 @@ class IdentificationInterview {
         size: IdentificationInterview.numberOrNull(base.size),
         imc: IdentificationInterview.numberOrNull(base.imc),
         imcCategory: IdentificationInterview.textOrNull(base.imc_category, 30),
-        schooling: IdentificationInterview.textOrNull(base.schooling, 30),
+        schooling: IdentificationInterview.numberOrNull(base.schooling),
         residence: IdentificationInterview.textOrNull(base.residence, 80),
-        fathersSchooling: IdentificationInterview.textOrNull(base.fathers_schooling, 30),
-        mothersSchooling: IdentificationInterview.textOrNull(base.mothers_schooling, 30),
+        fathersSchooling: IdentificationInterview.numberOrNull(base.fathers_schooling),
+        mothersSchooling: IdentificationInterview.numberOrNull(base.mothers_schooling),
         ocupation: IdentificationInterview.textOrNull(base.ocupation, 50),
+        scoreAge: IdentificationInterview.numberOrNull(base.score_age),
+        scoreSchooling: IdentificationInterview.numberOrNull(base.score_schooling),
       },
 
       completedSteps: this.mapInitialProgress(initialProgress),
@@ -218,7 +221,7 @@ class IdentificationInterview {
       children: children.map(child => ({
         childName: IdentificationInterview.textOrNull(child.child_name, 80),
         childAge: IdentificationInterview.numberOrNull(child.child_age),
-        childSchooling: IdentificationInterview.textOrNull(child.child_schooling, 30),
+        childSchooling: IdentificationInterview.numberOrNull(child.child_schooling),
         childOccupation: IdentificationInterview.textOrNull(child.child_occupation, 80),
       })),
 
@@ -295,11 +298,13 @@ class IdentificationInterview {
       size: this.numberRangeOrNull(data.size, 0, 251, 'La talla'),
       imc: this.numberOrNull(data.imc),
       imcCategory: this.textOrNull(data.imcCategory, 30),
-      schooling: this.enumOrNull(data.schooling, this.SCHOOLING_OPTIONS),
+      schooling: this.integerOrNull(data.schooling, 0, 30, 'La escolaridad'),
       residence: this.textOrNull(data.residence, 80),
-      fathersSchooling: this.enumOrNull(data.fathersSchooling, this.SCHOOLING_OPTIONS),
-      mothersSchooling: this.enumOrNull(data.mothersSchooling, this.SCHOOLING_OPTIONS),
+      fathersSchooling: this.integerOrNull(data.fathersSchooling, 0, 30, 'La escolaridad del padre'),
+      mothersSchooling: this.integerOrNull(data.mothersSchooling, 0, 30, 'La escolaridad de la madre'),
       ocupation: this.textOrNull(data.ocupation, 50),
+      scoreAge: this.scoreOrNull(data.scoreAge, 'El score de edad'),
+      scoreSchooling: this.scoreOrNull(data.scoreSchooling, 'El score de escolaridad'),
     };
   }
 
@@ -350,7 +355,7 @@ class IdentificationInterview {
       .map(child => ({
         childName: this.requiredText(child.childName, 80, 'El nombre del hijo'),
         childAge: this.integerOrNull(child.childAge, 0, null, 'La edad del hijo'),
-        childSchooling: this.enumOrNull(child.childSchooling, this.SCHOOLING_OPTIONS),
+        childSchooling: this.integerOrNull(child.childSchooling, 0, 30, 'La escolaridad del hijo'),
         childOccupation: this.textOrNull(child.childOccupation, 80),
       }));
   }

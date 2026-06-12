@@ -46,7 +46,7 @@ describe('postREYUseCase', () => {
     });
 
     resultsRepository.fetchUserSchooling
-      .mockResolvedValue('Licenciatura');
+      .mockResolvedValue(16);
 
     resultsRepository.fetchUserAge
       .mockResolvedValue('15/01/1996');

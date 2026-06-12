@@ -6,16 +6,6 @@
 // "Personas que aportan" contributors section in financial/subStep1/incomes.ejs.
 
 const CHILDREN_MAX_ROWS = 20;
-const CHILDREN_EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
-
-const CHILD_SCHOOLING_OPTIONS = [
-  'Sin escolaridad',
-  'Primaria',
-  'Secundaria',
-  'Bachillerato',
-  'Licenciatura',
-  'Posgrado',
-];
 
 // ----- Auxiliary functions ---------------------------------------------------
 
@@ -26,37 +16,6 @@ function getChildrenElements () {
     addBtn: document.getElementById('addChildBtn'),
     warning: document.getElementById('childrenLimitWarning'),
   };
-}
-
-// Block emojis and enforce maxlength on a card's text input (same rule as subStep1)
-function bindChildTextLimit (input) {
-  const limit = input.maxLength > 0 ? input.maxLength : null;
-
-  input.addEventListener('input', () => {
-    let { value } = input;
-
-    value = value.replace(CHILDREN_EMOJI_REGEX, '');
-    if (limit) value = value.slice(0, limit);
-
-    if (value !== input.value) input.value = value;
-  });
-}
-
-// Toggle a select's text color between placeholder gray and selected dark,
-// same convention as setSelectValue in identificationMapper.js / financialMapper.js
-function bindChildSelectVisual (select) {
-  const updateColor = () => {
-    if (select.value) {
-      select.classList.remove('text-gray-400');
-      select.classList.add('text-gray-900');
-    } else {
-      select.classList.remove('text-gray-900');
-      select.classList.add('text-gray-400');
-    }
-  };
-
-  select.addEventListener('change', updateColor);
-  updateColor();
 }
 
 // Update each card's title with its position ("Hijo 1", "Hijo 2"...),
@@ -100,21 +59,14 @@ function addRow (data = {}) {
 
   const nameInput = row.querySelector('.child-name');
   const ageInput = row.querySelector('.child-age');
-  const schoolingSelect = row.querySelector('.child-schooling');
+  const schoolingInput = row.querySelector('.child-schooling');
   const occupationInput = row.querySelector('.child-occupation');
   const removeBtn = row.querySelector('.remove-child-btn');
 
   nameInput.value = data.childName ?? '';
   ageInput.value = data.childAge ?? '';
+  schoolingInput.value = data.childSchooling ?? '';
   occupationInput.value = data.childOccupation ?? '';
-
-  if (data.childSchooling && CHILD_SCHOOLING_OPTIONS.includes(data.childSchooling)) {
-    schoolingSelect.value = data.childSchooling;
-  }
-
-  bindChildTextLimit(nameInput);
-  bindChildTextLimit(occupationInput);
-  bindChildSelectVisual(schoolingSelect);
 
   removeBtn.addEventListener('click', () => {
     row.remove();

@@ -126,6 +126,10 @@ function renderESCData (info) {
   document.getElementById('minIncome').value =
     info.minIncome || '';
 
+  // Minimum salary reference (read-only, set via the general config screen)
+  document.getElementById('min-salary-ref').textContent =
+    info.minSalaryReference ?? '--';
+
   const totalExpenses = info.extra?.totalExpenses || 0;
   const totalIncome = info.extra?.totalIncome || 0;
   const familyExpenses =

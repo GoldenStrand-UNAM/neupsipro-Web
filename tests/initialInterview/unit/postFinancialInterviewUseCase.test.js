@@ -104,7 +104,7 @@ describe('PostFinancialInterviewUseCase', () => {
 
   const validResultsBody = {
     protesisBudget: 25000,
-    notes: 'Paciente candidato a apoyo financiero.',
+    notes: 'Usuario candidato a apoyo financiero.',
   };
 
   describe('Happy Path', () => {
@@ -223,7 +223,7 @@ describe('PostFinancialInterviewUseCase', () => {
         completed: true,
         data: expect.objectContaining({
           protesisBudget: 25000,
-          notes: 'Paciente candidato a apoyo financiero.',
+          notes: 'Usuario candidato a apoyo financiero.',
         }),
       });
 

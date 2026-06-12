@@ -73,11 +73,13 @@ function mapPersonalData (personalData) {
   setFieldValue('proofAddress', info.proofAddress);
   setFieldValue('healthcareSystem', info.healthcareSystem);
   setFieldValue('religion', info.religion);
-  setSelectValue('schooling', info.schooling);
+  setFieldValue('schooling', info.schooling);
   setFieldValue('residence', info.residence);
-  setSelectValue('fathersSchooling', info.fathersSchooling);
-  setSelectValue('mothersSchooling', info.mothersSchooling);
+  setFieldValue('fathersSchooling', info.fathersSchooling);
+  setFieldValue('mothersSchooling', info.mothersSchooling);
   setFieldValue('currentOcupation', info.ocupation);
+  setFieldValue('score_age', info.scoreAge);
+  setFieldValue('score_schooling', info.scoreSchooling);
 }
 
 // Map weight/size and (re)initialize the IMC calculator with the patient context,

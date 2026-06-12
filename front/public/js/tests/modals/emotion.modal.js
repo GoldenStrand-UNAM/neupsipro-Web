@@ -65,7 +65,7 @@ function buildEmotionConsultHTML (test) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">Cuestionario SE</h2>
+        <h2 class="modal__title">Perfil SE</h2>
         <button id="btnCloseEmotion" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -163,7 +163,7 @@ function buildEmotionFormHTML (mode, prefill) {
   return `
     <div class="modal">
       <div class="modal__header">
-        <h2 class="modal__title">Cuestionario SE — ${title}</h2>
+        <h2 class="modal__title">Perfil SE — ${title}</h2>
         <button id="btnCloseEmotion" class="modal__close" aria-label="Cerrar modal">
           <svg class="modal__close-icon" xmlns="http://www.w3.org/2000/svg"
                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -293,9 +293,9 @@ function buildEmotionFormHTML (mode, prefill) {
           <p class="text-xs text-gray-600 leading-relaxed">
             (1) Inventario de Ansiedad de Beck (IAB); (2) Inventario de Depresión de Beck (IDB);
             (3) Lista de Verificación de 90 Síntomas Revisada (SCL-90-R); (4) Encuesta de Salud de
-            Formato Corto (SF-36); (5) Cuestionario de Evaluación de la Discapacidad de la
-            Organización Mundial de la Salud (WHODAS 2.0); (6) Cuestionario Breve de Afrontamiento
-            al Estrés (COPE-28); (7) Cuestionario de Reserva Cognitiva 2.0 (CRIq).
+            Formato Corto (SF-36); (5) Perfil de Evaluación de la Discapacidad de la
+            Organización Mundial de la Salud (WHODAS 2.0); (6) Perfil Breve de Afrontamiento
+            al Estrés (COPE-28); (7) Perfil de Reserva Cognitiva 2.0 (CRIq).
           </p>
 
           <!-- IAB table -->

@@ -47,11 +47,11 @@ const asUnauthenticated = () => { mockAuthBehavior = 'unauthenticated'; };
 
 const url = '/api/users/1/applications/app-001/tests/5/results';
 
-const validBody = () => ({ notes: 'Paciente colaborador, sin observaciones.' });
+const validBody = () => ({ notes: 'Usuario colaborador, sin observaciones.' });
 
 const successDTO = {
   idResults: 'r-005', idTest: 5, status: 3,
-  dateApplied: '2026-05-20', notes: 'Paciente colaborador.',
+  dateApplied: '2026-05-20', notes: 'Usuario colaborador.',
 };
 
 // ===================== TESTS =============================================
