@@ -143,7 +143,7 @@ function renderESCData (info) {
 
   // Minimum salary reference (read-only, set via the general config screen)
   document.getElementById('min-salary-ref').textContent =
-    info.minSalaryReference ?? '--';
+    info.minSalaryReference != null ? formatMinSalary(info.minSalaryReference) : '--';
 
   const totalExpenses = info.extra?.totalExpenses || 0;
   const totalIncome = info.extra?.totalIncome || 0;
