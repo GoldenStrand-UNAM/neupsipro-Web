@@ -1,6 +1,6 @@
 
 const db = require ('../database/database');
-const PermissionsRepository = require('../../domain/repository/PermissionsRepository');
+const PermissionsRepository = require('../../domain/repository/permissionsRepository');
 const Uncrypt = require('../crypt/clinical/getClinicals');
 
 const uncrypt = new Uncrypt();
