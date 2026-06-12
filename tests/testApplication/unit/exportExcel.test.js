@@ -22,7 +22,7 @@ describe('ExportTestResultsCsvUseCase — Unit Tests', () => {
     // validation
 
     test('throws 400 if the test type is invalid', async () => {
-        await expect(useCase.execute({ test: 'moca' }))
+        await expect(useCase.execute({ test: 'invalid' }))
             .rejects.toMatchObject({ status: 400, message: 'Tipo de prueba inválido' });
     });
 

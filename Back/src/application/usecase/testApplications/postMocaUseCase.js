@@ -6,25 +6,17 @@ class postMocaUseCase {
     this.impTestResultsRepository = impTestResultsRepository;
   }
 
-  // Maps schooling label to years of education.
+  // schooling is captured directly as years of education.
   // Used to determine if the +2 bonus applies.
   resolveSchoolingYears (schooling) {
-    const map = {
-      'Sin escolaridad': 0,
-      'Primaria': 6,
-      'Secundaria': 9,
-      'Bachillerato': 12,
-      'Licenciatura': 16,
-      'Posgrado': 18,
-    };
-    return map[schooling] ?? null;
+    return typeof schooling === 'number' ? schooling : null;
   }
 
-  // Applies +2 bonus if schooling <= 12 years and raw score <= 28.
+  // Applies +2 bonus if schooling <= 12 years and raw score <= 29.
   // Final score is capped at 30.
   resolveScore (rawScore, schoolingYears) {
     let final = rawScore;
-    if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 28) {
+    if (schoolingYears !== null && schoolingYears <= 12 && rawScore <= 29) {
       final = rawScore + 2;
     }
     return Math.min(final, 30);

@@ -85,10 +85,16 @@ class ImpDashboardRepository extends DashboardRepository {
       SELECT
         pt.id_test,
         pt.test_name,
+        ui.protocol,
         COUNT(tr.id_results) AS total
-      FROM psych_tests pt
-      LEFT JOIN test_results tr ON tr.id_test = pt.id_test
-      GROUP BY pt.id_test, pt.test_name
+      FROM test_results tr
+      JOIN psych_tests pt ON pt.id_test = tr.id_test
+      JOIN users u        ON u.id_user  = tr.id_user
+      JOIN user_info ui   ON ui.id_user = tr.id_user
+      WHERE u.eliminated = 0
+        AND u.id_role = 2
+        AND ui.protocol IN ('Research', 'Clinical')
+      GROUP BY pt.id_test, pt.test_name, ui.protocol
       ORDER BY pt.id_test;
     `);
     return rows.map(r => new TestCountEntity(r));

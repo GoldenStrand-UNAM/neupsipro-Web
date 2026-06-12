@@ -169,6 +169,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Permissions
+const permissionsRoutes = require('./presentation/routes/permissions/getPermission.routes');
+
+app.use('/', permissionsRoutes(authUseCase, authMiddleware));
+
 // Dasboards
 const dashRoutes = require('./presentation/routes/dashboard/getClinicalUserDashboard.routes');
 
@@ -216,6 +221,10 @@ const dashboardRoutes = require('./presentation/routes/dashboard/dashboardUnit.r
 
 app.use('/', dashboardRoutes(authUseCase, authMiddleware));
 
+const peerSessionRoutes = require('./presentation/routes/peerSession/peerSession.routes');
+
+app.use('/peer-sessions', peerSessionRoutes(authUseCase, authMiddleware));
+
 const interventionRoutes = require('./presentation/routes/interventions/intervention.routes');
 
 app.use('/', interventionRoutes(authUseCase, authMiddleware));
@@ -241,6 +250,13 @@ app.use('/api/profile', profileRoutes(authUseCase, authMiddleware));
 const testRoutes = require('./presentation/routes/applications/getTests.routes');
 
 app.use('/', testRoutes(authUseCase, authMiddleware));
+
+// ======== INITIAL INTERVIEW ROUTES ========
+const initialInterviewRoutes = require('./presentation/routes/initialInterview/financialInterview.routes');
+
+app.use('/initial-interview', initialInterviewRoutes(authUseCase, authMiddleware));
+
+// ======== TUTORIAL ROUTES ========
 const tutorialRoutes = require('./presentation/routes/tutorial/tutorial.routes');
 
 app.use('/api/tutorial', tutorialRoutes(authMiddleware));
@@ -250,6 +266,15 @@ app.get('/consultUser', (req, res) => {
     activePage: 'usuario',
   });
 });
+
+const patchPermissionsRoutes = require('./presentation/routes/permissions/patchPermission.routes');
+
+app.use('/api/admin', patchPermissionsRoutes(authUseCase, authMiddleware));
+
+// ======== CONFIG ROUTES ========
+const configRoutes = require('./presentation/routes/config/config.routes');
+
+app.use('/api/config', configRoutes(authUseCase, authMiddleware));
 
 app.get('/construction', (req, res) => {
   res.render('construction');

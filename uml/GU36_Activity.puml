@@ -1,0 +1,33 @@
+@startuml EditSessionActivity
+title Editar sesión - Diagrama de actividades (usuario)
+
+start
+
+:Entrar a la pantalla de intervención;
+:Ver la tabla de sesiones;
+:Hacer clic en una sesión;
+:Ver el detalle de la sesión;
+:Hacer clic en el lápiz (editar);
+
+:Modificar los datos\n(fecha, número, objetivos,\ndesarrollo, DQP / tarea);
+
+:Hacer clic en "Guardar";
+
+if (¿Seleccionó fecha?) then (no)
+  :Ver mensaje\n"Selecciona la fecha";
+  stop
+else (sí)
+endif
+
+if (¿Datos correctos?) then (no)
+  :Ver mensaje de error;
+  stop
+else (sí)
+endif
+
+:Ver confirmación\n"Sesión actualizada";
+:La tabla se recarga\ncon los cambios;
+
+stop
+
+@enduml

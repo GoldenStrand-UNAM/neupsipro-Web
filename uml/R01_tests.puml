@@ -12,16 +12,10 @@ database "DB" as DB
 == Abrir vista y crear aplicación ==
 
 USR -> VEVAL : Click [Crear Sesión]
-VEVAL -> VEVAL : openModal()\nclear inputAppName
-VEVAL --> USR : Show Modal\n(inputAppName*)
+VEVAL -> VEVAL : openModal()\nreset select → index 0
+VEVAL --> USR : Show Modal\n(dropdown: Evaluación 0 … Evaluación 9)
 
-USR -> VEVAL : Fill application_name\nClick [Guardar]
-
-VEVAL -> VEVAL : validate client-side\n(required, max 20 chars)
-
-alt Empty or > 20 chars
-    VEVAL --> USR : showModalError(msg)
-end
+USR -> VEVAL : Select application_name\nClick [Guardar]
 
 VEVAL -> MAIN : fetch POST /users/:id_user/applications\n{ application_name }
 
@@ -48,8 +42,8 @@ alt protocol null or 'Pending'
     MAIN --> VEVAL : showModalError(json.error)
 end
 
-alt application_name empty or > 20 chars
-    UC_POST --> TCTRL : throw Error 422\n'application_name is required /\nmust be 20 chars or less'
+alt application_name not in whitelist\n(Evaluación 0 … Evaluación 9)
+    UC_POST --> TCTRL : throw Error 422\n'Nombre de aplicación no válido'
     TCTRL --> MAIN : HTTP 422 { error }
     MAIN --> VEVAL : showModalError(json.error)
 end

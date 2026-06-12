@@ -1,0 +1,42 @@
+<div>
+    <%
+        const fields = [
+            { id: 'depression',          label: 'Depresión',           toggle: true },
+            { id: 'anxiety',             label: 'Ansiedad',            toggle: true },
+            { id: 'stress',              label: 'Estrés',              toggle: true },
+            { id: 'sleepingProblems',    label: 'Sueño',               toggle: true },
+            { id: 'easilyAngry',         label: 'Me enojo fácilmente', toggle: true },
+            { id: 'veryEmotional',       label: 'Muy emocional (p. ej., lloro con facilidad)', toggle: true },
+            { id: 'frustratedEasily',    label: 'Me frustro fácilmente', toggle: true },
+            { id: 'changesComments',     label: '¿Alguien le ha comentado sobre cambios en su pensamiento, conducta, estado de ánimo o personalidad?' },
+            { id: 'familyProblem',       label: 'En este momento, ¿tiene algún problema marital / familiar?', toggle: true },
+            { id: 'legalProblem',        label: 'En este momento, ¿tiene algún problema legal?', toggle: true },
+            { id: 'legalProblemDesc',    label: 'Si tiene problema legal, describa' },
+            { id: 'financeProblem',      label: 'En este momento, ¿tiene algún problema manejo de casa o del dinero?', toggle: true },
+            { id: 'drivingProblem',      label: 'En este momento, ¿tiene algún problema para conducir?', toggle: true },
+            { id: 'controlProblems',     label: 'Observación clínica: Nivel general de introspección del entrevistado' },
+        ];
+    %>
+
+    <div class="space-y-4 max-w-xl mt-3">
+        <% fields.forEach(function (f) { %>
+            <div>
+                <label class="input_label"><%= f.label %></label>
+                <% if (f.toggle) { %>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="<%= f.id %>_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Positivo">Positivo</option>
+                            <option value="Negativo">Negativo</option>
+                        </select>
+                        <input type="text" id="<%= f.id %>" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+                    </div>
+                    <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="90">0/90</span>
+                <% } else { %>
+                    <input type="text" id="<%= f.id %>" maxlength="100" class="input" placeholder="Notas">
+                    <span class="char-counter text-xs text-gray-400 mt-1" data-target="<%= f.id %>" data-max="100">0/100</span>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+</div>

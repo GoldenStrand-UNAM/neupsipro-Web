@@ -1,0 +1,56 @@
+@startuml GU40_EliminarPeerSession_Secuencia
+title GU40 - Eliminar sesión de grupo de pares 
+
+actor "Clinical User" as USR
+participant "PeerSessionView" as PSV
+participant "ConfirmDeleteModal\n(JS)" as MODAL
+participant "main.js" as MAIN
+participant "PeerSessionRoutes" as ROUTE
+participant "Auth & Permissions\nMiddleware" as AUTH
+participant "DeletePeerSessionController" as CTRL
+participant "DeletePeerSessionUseCase" as UC
+participant "ImpPeerSessionRepository" as IREPO
+database "MySQL DB" as DB
+
+USR -> PSV : Click [Eliminar] en una sesión
+activate PSV
+PSV -> MODAL : openConfirm(id_peer_session)
+activate MODAL
+MODAL --> USR : "¿Eliminar esta sesión?"
+deactivate PSV
+
+USR -> MODAL : Click [Confirmar]
+MODAL -> MAIN : deletePeerSession(id_peer_session)
+MAIN -> ROUTE : DELETE /peer-sessions/:id\n[Authorization: Bearer JWT]
+activate ROUTE
+ROUTE -> AUTH : verifyToken +\nrequirePermission('eliminate')
+AUTH --> ROUTE : OK
+ROUTE -> CTRL : deletePeerSession(req, res)
+activate CTRL
+CTRL -> UC : execute({ id_peer_session })
+activate UC
+
+UC -> IREPO : deleteSession(id_peer_session)
+activate IREPO
+IREPO -> DB : DELETE FROM peer_session\nWHERE id_peer_session = ?
+DB --> IREPO : { affectedRows }
+IREPO --> UC : affectedRows > 0
+deactivate IREPO
+
+alt affectedRows == 0 (no existe)
+  UC --> CTRL : throw NotFoundError
+  CTRL --> ROUTE : HTTP 404 { error }
+  ROUTE --> MAIN : HTTP 404 { error }
+  MAIN --> MODAL : Show error
+else Eliminada
+  UC --> CTRL : { success: true }
+  deactivate UC
+  CTRL --> ROUTE : HTTP 200 { message }
+  deactivate CTRL
+  ROUTE --> MAIN : HTTP 200 OK
+  deactivate ROUTE
+  MAIN -> PSV : remove session from list\n+ refresh charts
+  MODAL --> USR : Toast "Sesión eliminada"
+  deactivate MODAL
+end
+@enduml

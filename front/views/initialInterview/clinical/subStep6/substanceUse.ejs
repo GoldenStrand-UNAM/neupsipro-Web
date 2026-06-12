@@ -1,0 +1,93 @@
+<div>
+    <div class="space-y-4 max-w-xl mt-3">
+
+        <div>
+            <label class="input_label">Actualmente, ¿usted consume alguna droga?</label>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="drugConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="drugConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+                <input type="number" min="0" max="1" step="1"
+                    name="score_drug_use" id="score_drug_use"
+                    class="w-16 input" placeholder="0/1">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="drugConsumption" data-max="90">0/90</span>
+        </div>
+
+        <div>
+            <label class="input_label">Consumo de cigarro: frecuencia y cantidad</label>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="cigaretteConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="cigaretteConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="cigaretteConsumption" data-max="90">0/90</span>
+        </div>
+
+        <div>
+            <label class="input_label">Consumo de alcohol: frecuencia y cantidad</label>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="alcoholConsumption_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="alcoholConsumption" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="alcoholConsumption" data-max="90">0/90</span>
+        </div>
+
+        <div>
+            <label class="input_label">¿Alguna vez ha asistido a terapia?</label>
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="hasAttendedTherapy_presence" class="input w-40 sm:w-48 flex-shrink-0">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Positivo">Positivo</option>
+                    <option value="Negativo">Negativo</option>
+                </select>
+                <input type="text" id="hasAttendedTherapy" maxlength="90" class="input flex-1 min-w-[140px]" placeholder="Notas">
+            </div>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="hasAttendedTherapy" data-max="90">0/90</span>
+        </div>
+
+        <div>
+            <label class="input_label">Tipo de terapia y tiempo de duración</label>
+            <input type="text" id="therapyType" maxlength="100" class="input" placeholder="Notas">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="therapyType" data-max="100">0/100</span>
+        </div>
+
+        <div>
+            <label class="input_label">Duración de la terapia</label>
+            <input type="text" id="therapyDuration" maxlength="100" class="input" placeholder="Notas">
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="therapyDuration" data-max="100">0/100</span>
+        </div>
+
+        <div>
+            <label class="input_label">Algunas personas dicen que cada nube negra tiene un lado positivo: ¿a usted le ha pasado algo positivo o bueno como resultado de la amputación?</label>
+            <textarea id="positiveExperience" maxlength="300" rows="3"
+                      class="input resize-none" placeholder="Notas"></textarea>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="positiveExperience" data-max="300">0/300</span>
+        </div>
+
+        <div>
+            <label class="input_label">¿Cuáles son sus metas para el futuro?</label>
+            <textarea id="futureGoals" maxlength="300" rows="3"
+                      class="input resize-none" placeholder="Notas"></textarea>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="futureGoals" data-max="300">0/300</span>
+        </div>
+
+        <div>
+            <label class="input_label">Observaciones generales</label>
+            <textarea id="observations" maxlength="400" rows="4"
+                      class="input resize-none" placeholder="Observaciones"></textarea>
+            <span class="char-counter text-xs text-gray-400 mt-1" data-target="observations" data-max="400">0/400</span>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div>
+    <p class="input_label mt-2 mb-4">¿Algún problema durante el primer año de vida?</p>
+
+    <%
+        // Backend subStep 5 (validateDevelopment). id = clave camelCase del body.
+        // 'devResults' (Resultados) es UI-only: no hay columna en el backend.
+        const groups = [
+            { title: 'Dominio Comunicativo', fields: [
+                { id: 'babblingAge',         label: 'Balbuce', type: 'number', ph: 'Edad en meses' },
+                { id: 'firstWordAge',        label: 'Primera palabra (año)', type: 'number', ph: 'Edad' },
+                { id: 'firstWord',           label: '¿Cuál fue la primera palabra?', type: 'text', max: 15 },
+                { id: 'firstSentence',       label: 'Primera frase', type: 'text', max: 50 },
+                { id: 'talkStrangers',       label: 'Cuando habla con extraños, ¿le entienden?', type: 'yn' },
+                { id: 'languagePairs',       label: 'Al compararle con pares, ¿cómo es su lenguaje?', type: 'text' },
+                { id: 'expressedIdeas',      label: '¿Organiza bien sus ideas al expresarse?', type: 'text' },
+                { id: 'spokenComprehension', label: '¿Comprende todo lo que se le dice?', type: 'text' },
+                { id: 'languageTherapy',     label: '¿Ha recibido terapia de lenguaje?', type: 'yn' },
+                { id: 'therapyInfo',         label: '¿Cuánto tiempo tuvo de terapia?', type: 'text' },
+                { id: 'devResults',          label: 'Resultados', type: 'text' },
+            ] },
+            { title: 'Dominio Motor', fields: [
+                { id: 'headSupport',       label: 'Sostén cefálico', type: 'text' },
+                { id: 'turn',              label: 'Giro', type: 'text' },
+                { id: 'seating',           label: 'Sedestación', type: 'text' },
+                { id: 'crawl',             label: 'Gateo', type: 'text' },
+                { id: 'standing',          label: 'Bipedestación', type: 'text' },
+                { id: 'motion',            label: 'Marcha', type: 'text' },
+                { id: 'practicesSports',   label: 'Practica deporte', type: 'text' },
+                { id: 'trimming',          label: 'Recorte', type: 'text' },
+                { id: 'letterLegibility',  label: 'Legibilidad de letra', type: 'enum' },
+                { id: 'motorCoordination', label: 'Coordinación motora', type: 'text' },
+                { id: 'bicycle',           label: 'Bicicleta', type: 'text' },
+                { id: 'movementProblems',  label: 'Problema de movimientos', type: 'text' },
+            ] },
+            { title: 'Dominio Socioemocional', fields: [
+                { id: 'temper',                 label: 'Temperamento', type: 'text' },
+                { id: 'socialSmile',            label: 'Sonrisa social', type: 'text' },
+                { id: 'objectPermanence',       label: 'Permanencia del objeto', type: 'text' },
+                { id: 'affectionDemonstration', label: 'Demostración de cariño', type: 'text' },
+                { id: 'conductStrangers',       label: 'Conducta con extraños', type: 'text' },
+                { id: 'childsConduct',          label: '¿Cómo es la personalidad de su hijo/a?', type: 'text' },
+                { id: 'hasFriends',             label: '¿Tiene amigos/as?', type: 'text' },
+                { id: 'friendsToHome',          label: '¿Con qué frecuencia invita amistades a casa?', type: 'text' },
+                { id: 'invitedToParty',         label: '¿Le invitan a fiestas?', type: 'yn' },
+                { id: 'otherSexInterest',       label: '¿Se interesa por personas del otro sexo?', type: 'yn' },
+                { id: 'howPlays',               label: '¿Cómo juega?', type: 'text' },
+                { id: 'freetimeActivity',       label: '¿Qué actividades realiza en su tiempo libre?', type: 'text' },
+                { id: 'electronics',            label: 'TV / Videojuegos / Tableta', type: 'yn' },
+                { id: 'followsGamesRules',      label: '¿Sigue reglas en los juegos?', type: 'yn' },
+                { id: 'newSituationAdaptation', label: '¿Cómo se adapta a situaciones nuevas?', type: 'text' },
+            ] },
+        ];
+    %>
+
+    <% groups.forEach(function (g) { %>
+        <h3 class="section_title text-lg mt-6"><%= g.title %></h3>
+        <div class="space-y-4 max-w-xl mt-3">
+            <% g.fields.forEach(function (f) { %>
+                <div>
+                    <label class="input_label"><%= f.label %></label>
+                    <% if (f.type === 'number') { %>
+                        <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="<%= f.ph || 'Número' %>">
+                    <% } else if (f.type === 'yn') { %>
+                        <select id="<%= f.id %>" class="input text-black">
+                            <option value="">Selecciona</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    <% } else if (f.type === 'enum') { %>
+                        <select id="<%= f.id %>" class="input text-black">
+                            <option value="">Selecciona</option>
+                            <option value="Legible">Legible</option>
+                            <option value="Poco legible">Poco legible</option>
+                            <option value="Ilegible">Ilegible</option>
+                        </select>
+                    <% } else { %>
+                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa">
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    <% }); %>
+</div>

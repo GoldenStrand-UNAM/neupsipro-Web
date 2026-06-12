@@ -1,0 +1,58 @@
+<div>
+    <%
+        // Backend subStep 8 (validatePhysicalExam). id = clave camelCase del body.
+        const groups = [
+            { title: 'Antropometría y signos vitales', fields: [
+                { id: 'weight',             label: 'Peso', type: 'int', ph: 'kg' },
+                { id: 'size',               label: 'Talla', type: 'float', ph: 'cm / m' },
+                { id: 'wc',                 label: 'Perímetro cefálico (PC)', type: 'text', max: 50 },
+                { id: 'temperature',        label: 'Temperatura', type: 'float', ph: '°C' },
+                { id: 'bp',                 label: 'Tensión arterial (TA)', type: 'text', max: 50 },
+                { id: 'oxygenation',        label: 'Oxigenación', type: 'float', ph: '%' },
+                { id: 'alergiesDermatitis', label: 'Alergias / dermatitis', type: 'text', max: 100 },
+                { id: 'functionalSupport',  label: 'Apoyo funcional', type: 'text', max: 100 },
+            ] },
+            { title: 'Desarrollo sensorial — Audición', fields: [
+                { id: 'goodHearing',   label: '¿Escucha bien?', type: 'text', max: 100 },
+                { id: 'concernListen', label: '¿Alguna vez se preocupó por si escuchaba?', type: 'text', max: 100 },
+                { id: 'audiometry',    label: 'Audiometría / potenciales evocados', type: 'yn' },
+                { id: 'result',        label: 'Resultados (audiometría)', type: 'text', max: 100 },
+            ] },
+            { title: 'Desarrollo sensorial — Visión', fields: [
+                { id: 'seesWell',     label: '¿Ve bien?', type: 'text', max: 100 },
+                { id: 'needsGlasses', label: '¿Usa lentes?', type: 'yn' },
+                { id: 'visionError',  label: 'Tipo de error y graduación', type: 'text', max: 150 },
+            ] },
+            { title: 'Conclusión', fields: [
+                { id: 'examSummary',       label: 'RESUMEN', type: 'textarea' },
+                { id: 'examTreatmentPlan', label: 'PLAN DE TX', type: 'textarea' },
+            ] },
+        ];
+    %>
+
+    <% groups.forEach(function (g) { %>
+        <h3 class="section_title text-lg mt-6"><%= g.title %></h3>
+        <div class="space-y-4 max-w-xl mt-3">
+            <% g.fields.forEach(function (f) { %>
+                <div>
+                    <label class="input_label"><%= f.label %></label>
+                    <% if (f.type === 'int') { %>
+                        <input type="number" min="0" step="1" inputmode="numeric" id="<%= f.id %>" class="input" placeholder="<%= f.ph || 'Número' %>">
+                    <% } else if (f.type === 'float') { %>
+                        <input type="number" min="0" step="any" inputmode="decimal" id="<%= f.id %>" class="input" placeholder="<%= f.ph || 'Número' %>">
+                    <% } else if (f.type === 'yn') { %>
+                        <select id="<%= f.id %>" class="input text-black">
+                            <option value="">Selecciona</option>
+                            <option value="Sí">Sí</option>
+                            <option value="No">No</option>
+                        </select>
+                    <% } else if (f.type === 'textarea') { %>
+                        <textarea id="<%= f.id %>" rows="3" maxlength="500" class="input" placeholder="Describa"></textarea>
+                    <% } else { %>
+                        <input type="text" id="<%= f.id %>" maxlength="<%= f.max || 100 %>" class="input" placeholder="Describa">
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    <% }); %>
+</div>

@@ -1,0 +1,48 @@
+@startuml GU41_ConsultarHistorial_Secuencia
+title GU41 - Consultar historial de sesiones
+
+actor "Clinical User" as USR
+participant "PeerSessionView" as PSV
+participant "main.js" as MAIN
+participant "PeerSessionRoutes" as ROUTE
+participant "Auth & Permissions\nMiddleware" as AUTH
+participant "GetPeerSessionsController" as CTRL
+participant "GetPeerSessionsUseCase" as UC
+participant "ImpPeerSessionRepository" as IREPO
+database "MySQL DB" as DB
+
+USR -> PSV : Entra a Grupo de Pares\n(o cambia de página / rango fechas)
+activate PSV
+PSV -> MAIN : loadSessions({page, limit,\nfrom?, to?})
+MAIN -> ROUTE : GET /peer-sessions?page&limit&from&to\n[Authorization: Bearer JWT]
+activate ROUTE
+ROUTE -> AUTH : verifyToken +\nrequirePermission('consultation')
+AUTH --> ROUTE : OK
+ROUTE -> CTRL : getPeerSessions(req, res)
+activate CTRL
+CTRL -> CTRL : extract query params\n(page, limit, from, to)
+
+CTRL -> UC : execute({page, limit, from, to})
+activate UC
+UC -> IREPO : fetchSessions({page, limit, from, to})
+activate IREPO
+IREPO -> IREPO : offset = (page-1)*limit
+IREPO -> DB : SELECT * FROM peer_session\n[WHERE date BETWEEN ? AND ?]\nORDER BY date DESC\nLIMIT ? OFFSET ?
+DB --> IREPO : rows
+IREPO -> DB : SELECT COUNT(*) FROM peer_session
+DB --> IREPO : { total }
+IREPO --> UC : { sessions, total }
+deactivate IREPO
+
+UC -> UC : totalPages = ceil(total/limit)
+UC -> UC : map rows -> PeerSessionDTO[]
+UC --> CTRL : { sessions, page, totalPages }
+deactivate UC
+CTRL --> ROUTE : HTTP 200 { data }
+deactivate CTRL
+ROUTE --> MAIN : HTTP 200 { data }
+deactivate ROUTE
+MAIN -> PSV : render session cards\n+ paginación
+PSV --> USR : Muestra historial segmentado
+deactivate PSV
+@enduml

@@ -1,0 +1,37 @@
+<div>
+    <p class="input_label mt-2 mb-4">
+        ¿Algún miembro biológico de la familia viva/ió con alguna de las siguientes dificultades?
+    </p>
+
+    <%
+        // Mismo patrón que la entrevista de adultos (_symptom): por categoría hay un
+        // Sí/No (presence) y una descripción (consecuencias). El front los combina en
+        // un solo texto "Sí: <consecuencias>" / "No" y lo manda a la única columna de
+        // esa categoría (ver childBuilder.js). id = clave camelCase de la categoría.
+        const categorias = [
+            { id: 'neurological',         label: 'Neurológicos' },
+            { id: 'psychiatric',          label: 'Psiquiátricos' },
+            { id: 'drugAddictions',       label: 'Toxicomanías' },
+            { id: 'lawConduct',           label: 'Conducta / Problema con la ley' },
+            { id: 'cognitiveDevelopment', label: 'Desarrollo / Cognitivos' },
+            { id: 'speech',               label: 'Lenguaje' },
+        ];
+    %>
+
+    <div class="space-y-5">
+        <% categorias.forEach(function (cat) { %>
+            <div>
+                <label class="input_label"><%= cat.label %></label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <select id="<%= cat.id %>Presence" class="input text-black">
+                        <option value="">¿Antecedente? (Sí / No)</option>
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                    <input type="text" id="<%= cat.id %>Desc" maxlength="140" class="input"
+                        placeholder="Consecuencias / descripción">
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>

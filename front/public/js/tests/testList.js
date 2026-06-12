@@ -13,11 +13,10 @@
   // ── Card builder ────────────────────────────────────────────────────────────
 
   function createTestCard (test, { idUser, idApplication, applicationStatus }) {
-    const variant   = getVariant(test.status);
-    // eslint-disable-next-line security/detect-object-injection
+    const variant    = getVariant(test.status);
     const statusIcon = _variantIcons[variant] ?? _variantIcons.neutral;
     const dateFormatted = test.dateApplied
-      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
       : 'Sin fecha';
 
     const isClickable = !!TEST_REGISTRY[test.idTest];
@@ -48,15 +47,34 @@
                     a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <h3 class="application-card__title">${escapeHTML(test.testName)}</h3>
-          <p class="application-card__date">Aplicada: ${dateFormatted}</p>
+          <p class="application-card__date">Registrada: ${dateFormatted}</p>
         </div>
       </div>
     `;
   }
 
-  // ── Export PDF ────────────────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────────────────
 
-  // Marks every test card as "Entregado" after a successful export.
+  function _enableExportBtn (idUser, idApplication) {
+    const btn = document.getElementById('btnExportPdf');
+    if (!btn) return;
+    btn.disabled = false;
+    btn.classList.remove('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+    btn.classList.add('bg-[#BA8700]', 'cursor-pointer');
+    btn.onclick = () => exportPdf(idUser, idApplication, btn);
+  }
+
+  function _disableExportBtn () {
+    const btn = document.getElementById('btnExportPdf');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.classList.remove('bg-[#BA8700]', 'cursor-pointer');
+    btn.classList.add('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+    btn.onclick = null;
+  }
+
+  // ── Export PDF ───────────────────────────────────────────────────────────────
+
   function markAllDelivered () {
     const variants = ['neutral', 'warning', 'success', 'complete', 'fatal'];
     document.querySelectorAll('.application-card').forEach(card => {
@@ -73,7 +91,6 @@
     });
   }
 
-  // Downloads the application report PDF and updates the UI to "Entregado".
   async function exportPdf (idUser, idApplication, button) {
     const btn     = button;
     const iconEl  = document.getElementById('exportPdfIcon');
@@ -113,7 +130,6 @@
       markAllDelivered();
     } catch (err) {
       showToast('No se pudo conectar con el servidor');
-      // eslint-disable-next-line no-console
       console.error('[exportPdf] error:', err);
     } finally {
       btn.disabled = false;
@@ -124,29 +140,26 @@
     }
   }
 
-  // Exposed globally so utils.js can trigger it after every card update.
-  // When all tests are graded, redirects to the user view so that check-expiry
-  // runs and promotes test_applications.status to 3 before the export is attempted.
+  // ── Reveal export (called by utils.js after every card update) ───────────────
+
   window._revealExportIfAllGraded = function () {
     const allCards = document.querySelectorAll('[data-id-results]');
     if (allCards.length === 0) return;
+
     const allGraded = [...allCards].every(card => {
       try {
         const data = JSON.parse(card.dataset.test || '{}');
         return data.status === 'Calificada' || data.status === 'Entregado';
       } catch { return false; }
     });
+
     if (!allGraded) return;
-    const { idUser } = window.__TEST_PAGE__ || {};
-    if (!idUser) return;
-    sessionStorage.setItem('pendingToast', JSON.stringify({
-      message: '¡Todas los resultados han sido registrados!',
-      type: 'success',
-    }));
-    setTimeout(() => { window.location.href = `/users/${idUser}`; }, 1500);
+
+    const { idUser, idApplication } = window.__TEST_PAGE__ || {};
+    _enableExportBtn(idUser, idApplication);
   };
 
-  // ── Main fetch ──────────────────────────────────────────────────────────────
+  // ── Main fetch ───────────────────────────────────────────────────────────────
 
   async function loadTests (idUser, idApplication) {
     const container = document.getElementById('testListContainer');
@@ -164,7 +177,6 @@
 
       const { applicationStatus, tests } = json.data;
 
-      // Show expiry banner if application is Caducada
       if (applicationStatus === 'Caducada') {
         document.getElementById('expiryBanner').classList.remove('hidden');
       }
@@ -177,7 +189,6 @@
         return;
       }
 
-      // Render one card per test result
       tests.forEach(test => {
         container.insertAdjacentHTML(
           'beforeend',
@@ -185,22 +196,22 @@
         );
       });
 
-      // Show the export button once the application is graded or delivered
-      const exportBtn = document.getElementById('btnExportPdf');
-      if (exportBtn && (applicationStatus === 'Calificada' || applicationStatus === 'Entregado')) {
-        exportBtn.classList.remove('hidden');
-        exportBtn.onclick = () => exportPdf(idUser, idApplication, exportBtn);
+      // El botón siempre es visible — amarillo si listo, gris si no
+      const isReady = applicationStatus === 'Calificada' || applicationStatus === 'Entregado';
+      if (isReady) {
+        _enableExportBtn(idUser, idApplication);
+      } else {
+        _disableExportBtn();
       }
 
     } catch (err) {
       removeSkeletons();
       showToast('No se pudo conectar con el servidor');
-      // eslint-disable-next-line no-console
       console.error('[testList] fetch error:', err);
     }
   }
 
-  // ── Init ────────────────────────────────────────────────────────────────────
+  // ── Init ─────────────────────────────────────────────────────────────────────
 
   document.addEventListener('DOMContentLoaded', () => {
     const { idUser, idApplication } = window.__TEST_PAGE__;

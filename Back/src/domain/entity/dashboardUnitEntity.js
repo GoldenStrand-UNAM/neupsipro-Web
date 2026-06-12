@@ -27,6 +27,7 @@ class TestCountEntity {
   constructor (row) {
     this.idTest   = row.id_test;
     this.testName = row.test_name;
+    this.protocol = row.protocol || null; 
     this.total    = Number(row.total) || 0;
   }
 }

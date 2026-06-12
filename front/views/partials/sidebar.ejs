@@ -1,5 +1,5 @@
 <aside id="sidebar"
-    class="fixed h-full w-48 bg-[#0A2472] text-white flex flex-col pb-4
+    class="fixed h-full w-58 bg-[#0A2472] text-white flex flex-col pb-4
     -translate-x-full md:translate-x-0 md:static md:flex transition-transform duration-300 z-20
     touch-none">
 
@@ -14,7 +14,7 @@
     <div class="items-center gap-2 text-white text-xl py-4 pl-4 w-maxrelative z-10 rounded-br-xl hidden md:flex">
         <a href="/dashboard">
             <button class="flex items-center gap-3 cursor-pointer">
-                <img src="/assets/enes-white-logo1.svg" class="h-24 shrink-0" alt="Logo">
+                <img src="/assets/Neuropsicologia_BlancoNegro.svg" class="h-24 shrink-0" alt="Logo">
                 <h1 class="font-semibold whitespace-nowrap ">Golondrina</h1>
             </button>
         </a>
@@ -58,7 +58,15 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity-icon lucide-activity">
                     <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
                 </svg>
-                <span class="nav-button__text">Clínicos</span>
+                <span class="nav-button__text">Colaboradores</span>
+            </button>
+        </a>
+        <a href="/peer-sessions">
+            <button class="nav-button <%= activePage === 'peer-sessions' ? 'active' : '' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity-icon lucide-activity">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                </svg>
+                <span class="nav-button__text">Pares</span>
             </button>
         </a>
     </nav>

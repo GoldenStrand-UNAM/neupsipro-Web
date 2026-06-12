@@ -1,0 +1,91 @@
+@startuml MP01
+actor Administrator
+
+participant "View" as View
+participant "Routes" as Routes
+participant "PermissionsMiddleware" as Mid
+participant "PatchPermissionsController" as Controller
+participant "AuthUseCase" as AuthUseCase
+participant "PatchPermissionsUseCase" as UseCase
+participant "PermissionsRepository" as Repository
+database "DB" as DB
+
+Administrator -> View : Modifica permisos y presiona "Guardar cambios"
+
+View -> Routes : PATCH /api/admin/users/:userId/permissions\nbody: { permissions }
+
+Routes -> Mid : requirePermission('Permissions', 'edit')
+Mid -> AuthUseCase : checkPermission(adminId, 'Permissions', 'edit')
+
+alt administrador autorizado
+
+```
+Mid --> Routes : authorized
+
+Routes -> Controller : patchPermission(userId, permissions)
+
+Controller -> UseCase : executePatch({ userId, permissions })
+
+loop por cada módulo recibido
+
+    note over UseCase
+        Ejemplo:
+        Forum
+        Profile
+        Clinical
+    end note
+
+    UseCase -> Repository : fetchExceptions({ userId, moduleName })
+
+    Repository -> DB : SELECT user_acl\nWHERE id_user=? AND module=?
+    DB --> Repository : registro o null
+    Repository --> UseCase : permissionRecord
+
+    alt registro existe
+
+        UseCase -> Repository : updateException({\nuserId,\nmoduleName,\nconsultation,\nwriting,\nedit,\neliminate\n})
+
+        Repository -> DB : UPDATE user_acl\nSET consultation=?, writing=?, edit=?, eliminate=?\nWHERE id_user=? AND module=?
+
+        DB --> Repository : ResultSetHeader
+        Repository --> UseCase : updated
+
+    else registro no existe
+
+        UseCase -> Repository : fetchIdModule({ moduleName })
+
+        Repository -> DB : SELECT id_module\nFROM modules\nWHERE module=?
+
+        DB --> Repository : module row
+        Repository --> UseCase : moduleId
+
+        UseCase -> Repository : insertException({\nuserId,\nidModule,\nconsultation,\nwriting,\nedit,\neliminate\n})
+
+        Repository -> DB : INSERT INTO user_acl(...)
+        DB --> Repository : inserted row
+        Repository --> UseCase : inserted
+
+    end
+
+end
+
+UseCase --> Controller : true
+
+Controller --> Routes : HTTP 200
+
+Routes --> View : {\n success:true,\n message:"Permissions saved"\n}
+
+View --> Administrator : Confirmación de guardado
+```
+
+else administrador sin permisos
+
+```
+Mid --> Routes : HTTP 403
+Routes --> View : Error
+View --> Administrator : No autorizado
+```
+
+end
+
+@enduml

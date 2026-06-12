@@ -1,0 +1,124 @@
+<!-- Flatpickr (same date picker used in createAppointmentModal.ejs) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<div>
+    <h2 class="section_title">Datos Generales de la Entrevista</h2>
+
+    <div class="mt-4 space-y-4">
+        <!--Interview date-->
+        <div>
+            <label class="input_label">Fecha de la entrevista</label>
+            <input type="text" id="interviewDate" class="input" placeholder="Selecciona una fecha" autocomplete="off">
+        </div>
+
+        <!--Interviewer name-->
+        <div>
+            <label class="input_label">Nombre del entrevistador</label>
+            <input type="text" id="interviewerName" maxlength="80" class="input" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
+        </div>
+
+        <!--Support student name-->
+        <div>
+            <label class="input_label">Nombre del estudiante de apoyo</label>
+            <input type="text" id="supportStudentName" maxlength="80" class="input" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
+        </div>
+
+        <!--Companions name-->
+        <div>
+            <label class="input_label">Nombre de los acompañantes</label>
+            <input type="text" id="companionsName" maxlength="50" class="input" placeholder="Nombre completo">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+        </div>
+
+        <!--Companion relation-->
+        <div>
+            <label class="input_label">Parentesco con el acompañante</label>
+            <input type="text" id="companionRelation" maxlength="50" class="input" placeholder="Ej. Madre, padre, tutor">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+        </div>
+
+        <!--Address-->
+        <div>
+            <label class="input_label">Domicilio</label>
+            <input type="text" id="address" maxlength="100" class="input" placeholder="Calle, número, colonia, municipio">
+            <p class="text-xs text-gray-400 mt-1">Máximo 100 caracteres</p>
+        </div>
+
+        <!--Proof of address-->
+        <div>
+            <label class="input_label">Comprobante de domicilio</label>
+            <input type="text" id="proofAddress" maxlength="200" class="input" placeholder="Tipo de comprobante presentado">
+            <p class="text-xs text-gray-400 mt-1">Máximo 200 caracteres</p>
+        </div>
+
+        <!--Healthcare system-->
+        <div>
+            <label class="input_label">Sistema de salud</label>
+            <input type="text" id="healthcareSystem" maxlength="50" class="input" placeholder="Ej. IMSS, ISSSTE, particular">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+        </div>
+
+        <!--Religion-->
+        <div>
+            <label class="input_label">Religión</label>
+            <input type="text" id="religion" maxlength="30" class="input" placeholder="Religión que profesa">
+            <p class="text-xs text-gray-400 mt-1">Máximo 30 caracteres</p>
+        </div>
+
+        <!--Residence-->
+        <div>
+            <label class="input_label">Lugar de residencia</label>
+            <input type="text" id="residence" maxlength="80" class="input" placeholder="Ciudad, estado">
+            <p class="text-xs text-gray-400 mt-1">Máximo 80 caracteres</p>
+        </div>
+
+        <!--Ocupation-->
+        <div>
+            <label class="input_label">Ocupación</label>
+            <input type="text" id="currentOcupation" maxlength="50" class="input" placeholder="Ocupación actual">
+            <p class="text-xs text-gray-400 mt-1">Máximo 50 caracteres</p>
+        </div>
+
+        <!--Schooling-->
+        <div class="flex items-end gap-2">
+            <div class="flex-1">
+                <label class="input_label">Escolaridad (años)</label>
+
+                <input type="number" min="0" max="30" step="1" id="schooling" class="schooling-years input" placeholder="Años de estudio">
+            </div>
+            <input type="number" min="0" max="1" step="1"
+                name="score_schooling" id="score_schooling"
+                class="w-16 input" placeholder="0/1">
+        </div>
+
+        <!--Father's schooling-->
+        <div>
+            <label class="input_label">Escolaridad del padre (años)</label>
+
+            <input type="number" min="0" max="30" step="1" id="fathersSchooling" class="schooling-years input" placeholder="Años de estudio">
+        </div>
+
+        <!--Mother's schooling-->
+        <div>
+            <label class="input_label">Escolaridad de la madre (años)</label>
+
+            <input type="number" min="0" max="30" step="1" id="mothersSchooling" class="schooling-years input" placeholder="Años de estudio">
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Same date picker setup as createAppointmentModal.ejs, adapted to a date-only field
+    // (no time component, and dates are not restricted to "today onward")
+    (function () {
+        const inputDate = document.getElementById('interviewDate');
+        if (inputDate && window.flatpickr) {
+            flatpickr(inputDate, {
+                dateFormat: 'Y-m-d',
+            });
+        }
+    })();
+</script>

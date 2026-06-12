@@ -234,7 +234,7 @@ function reyAreaSection (title, area) {
 function buildREYConsultHTML (test) {
   const notes     = test.notes ?? '';
   const dateLabel = test.dateApplied
-    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? new Date(test.dateApplied).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
     : '—';
   return `
     <div class="modal">
@@ -285,8 +285,7 @@ function reyInfoBanner (schoolingData, ageData, prefill) {
       </svg>
       <div class="flex flex-col flex-1">
         <span class="text-sm font-medium text-blue-700">
-          Escolaridad: ${escapeHTML(schoolingData.schooling)}
-          (${schoolingData.years} años) —
+          Escolaridad: ${schoolingData.years} años —
           Bloque: ${schoolingData.years > 12 ? '>12' : '1-12'}
         </span>
         <span class="text-xs text-blue-500">

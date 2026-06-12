@@ -2,29 +2,45 @@ const Crypt = require('../crypt');
 
 const crypt = new Crypt();
 
-function uncryptUser (user) {
-  return {
-    ...user,
-    neuro_status: crypt.decrypt(user.neuro_status),
-    base_patology: crypt.decrypt(user.base_patology),
-    notes: crypt.decrypt(user.notes),
-    sex: crypt.decrypt(user.gender),
-    modality: crypt.decrypt(user.attendance),
-    reference_number: crypt.decrypt(user.reference_number),
-    amputation_date: crypt.decrypt(user.amputation_date),
-    group_intervention: crypt.decrypt(user.group_intervention),
-    laterality: crypt.decrypt(user.laterality),
-    prosthetist: crypt.decrypt(user.prosthetist),
-    neuro_entry_date: crypt.decrypt(user.neuro_entry_date),
-    amputation_level: crypt.decrypt(user.amputation_level),
-    first_name: crypt.decrypt(user.first_name),
-    lastname_p: crypt.decrypt(user.lastname_p),
-    lastname_m: crypt.decrypt(user.lastname_m),
-    birthdate: crypt.decrypt(user.birthdate),
-    assigned_clinic: crypt.decrypt(user.assigned_clinic),
-    email: crypt.decrypt(user.email),
-    phone: crypt.decrypt(user.phone),
-  };
+class uncrypt{
+  uncryptUser (user) {
+    return {
+      ...user,
+      neuro_status: crypt.decrypt(user.neuro_status),
+      base_patology: crypt.decrypt(user.base_patology),
+      notes: crypt.decrypt(user.notes),
+      sex: crypt.decrypt(user.gender),
+      modality: crypt.decrypt(user.attendance),
+      reference_number: crypt.decrypt(user.reference_number),
+      amputation_date: crypt.decrypt(user.amputation_date),
+      group_intervention: crypt.decrypt(user.group_intervention),
+      laterality: crypt.decrypt(user.laterality),
+      prosthetist: crypt.decrypt(user.prosthetist),
+      neuro_entry_date: crypt.decrypt(user.neuro_entry_date),
+      amputation_level: crypt.decrypt(user.amputation_level),
+      first_name: crypt.decrypt(user.first_name),
+      lastname_p: crypt.decrypt(user.lastname_p),
+      lastname_m: crypt.decrypt(user.lastname_m),
+      birthdate: crypt.decrypt(user.birthdate),
+      assigned_clinic: crypt.decrypt(user.assigned_clinic),
+      email: crypt.decrypt(user.email),
+      phone: crypt.decrypt(user.phone),
+    };
+  }
+
+  forPDF (user) {
+    const ufirstName = crypt.decrypt(user.first_name);
+    const uLastnameP = crypt.decrypt(user.lastname_p);
+    const uLastnameM = crypt.decrypt(user.lastname_m);
+    const fullname = `${ufirstName} ${uLastnameP} ${uLastnameM || ''}`.trim();
+    return {
+      ...user,
+      name: fullname,
+      reference_number: user.reference_number ? crypt.decrypt(user.reference_number) : user.reference_number,
+      laterality: user.laterality ? crypt.decrypt(user.laterality) : user.laterality,
+      birthdate: user.birthdate ? crypt.decrypt(user.birthdate) : user.birthdate,
+    }
+  }
 }
 
-module.exports = uncryptUser;
+module.exports = uncrypt;

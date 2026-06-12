@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../database/database');
 const appointmentRepository = require('../../domain/repository/appointmentRepository');
 const Appointment = require('../../domain/entity/appointment');
+const crypt = require('../crypt/appointments/appointment');
 
 class ImpAppointmentRepository extends appointmentRepository {
 
@@ -61,38 +62,32 @@ class ImpAppointmentRepository extends appointmentRepository {
     return idAppointment;
   }
   // Deletes the upcoming appointment of a user, returns true if deleted
-  async deleteUpcomingByUser ({ id_user }) {
-    //  Find the upcoming appointment id and its user_relation id
-    const [rows] = await db.query(
-      `SELECT 
-    ur.id_user_relation,
-    a.id_appointment    
-FROM user_relation ur
-LEFT JOIN appointment a ON ur.id_user_relation = a.id_user_relation 
-WHERE ur.id_user = ?
-  AND ur.type = 'appointment'
-ORDER BY a.date_time ASC
-LIMIT 1;`,
-      [id_user]
-    );
+async deleteUpcomingByUser ({ id_user }) {
+  const [rows] = await db.query(
+    `SELECT a.id_appointment
+     FROM appointment a
+     JOIN user_relation ur ON a.id_user_relation = ur.id_user_relation
+     WHERE ur.id_user = ?
+       AND ur.type = 'appointment'
+       AND a.date_time >= NOW() - INTERVAL 6 HOUR
+     ORDER BY a.date_time ASC
+     LIMIT 1`,
+    [id_user]
+  );
 
-    if (rows.length === 0) {
-      return false;
-    }
-
-    const { id_user_relation, id_appointment } = rows[0];
-
-    // Delete the appointment
-    await db.query(
-      'DELETE FROM appointment WHERE id_appointment = ?',
-      [id_appointment]
-    );
-
-    await db.query('Delete from user_relation where id_user_relation = ? AND type = \'appointment\'', [id_user_relation]);
-    return true;
+  if (rows.length === 0) {
+    return false;
   }
+
+  await db.query(
+    'DELETE FROM appointment WHERE id_appointment = ?',
+    [rows[0].id_appointment]
+  );
+
+  return true;
+}
   async fecthAppointmentWithClinical ({ idClinicalUser }) {
-    const [users] = await db.query (`SELECT a.id_appointment, a.date_time, a.issue, CONCAT_WS( ' ', u.first_name, u.lastname_p, u.lastname_m) AS full_name,
+    const [users] = await db.query (`SELECT a.id_appointment, a.date_time, a.issue, u.first_name, u.lastname_p, u.lastname_m,
       CASE
           WHEN DATE(a.date_time) = CURDATE() THEN 'today'
         WHEN DATE(a.date_time) = DATE_ADD(CURDATE(), INTERVAL 1 DAY) THEN 'tomorrow'
@@ -102,7 +97,7 @@ LIMIT 1;`,
             JOIN user_relation ur ON ur.id_user_relation = a.id_user_relation
             JOIN users u ON u.id_user = ur.id_user
           WHERE ur.id_clinic_user = ? AND DATE(a.date_time) >= CURDATE()`, [idClinicalUser]);
-    return users;
+    return users.map(user => crypt(user));
   }
 }
 

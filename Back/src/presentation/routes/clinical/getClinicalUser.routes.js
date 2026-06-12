@@ -20,22 +20,21 @@ module.exports = (authUseCase, authMiddleware) => {
   const secondUseCase = new GetClinicalPatientsUseCase(clinicalUserRepository);
   const controller = new ClinicalUserController(useCase, secondUseCase);
   const permissionsMiddleware = new PermissionsMiddleware(authUseCase);
- 
+
   const deleteUseCase = new deleteClinicalUseCase(clinicalUserRepository);
   const deleteController = new DeleteClinicalController(deleteUseCase);
-
 
   router.get('/clinical-patient', authMiddleware.verifyToken, permissionsMiddleware.requirePermission('clinical', 'consultation'),  (req, res) => controller.getPatients(req, res));
 
   router.get(
     '/:id_user', authMiddleware.verifyToken,     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'), (req, res) => controller.getClinicalUser(req, res)
+    permissionsMiddleware.requirePermission('clinical', 'consultation'), (req, res) => controller.getClinicalUser(req, res)
   );
 
   router.delete(
     '/:id_user',
     authMiddleware.verifyToken, apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'eliminate'),
+    permissionsMiddleware.requirePermission('clinical', 'eliminate'),
     (req, res) => deleteController.deleteClinical(req, res)
   );
 

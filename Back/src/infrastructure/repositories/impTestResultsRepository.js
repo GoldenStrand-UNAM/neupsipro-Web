@@ -2,6 +2,9 @@ const db = require ('../database/database');
 const Tests = require('../../domain/entity/tests');
 const resultRepository = require('../../domain/repository/resultRepository');
 const { v4: uuidv4 } = require('uuid');
+const Crypt = require('../crypt/users/getAge');
+
+const crypt = new Crypt();
 
 class impTestResultsRepository extends resultRepository {
 
@@ -180,15 +183,15 @@ class impTestResultsRepository extends resultRepository {
     const executor = db_ ?? db;
     await executor.query(
       `UPDATE test_applications ta
-       INNER JOIN test_results tr_trigger ON tr_trigger.id_results = ?
-       SET ta.status = 3
-       WHERE ta.id_application = tr_trigger.id_application
-         AND ta.status = 2
-         AND NOT EXISTS (
-           SELECT 1 FROM test_results tr_check
-           WHERE tr_check.id_application = tr_trigger.id_application
-             AND tr_check.status NOT IN (3, 4, 5)
-         )`,
+      INNER JOIN test_results tr_trigger ON tr_trigger.id_results = ?
+      SET ta.status = 3
+      WHERE ta.id_application = tr_trigger.id_application
+        AND ta.status IN (1, 2)
+        AND NOT EXISTS (
+          SELECT 1 FROM test_results tr_check
+          WHERE tr_check.id_application = tr_trigger.id_application
+            AND tr_check.status NOT IN (3, 4, 5)
+        )`,
       [id_results]
     );
   }
@@ -205,7 +208,7 @@ class impTestResultsRepository extends resultRepository {
     score_orbit_frontal,  inter_orbit_frontal,
     score_prefrontal_before, inter_prefrontal_before,
     score_d_lateral,      inter_d_lateral,
-    score_total, notes,
+    score_total, inter_total, notes,
   }) {
   // Update parent row status and application date
     await db.query(
@@ -223,8 +226,8 @@ class impTestResultsRepository extends resultRepository {
         score_orbit_frontal,    inter_orbit_frontal,
         score_prefrontal_before, inter_prefrontal_before,
         score_d_lateral,        inter_d_lateral,
-        score_total, notes)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        score_total, inter_total, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
         score_orbit_frontal     = VALUES(score_orbit_frontal),
         inter_orbit_frontal     = VALUES(inter_orbit_frontal),
@@ -233,13 +236,14 @@ class impTestResultsRepository extends resultRepository {
         score_d_lateral         = VALUES(score_d_lateral),
         inter_d_lateral         = VALUES(inter_d_lateral),
         score_total             = VALUES(score_total),
+        inter_total             = VALUES(inter_total),
         notes                   = VALUES(notes)`,
       [
         id_results,
         score_orbit_frontal,    inter_orbit_frontal,
         score_prefrontal_before, inter_prefrontal_before,
         score_d_lateral,        inter_d_lateral,
-        score_total,            notes,
+        score_total,            inter_total,            notes,
       ]
     );
 
@@ -532,6 +536,68 @@ class impTestResultsRepository extends resultRepository {
     return rows[0];
   }
 
+  // ================= EMOTION ==================
+
+  async fetchEmotionResult ({ id_results }) {
+    const [rows] = await db.query(
+      `SELECT er.*,
+              tr.status,
+              tr.date_applied
+       FROM emotion_results er
+       JOIN test_results tr ON er.id_results = tr.id_results
+       WHERE er.id_results = ?
+       LIMIT 1`,
+      [id_results]
+    );
+    return rows[0] ?? null;
+  }
+
+  async saveEmotionResult ({
+    id_results,
+    score_anxiety_beck,    inter_anxiety_beck,
+    score_depression_beck, inter_depression_beck,
+    notes,
+  }) {
+    await db.query(
+      `UPDATE test_results
+       SET status       = 3,
+           date_applied = CURDATE()
+       WHERE id_results = ?`,
+      [id_results]
+    );
+
+    await db.query(
+      `INSERT INTO emotion_results
+         (id_results,
+          score_anxiety_beck,    inter_anxiety_beck,
+          score_depression_beck, inter_depression_beck,
+          notes)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         score_anxiety_beck    = VALUES(score_anxiety_beck),
+         inter_anxiety_beck    = VALUES(inter_anxiety_beck),
+         score_depression_beck = VALUES(score_depression_beck),
+         inter_depression_beck = VALUES(inter_depression_beck),
+         notes                 = VALUES(notes)`,
+      [
+        id_results,
+        score_anxiety_beck,    inter_anxiety_beck,
+        score_depression_beck, inter_depression_beck,
+        notes ?? null,
+      ]
+    );
+
+    const [rows] = await db.query(
+      `SELECT er.*, tr.date_applied
+       FROM emotion_results er
+       JOIN test_results tr ON er.id_results = tr.id_results
+       WHERE er.id_results = ?`,
+      [id_results]
+    );
+    await this.#promoteApplicationIfAllGraded({ id_results });
+    return rows[0];
+  }
+
   // ================= schooling and age ==================
 
   // Fetch schooling level for a user from their initial interview.
@@ -539,14 +605,34 @@ class impTestResultsRepository extends resultRepository {
   // Use by REY to determine the percentil
   async fetchUserSchooling ({ id_user }) {
     const [rows] = await db.query(
-      `SELECT schooling
-     FROM user_info
-     WHERE id_user = ?
-     LIMIT 1`,
+      `SELECT ii.schooling
+         FROM user_relation ur
+         JOIN initial_interview ii ON ii.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        ORDER BY ur.assignment_date DESC
+        LIMIT 1`,
       [id_user]
     );
     return rows.length ? rows[0].schooling : null;
   }
+  // Fetch schooling and occupation captured in the user's initial interview.
+  // The interview is linked to the user through user_relation (type 'initial_interview').
+  // Used by the PDF export to fill the identification card.
+  async fetchUserSchoolingAndOccupation ({ id_user }) {
+    const [rows] = await db.query(
+      `SELECT ii.schooling, ii.ocupation
+         FROM user_relation ur
+         JOIN initial_interview ii ON ii.id_user_relation = ur.id_user_relation
+        WHERE ur.id_user = ?
+        ORDER BY ur.assignment_date DESC
+        LIMIT 1`,
+      [id_user]
+    );
+    return rows.length
+      ? { schooling: rows[0].schooling ?? null, ocupation: rows[0].ocupation ?? null }
+      : { schooling: null, ocupation: null };
+  }
+
   // Fetch birthdate of user.
   async fetchUserAge ({ id_user }) {
     const [rows] = await db.query(
@@ -555,7 +641,27 @@ class impTestResultsRepository extends resultRepository {
        WHERE id_user = ?`,
       [id_user]
     );
-    return rows.length ? rows[0].birthdate : null;
+    return rows.length ? crypt.uncryptUser(rows[0].birthdate) : null;
+  }
+
+  async deleteAllResults ({ id_application }) {
+    const tables = [
+      'banfe_results', 'wais_results', 'rey_results',
+      'moca_results', 'nih_results', 'emotion_results',
+    ];
+    for (const table of tables) {
+      await db.query(
+        `DELETE FROM ${table}
+         WHERE id_results IN (
+           SELECT id_results FROM test_results WHERE id_application = ?
+         )`,
+        [id_application]
+      );
+    }
+    await db.query(
+      'DELETE FROM test_results WHERE id_application = ?',
+      [id_application]
+    );
   }
 
 }

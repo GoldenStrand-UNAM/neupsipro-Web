@@ -448,65 +448,6 @@
               </select>
             </div>
           </div>
-
-          <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Nombre de usuario <span style="color: #FF0404">*</span>
-            </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                required
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="text"
-                name="userName"
-                id="userName"
-                placeholder="Nombre de usuario"
-                maxlength="30"
-                value="<%= usuario.userName || '' %>"
-              >
-              <span id="charactersUserName" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/30 
-              </span>
-            </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Contraseña
-            </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Deja vacío para conservar la actual"
-                maxlength="30"
-              >
-              <span id="charactersPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/30 
-              </span>
-            </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-            <label class="sm:w-1/4 font-medium sm:text-right shrink-0">
-              Confirma contraseña
-            </label>
-            <div class="inputs w-full relative flex items-center">
-              <input
-                class="input-base w-full sm:flex-1 border p-2 pr-12 rounded"
-                type="password"
-                name="confirmPassword"
-                id="confirmPassword"
-                placeholder="Repite la nueva contraseña"
-                maxlength="30"
-              >
-              <span id="charactersConfirmPassword" class="absolute right-3 text-xs text-gray-500 pointer-events-none"> 
-                0/30 
-              </span>
-            </div>
-          </div>
           <div class="flex flex-col sm:flex-row w-full">
             <div class="sm:block sm:w-1/4 shrink-0"></div>
             <div class="flex flex-row w-full justify-between px-4">
@@ -563,8 +504,6 @@
     const emptyState  = document.getElementById('emptyState');
     const previewImg  = document.getElementById('previewImg');
     const previewName = document.getElementById('previewName');
-    const passInput = document.getElementById('password');
-    const confirmInput = document.getElementById('confirmPassword');
     const basePathology = document.getElementById('basePathology');
 
     function escapeHTML(text) {
@@ -624,7 +563,7 @@
       showToast('Campos limpiados');
     }
 
-        function formatRefNumber(id) {
+    function formatRefNumber(id) {
       const input = document.getElementById(id);
       input.addEventListener('input', (e) => {
         let cursorP = input.selectionStart;
@@ -633,17 +572,33 @@
         let numMatch = val.match(/^[0-8]{0,3}/);
         let numPart = numMatch ? numMatch[0] : '';
         let finalValue = numPart;
+        
         if (numPart.length === 3) {
           let restPart = val.substring(3);
           if (restPart.length > 0) {
-            finalValue += 'P';
-            restPart = restPart.replace(/^P/, '');
-            const tieneGuionManual = restPart.startsWith('-');
-            let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
-            if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
-              finalValue += '-' + letterPart;
+            let prefijo = '';
+            if (restPart.startsWith('NP'))
+              prefijo = 'NP';
+            else if (restPart.startsWith('P'))
+              prefijo = 'P';
+            if (prefijo === '') {
+              if (restPart.startsWith('N')) {
+                prefijo = 'N';
+                restPart = ''; 
+              } else
+                restPart = '';
+            } else
+              restPart = restPart.replace(/^(NP|P)/, '');
+            finalValue += prefijo;
+            if (prefijo === 'P' || prefijo === 'NP') {
+              const tieneGuionManual = restPart.startsWith('-');
+              let letterPart = restPart.replace(/^-/, '').replace(/[^A-Z]/g, '').slice(0, 5);
+              if (tieneGuionManual || letterPart.length > 0 || restPart.length > 0)
+                finalValue += '-' + letterPart;
+            }
           }
         }
+        
         input.value = finalValue;
         const newLength = finalValue.length;
         cursorP = cursorP + (newLength - oldLength);
@@ -804,8 +759,8 @@
     }
     const phoneInput = document.getElementById('phone');
 
-    const allowedCharRegex = /^[0-9+()\s-]$/;
-    const allowedStringRegex = /^[0-9+()\s-]+$/;
+    const allowedCharRegex = /^[0-9+()-]$/;
+    const allowedStringRegex = /^[0-9+()-]+$/;
 
     phoneInput.addEventListener('keydown', (e) => {
       if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -829,41 +784,6 @@
       }
     });
 
-
-    function validateMatch() {
-      const val = passInput.value;
-      const confVal = confirmInput.value;
-
-      if (val === '' && confVal === '') {
-        document.getElementById('validation').textContent = "";
-        confirmInput.setCustomValidity("");
-        return;
-      }
-
-      if (val === confVal) {
-        document.getElementById('validation').textContent = "";
-        confirmInput.setCustomValidity("");
-      } else {
-        document.getElementById('validation').textContent = "Las contraseñas no coinciden";
-        confirmInput.setCustomValidity("Las contraseñas no coinciden");
-      }
-    }
-    
-    passInput.addEventListener('input', validateMatch);
-    confirmInput.addEventListener('input', validateMatch);
-
-    const showBtn = document.getElementById('showPw');
-    if (showBtn) {
-      showBtn.addEventListener('click', () => {
-        const type = passInput.type === 'password' ? 'text' : 'password';
-        passInput.type = type;
-        confirmInput.type = type;
-                
-        const label = document.getElementById('showHide');
-        if (label) label.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
-      });
-    }
-
     function changeDefaultColor(id) {
       const inputSelect = document.getElementById(id);
 
@@ -882,10 +802,7 @@
     setupCounter('firstName', 'charactersNames');
     setupCounter('lastnameP', 'charactersLastnameP');
     setupCounter('lastnameM', 'charactersLastnameM');
-    setupCounter('userName', 'charactersUserName');
-    setupCounter('password', 'charactersPassword');
     setupCounter('otherPathology', 'charactersOtherPathology');
-    setupCounter('confirmPassword', 'charactersConfirmPassword');
     setupCounter('referenceNumber', 'charactersReferenceNumber');
     setupCounter('prosthetist', 'charactersProsthetist');
     setupCounter('phone', 'charactersPhone');

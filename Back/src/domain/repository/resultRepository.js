@@ -130,6 +130,25 @@ class resultRepository {
 
   }
 
+  async deleteAllResults ({ _id_application }) {
+    throw new Error('deleteAllResults() not implemented');
+  }
+
+  //========= EMOTION ========================
+
+  async fetchEmotionResult ({ _id_results }) {
+    throw new Error('fetchEmotionResult() not implemented');
+  }
+
+  async saveEmotionResult ({
+    _id_results,
+    _score_anxiety_beck, _inter_anxiety_beck,
+    _score_depression_beck, _inter_depression_beck,
+    _notes,
+  }) {
+    throw new Error('saveEmotionResult() not implemented');
+  }
+
 }
 
 module.exports = resultRepository;

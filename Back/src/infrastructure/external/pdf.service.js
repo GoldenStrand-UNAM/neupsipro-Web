@@ -3,7 +3,9 @@ const fs = require('fs');
 const ejs = require('ejs');
 
 const TEMPLATE_PATH = path.resolve(__dirname, '../../../../front/views/pdf/exportReport.ejs');
-const UNAM_LOGO_PATH = path.resolve(__dirname, '../../../../front/public/assets/Escudo-UNAM-escalable.svg');
+const ASSETS_DIR = path.resolve(__dirname, '../../../../front/public/assets');
+const ENES_LOGO_PATH = path.resolve(ASSETS_DIR, 'logo-enes-black.svg');
+const UNAM_LOGO_PATH = path.resolve(ASSETS_DIR, 'Escudo-UNAM-escalable.svg');
 
 // Renders the export report EJS template to a PDF buffer using headless Chromium.
 class PdfService {
@@ -12,8 +14,9 @@ class PdfService {
     // Loading it here keeps app.js (and the whole test suite) importable.
     const puppeteer = require('puppeteer');
 
+    const enesLogo = this.#loadLogoDataUri(ENES_LOGO_PATH);
     const unamLogo = this.#loadLogoDataUri(UNAM_LOGO_PATH);
-    const html = await ejs.renderFile(TEMPLATE_PATH, { report, unamLogo });
+    const html = await ejs.renderFile(TEMPLATE_PATH, { report, enesLogo, unamLogo });
 
     const browser = await puppeteer.launch({
       headless: true,

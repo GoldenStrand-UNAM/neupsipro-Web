@@ -1,15 +1,6 @@
 const ReyResultsDTO = require('../../dto/reyDTO');
 const { REY_TABLE_RC, REY_TABLE_MCP_MLP, TIME_TABLE } = require('../constants/reyTables');
 
-const SCHOOLING_YEARS_MAP = new Map([
-  ['Sin escolaridad', 0],
-  ['Primaria', 6],
-  ['Secundaria', 9],
-  ['Bachillerato', 12],
-  ['Licenciatura', 16],
-  ['Posgrado', 18],
-]);
-
 class postREYUseCase {
 
   constructor (impTestResultsRepository) {
@@ -20,16 +11,20 @@ class postREYUseCase {
 
   #calculateAge (birthdate) {
     if (!birthdate) return null;
+    const [day, month, year] = String(birthdate).trim().split('/').map(Number);
+    if (!day || !month || !year) return null;
+    const birth = new Date(year, month - 1, day);
+    if (isNaN(birth.getTime())) return null;
     const today = new Date();
-    const birth = new Date(birthdate);
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age -= 1;
     return age;
   }
 
+  // schooling is now captured directly as years of education
   #resolveSchoolingYears (schooling) {
-    return SCHOOLING_YEARS_MAP.has(schooling) ? SCHOOLING_YEARS_MAP.get(schooling) : null;
+    return typeof schooling === 'number' ? schooling : null;
   }
 
   #resolveEducationBlock (schoolingYears) {
@@ -166,8 +161,12 @@ class postREYUseCase {
       throw err;
     }
 
-    const schooling      = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
-    const birthdate      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+    const schooling   = await this.impTestResultsRepository.fetchUserSchooling({ id_user });
+    const rawAge      = await this.impTestResultsRepository.fetchUserAge({ id_user });
+
+    // uncryptUser devuelve objeto completo — extraer birthdate
+    const birthdate   = rawAge?.birthdate ?? rawAge;
+
     const schoolingYears = this.#resolveSchoolingYears(schooling);
     const age            = this.#calculateAge(birthdate);
     const educationBlock = this.#resolveEducationBlock(schoolingYears);

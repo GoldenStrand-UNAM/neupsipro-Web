@@ -10,9 +10,12 @@
 @import './components/atoms/_text.css';
 @import './components/atoms/_input-base.css';
 @import './components/atoms/_pop-up.css';
+@import './components/atoms/_checkbox.css';
 
 @import './components/molecules/_btn-molecules.css';
 @import './components/molecules/_input-molecules.css';
+@import './components/molecules/_steps-container.css';
+@import './components/molecules/_timeline.css';
 @import './components/molecules/_informative_molecules.css';
 
 @import './components/organisms/_login-form.css';

@@ -12,13 +12,13 @@ function interpretMOCA (finalScore) {
 }
 
 // ── Final score resolution ───────────────────────────────────────────────────
-// Applies +2 bonus if schooling <= 12 years and raw score <= 28.
+// Applies +2 bonus if schooling <= 12 years and raw score <= 29.
 // Mirrors server-side logic — used only for live display, never trusted.
 
 function resolveMOCAFinalScore (raw, schoolingYears) {
   const n = Number(raw);
   if (isNaN(n)) return null;
-  if (schoolingYears !== null && schoolingYears <= 12 && n <= 28) {
+  if (schoolingYears !== null && schoolingYears <= 12 && n <= 29) {
     return Math.min(n + 2, 30);
   }
   return Math.min(n, 30);
@@ -33,7 +33,7 @@ function buildMOCAConsultHTML (test) {
 
   const dateLabel = test.dateApplied
     ? new Date(test.dateApplied).toLocaleDateString('es-MX', {
-      day: 'numeric', month: 'long', year: 'numeric',
+      day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
     })
     : '—';
 
@@ -164,8 +164,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
       </svg>
       <div class="flex flex-col">
         <span class="text-sm font-medium ${bonusApplies ? 'text-blue-700' : 'text-gray-700'}">
-          Escolaridad: ${escapeHTML(schoolingData.schooling)}
-          (${schoolingData.years} años)
+          Escolaridad: ${schoolingData.years} años
         </span>
         <span class="text-xs ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
           ${bonusApplies
@@ -312,7 +311,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
           <div class="border border-blue-200 rounded-xl bg-blue-50 px-4 py-3">
             <p class="text-sm font-medium text-gray-700 mb-1">Bono de escolaridad</p>
             <p class="text-sm text-gray-600">
-              Se suman 2 puntos al puntaje bruto cuando el paciente tiene 12 años o menos de escolaridad Y el puntaje bruto es ≤ 28. El puntaje final se limita a un máximo de 30.
+              Se suman 2 puntos al puntaje bruto cuando el Usuario tiene 12 años o menos de escolaridad Y el puntaje bruto es ≤ 28. El puntaje final se limita a un máximo de 30.
             </p>
           </div>
 
