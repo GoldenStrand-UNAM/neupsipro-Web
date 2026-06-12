@@ -311,7 +311,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
           <div class="border border-blue-200 rounded-xl bg-blue-50 px-4 py-3">
             <p class="text-sm font-medium text-gray-700 mb-1">Bono de escolaridad</p>
             <p class="text-sm text-gray-600">
-              Se suman 2 puntos al puntaje bruto cuando el paciente tiene 12 años o menos de escolaridad Y el puntaje bruto es ≤ 28. El puntaje final se limita a un máximo de 30.
+              Se suman 2 puntos al puntaje bruto cuando el Usuario tiene 12 años o menos de escolaridad Y el puntaje bruto es ≤ 28. El puntaje final se limita a un máximo de 30.
             </p>
           </div>
 

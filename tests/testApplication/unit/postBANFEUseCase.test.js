@@ -11,7 +11,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
         score_prefrontal_before: 95,
         score_d_lateral: 90,
         score_total: 285,
-        notes: 'Paciente colaborador',
+        notes: 'Usuario colaborador',
     };
 
     // Shape returned by fetchResultRow 
@@ -24,7 +24,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
         score_prefrontal_before: 95,  inter_prefrontal_before: 'Normal',
         score_d_lateral: 90,          inter_d_lateral: 'Normal',
         score_total: 285,             inter_total: 'Normal alto',
-        notes: 'Paciente colaborador',
+        notes: 'Usuario colaborador',
         status: 3,
         date_applied: '2026-05-19',
     };
@@ -116,7 +116,7 @@ describe('postBanfeUseCase — Unit Tests (Story R01)', () => {
         expect(dto.areas.prefrontalBefore.score).toBe(95);
         expect(dto.areas.dLateral.score).toBe(90);
         expect(dto.scoreTotal).toBe(285);
-        expect(dto.notes).toBe('Paciente colaborador');
+        expect(dto.notes).toBe('Usuario colaborador');
     });
 
     test('recalculates interpretations server side regardless of client input', async () => {

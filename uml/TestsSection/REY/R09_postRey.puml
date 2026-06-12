@@ -31,7 +31,7 @@ RMODAL -> RMODAL : resolveEducationBlock(years)\nyears > 12 → '>12'\nyears <= 
 RMODAL -> RMODAL : resolveAgeRange(age)\n18-22 | 23-27 | 28-32 | ... | >77
 
 alt sin escolaridad o edad registrada
-    RMODAL --> USR : Banner amarillo:\n"No se pudieron cargar\nlos datos del paciente\nLos percentiles no se calcularán"
+    RMODAL --> USR : Banner amarillo:\n"No se pudieron cargar\nlos datos del Usuario\nLos percentiles no se calcularán"
 end
 
 RMODAL --> USR : Modal de registro visible\nBanner: escolaridad + bloque + edad + rango\n6 inputs: score y tiempo por área\nPercentiles en vivo (read-only)

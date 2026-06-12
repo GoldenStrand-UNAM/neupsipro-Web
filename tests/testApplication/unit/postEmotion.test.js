@@ -243,7 +243,7 @@ describe('UNIT — postEmotionUseCase', () => {
   });
 
   test('6.3 422 when notes contains emojis', async () => {
-  await expect(useCase.execute(validInput({ notes: 'Paciente estable 😀' })))
+  await expect(useCase.execute(validInput({ notes: 'Usuario estable 😀' })))
     .rejects.toMatchObject({ status: 422 });
   expect(mockRepository.saveEmotionResult).not.toHaveBeenCalled();
 });

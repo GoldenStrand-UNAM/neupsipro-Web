@@ -188,6 +188,28 @@
         ], '#topCubes');
     }
 
+    // Render test counters
+    function renderBottomCubes (testCounts) {
+        const map = {};
+        testCounts.items.forEach(t => {
+            const key = t.testName === 'REY' ? 'ROFC' : t.testName;
+            map[key] = t.total;
+        });
+
+        const cubeFor = (label, value) => ({
+            value, label, variant: value === 0 ? 'muted' : null,
+        });
+
+        renderCubes([
+            cubeFor('Perfil SE', map['Perfil SE'] ?? 0),
+            cubeFor('BANFE',           map.BANFE              ?? 0),
+            cubeFor('WAIS',            map.WAIS               ?? 0),
+            cubeFor('ROFC',            map.ROFC               ?? 0),
+            cubeFor('Devolución',      map['Devolución']      ?? 0),
+            { value: testCounts.totalProtocols, label: 'Total Protocolos', variant: 'accent' },
+        ], '#bottomCubes');
+    }
+
     // ============== CHARTS ==============
     let flowChartInstance, ageChartInstance, genderChartInstance;
 

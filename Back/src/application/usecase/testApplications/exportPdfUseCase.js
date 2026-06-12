@@ -226,7 +226,7 @@ class ExportPdfUseCase {
     if (result.idTest === 6 && this.getEmotionUseCase) {
       const dto = await this.getEmotionUseCase.execute({ id_results: result.idResults });
       return {
-        testName: 'Cuestionario Socioemocional',
+        testName: 'Perfil Socioemocional',
         dateApplied,
         columns: ['Índice', 'Puntuación', 'Interpretación'],
         rows: [
