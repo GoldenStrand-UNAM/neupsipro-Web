@@ -82,10 +82,15 @@
         </div>
 
         <!--Schooling-->
-        <div>
-            <label class="input_label">Escolaridad (años)</label>
+        <div class="flex items-end gap-2">
+            <div class="flex-1">
+                <label class="input_label">Escolaridad (años)</label>
 
-            <input type="number" min="0" max="30" step="1" id="schooling" class="schooling-years input" placeholder="Años de estudio">
+                <input type="number" min="0" max="30" step="1" id="schooling" class="schooling-years input" placeholder="Años de estudio">
+            </div>
+            <input type="number" min="0" max="1" step="1"
+                name="score_schooling" id="score_schooling"
+                class="w-16 input" placeholder="0/1">
         </div>
 
         <!--Father's schooling-->

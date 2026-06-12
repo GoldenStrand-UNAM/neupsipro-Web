@@ -33,9 +33,14 @@
         </div>
 
         <!--Age-->
-        <div>
-            <label class="input_label">Edad</label>
-            <input type="text" id="age" class="input bg-gray-100 text-gray-500" disabled>
+        <div class="flex items-end gap-2">
+            <div class="flex-1">
+                <label class="input_label">Edad</label>
+                <input type="text" id="age" class="input bg-gray-100 text-gray-500" disabled>
+            </div>
+            <input type="number" min="0" max="1" step="1"
+                name="score_age" id="score_age"
+                class="w-16 input" placeholder="0/1">
         </div>
 
         <!--Laterality-->
