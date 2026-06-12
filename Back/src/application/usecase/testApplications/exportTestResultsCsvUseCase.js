@@ -1,4 +1,4 @@
-const ALLOWED_TESTS = ['all', 'banfe', 'wais', 'rey'];
+const ALLOWED_TESTS = ['all', 'banfe', 'wais', 'rey', 'moca', 'nih'];
 
 class ExportTestResultsCsvUseCase {
   constructor(testExportRepository) {
@@ -30,6 +30,14 @@ class ExportTestResultsCsvUseCase {
       rey: {
         filename: 'rey_results.csv',
         fetch: () => this.testExportRepository.fetchReyResults(),
+      },
+      moca: {
+        filename: 'moca_results.csv',
+        fetch: () => this.testExportRepository.fetchMocaResults(),
+      },
+      nih: {
+        filename: 'nih_results.csv',
+        fetch: () => this.testExportRepository.fetchNihResults(),
       },
     };
 

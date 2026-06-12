@@ -35,7 +35,7 @@ class ExportTestResultsCsvController {
 
   toCsv(rows) {
     if (!rows || rows.length === 0) {
-      return '\uFEFF';
+      return '';
     }
 
     const headers = Object.keys(rows[0]);
@@ -64,7 +64,7 @@ class ExportTestResultsCsvController {
       ),
     ];
 
-    return `\uFEFF${csvRows.join('\n')}`;
+    return csvRows.join('\n');
   }
 }
 
