@@ -164,8 +164,7 @@ function buildMOCAFormHTML (mode, prefill, schoolingData) {
       </svg>
       <div class="flex flex-col">
         <span class="text-sm font-medium ${bonusApplies ? 'text-blue-700' : 'text-gray-700'}">
-          Escolaridad: ${escapeHTML(schoolingData.schooling)}
-          (${schoolingData.years} años)
+          Escolaridad: ${schoolingData.years} años
         </span>
         <span class="text-xs ${bonusApplies ? 'text-blue-500' : 'text-gray-400'}">
           ${bonusApplies

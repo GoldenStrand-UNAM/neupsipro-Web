@@ -246,7 +246,7 @@
         // Update nav buttons: hidden only at the very first/last subStep of the whole interview
         function updateNavigationButtons(phase, currentSection) {
 
-            const maxPhase = window.isChild ? 3 : 2;
+            const maxPhase = 3;
             const isFirst = phase === 1 && currentSection === 1;
             const isLast = phase === maxPhase && currentSection === PHASE_SUBSTEPS[maxPhase];
 
@@ -813,7 +813,6 @@
 
             const phase = Number(phaseEl.dataset.step);
 
-            // Phase 3 (Historia Clínica) has no content/data wired up yet
             if (!PHASE_SUBSTEPS[phase] || phase === window.currentPhase) return;
 
             // Save the active subStep before switching phases (free navigation: don't block on save outcome)
@@ -830,7 +829,7 @@
                 const phase = window.currentPhase;
                 const current = getActivePhaseData().current_section;
                 const total = PHASE_SUBSTEPS[phase];
-                const maxPhase = window.isChild ? 3 : 2;
+                const maxPhase = 3;
 
                 // Save current section (free navigation: don't block on save outcome)
                 await saveActiveSection(current);

@@ -73,10 +73,10 @@ function mapPersonalData (personalData) {
   setFieldValue('proofAddress', info.proofAddress);
   setFieldValue('healthcareSystem', info.healthcareSystem);
   setFieldValue('religion', info.religion);
-  setSelectValue('schooling', info.schooling);
+  setFieldValue('schooling', info.schooling);
   setFieldValue('residence', info.residence);
-  setSelectValue('fathersSchooling', info.fathersSchooling);
-  setSelectValue('mothersSchooling', info.mothersSchooling);
+  setFieldValue('fathersSchooling', info.fathersSchooling);
+  setFieldValue('mothersSchooling', info.mothersSchooling);
   setFieldValue('currentOcupation', info.ocupation);
 }
 

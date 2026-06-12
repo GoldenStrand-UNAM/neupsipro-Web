@@ -242,15 +242,7 @@ module.exports = (authUseCase, authMiddleware) => {
       const { id_user } = req.params;
       testResultsRepo.fetchUserSchooling({ id_user })
         .then(schooling => {
-          const map = {
-            'Sin schooling': 0,
-            'Primaria': 6,
-            'Secundaria': 9,
-            'Bachillerato': 12,
-            'Licenciatura': 16,
-            'Posgrado': 18,
-          };
-          const years = map[schooling] ?? null;
+          const years = typeof schooling === 'number' ? schooling : null;
           res.status(200).json({ schooling, years });
         })
         .catch(err => res.status(500).json({ error: err.message }));

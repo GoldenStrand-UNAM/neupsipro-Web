@@ -101,16 +101,16 @@ function buildSubStep1Payload () {
       imcCategory ?? null,
 
     schooling:
-      getIdentificationTextOrNull('schooling'),
+      getIdentificationNumberOrNull('schooling'),
 
     residence:
       getIdentificationTextOrNull('residence'),
 
     fathersSchooling:
-      getIdentificationTextOrNull('fathersSchooling'),
+      getIdentificationNumberOrNull('fathersSchooling'),
 
     mothersSchooling:
-      getIdentificationTextOrNull('mothersSchooling'),
+      getIdentificationNumberOrNull('mothersSchooling'),
 
     ocupation:
       getIdentificationTextOrNull('currentOcupation'),
