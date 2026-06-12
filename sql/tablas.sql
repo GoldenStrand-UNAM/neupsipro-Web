@@ -986,5 +986,35 @@ CREATE TABLE user_acl (
     UNIQUE KEY unique_user_module (id_user, id_module)
 );
 
-Alter table financial_situation
-    ADD COLUMN min_salary       INT NULL;
+-- 1. Tabla de configuración global
+CREATE TABLE system_config (
+    config_key    VARCHAR(50)  NOT NULL PRIMARY KEY,
+    config_value  VARCHAR(100) NOT NULL,
+    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                               ON UPDATE CURRENT_TIMESTAMP,
+    updated_by    VARCHAR(36)  NULL,
+    CONSTRAINT fk_config_user
+        FOREIGN KEY (updated_by)
+        REFERENCES users(id_user)
+);
+
+-- 2. Valor inicial del salario mínimo
+INSERT INTO system_config (config_key, config_value)
+VALUES ('min_salary', '249');
+
+ALTER TABLE financial_situation
+    ADD COLUMN min_salary INT NULL;
+
+-- 4. Trigger que copia el valor vigente al crear un nuevo usuario
+CREATE TRIGGER trg_set_min_salary
+AFTER INSERT ON financial_situation
+FOR EACH ROW
+BEGIN
+    UPDATE financial_situation
+    SET min_salary = (
+        SELECT CAST(config_value AS UNSIGNED)
+        FROM system_config
+        WHERE config_key = 'min_salary'
+    )
+    WHERE id_user_relation = NEW.id_user_relation;
+END;
