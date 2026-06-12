@@ -30,7 +30,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/postUser',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    permissionsMiddleware.requirePermission('clinical', 'consultation'),
     (req, res) => controller.postUser(req, res)
   );
 
@@ -38,7 +38,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/post',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'writing'),
+    permissionsMiddleware.requirePermission('clinical', 'writing'),
     upload.none(),
     (req, res) => controller.postClinicalUser(req, res)
   );
@@ -47,7 +47,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/:id_user/edit',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'consultation'),
+    permissionsMiddleware.requirePermission('clinical', 'consultation'),
     (req, res) => editController.editClinicalUserView(req, res)
   );
 
@@ -55,7 +55,7 @@ module.exports = (authUseCase, authMiddleware) => {
     '/:id_user/edit',
     authMiddleware.verifyToken,
     apiLimiter,
-    permissionsMiddleware.requirePermission('user management', 'writing'),
+    permissionsMiddleware.requirePermission('clinical', 'edit'),
     upload.none(),
     (req, res) => editController.editClinicalUser(req, res)
   );

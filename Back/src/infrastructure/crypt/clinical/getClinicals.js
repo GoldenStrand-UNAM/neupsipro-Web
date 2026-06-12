@@ -56,6 +56,18 @@ class uncrypt {
       reference_number: crypt.decrypt(user.reference_number),
     };
   }
+
+  uncryptName (user) {
+    const userData = Array.isArray(user) ? user[0] : user;
+    const first_name = crypt.decrypt(userData.first_name);
+    const lastname_p = crypt.decrypt(userData.lastname_p);
+    const lastname_m = crypt.decrypt(userData.lastname_m);
+    return {
+      first_name,
+      lastname_p,
+      lastname_m,
+    };
+  }
 };
 
 module.exports = uncrypt;
