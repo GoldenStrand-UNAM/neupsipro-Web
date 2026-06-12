@@ -1,5 +1,38 @@
+/* eslint-disable no-undef */
 /* eslint-disable max-lines-per-function */
 document.addEventListener('DOMContentLoaded', () => {
+  // --- Blocking write, edit & eliminate if there is no consult
+  const allRows = document.querySelectorAll('.table-permissions-row');
+
+  allRows.forEach(row => {
+    const chkConsult = row.querySelector('.chk-consult');
+    const chkWrite = row.querySelector('.chk-write');
+    const chkEdit = row.querySelector('.chk-editar');
+    const chkEliminate = row.querySelector('.chk-eliminar');
+
+    if (!chkConsult || !chkWrite || !chkEdit || !chkEliminate) return;
+
+    const syncPermissions = () => {
+      if (!chkConsult.checked) {
+        chkWrite.checked = false;
+        chkEdit.checked = false;
+        chkEliminate.checked = false;
+
+        chkWrite.disabled = true;
+        chkEdit.disabled = true;
+        chkEliminate.disabled = true;
+      } else {
+        chkWrite.disabled = false;
+        chkEdit.disabled = false;
+        chkEliminate.disabled = false;
+      }
+    };
+
+    syncPermissions();
+
+    chkConsult.addEventListener('change', syncPermissions);
+  });
+  // ----------------------------------------------------
   const btnSave = document.getElementById('btn-save-permissions');
 
   if (btnSave) {
@@ -71,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => window.location.reload(), 1500);
 
       } catch (error) {
-        console.error('Error de red:', error);
         showToast('Error de conexión con el servidor', 'error');
       } finally {
         btnSave.disabled = false;

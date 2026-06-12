@@ -80,7 +80,7 @@
                     <input 
                         type="checkbox" 
                         id="cb-<%= module.idModule %>-<%= action %>" 
-                        class="permission-checkbox w-5 h-5 cursor-pointer accent-[#C9A84C] <%= classMap[action] %>" 
+                        class="permission-checkbox <%= classMap[action] %> <%= module.hasCustomException ? 'is-custom' : 'is-inherited' %>"
                         data-module-id="<%= module.idModule %>" 
                         data-action="<%= action %>" 
                         <%= module.actions[action] && module.actions[action].active ? 'checked' : '' %> 
