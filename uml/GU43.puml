@@ -1,0 +1,85 @@
+@startuml GU43
+actor Administrator
+
+participant "View" as View
+participant "Routes" as Routes
+participant "PermissionsMiddleware" as Mid
+participant "PermissionsController" as Controller
+participant "AuthUseCase" as AuthUseCase
+participant "PermissionsUseCase" as UseCase
+participant "PermissionsEntity" as PermissionsEntity
+participant "ExceptionsEntity" as ExceptionsEntity
+participant "PermissionsDTO" as PermissionsDTO
+participant "ExceptionsDTO" as ExceptionsDTO
+participant "PermissionsRepository" as Repository
+database "DB" as DB
+
+Administrator -> View : Selecciona usuario y presiona "Ver permisos"
+
+View -> Routes : GET /api/admin/users/:userId/permissions
+
+Routes -> Mid : requirePermission('Permissions', 'consultation')
+
+Mid -> AuthUseCase : checkPermission(adminId, 'Permissions', 'consultation')
+
+alt administrador autorizado
+
+```
+Mid --> Routes : authorized
+
+Routes -> Controller : getPermission(userId)
+
+Controller -> UseCase : execute({ userId })
+
+par Obtener permisos ACL
+
+    UseCase -> Repository : fetchAll({ userId })
+
+    Repository -> DB : SELECT user_acl + modules
+    DB --> Repository : permissionsData[]
+
+    Repository --> UseCase : permissionsData[]
+
+and Obtener privilegios base
+
+    UseCase -> Repository : fetchPrivilegeNames()
+
+    Repository -> DB : SELECT privilege_role + privilege
+    DB --> Repository : exceptionsData[]
+
+    Repository --> UseCase : exceptionsData[]
+
+end
+
+UseCase -> PermissionsEntity : new Permissions({ permissionsData })
+PermissionsEntity --> UseCase : permissionsEntity
+
+UseCase -> ExceptionsEntity : new Exceptions({ exceptionsData })
+ExceptionsEntity --> UseCase : exceptionsEntity
+
+UseCase --> Controller : {\npermissions,\nexceptions\n}
+
+Controller -> PermissionsDTO : fromEntity(permissions)
+PermissionsDTO --> Controller : permissionsDto
+
+Controller -> ExceptionsDTO : fromEntity(exceptions)
+ExceptionsDTO --> Controller : exceptionsDto
+
+Controller --> Routes : HTTP 200
+
+Routes --> View : {\n permissions,\n exceptions\n}
+
+View --> Administrator : Mostrar matriz de permisos\n y excepciones
+```
+
+else administrador sin permisos
+
+```
+Mid --> Routes : HTTP 403
+Routes --> View : Error
+View --> Administrator : No autorizado
+```
+
+end
+
+@enduml

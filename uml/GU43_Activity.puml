@@ -1,0 +1,51 @@
+@startuml consult permissions
+title Consult Permissions Flow
+
+skinparam style strictuml
+skinparam activity {
+  BackgroundColor #dbeafe
+  BorderColor #1e40af
+  DiamondBackgroundColor #fef08a
+  DiamondBorderColor #ca8a04
+}
+
+|Admin|
+start
+:Clicks on "Ver permisos" from the\nClinical User's options menu;
+
+|System|
+:Validates session token and\n"Administrator" role;
+
+if (Is the user a valid Administrator?) then (No)
+  #fee2e2:Blocks the action (Error 403);
+  stop
+else (Yes)
+  :Starts real-time data query;
+  
+  fork
+    :Fetch Modules catalog;
+  fork again
+    :Fetch Base Role permissions;
+  fork again
+    :Fetch user's ACL exceptions;
+  end fork
+  
+  :Combine data into unified matrix;
+  
+  if (Did a network or DB error occur?) then (Yes)
+    #fee2e2:Shows message:\n"Permissions could not be loaded at this time";
+    stop
+  else (No)
+    :Renders view with matrix\ngrouped by module;
+    
+    |Admin|
+    :Views current permissions and\nthe origin of each (Role vs ACL);
+    :Clicks on "Close" or "Return" button;
+    
+    |System|
+    :Closes view without\nreloading the entire page;
+    :Returns to the Clinical User's profile;
+    stop
+  endif
+endif
+@enduml

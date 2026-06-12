@@ -263,6 +263,19 @@
           headers: { 'x-csrf-token': window.__CSRF_TOKEN__ },
           body: formData,
         });
+        const contentType = res.headers.get("content-type");
+        
+        if (contentType && contentType.includes("text/html")) {
+          if (res.status === 404 || res.status === 403) {
+            const htmlError = await res.text();
+            
+            document.open();
+            document.write(htmlError);
+            document.close();
+            return;
+          }
+        }
+
         const data = await res.json();
 
         if (res.ok) {
