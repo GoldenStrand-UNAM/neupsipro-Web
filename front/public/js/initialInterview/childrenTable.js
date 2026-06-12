@@ -6,7 +6,6 @@
 // "Personas que aportan" contributors section in financial/subStep1/incomes.ejs.
 
 const CHILDREN_MAX_ROWS = 20;
-const CHILDREN_EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
 
 // ----- Auxiliary functions ---------------------------------------------------
 
@@ -17,20 +16,6 @@ function getChildrenElements () {
     addBtn: document.getElementById('addChildBtn'),
     warning: document.getElementById('childrenLimitWarning'),
   };
-}
-
-// Block emojis and enforce maxlength on a card's text input (same rule as subStep1)
-function bindChildTextLimit (input) {
-  const limit = input.maxLength > 0 ? input.maxLength : null;
-
-  input.addEventListener('input', () => {
-    let { value } = input;
-
-    value = value.replace(CHILDREN_EMOJI_REGEX, '');
-    if (limit) value = value.slice(0, limit);
-
-    if (value !== input.value) input.value = value;
-  });
 }
 
 // Update each card's title with its position ("Hijo 1", "Hijo 2"...),
@@ -82,9 +67,6 @@ function addRow (data = {}) {
   ageInput.value = data.childAge ?? '';
   schoolingInput.value = data.childSchooling ?? '';
   occupationInput.value = data.childOccupation ?? '';
-
-  bindChildTextLimit(nameInput);
-  bindChildTextLimit(occupationInput);
 
   removeBtn.addEventListener('click', () => {
     row.remove();
