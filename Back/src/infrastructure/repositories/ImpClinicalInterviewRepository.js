@@ -129,12 +129,21 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
       `SELECT depression, anxiety, stress, sleeping_problems,
               easily_angry, very_emotional, frustrated_easily, changes_comments,
               family_problem, legal_problem, legal_problem_desc,
-              finance_problem, driving_problem, control_problems
+              finance_problem, driving_problem, control_problems,
+              psychology_notes
          FROM clinical_interview
         WHERE id_user_relation = ?`,
       [id_user_relation]
     );
-    return rows[0] || {};
+
+    const [scoreRows] = await db.query(
+      `SELECT score_psychiatric
+         FROM initial_interview
+        WHERE id_user_relation = ?`,
+      [id_user_relation]
+    );
+
+    return { ...(rows[0] || {}), ...(scoreRows[0] || {}) };
   }
 
   async fetchSubstanceUse ({ id_user_relation }) {
@@ -256,12 +265,11 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
     );
 
     await connection.query(
-      `INSERT INTO initial_interview (id_user_relation, interview_date, score_moca, score_psychiatric)
-       VALUES (?, CURRENT_DATE, ?, ?)
+      `INSERT INTO initial_interview (id_user_relation, interview_date, score_moca)
+       VALUES (?, CURRENT_DATE, ?)
        ON DUPLICATE KEY UPDATE
-           score_moca = VALUES(score_moca),
-           score_psychiatric = VALUES(score_psychiatric)`,
-      [id_user_relation, data.score_moca, data.score_psychiatric]
+           score_moca = VALUES(score_moca)`,
+      [id_user_relation, data.score_moca]
     );
 
     await this._recomputeInclusionTotal({ connection, id_user_relation });
@@ -273,16 +281,28 @@ class ImpClinicalInterviewRepository extends ClinicalInterviewRepository {
           SET depression = ?, anxiety = ?, stress = ?, sleeping_problems = ?,
               easily_angry = ?, very_emotional = ?, frustrated_easily = ?, changes_comments = ?,
               family_problem = ?, legal_problem = ?, legal_problem_desc = ?,
-              finance_problem = ?, driving_problem = ?, control_problems = ?
+              finance_problem = ?, driving_problem = ?, control_problems = ?,
+              psychology_notes = ?
         WHERE id_user_relation = ?`,
       [
         data.depression, data.anxiety, data.stress, data.sleeping_problems,
         data.easily_angry, data.very_emotional, data.frustrated_easily, data.changes_comments,
         data.family_problem, data.legal_problem, data.legal_problem_desc,
         data.finance_problem, data.driving_problem, data.control_problems,
+        data.psychology_notes,
         id_user_relation,
       ]
     );
+
+    await connection.query(
+      `INSERT INTO initial_interview (id_user_relation, interview_date, score_psychiatric)
+       VALUES (?, CURRENT_DATE, ?)
+       ON DUPLICATE KEY UPDATE
+           score_psychiatric = VALUES(score_psychiatric)`,
+      [id_user_relation, data.score_psychiatric]
+    );
+
+    await this._recomputeInclusionTotal({ connection, id_user_relation });
   }
 
   async _saveSubstanceUse ({ connection, id_user_relation, data }) {
