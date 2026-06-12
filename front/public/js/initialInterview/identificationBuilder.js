@@ -59,6 +59,9 @@ function buildSubStep1Payload () {
 
   const { imc, imcCategory } = window.imcCalculator?.getImcResult() ?? {};
 
+  const scoreAge = getIdentificationNumberOrNull('score_age');
+  const scoreSchooling = getIdentificationNumberOrNull('score_schooling');
+
   return {
 
     interviewDate:
@@ -101,19 +104,22 @@ function buildSubStep1Payload () {
       imcCategory ?? null,
 
     schooling:
-      getIdentificationTextOrNull('schooling'),
+      getIdentificationNumberOrNull('schooling'),
 
     residence:
       getIdentificationTextOrNull('residence'),
 
     fathersSchooling:
-      getIdentificationTextOrNull('fathersSchooling'),
+      getIdentificationNumberOrNull('fathersSchooling'),
 
     mothersSchooling:
-      getIdentificationTextOrNull('mothersSchooling'),
+      getIdentificationNumberOrNull('mothersSchooling'),
 
     ocupation:
       getIdentificationTextOrNull('currentOcupation'),
+
+    scoreAge,
+    scoreSchooling,
   };
 }
 

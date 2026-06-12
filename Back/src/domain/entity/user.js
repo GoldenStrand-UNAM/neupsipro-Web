@@ -22,7 +22,7 @@ class User {
     this.nextAppointment = data.next_appointment;
     this.laterality = data.laterality;
     this.groupIntervention = data.group_intervention;
-    this.initialInterview = this.getStatus(data.initial_interview);
+    this.initialInterview = this.getStatus(data.initial_interview_status);
     this.protocol = this.setProtocol(data.protocol);
     this.phone = data.phone;
   }
@@ -75,15 +75,15 @@ class User {
   }
 
   getStatus (status) {
-    if (!status) return null;
-
     switch (status) {
-      case 1:
+      case 'to_start':
         return 'Por comenzar';
-      case 2:
+      case 'in_progress':
         return 'En proceso';
-      case 3:
+      case 'completed':
         return 'Terminada';
+      default:
+        return 'Sin comenzar';
     }
   }
 

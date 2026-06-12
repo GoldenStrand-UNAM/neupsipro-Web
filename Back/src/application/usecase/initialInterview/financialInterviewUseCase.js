@@ -28,7 +28,10 @@ class FinancialInterviewUseCase {
 
       case 2:
         rawData = await this.financialInterviewRepository.fetchEscGov({ id_user_relation });
-        formattedData = rawData;
+        formattedData = {
+          ...rawData,
+          minSalaryReference: await this.financialInterviewRepository.fetchMinSalaryConfig(),
+        };
         break;
 
       case 3:

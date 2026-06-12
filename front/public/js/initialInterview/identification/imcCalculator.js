@@ -156,7 +156,6 @@ function clearResult () {
   if (imcResult) imcResult.textContent = '';
   if (imcCategory) imcCategory.textContent = '';
 
-  document.getElementById('adjustedWeightResult')?.classList.add('hidden');
   document.getElementById('ageRangeResult')?.classList.add('hidden');
   document.getElementById('pediatricNote')?.classList.add('hidden');
   document.getElementById('ageWarning')?.classList.add('hidden');
@@ -204,20 +203,12 @@ function calculate () {
 
   const sizeInMeters = size / 100;
   const amputationEnabled = document.getElementById('amputationEnabled')?.checked;
-  const adjustedWeightBlock = document.getElementById('adjustedWeightResult');
 
   let weightForCalc = weight;
 
   if (amputationEnabled) {
     const amputationPct = getAmputationPercentage();
     weightForCalc = weight / (1 - amputationPct);
-
-    const adjustedWeightEl = document.getElementById('adjustedWeight');
-    if (adjustedWeightEl) adjustedWeightEl.textContent = round1(weightForCalc);
-
-    adjustedWeightBlock?.classList.remove('hidden');
-  } else {
-    adjustedWeightBlock?.classList.add('hidden');
   }
 
   const imc = round1(weightForCalc / (sizeInMeters ** 2));

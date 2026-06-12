@@ -1,15 +1,6 @@
 const ReyResultsDTO = require('../../dto/reyDTO');
 const { REY_TABLE_RC, REY_TABLE_MCP_MLP, TIME_TABLE } = require('../constants/reyTables');
 
-const SCHOOLING_YEARS_MAP = new Map([
-  ['Sin escolaridad', 0],
-  ['Primaria', 6],
-  ['Secundaria', 9],
-  ['Bachillerato', 12],
-  ['Licenciatura', 16],
-  ['Posgrado', 18],
-]);
-
 class postREYUseCase {
 
   constructor (impTestResultsRepository) {
@@ -31,8 +22,9 @@ class postREYUseCase {
     return age;
   }
 
+  // schooling is now captured directly as years of education
   #resolveSchoolingYears (schooling) {
-    return SCHOOLING_YEARS_MAP.has(schooling) ? SCHOOLING_YEARS_MAP.get(schooling) : null;
+    return typeof schooling === 'number' ? schooling : null;
   }
 
   #resolveEducationBlock (schoolingYears) {

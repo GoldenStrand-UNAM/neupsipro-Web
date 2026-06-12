@@ -226,6 +226,8 @@ class FinancialInterview {
       socioeconomicLevel: FinancialInterview.textOrNull(data.socioeconomic_level),
       total: FinancialInterview.numberOrNull(data.total),
 
+      minSalaryReference: FinancialInterview.numberOrNull(data.minSalaryReference),
+
       completedSteps: this.mapInitialProgress(initialProgress),
       completedSubSteps: this.mapFinancialProgress(financialProgress),
 
