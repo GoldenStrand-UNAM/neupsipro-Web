@@ -1,6 +1,6 @@
 @startuml EI04 - GET Child Interview (Pediatric)
 
-title Get - Child Interview / Pediatric (Golondrina)
+title Get - Child Interview / Pediatric (Neurogolondrina)
 
 actor "Clinical Group" as CG
 boundary "Consult User View" as UView

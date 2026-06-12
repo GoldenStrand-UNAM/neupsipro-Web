@@ -1,6 +1,6 @@
 @startuml EI04 - PATCH Child Interview (Pediatric)
 
-title Patch - Child Interview / Pediatric (Golondrina)
+title Patch - Child Interview / Pediatric (Neurogolondrina)
 
 actor "Clinical Group" as CG
 boundary "Child Interview \nView (Step 3)" as View

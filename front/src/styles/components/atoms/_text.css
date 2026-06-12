@@ -1,6 +1,6 @@
 @layer components{
     .title {
-        @apply text-white font-sans text-5xl relative z-50 font-bold;
+        @apply text-white font-sans text-3xl md:text-5xl relative z-50 font-bold;
     }
 
     .recover-password {

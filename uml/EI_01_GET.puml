@@ -1,6 +1,6 @@
 @startuml EI02 - GET Identification Card
 
-title Get - Identification Card (Golondrina)
+title Get - Identification Card (Neurogolondrina)
 
 actor "Clinical Group" as CG
 boundary "Consult User View" as UView
