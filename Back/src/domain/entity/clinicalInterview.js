@@ -24,6 +24,26 @@ class ClinicalInterview {
     return value;
   }
 
+  // Inclusion criteria score: must be 0, 1 or null
+  static _scoreOrNull (value, fieldName) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const n = Number(value);
+    if (![0, 1].includes(n)) this._fail(`${fieldName} debe ser 0, 1 o null`);
+
+    return n;
+  }
+
+  // Inclusion total: integer 0-7 or null
+  static _totalOrNull (value, fieldName) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const n = Number(value);
+    if (!Number.isInteger(n) || n < 0 || n > 7) this._fail(`${fieldName} debe estar entre 0 y 7`);
+
+    return n;
+  }
+
   static _symptom (field = {}, max = 100, name = 'symptom') {
     const presence = this._text(field.presence); // Sí | No | null
     const desc = this._text(field.desc);
@@ -79,6 +99,9 @@ class ClinicalInterview {
       phantom_limb_desc:       this._maxLen(this._text(body.phantomLimbDesc), 100, 'phantomLimbDesc'),
       phantom_limb_pain:       this._symptom(body.phantomLimbPain, 100, 'phantomLimbPain'),
       phantom_limb_pain_desc:  this._maxLen(this._text(body.phantomLimbPainDesc), 100, 'phantomLimbPainDesc'),
+      score_vision:            this._scoreOrNull(body.scoreVision, 'scoreVision'),
+      score_hearing:           this._scoreOrNull(body.scoreHearing, 'scoreHearing'),
+      inclusion_total:         this._totalOrNull(body.inclusionTotal, 'inclusionTotal'),
     };
   }
 
@@ -88,6 +111,9 @@ class ClinicalInterview {
       cdr_result:         this._maxLen(this._text(body.cdrResult), 150, 'cdrResult'),
       nihss_result:       this._maxLen(this._text(body.nihssResult), 150, 'nihssResult'),
       mental_observation: this._maxLen(this._text(body.mentalObservation), 500, 'mentalObservation'),
+      score_moca:         this._scoreOrNull(body.scoreMoca, 'scoreMoca'),
+      score_psychiatric:  this._scoreOrNull(body.scorePsychiatric, 'scorePsychiatric'),
+      inclusion_total:    this._totalOrNull(body.inclusionTotal, 'inclusionTotal'),
     };
   }
 
@@ -123,6 +149,8 @@ class ClinicalInterview {
       positive_experience:    this._maxLen(this._text(body.positiveExperience), 300, 'positiveExperience'),
       future_goals:           this._maxLen(this._text(body.futureGoals), 300, 'futureGoals'),
       observations:           this._maxLen(this._text(body.observations), 400, 'observations'),
+      score_drug_use:         this._scoreOrNull(body.scoreDrugUse, 'scoreDrugUse'),
+      inclusion_total:        this._totalOrNull(body.inclusionTotal, 'inclusionTotal'),
     };
   }
 

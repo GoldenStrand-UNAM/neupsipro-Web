@@ -114,7 +114,10 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
               residence,
               fathers_schooling,
               mothers_schooling,
-              ocupation
+              ocupation,
+              score_age,
+              score_schooling,
+              inclusion_total
             FROM initial_interview
             WHERE id_user_relation = ?`,
       [id_user_relation]
@@ -213,8 +216,9 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           id_user_relation, interview_date, interviewer_name, support_student_name,
           companions_name, companion_relation, address, proof_address, healthcare_system,
           religion, weight, size, imc, imc_category, schooling, residence,
-          fathers_schooling, mothers_schooling, ocupation
-      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          fathers_schooling, mothers_schooling, ocupation,
+          score_age, score_schooling, inclusion_total
+      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
           interview_date = COALESCE(?, interview_date),
           interviewer_name = VALUES(interviewer_name),
@@ -233,7 +237,10 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           residence = VALUES(residence),
           fathers_schooling = VALUES(fathers_schooling),
           mothers_schooling = VALUES(mothers_schooling),
-          ocupation = VALUES(ocupation)`,
+          ocupation = VALUES(ocupation),
+          score_age = VALUES(score_age),
+          score_schooling = VALUES(score_schooling),
+          inclusion_total = VALUES(inclusion_total)`,
       [
         id_user_relation,
         data.interviewDate,
@@ -254,6 +261,9 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.fathersSchooling,
         data.mothersSchooling,
         data.ocupation,
+        data.scoreAge,
+        data.scoreSchooling,
+        data.inclusionTotal,
 
         data.interviewDate,
       ]

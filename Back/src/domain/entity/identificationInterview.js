@@ -140,6 +140,16 @@ class IdentificationInterview {
     return this.integerOrNull(value, min, max, label);
   }
 
+  // Inclusion criteria score: must be 0, 1 or null
+  static scoreOrNull (value, fieldName) {
+    if (value === null || value === undefined || value === '') return null;
+
+    const n = Number(value);
+    if (![0, 1].includes(n)) throw new Error(`${fieldName} debe ser 0, 1 o null`);
+
+    return n;
+  }
+
   // ================================= Map =================================
 
   // Datos Personales
@@ -178,6 +188,9 @@ class IdentificationInterview {
         fathersSchooling: IdentificationInterview.numberOrNull(base.fathers_schooling),
         mothersSchooling: IdentificationInterview.numberOrNull(base.mothers_schooling),
         ocupation: IdentificationInterview.textOrNull(base.ocupation, 50),
+        scoreAge: IdentificationInterview.numberOrNull(base.score_age),
+        scoreSchooling: IdentificationInterview.numberOrNull(base.score_schooling),
+        inclusionTotal: IdentificationInterview.numberOrNull(base.inclusion_total),
       },
 
       completedSteps: this.mapInitialProgress(initialProgress),
@@ -291,6 +304,9 @@ class IdentificationInterview {
       fathersSchooling: this.integerOrNull(data.fathersSchooling, 0, 30, 'La escolaridad del padre'),
       mothersSchooling: this.integerOrNull(data.mothersSchooling, 0, 30, 'La escolaridad de la madre'),
       ocupation: this.textOrNull(data.ocupation, 50),
+      scoreAge: this.scoreOrNull(data.scoreAge, 'El score de edad'),
+      scoreSchooling: this.scoreOrNull(data.scoreSchooling, 'El score de escolaridad'),
+      inclusionTotal: this.integerOrNull(data.inclusionTotal, 0, 7, 'El total de inclusión'),
     };
   }
 
