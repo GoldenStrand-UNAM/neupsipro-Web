@@ -6,9 +6,14 @@
 
     <div class="mt-4 space-y-4">
         <!--Interview date-->
-        <div>
-            <label class="input_label">Fecha de la entrevista</label>
-            <input type="text" id="interviewDate" class="input" placeholder="Selecciona una fecha" autocomplete="off">
+        <div class="flex items-end gap-2">
+            <div class="flex-1">
+                <label class="input_label">Fecha de la entrevista</label>
+                <input type="text" id="interviewDate" class="input" placeholder="Selecciona una fecha" autocomplete="off">
+            </div>
+            <input type="number" min="0" max="1" step="1"
+                name="score_interview_date" id="score_interview_date"
+                class="w-16 input" placeholder="0/1">
         </div>
 
         <!--Interviewer name-->

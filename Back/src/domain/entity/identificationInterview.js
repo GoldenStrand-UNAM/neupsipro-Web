@@ -190,6 +190,7 @@ class IdentificationInterview {
         ocupation: IdentificationInterview.textOrNull(base.ocupation, 50),
         scoreAge: IdentificationInterview.numberOrNull(base.score_age),
         scoreSchooling: IdentificationInterview.numberOrNull(base.score_schooling),
+        scoreInterviewDate: IdentificationInterview.numberOrNull(base.score_interview_date),
       },
 
       completedSteps: this.mapInitialProgress(initialProgress),
@@ -305,6 +306,7 @@ class IdentificationInterview {
       ocupation: this.textOrNull(data.ocupation, 50),
       scoreAge: this.scoreOrNull(data.scoreAge, 'El score de edad'),
       scoreSchooling: this.scoreOrNull(data.scoreSchooling, 'El score de escolaridad'),
+      scoreInterviewDate: this.scoreOrNull(data.scoreInterviewDate, 'El score de fecha de entrevista'),
     };
   }
 
