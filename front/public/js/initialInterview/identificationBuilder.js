@@ -61,6 +61,7 @@ function buildSubStep1Payload () {
 
   const scoreAge = getIdentificationNumberOrNull('score_age');
   const scoreSchooling = getIdentificationNumberOrNull('score_schooling');
+  const scoreInterviewDate = getIdentificationNumberOrNull('score_interview_date');
 
   return {
 
@@ -120,6 +121,7 @@ function buildSubStep1Payload () {
 
     scoreAge,
     scoreSchooling,
+    scoreInterviewDate,
   };
 }
 

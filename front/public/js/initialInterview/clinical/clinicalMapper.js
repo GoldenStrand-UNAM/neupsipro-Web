@@ -71,7 +71,6 @@ function renderMentalFunctionsData (info) {
   setVal('nihssResult',       info.nihss_result        ?? '');
   setVal('mentalObservation', info.mental_observation  ?? '');
   setVal('score_moca',        info.score_moca          ?? '');
-  setVal('score_psychiatric', info.score_psychiatric   ?? '');
 }
 
 // 3.5 Personalidad  (backend subStep 5)
@@ -91,6 +90,8 @@ function renderPersonalityData (info) {
   applyPositiveNegative('financeProblem',   info.finance_problem);
   applyPositiveNegative('drivingProblem',   info.driving_problem);
   setVal('controlProblems',  info.control_problems    ?? '');
+  setVal('psychologyNotes',   info.psychology_notes   ?? '');
+  setVal('score_psychiatric', info.score_psychiatric  ?? '');
 }
 
 // 3.6 Uso de Sustancias  (backend subStep 6)

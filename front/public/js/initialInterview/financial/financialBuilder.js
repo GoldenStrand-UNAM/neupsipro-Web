@@ -11,6 +11,16 @@ function getNumberOrNull (id) {
     : Number(value);
 }
 
+// Parse a comma-formatted money input (e.g. "1,249.00") into a clean integer
+function parseMinSalary (id) {
+  // eslint-disable-next-line no-undef
+  const { value } = document.getElementById(id);
+
+  return value === ''
+    ? null
+    : parseInt(value.replace(/,/g, ''), 10) || 0;
+}
+
 // Get text or null if the value isn't registered
 function getTextOrNull (id) {
   // eslint-disable-next-line no-undef
@@ -196,7 +206,7 @@ function buildESC () {
   return {
 
     minIncome:
-      getNumberOrNull('minIncome'),
+      parseMinSalary('minIncome'),
 
     familyExpenses:
       getNumberOrNull('familyExpenses'),

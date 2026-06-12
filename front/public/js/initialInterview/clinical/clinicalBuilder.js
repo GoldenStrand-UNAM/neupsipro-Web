@@ -72,7 +72,6 @@ function buildMentalFunctions () {
     nihssResult:        val('nihssResult'),
     mentalObservation:  val('mentalObservation'),
     scoreMoca: score('score_moca'),
-    scorePsychiatric: score('score_psychiatric'),
   };
 }
 
@@ -93,6 +92,8 @@ function buildPersonality () {
     financeProblem:      positiveNegative('financeProblem'),
     drivingProblem:      positiveNegative('drivingProblem'),
     controlProblems:     val('controlProblems'),
+    psychologyNotes:     val('psychologyNotes'),
+    scorePsychiatric: score('score_psychiatric'),
   };
 }
 

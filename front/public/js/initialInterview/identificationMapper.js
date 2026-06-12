@@ -80,6 +80,7 @@ function mapPersonalData (personalData) {
   setFieldValue('currentOcupation', info.ocupation);
   setFieldValue('score_age', info.scoreAge);
   setFieldValue('score_schooling', info.scoreSchooling);
+  setFieldValue('score_interview_date', info.scoreInterviewDate);
 }
 
 // Map weight/size and (re)initialize the IMC calculator with the patient context,
