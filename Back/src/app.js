@@ -18,13 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet({
-  //TODO: remove once we have HTTPS certificate
-  hsts: false,
+
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'upgrade-insecure-requests': null,
-
       'default-src': ["'self'"],
 
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
