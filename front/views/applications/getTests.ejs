@@ -17,8 +17,8 @@
 
         <%- include('../partials/header') %>
 
-        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-hidden">
-            <div class="w-full h-full bg-white rounded-3xl p-6 overflow-y-auto">
+        <main class="flex-1 px-3 sm:px-6 pt-4 sm:pt-6 pb-0 md:pl-0 overflow-auto">
+            <div class="w-full bg-white rounded-3xl p-6">
 
                 <!--Main Header-->
                 <div>
@@ -83,6 +83,9 @@
                 <!-- Inline error message — hidden by default -->
                 <p id="testListError" class="hidden text-sm text-red-500 mt-2"></p>
 
+            </div>
+            <div class="mt-auto pt-4">
+                <%- include('../partials/footer') %>
             </div>
         </main>
 
