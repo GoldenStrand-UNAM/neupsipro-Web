@@ -107,7 +107,6 @@ class ClinicalInterview {
       nihss_result:       this._maxLen(this._text(body.nihssResult), 150, 'nihssResult'),
       mental_observation: this._maxLen(this._text(body.mentalObservation), 500, 'mentalObservation'),
       score_moca:         this._scoreOrNull(body.scoreMoca, 'scoreMoca'),
-      score_psychiatric:  this._scoreOrNull(body.scorePsychiatric, 'scorePsychiatric'),
     };
   }
 
@@ -128,6 +127,8 @@ class ClinicalInterview {
       finance_problem:    this._positiveNegative(body.financeProblem, 100, 'financeProblem'),
       driving_problem:    this._positiveNegative(body.drivingProblem, 100, 'drivingProblem'),
       control_problems:   this._maxLen(this._text(body.controlProblems), 100, 'controlProblems'),
+      psychology_notes:   this._maxLen(this._text(body.psychologyNotes), 500, 'psychologyNotes'),
+      score_psychiatric:  this._scoreOrNull(body.scorePsychiatric, 'scorePsychiatric'),
     };
   }
 

@@ -1,6 +1,6 @@
 @startuml GU05 Get-Clinical-User
 
-title Get Clinical User - User Management (Golondrina)
+title Get Clinical User - User Management (Neurogolondrina)
 
 actor "Clinical Group" as CG
 

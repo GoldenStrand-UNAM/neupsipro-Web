@@ -1,6 +1,6 @@
 @startuml EI01 - POST Identification Card
 
-title Post - Identification Card (Golondrina)
+title Post - Identification Card (Neurogolondrina)
 
 actor "Clinical Group" as CG
 boundary "Consult User View" as UView

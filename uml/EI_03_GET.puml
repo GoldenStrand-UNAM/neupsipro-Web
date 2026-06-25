@@ -1,6 +1,6 @@
 @startuml EI03 - GET Clinical Interview (Symptoms)
 
-title Get - Clinical Interview / Symptoms (Golondrina)
+title Get - Clinical Interview / Symptoms (Neurogolondrina)
 
 actor "Clinical Team" as CG
 boundary "User Consultation View" as UView

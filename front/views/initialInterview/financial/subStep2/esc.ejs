@@ -3,7 +3,7 @@
     <label>
         <p>1.- Salario Mínimo</p>
     </label>
-    <input enable type="number" min="0" id="minIncome" class="input" placeholder="$0.00">
+    <input enable type="text" inputmode="numeric" id="minIncome" class="input" placeholder="$0.00">
     <p class="text-sm text-gray-500 mt-1">
         Salario mínimo vigente: $<span id="min-salary-ref">--</span> MXN/día
     </p>
@@ -339,7 +339,7 @@
     function calculateMinIncomePoints() {
 
         const minIncome =
-            parseFloat(document.getElementById('minIncome').value) || 0;
+            parseFloat(document.getElementById('minIncome').value.replace(/,/g, '')) || 0;
 
         if (minIncome <= 0) return 0;
 

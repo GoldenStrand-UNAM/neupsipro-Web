@@ -1,4 +1,4 @@
-# golondrina-WEB
+# Neurogolondrina-WEB
 Thanks to the new migration to pnpm to npm, the installation for the dependencies has changed.
 
 ---

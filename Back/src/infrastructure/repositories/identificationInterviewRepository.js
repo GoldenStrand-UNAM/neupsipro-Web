@@ -116,7 +116,8 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
               mothers_schooling,
               ocupation,
               score_age,
-              score_schooling
+              score_schooling,
+              score_interview_date
             FROM initial_interview
             WHERE id_user_relation = ?`,
       [id_user_relation]
@@ -216,8 +217,8 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           companions_name, companion_relation, address, proof_address, healthcare_system,
           religion, weight, size, imc, imc_category, schooling, residence,
           fathers_schooling, mothers_schooling, ocupation,
-          score_age, score_schooling
-      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          score_age, score_schooling, score_interview_date
+      ) VALUES (?, COALESCE(?, CURRENT_DATE), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
           interview_date = COALESCE(?, interview_date),
           interviewer_name = VALUES(interviewer_name),
@@ -238,7 +239,8 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
           mothers_schooling = VALUES(mothers_schooling),
           ocupation = VALUES(ocupation),
           score_age = VALUES(score_age),
-          score_schooling = VALUES(score_schooling)`,
+          score_schooling = VALUES(score_schooling),
+          score_interview_date = VALUES(score_interview_date)`,
       [
         id_user_relation,
         data.interviewDate,
@@ -261,6 +263,7 @@ class IdentificationInterviewRepository extends ImpIdentificationInterviewReposi
         data.ocupation,
         data.scoreAge,
         data.scoreSchooling,
+        data.scoreInterviewDate,
 
         data.interviewDate,
       ]
