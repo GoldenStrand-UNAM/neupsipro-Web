@@ -39,7 +39,7 @@ const ModifyStateController = require('../../controller/users/modifyStatus.contr
 const modifyProtocolUseCase   = require('../../../application/usecase/users/modifyProtocolUseCase');
 const modifyProtocolController = require('../../controller/users/modifyProtocol.controller');
 const upload = require('../../../infrastructure/external/multer.service');
-const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
+const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware')("users");
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 const HashingService  = require('../../../infrastructure/external/hashing.service');
 

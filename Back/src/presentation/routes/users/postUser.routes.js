@@ -7,7 +7,7 @@ const postUserController = require('../../controller/users/postUser.controller')
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const upload = require('../../../infrastructure/external/multer.service');
-const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
+const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware')("users");
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 
 module.exports = (authUseCase, authMiddleware) => {

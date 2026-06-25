@@ -1,6 +1,6 @@
 const { uploadToS3 } = require('./s3.config');
 
-const s3UploadMiddleware = async (req, res, next) => {
+const s3UploadMiddleware = (user) => async (req, res, next) => {
   //if there is no file, skip middleware
   if (!req.file) return next();
 
@@ -21,7 +21,7 @@ const s3UploadMiddleware = async (req, res, next) => {
     const nameFileS3 = `${titlePublication}_${timestamp}_.${ext}`;
 
     // Upload to bucketS3 and get the publicURL
-    const s3Url = await uploadToS3(req.file.path, nameFileS3);
+    const s3Url = await uploadToS3(user)(req.file.path, nameFileS3);
 
     req.file.s3Location = s3Url;
     next();
