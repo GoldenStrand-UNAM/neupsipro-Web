@@ -76,7 +76,8 @@ describe('POST /upload (with mocked s3 service) SUCCESS', () => {
     test('Successfully uploads an image', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -103,7 +104,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     test('Tries uploading unkown file type', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -120,7 +122,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     test('Tries uploading publication with no title', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -136,7 +139,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     test('SQL inyection test in title', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -155,7 +159,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     test('SQL inyection test in content', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -174,7 +179,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
     test('Extremly large title', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
@@ -193,7 +199,8 @@ describe('POST /upload (with mocked s3 service) ALTERNATE FLOWS', () => {
         test('Extremly large title', async () => {
         const fakeImage = "https://my-bucket.s3.amazonaws.com/images/foto.jpg";
 
-        mockedS3Upload.mockResolvedValue(fakeImage);
+        const mockInnerUpload = jest.fn().mockResolvedValue(fakeImage);
+        mockedS3Upload.mockReturnValue(mockInnerUpload);
         
         const imagePath = path.join(__dirname, '../fixtures/testImage.jpg');
         const imageBuffer = fs.readFileSync(imagePath);
