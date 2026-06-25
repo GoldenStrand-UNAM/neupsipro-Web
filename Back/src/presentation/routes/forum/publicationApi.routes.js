@@ -20,7 +20,7 @@ const UsersRepository = require('../../../infrastructure/repositories/ImpUsersRe
 const PermissionsMiddleware = require('../../../infrastructure/auth/permissions.middleware');
 
 const upload = require('../../../infrastructure/external/multer.service');
-const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware');
+const s3UploadMiddleware = require('../../../infrastructure/external/s3.middleware')("forum");
 const validateImageMiddleware = require('../../../infrastructure/external/validateImage.middleware');
 
 module.exports = (authUseCase, authMiddleware) => {

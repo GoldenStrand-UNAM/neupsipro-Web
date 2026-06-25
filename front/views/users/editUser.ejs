@@ -649,7 +649,7 @@
         showToast((data.error || 'Error desconocido'), 'error');
       }
       } catch (error) {
-      showToast('Error de conexión');
+      showToast('Error de conexión', error);
       }
     });
 

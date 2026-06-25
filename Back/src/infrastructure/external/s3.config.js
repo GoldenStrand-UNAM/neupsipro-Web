@@ -19,7 +19,7 @@ const s3 = new S3Client({
   },
 });
 
-const uploadToS3 = async (filePath, fileName) => {
+const uploadToS3 = (user) => async (filePath, fileName) => {
   // Read the temp file into a Buffer
   //We need to convert it to base64 in order to upload it, fs to process the file
 
@@ -35,7 +35,12 @@ const uploadToS3 = async (filePath, fileName) => {
 
   await s3.send(command);
 
-  const location = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/forum/${fileName}`;
+  let location;
+
+  if (user == "forum")
+    location = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/forum/${fileName}`;
+  else if (user == "users")
+    location = `https://${BUCKET_NAME}.s3.${REGION}.amazonaws.com/users/${fileName}`;
 
   //eslint-disable-next-line no-console
   console.log(`File uploaded successfully at ${location}`);
