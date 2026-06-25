@@ -43,6 +43,19 @@
     @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
   }
 
+  .btnPostMobile {
+    @apply sticky bottom-5 left-full z-10;
+    
+    @apply flex items-center justify-center gap-2;
+    @apply px-3 py-2 md:px-4 text-white font-medium rounded-lg;
+
+    @apply w-auto md:w-[138px];
+    @apply h-[34px] md:h-[40px];
+
+    @apply text-sm md:text-base;
+    @apply hover:brightness-125 hover:scale-[1.05] hover:shadow-xl active:scale-95 transition-all duration-200;
+  }
+
   .btn-clear {
     @apply flex items-center justify-center gap-2;
     @apply px-3 py-2 md:px-4 font-medium rounded-lg;
